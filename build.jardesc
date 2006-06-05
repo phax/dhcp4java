@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jardesc>
+    <jar path="dhcp4java.jar"/>
+    <options overwrite="true" compress="true" exportErrors="true" exportWarnings="true" saveDescription="true" descriptionLocation="/dhcp4java/jar.jardesc" useSourceFolders="false" buildIfNeeded="true"/>
+    <manifest manifestVersion="1.0" usesManifest="true" reuseManifest="false" saveManifest="false" generateManifest="true" manifestLocation="" mainClassHandleIdentifier="=dhcp4java/src&lt;sf.dhcp4java.examples{DHCPSnifferServlet.java[DHCPSnifferServlet">
+        <sealing sealJar="true">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportOutputFolder="false" exportJavaFiles="false">
+        <javaElement handleIdentifier="=dhcp4java/src&lt;sf.dhcp4java.examples"/>
+        <file path="/dhcp4java/src/DHCPd.properties"/>
+        <javaElement handleIdentifier="=dhcp4java/src&lt;sf.dhcp4java"/>
+    </selectedElements>
+</jardesc>
