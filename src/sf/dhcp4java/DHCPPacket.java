@@ -1914,10 +1914,10 @@ public class DHCPPacket implements Cloneable, Serializable {
      */
     static private final String toHex(int i) {
         StringBuffer s = new StringBuffer();
-        s.append(toHex((byte)((i & 0xff000000) >>> 24)));
-        s.append(toHex((byte)((i & 0x00ff0000) >>> 16)));
-        s.append(toHex((byte)((i & 0x0000ff00) >>>  8)));
-        s.append(toHex((byte)((i & 0x000000ff)       )));
+        appendHex(s, (byte)((i & 0xff000000) >>> 24));
+        appendHex(s, (byte)((i & 0x00ff0000) >>> 16));
+        appendHex(s, (byte)((i & 0x0000ff00) >>>  8));
+        appendHex(s, (byte)((i & 0x000000ff)       ));
         return s.toString();
     }
     
