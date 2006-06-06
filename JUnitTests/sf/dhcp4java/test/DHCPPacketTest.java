@@ -9,8 +9,14 @@ package sf.dhcp4java.test;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
 import sf.dhcp4java.DHCPPacket;
 import sf.dhcp4java.test.HexUtils;
+import junit.framework.JUnit4TestAdapter;
 import junit.framework.TestCase;
 import static sf.dhcp4java.DHCPConstants.*;
 
@@ -20,16 +26,20 @@ import static sf.dhcp4java.DHCPConstants.*;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class DHCPPacketTest extends TestCase {
+public class DHCPPacketTest {
 
 	private DHCPPacket refPacketFromHex;
 	private DHCPPacket refPacketFromSratch;
 	private byte[] null256 = new byte[256];
+	
+	public static junit.framework.Test suite() {
+		  return new JUnit4TestAdapter(DHCPPacketTest.class);    
+		}
+	
     /*
      * @see TestCase#setUp()
      */
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before public void setUp() throws Exception {
 
     	byte[] refBuf = HexUtils.hexToBytes(REF_PACKET);
     	refPacketFromHex = DHCPPacket.getPacket(refBuf, 0, refBuf.length);
@@ -69,11 +79,10 @@ public class DHCPPacketTest extends TestCase {
      * Constructor for PacketTest.
      * @param arg0
      */
-    public DHCPPacketTest(String arg0) {
-        super(arg0);
+    public DHCPPacketTest() {
     }
 
-    public void testEquivalence() {
+    @Test public void testEquivalence() {
     	//assertEquals(refPacketFromHex, refPacketFromSratch);
 
 //    	is($pac->comment(), undef, "comparing each attribute");
@@ -108,19 +117,20 @@ public class DHCPPacketTest extends TestCase {
 //    	is($pac->getOptionValue(DHO_IRC_SERVER()), undef);
     }
     
-    public void testMarshall() throws UnknownHostException {
+    @Test public void testMarshall() throws UnknownHostException {
     	// test if serialized packet has the right parameters
     	DHCPPacket p = refPacketFromHex;
     	
     	assertEquals("", p.getComment());
     	assertEquals(BOOTREQUEST, p.getOp());
     	assertEquals(HTYPE_ETHER, p.getHtype());
-    	assertEquals(6, p.getHlen());
-    	assertEquals(0, p.getHops());
+    	assertEquals((byte) 6, p.getHlen());
+    	assertEquals((byte)0, p.getHops());
     	assertEquals(0x11223344, p.getXid());
     	assertEquals((short) 0x8000, p.getFlags());
     	assertEquals(InetAddress.getByName("10.0.0.1"), p.getCiaddr());
-    	assertEquals(InetAddress.getByName("10.0.0.1").getAddress(), p.getCiaddrRaw());
+    	assertTrue(ByteArrayComparator.equalsByteArray(InetAddress.getByName("10.0.0.1").getAddress(), p.getCiaddrRaw()));
+
 //    	is($pac->ciaddr(), "10.0.0.1");
 //    	is($pac->ciaddrRaw(), "\x0a\x00\x00\x01");
 //    	is($pac->yiaddr(), "10.0.0.2");
@@ -147,12 +157,12 @@ public class DHCPPacketTest extends TestCase {
         //TODO Implement marshall().
     }
 
-    public void testSerialize() throws Exception {
+    @Test public void testSerialize() throws Exception {
         //TODO Implement serialize().
         //throw new Exception("toto");
     }
 
-    public void testHashCode() {
+    @Test public void testHashCode() {
         //TODO Implement hashCode().
     }
 
