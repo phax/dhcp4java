@@ -388,12 +388,38 @@ public class DHCPPacket implements Cloneable, Serializable {
      * 
      * @return a copy of the <tt>DHCPPacket</tt> instance.
      */
-    public Object clone() throws CloneNotSupportedException {
-        DHCPPacket obj = (DHCPPacket) super.clone();	// TODO deep or shallow copy?
-        obj.truncated = false;	// freshly new object, it is not considered as corrupt
-        return obj;
+    public DHCPPacket clone() {
+    	DHCPPacket p;
+    	try {
+    		p = (DHCPPacket) super.clone();
+
+    		// specifically cloning arrays to avoid side-effects
+    		p.ciaddr = this.ciaddr.clone();
+    		p.yiaddr = this.yiaddr.clone();
+    		p.siaddr = this.siaddr.clone();
+    		p.giaddr = this.giaddr.clone();
+    		p.chaddr = this.chaddr.clone();
+    		p.sname = this.sname.clone();
+    		p.file = this.file.clone();
+    		//p.options = (LinkedHashMap<Byte, DHCPOption>) this.options.clone();
+    		p.options = new LinkedHashMap<Byte, DHCPOption>(this.options);
+    		p.padding = this.padding.clone();
+    		
+            p.truncated = false;	// freshly new object, it is not considered as corrupt
+    		
+            return p;
+    	} catch (CloneNotSupportedException e) {
+    		// this shouldn't happen, since we are Cloneable
+    		throw new InternalError();
+    	}
     }
-    
+    /**
+     * Assert all the invariants of the object. For debug purpose only.
+     *
+     */
+    private final void assertInvariants() {
+    	// TODO
+    }
     /** 
      * Convert a specified byte array containing a DHCP message into a
      * DHCPMessage object.
@@ -504,7 +530,7 @@ public class DHCPPacket implements Cloneable, Serializable {
 	        } else {	// only BOOTP
 	            padding = opt_buf;
 	        }
-	        
+	        assertInvariants();
 	        return this;
         } catch (IOException e) {
             // unlikely with ByteArrayInputStream
@@ -520,6 +546,7 @@ public class DHCPPacket implements Cloneable, Serializable {
      * @throws DHCPBadPacketException the datagram would be malformed (too small, too big...)
      */
     public synchronized byte[] serialize() {
+    	assertInvariants();
         // prepare output buffer, pre-sized to maximum buffer length
         // default buffer is half the maximum size of possible packet
         // (this seams reasonable for most uses, worst case only doubles the buffer size once
@@ -805,7 +832,7 @@ public class DHCPPacket implements Cloneable, Serializable {
      * @return the file converted to a String (transparent encoding).
      */
     public String getFile() {
-        return bytesToString(getFileRaw());
+        return bytesToString(getFileRaw());		// TODO remove leading zeroes
     }
     /**
      * Sets the file field (Boot File Name) as String.
@@ -1869,6 +1896,14 @@ public class DHCPPacket implements Cloneable, Serializable {
     	if (src >= buf.length) return "";
     	if (src + len > buf.length) len = buf.length - src;
         // string should be null terminated or whole buffer
+    	// first find the real lentgh
+    	for (int i=src; i<src+len; i++) {
+    		if (buf[i] == 0) {
+    			len = i - src;
+    			break;
+    		}
+    	}
+    	
         char[] chars = new char[len];
         for (int i=src; i<src+len; i++)
         	chars[i-src] = (char) buf[i];
