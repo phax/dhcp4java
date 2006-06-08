@@ -107,6 +107,14 @@ public class DHCPOption implements Serializable {
     	
     }
     /**
+     * Returns hashcode.
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return code ^ Arrays.hashCode(value);
+	}
+	/**
      * 
      * @return option value, never <tt>null</tt>. Minimal value is <tt>byte[0]</tt>.
      */
