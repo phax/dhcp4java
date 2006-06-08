@@ -413,6 +413,11 @@ public class DHCPPacket implements Cloneable, Serializable {
     		throw new InternalError();
     	}
     }
+    /**
+     * Returns true if 2 instances of <tt>DHCPPacket</tt> represent the same DHCP packet.
+     * 
+     * <p>This is a field by field comparison, except <tt>truncated</tt> which is ignored.
+     */
     public boolean equals(Object o) {
     	if (o == this)
     		return true;
