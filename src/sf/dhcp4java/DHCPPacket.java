@@ -413,12 +413,77 @@ public class DHCPPacket implements Cloneable, Serializable {
     		throw new InternalError();
     	}
     }
+    public boolean equals(Object o) {
+    	if (o == this)
+    		return true;
+        if (!(o instanceof DHCPPacket))
+            return false;
+        DHCPPacket p = (DHCPPacket) o;
+        boolean b = true;
+        
+        b = b && (comment == p.comment);
+        b = b && (op == p.op);
+        b = b && (htype == p.htype);
+        b = b && (hlen == p.hlen);
+        b = b && (hops == p.hops);
+        b = b && (xid == p.xid);
+        b = b && (secs == p.secs);
+        b = b && (flags == p.flags);
+        b = b && (Arrays.equals(ciaddr, p.ciaddr));
+        b = b && (Arrays.equals(yiaddr, p.yiaddr));
+        b = b && (Arrays.equals(siaddr, p.siaddr));
+        b = b && (Arrays.equals(giaddr, p.giaddr));
+        b = b && (Arrays.equals(chaddr, p.chaddr));
+        b = b && (Arrays.equals(sname, p.sname));
+        b = b && (Arrays.equals(file, p.file));
+        b = b && (options.equals(p.options));
+        b = b && (isDhcp == p.isDhcp);
+        // we deliberately ignoe "truncated" since it is reset when cloning
+        b = b && (Arrays.equals(padding, p.padding));
+        b = b && (equalsStatic(address, p.address));
+        b = b && (port == p.port);
+
+        return b;
+    }
+    static private final boolean equalsStatic(Object a, Object b) {
+    	if (a == null)
+    		return (b == null);
+    	return a.equals(b);
+    }
     /**
      * Assert all the invariants of the object. For debug purpose only.
      *
      */
     private final void assertInvariants() {
-    	// TODO
+    	assert(comment != null);
+    	assert(ciaddr != null);
+    	assert(ciaddr.length == 4);
+    	assert(yiaddr != null);
+    	assert(yiaddr.length == 4);
+    	assert(siaddr != null);
+    	assert(siaddr.length == 4);
+    	assert(giaddr != null);
+    	assert(giaddr.length == 4);
+    	// strings
+    	assert(chaddr != null);
+    	assert(chaddr.length == 16);
+    	assert(sname != null);
+    	assert(sname.length == 64);
+    	assert(file != null);
+    	assert(file.length == 128);
+    	assert(padding != null);	// length is free for padding
+    	// options
+    	assert(options != null);
+    	for (Byte key : options.keySet()) {
+    		assert(key != null);
+    		assert(key != DHO_PAD);
+    		assert(key != DHO_END);
+    		DHCPOption opt = options.get(key);
+    		assert(opt != null);
+    		assert(opt.getCode() == key);
+    		assert(opt.getValueFast() != null);
+    		assert(opt.getValueFast().length < 256);
+    	}
     }
     /** 
      * Convert a specified byte array containing a DHCP message into a
