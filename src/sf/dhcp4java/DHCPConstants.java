@@ -169,12 +169,7 @@ public class DHCPConstants {
     final static int _DHCP_UDP_OVERHEAD = 14 + 20 + 8;
     
     // Magic cookie
-    final static byte[] _MAGIC_COOKIE = {
-            (byte) 99,
-            (byte) 130,
-            (byte) 83,
-            (byte) 99
-    };
+    final static int _MAGIC_COOKIE = 0x63825363;
     
     // Maps for "code" to "string" conversion
     static Map<Byte, String> _BOOT_NAMES = new LinkedHashMap<Byte, String>();

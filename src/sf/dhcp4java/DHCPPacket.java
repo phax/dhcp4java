@@ -553,29 +553,21 @@ public class DHCPPacket implements Cloneable, Serializable {
 	        inStream.readFully(chaddr, 0, 16);
 	        inStream.readFully(sname, 0, 64);
 	        inStream.readFully(file, 0, 128);
-	        
-	        // get remaining bytes
-	        // TODO we don't need to copy the rest of the buffer
-	        byte opt_buf[] = new byte[inBStream.available()];
-	        inBStream.read(opt_buf);
-	        
+	        	        
 	        // check for DHCP MAGIC_COOKIE
-	        isDhcp = false;
-	        if (opt_buf.length > 4) {
-	            isDhcp = (	(opt_buf[0] == _MAGIC_COOKIE[0]) &&
-	                    	(opt_buf[1] == _MAGIC_COOKIE[1]) &&
-	                    	(opt_buf[2] == _MAGIC_COOKIE[2]) &&
-	                    	(opt_buf[3] == _MAGIC_COOKIE[3]) );
+	        isDhcp = true;
+	        inBStream.mark(4);		// read ahead 4 bytes
+	        if (inStream.readInt() != _MAGIC_COOKIE) {
+	        	isDhcp = false;
+	        	inBStream.reset();	// re-read the 4 bytes
 	        }
 	        
 	        if (isDhcp) {	// is it a full DHCP packet or a simple BOOTP?
 	            // DHCP Packet: parsing options
-	            // skip 4 bytes for MAGIC_COOKIE
-	            ByteArrayInputStream inOStream = new ByteArrayInputStream(opt_buf, 4, opt_buf.length-4);
 	            int type = 0;
 	            
 	            while (true) {
-	                int r = inOStream.read();
+	                int r = inBStream.read();
 	                if (r < 0) break; // EOF
 	                
 	                type = (byte) r;
@@ -583,23 +575,22 @@ public class DHCPPacket implements Cloneable, Serializable {
 	                if (type == DHO_PAD) continue; // skip Padding
 	                if (type == DHO_END) break; // break if end of options
 	                
-	                r = inOStream.read();
+	                r = inBStream.read();
 	                if (r < 0) break; // EOF
 	                
 	                int len = r;
-	                if (len > inOStream.available()) len = inOStream.available();
+	                if (len > inBStream.available()) len = inBStream.available();
 	                byte unit_opt[] = new byte[len];
-	                inOStream.read(unit_opt);
+	                inBStream.read(unit_opt);
 	                
 	                setOption(new DHCPOption((byte)type, unit_opt));	 // store option
 	            }
 	            truncated = (type != DHO_END); // truncated options?
-	            
-	            padding = new byte[inOStream.available()];
-	            inOStream.read(padding); // resulting padding
-	        } else {	// only BOOTP
-	            padding = opt_buf;
 	        }
+	        // put the remaining in padding
+	        padding = new byte[inBStream.available()];
+	        inBStream.read(padding);
+	        // final verifications (if assertions are activated)
 	        assertInvariants();
 	        return this;
         } catch (IOException e) {
@@ -640,7 +631,7 @@ public class DHCPPacket implements Cloneable, Serializable {
 	        
 	        if (isDhcp) {
 	            // DHCP and not BOOTP -> magic cookire required
-	            outStream.write(_MAGIC_COOKIE, 0, 4);
+	            outStream.writeInt(_MAGIC_COOKIE);
 	            
 	            // output options in creation order (LinkedHashMap)
 	            for (DHCPOption opt : getAllOptions()) {
