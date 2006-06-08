@@ -8,6 +8,7 @@ package sf.dhcp4java.test;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +18,6 @@ import static org.junit.Assert.*;
 import sf.dhcp4java.DHCPPacket;
 import sf.dhcp4java.test.HexUtils;
 import junit.framework.JUnit4TestAdapter;
-import junit.framework.TestCase;
 import static sf.dhcp4java.DHCPConstants.*;
 
 /**
@@ -117,6 +117,10 @@ public class DHCPPacketTest {
 //    	is($pac->getOptionValue(DHO_IRC_SERVER()), undef);
     }
     
+    @Test public void compareRefScratch() {
+    	assertEquals(refPacketFromHex, refPacketFromSratch);
+    }
+    
     @Test public void testMarshall() throws UnknownHostException {
     	// test if serialized packet has the right parameters
     	DHCPPacket p = refPacketFromHex;
@@ -129,7 +133,7 @@ public class DHCPPacketTest {
     	assertEquals(0x11223344, p.getXid());
     	assertEquals((short) 0x8000, p.getFlags());
     	assertEquals(InetAddress.getByName("10.0.0.1"), p.getCiaddr());
-    	assertTrue(ByteArrayComparator.equalsByteArray(InetAddress.getByName("10.0.0.1").getAddress(), p.getCiaddrRaw()));
+    	assertTrue(Arrays.equals(InetAddress.getByName("10.0.0.1").getAddress(), p.getCiaddrRaw()));
 
 //    	is($pac->ciaddr(), "10.0.0.1");
 //    	is($pac->ciaddrRaw(), "\x0a\x00\x00\x01");
@@ -170,11 +174,11 @@ public class DHCPPacketTest {
     	"0101060011223344000080000a0000010a0000020a0000030a00000400112233"+
     	"445566778899aabbccddeeff3132333435363738393031323334353637383930"+
     	"3132333435363738393031323334353637383930313233343536373839303132"+
-    	"3334353637383930313233003132333435363738393031323334353637383930"+
+    	"3334353637383930313233343132333435363738393031323334353637383930"+
     	"3132333435363738393031323334353637383930313233343536373839303132"+
     	"3334353637383930313233343536373839303132333435363738393031323334"+
     	"3536373839303132333435363738393031323334353637383930313233343536"+
-    	"3738393031323334353637006382536335010136040c22384433040001518001"+
+    	"3738393031323334353637386382536335010136040c22384433040001518001"+
     	"04ffffff0003040a0000fe210816212c370a0000fe2a040a00000548040a0000"+
     	"06ff000000000000000000000000000000000000000000000000000000000000"+
     	"0000000000000000000000000000000000000000000000000000000000000000"+
