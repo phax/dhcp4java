@@ -82,40 +82,6 @@ public class DHCPPacketTest {
     public DHCPPacketTest() {
     }
 
-    @Test public void testEquivalence() {
-    	//assertEquals(refPacketFromHex, refPacketFromSratch);
-
-//    	is($pac->comment(), undef, "comparing each attribute");
-//    	is($pac->op(), BOOTREQUEST());
-//    	is($pac->htype(), HTYPE_ETHER());
-//    	is($pac->hlen(), 6);
-//    	is($pac->hops(), 0);
-//    	is($pac->xid(), 0x11223344);
-//    	is($pac->flags(), 0x8000);
-//    	is($pac->ciaddr(), "10.0.0.1");
-//    	is($pac->ciaddrRaw(), "\x0a\x00\x00\x01");
-//    	is($pac->yiaddr(), "10.0.0.2");
-//    	is($pac->yiaddrRaw(), "\x0a\x00\x00\x02");
-//    	is($pac->siaddr(), "10.0.0.3");
-//    	is($pac->siaddrRaw(), "\x0a\x00\x00\x03");
-//    	is($pac->giaddr(), "10.0.0.4");
-//    	is($pac->giaddrRaw(), "\x0a\x00\x00\x04");
-//    	is($pac->chaddr(), "00112233445566778899aabbccddeeff");
-//    	is($pac->chaddrRaw(), "\x00\x11\x22\x33\x44\x55\x66\x77\x88\x99\xaa\xbb\xcc\xdd\xee\xff");
-//    	is($pac->sname(), substr($str200, 0, 63));
-//    	is($pac->file(), substr($str200, 0, 127));
-//    	is($pac->padding(), "\x00" x 256);
-//    	is($pac->isDhcp(), 1);
-//
-//    	is($pac->getOptionValue(DHO_DHCP_MESSAGE_TYPE()), DHCPDISCOVER());
-//    	is($pac->getOptionValue(DHO_DHCP_SERVER_IDENTIFIER()), "12.34.56.68");
-//    	is($pac->getOptionValue(DHO_DHCP_LEASE_TIME()), 86400);
-//    	is($pac->getOptionValue(DHO_SUBNET_MASK()), "255.255.255.0");
-//    	is($pac->getOptionValue(DHO_ROUTERS()), "10.0.0.254");
-//    	is($pac->getOptionValue(DHO_STATIC_ROUTES()), "22.33.44.55 10.0.0.254");
-//    	is($pac->getOptionValue(DHO_WWW_SERVER()), "10.0.0.6");
-//    	is($pac->getOptionValue(DHO_IRC_SERVER()), undef);
-    }
     
     @Test public void compareRefScratch() {
     	assertEquals(refPacketFromHex, refPacketFromSratch);
@@ -134,22 +100,22 @@ public class DHCPPacketTest {
     	assertEquals((short) 0x8000, p.getFlags());
     	assertEquals(InetAddress.getByName("10.0.0.1"), p.getCiaddr());
     	assertTrue(Arrays.equals(InetAddress.getByName("10.0.0.1").getAddress(), p.getCiaddrRaw()));
+    	assertEquals(InetAddress.getByName("10.0.0.2"), p.getYiaddr());
+    	assertTrue(Arrays.equals(InetAddress.getByName("10.0.0.2").getAddress(), p.getYiaddrRaw()));
+    	assertEquals(InetAddress.getByName("10.0.0.3"), p.getSiaddr());
+    	assertTrue(Arrays.equals(InetAddress.getByName("10.0.0.3").getAddress(), p.getSiaddrRaw()));
+    	assertEquals(InetAddress.getByName("10.0.0.4"), p.getGiaddr());
+    	assertTrue(Arrays.equals(InetAddress.getByName("10.0.0.4").getAddress(), p.getGiaddrRaw()));
+    	
+    	assertEquals("00112233445566778899aabbccddeeff".substring(0, 2*p.getHlen()), p.getChaddrAsHex());
+    	assertTrue(Arrays.equals(HexUtils.hexToBytes("00112233445566778899AABBCCDDEEFF"), p.getChaddr()));
+    	
+    	assertEquals(STR200.substring(0,64), p.getSname());
+    	assertEquals(STR200.substring(0, 128), p.getFile());
+    	assertTrue(Arrays.equals(new byte[256], p.getPadding()));
+    	assertTrue(p.isDhcp());
+    	assertFalse(p.isTruncated());
 
-//    	is($pac->ciaddr(), "10.0.0.1");
-//    	is($pac->ciaddrRaw(), "\x0a\x00\x00\x01");
-//    	is($pac->yiaddr(), "10.0.0.2");
-//    	is($pac->yiaddrRaw(), "\x0a\x00\x00\x02");
-//    	is($pac->siaddr(), "10.0.0.3");
-//    	is($pac->siaddrRaw(), "\x0a\x00\x00\x03");
-//    	is($pac->giaddr(), "10.0.0.4");
-//    	is($pac->giaddrRaw(), "\x0a\x00\x00\x04");
-//    	is($pac->chaddr(), "00112233445566778899aabbccddeeff");
-//    	is($pac->chaddrRaw(), "\x00\x11\x22\x33\x44\x55\x66\x77\x88\x99\xaa\xbb\xcc\xdd\xee\xff");
-//    	is($pac->sname(), substr($str200, 0, 63));
-//    	is($pac->file(), substr($str200, 0, 127));
-//    	is($pac->padding(), "\x00" x 256);
-//    	is($pac->isDhcp(), 1);
-//
 //    	is($pac->getOptionValue(DHO_DHCP_MESSAGE_TYPE()), DHCPDISCOVER());
 //    	is($pac->getOptionValue(DHO_DHCP_SERVER_IDENTIFIER()), "12.34.56.68");
 //    	is($pac->getOptionValue(DHO_DHCP_LEASE_TIME()), 86400);
@@ -158,7 +124,6 @@ public class DHCPPacketTest {
 //    	is($pac->getOptionValue(DHO_STATIC_ROUTES()), "22.33.44.55 10.0.0.254");
 //    	is($pac->getOptionValue(DHO_WWW_SERVER()), "10.0.0.6");
 //    	is($pac->getOptionValue(DHO_IRC_SERVER()), undef);
-        //TODO Implement marshall().
     }
 
     @Test public void testSerialize() throws Exception {
