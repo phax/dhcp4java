@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -46,9 +47,6 @@ import java.util.logging.Logger;
  * @version 0.50
  * 
  * Immutable object.
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class DHCPOption implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -86,9 +84,27 @@ public class DHCPOption implements Serializable {
         this.code = code;
         this.value = value;
     }
-    
+    /**
+     * Return the <tt>code</tt> field (byte).
+     * 
+     * @return code field
+     */
     public byte getCode() {
         return code;
+    }
+    /**
+     * returns true if two <tt>DHCPOption</tt> objects are equal, i.e. have same <tt>code</tt>
+     * and same <tt>value</tt>.
+     */
+    public boolean equals(Object o) {
+    	if (o == this)
+    		return true;
+        if (!(o instanceof DHCPOption))
+            return false;
+        DHCPOption opt = (DHCPOption) o;
+        return ((opt.code == this.code) &&
+        		 Arrays.equals(opt.value, this.value));
+    	
     }
     /**
      * 
@@ -607,7 +623,7 @@ public class DHCPOption implements Serializable {
         
         // check for value printing
         if (code == DHO_DHCP_MESSAGE_TYPE) {
-        	Byte cmd = getValueAsByte();	// TODO put a try/catch?
+        	Byte cmd = getValueAsByte();
         	if (_DHCP_CODES.containsKey(cmd)) {
         		s.append(_DHCP_CODES.get(cmd));
         	} else {
