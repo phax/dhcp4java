@@ -62,7 +62,7 @@ import java.util.logging.Logger;
  * </pre>
  * 
  * @author Stephan Hadinger
- * @version 0.50
+ * @version 0.51
  */
 public class DHCPServer implements Runnable {
     private static final Logger logger = Logger.getLogger("sf.dhcp4java.dhcpserver");
@@ -88,7 +88,6 @@ public class DHCPServer implements Runnable {
     private DHCPServer(DHCPServlet servlet, Properties userProps) throws DHCPServerInitException {
         this.servlet = servlet;
         this.userProps = userProps;
-        init();
     }
     /**
      * Creates and initializes a new DHCP Server.
