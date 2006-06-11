@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project default="javadoc">
     <target name="javadoc">
-        <javadoc destdir="../dhcp4java-doc" access="protected" source="1.5" use="true" notree="false" nonavbar="false" noindex="false" splitindex="true" author="true" version="true" nodeprecatedlist="false" nodeprecated="false" packagenames="sf.dhcp4java,sf.dhcp4java.examples" sourcepath="src" classpath="C:\appFT\eclipse\plugins\org.junit_3.8.1\junit.jar"/>
+        <javadoc destdir="web/javadoc" access="protected" source="1.5" use="true" notree="false" nonavbar="false" noindex="false" splitindex="true" author="true" version="true" nodeprecatedlist="false" nodeprecated="false" packagenames="sf.dhcp4java,sf.dhcp4java.examples" sourcepath="src" classpath="C:\appFT\eclipse\plugins\org.junit_3.8.1\junit.jar"/>
     </target>
 </project>
