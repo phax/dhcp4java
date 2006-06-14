@@ -89,7 +89,7 @@ contructing the server. Default values are:
 <pre>
     public static void main(String[] args) {
         try {
-            DHCPServer server = new DHCPServer(new TrivialDHCPServlet());
+            DHCPServer server = DHCPServer.initServer(new TrivialDHCPServlet(), null);
             new Thread(server).start();
         } catch (ServerInitException e) {
             // die gracefully
