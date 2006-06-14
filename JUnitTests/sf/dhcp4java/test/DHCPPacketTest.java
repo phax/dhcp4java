@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+import sf.dhcp4java.DHCPBadPacketException;
 import sf.dhcp4java.DHCPPacket;
 import sf.dhcp4java.test.HexUtils;
 import junit.framework.JUnit4TestAdapter;
@@ -30,7 +31,6 @@ public class DHCPPacketTest {
 
 	private DHCPPacket refPacketFromHex;
 	private DHCPPacket refPacketFromSratch;
-	private byte[] null256 = new byte[256];
 	
 	public static junit.framework.Test suite() {
 		  return new JUnit4TestAdapter(DHCPPacketTest.class);    
@@ -84,7 +84,12 @@ public class DHCPPacketTest {
 
     
     @Test public void compareRefScratch() {
+    	// compare packet serialized from packet built from scratch
+    	// compare DHCPPacket objects
     	assertEquals(refPacketFromHex, refPacketFromSratch);
+    	// compare byte[] datagrams
+    	assertTrue(Arrays.equals(HexUtils.hexToBytes(REF_PACKET),
+    			refPacketFromSratch.serialize()));
     }
     
     @Test public void testMarshall() throws UnknownHostException {
@@ -115,20 +120,54 @@ public class DHCPPacketTest {
     	assertTrue(Arrays.equals(new byte[256], p.getPadding()));
     	assertTrue(p.isDhcp());
     	assertFalse(p.isTruncated());
-
-//    	is($pac->getOptionValue(DHO_DHCP_MESSAGE_TYPE()), DHCPDISCOVER());
-//    	is($pac->getOptionValue(DHO_DHCP_SERVER_IDENTIFIER()), "12.34.56.68");
-//    	is($pac->getOptionValue(DHO_DHCP_LEASE_TIME()), 86400);
-//    	is($pac->getOptionValue(DHO_SUBNET_MASK()), "255.255.255.0");
-//    	is($pac->getOptionValue(DHO_ROUTERS()), "10.0.0.254");
-//    	is($pac->getOptionValue(DHO_STATIC_ROUTES()), "22.33.44.55 10.0.0.254");
-//    	is($pac->getOptionValue(DHO_WWW_SERVER()), "10.0.0.6");
-//    	is($pac->getOptionValue(DHO_IRC_SERVER()), undef);
+    	
+    	assertEquals(DHCPDISCOVER, p.getDHCPMessageType());
+    	assertEquals("12.34.56.68", p.getOptionAsInetAddr(DHO_DHCP_SERVER_IDENTIFIER).getHostAddress());
+    	assertEquals(86400, p.getOptionAsInteger(DHO_DHCP_LEASE_TIME));
+    	assertEquals("255.255.255.0", p.getOptionAsInetAddr(DHO_SUBNET_MASK).getHostAddress());
+    	assertEquals(1, p.getOptionAsInetAddrs(DHO_ROUTERS).length);
+    	assertEquals("10.0.0.254", p.getOptionAsInetAddrs(DHO_ROUTERS)[0].getHostAddress());
+    	assertEquals(2, p.getOptionAsInetAddrs(DHO_STATIC_ROUTES).length);
+    	assertEquals("22.33.44.55", p.getOptionAsInetAddrs(DHO_STATIC_ROUTES)[0].getHostAddress());
+    	assertEquals("10.0.0.254", p.getOptionAsInetAddrs(DHO_STATIC_ROUTES)[1].getHostAddress());
+    	assertEquals(1, p.getOptionAsInetAddrs(DHO_WWW_SERVER).length);
+    	assertEquals("10.0.0.6", p.getOptionAsInetAddrs(DHO_WWW_SERVER)[0].getHostAddress());
+    	assertEquals(null, p.getOptionAsInetAddrs(DHO_IRC_SERVER));
     }
 
     @Test public void testSerialize() throws Exception {
         //TODO Implement serialize().
         //throw new Exception("toto");
+    }
+    
+    @Test public void testSerializeExtremeValues() {
+    	// bad values
+    	try {
+    		byte[] buf = new byte[0];
+    		
+    		DHCPPacket.getPacket(buf, -1, 10);
+    		assertTrue(false);
+    	} catch (IndexOutOfBoundsException e) {
+    		// good
+    	}
+    	
+    	// packet too small
+    	try {
+    		byte[] buf = new byte[47];
+    		DHCPPacket.getPacket(buf, 0, buf.length);
+    		assertTrue(false);
+    	} catch (DHCPBadPacketException e) {
+    		// good
+    	}
+    	
+    	// packet too big
+    	try {
+    		byte[] buf = new byte[4700];
+    		DHCPPacket.getPacket(buf, 0, buf.length);
+    		assertTrue(false);
+    	} catch (DHCPBadPacketException e) {
+    		// good
+    	}
     }
 
     private static final String REF_PACKET = 
