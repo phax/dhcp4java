@@ -29,6 +29,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
 /**
  * A simple generic DHCP Server.
  * 
@@ -53,7 +54,7 @@ import java.util.logging.Logger;
  * <pre>
  *     public static void main(String[] args) {
  *         try {
- *             DHCPServer server = new DHCPServer(new TrivialDHCPServlet());
+ *             DHCPServer server = DHCPServer.initServer(new TrivialDHCPServlet(), null);
  *             new Thread(server).start();
  *         } catch (DHCPServerInitException e) {
  *             // die gracefully
