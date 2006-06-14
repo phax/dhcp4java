@@ -24,7 +24,6 @@ public class DHCPPacketSanityTest extends TestCase {
 	private InetAddress ip0;
 	
     protected void setUp() throws Exception {
-        // TODO Auto-generated method stub
         super.setUp();
         try {
             ip0 = InetAddress.getByName("0.0.0.0");

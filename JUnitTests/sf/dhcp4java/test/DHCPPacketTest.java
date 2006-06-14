@@ -131,10 +131,6 @@ public class DHCPPacketTest {
         //throw new Exception("toto");
     }
 
-    @Test public void testHashCode() {
-        //TODO Implement hashCode().
-    }
-
     private static final String REF_PACKET = 
     	"0101060011223344000080000a0000010a0000020a0000030a00000400112233"+
     	"445566778899aabbccddeeff3132333435363738393031323334353637383930"+

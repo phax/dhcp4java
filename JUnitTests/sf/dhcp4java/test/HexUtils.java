@@ -110,8 +110,6 @@ public class HexUtils {
 	public final static byte[] bitsToBytes(BitSet ba, int size) {
 		int bytesAlloc = countBytesForBits(size);
 		byte[] b = new byte[bytesAlloc];
-//		StringBuffer sb =null;
-//		if(logDEBUG) sb = new StringBuffer(8*bytesAlloc); //TODO: Should it be 2*8*bytesAlloc here?
 		for(int i=0;i<b.length;i++) {
 			short s = 0;
 			for(int j=0;j<8;j++) {
@@ -120,13 +118,10 @@ public class HexUtils {
 					idx > size ? false :
 						ba.get(idx);
 				s |= val ? (1<<j) : 0;
-//				if(sb != null) sb.append(val ? '1' : '0');
 			}
 			if(s > 255) throw new IllegalStateException("WTF? s = "+s);
 			b[i] = (byte)s;
 		}
-//		if(logDEBUG) Logger.debug(HexUtil.class, "bytes: "+bytesAlloc+" returned from bitsToBytes("
-//				+ba+","+size+"): "+bytesToHex(b)+" for "+sb.toString());
 		return b;
 	}
 
@@ -153,7 +148,6 @@ public class HexUtils {
 	 *  <at> param ba the bitset to write to
 	 */
 	public static void bytesToBits(byte[] b, BitSet ba, int maxSize) {
-//		if(logDEBUG) Logger.debug(HexUtil.class, "bytesToBits("+bytesToHex(b)+",ba,"+maxSize);
 		int x = 0;
 		for(int i=0;i<b.length;i++) {
 			for(int j=0;j<8;j++) {

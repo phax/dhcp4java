@@ -384,7 +384,6 @@ public class DHCPPacket implements Cloneable, Serializable {
      * Returns a copy of this <tt>DHCPPacket</tt>.
      * 
      * <p>The <tt>truncated</tt> flag is reset.
-     * TODO is it a shallow copy of arrays?
      * 
      * @return a copy of the <tt>DHCPPacket</tt> instance.
      */
@@ -893,7 +892,7 @@ public class DHCPPacket implements Cloneable, Serializable {
      * @return the file converted to a String (transparent encoding).
      */
     public String getFile() {
-        return bytesToString(getFileRaw());		// TODO remove leading zeroes
+        return bytesToString(getFileRaw());
     }
     /**
      * Sets the file field (Boot File Name) as String.
