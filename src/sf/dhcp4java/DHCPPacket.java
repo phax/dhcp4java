@@ -387,6 +387,7 @@ public class DHCPPacket implements Cloneable, Serializable {
      * 
      * @return a copy of the <tt>DHCPPacket</tt> instance.
      */
+    @Override
     public DHCPPacket clone() {
     	DHCPPacket p;
     	try {
@@ -417,6 +418,7 @@ public class DHCPPacket implements Cloneable, Serializable {
      * 
      * <p>This is a field by field comparison, except <tt>truncated</tt> which is ignored.
      */
+    @Override
     public boolean equals(Object o) {
     	if (o == this)
     		return true;
@@ -682,6 +684,7 @@ public class DHCPPacket implements Cloneable, Serializable {
      * 
      * @return a string representation of the object.
      */
+    @Override
     public String toString() {
         StringBuffer s = new StringBuffer(); // output buffer
         try {
