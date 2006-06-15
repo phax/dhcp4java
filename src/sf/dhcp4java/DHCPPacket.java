@@ -635,7 +635,7 @@ public class DHCPPacket implements Cloneable, Serializable {
 	            outStream.writeInt(_MAGIC_COOKIE);
 	            
 	            // output options in creation order (LinkedHashMap)
-	            for (DHCPOption opt : getAllOptions()) {
+	            for (DHCPOption opt : getOptionsCollection()) {
 	            	assert (opt != null);
 	            	assert (opt.getCode() != DHO_PAD);
 	            	assert (opt.getCode() != DHO_END);
@@ -729,7 +729,7 @@ public class DHCPPacket implements Cloneable, Serializable {
                 s.append("\nOptions follows:");
 
                 // parse options in creation order (LinkedHashMap)
-                for (DHCPOption opt : getAllOptions()) {
+                for (DHCPOption opt : getOptionsCollection()) {
                 	s.append("\n").append(opt.toString());
                 }                
             }
@@ -810,6 +810,14 @@ public class DHCPPacket implements Cloneable, Serializable {
         } else {
             Arrays.fill(this.chaddr, (byte) 0);
         }
+    }
+    /**
+     * Sets the chaddr field - from an hex String.
+     * 
+     * @param hex the chaddr in hex format
+     */
+    public void setChaddrHex(String hex) {
+    	setChaddr(hex2Bytes(hex));
     }
     /**
      * Returns the ciaddr field (Client IP Address).
@@ -1787,14 +1795,27 @@ public class DHCPPacket implements Cloneable, Serializable {
     	return options.containsKey(code);
     }
     /**
-     * Return an ordered list of all options.
+     * Return an ordered list/collection of all options.
      * 
      * <p>The Collection is read-only.
      * 
      * @return collection of <tt>DHCPOption</tt>.
      */
-    public Collection<DHCPOption> getAllOptions() {
+    public Collection<DHCPOption> getOptionsCollection() {
     	return Collections.unmodifiableCollection(options.values());	// read only
+    }
+    /**
+     * Return an array of all DHCP options.
+     * 
+     * @return the options array
+     */
+    public DHCPOption[] getOptionsArray() {
+    	DHCPOption[] opts = new DHCPOption[options.size()];
+    	int i=0;
+    	for (DHCPOption opt : options.values()) {
+    		opts[i++] = opt;
+    	}
+    	return opts;
     }
     /**
      * Sets the option specified for the option.
@@ -2005,6 +2026,19 @@ public class DHCPPacket implements Cloneable, Serializable {
      */
     static final String toHex(final byte buf[]) {
         return toHex(buf, 0, buf.length);
+    }
+
+    /* (non-Javadoc)
+     * Convert hes String to byte[]
+     */
+    static final byte[] hex2Bytes(String s) {
+    	if (s.length() % 2 != 0)
+    		throw new IllegalArgumentException("String length must be even: "+s.length());
+    	byte[] buf = new byte[s.length() / 2];
+    	for (int i = 0; i < buf.length; i++) {
+    		buf[i] = (byte) Integer.parseInt(s.substring(2*i, 2*i+2), 16);
+    	}
+    	return buf;
     }
 
     /* (non-Javadoc)
