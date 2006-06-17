@@ -78,6 +78,7 @@ public class TrivialDHCPServlet extends DHCPServlet {
 		
 		DHCPPacket response = request.clone();
 		response.setOp(BOOTREPLY);
+		response.setCiaddr(clientIp);
 		response.setDHCPMessageType(DHCPOFFER);
 		response.setOptions(commonOptions);
 
@@ -94,7 +95,11 @@ public class TrivialDHCPServlet extends DHCPServlet {
 		
 		DHCPPacket response = request.clone();
 		response.setOp(BOOTREPLY);
-		response.setDHCPMessageType(DHCPOFFER);
+		if (request.getCiaddr().equals(clientIp)) {
+			response.setDHCPMessageType(DHCPACK);
+		} else {
+			response.setDHCPMessageType(DHCPNAK);
+		}
 		response.setOptions(commonOptions);
 
 		return response;
