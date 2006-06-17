@@ -270,11 +270,11 @@ public class DHCPServer implements Runnable {
 
     private static final Properties DEF_PROPS = new Properties();
 
-    private static final String SERVER_ADDRESS = "serverAddress";
+    public static final String SERVER_ADDRESS = "serverAddress";
 
     private static final String SERVER_ADDRESS_DEFAULT = "127.0.0.1:67";
 
-    private static final String SERVER_THREADS = "serverThreads";
+    public static final String SERVER_THREADS = "serverThreads";
 
     private static final String SERVER_THREADS_DEFAULT = "2";
 
