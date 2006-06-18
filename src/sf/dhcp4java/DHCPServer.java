@@ -104,7 +104,7 @@ public class DHCPServer implements Runnable {
      */
     public static DHCPServer initServer(DHCPServlet servlet, Properties userProps) throws DHCPServerInitException {
     	if (servlet == null)
-    		throw new IllegalArgumentException("servlet musr not be null");
+    		throw new IllegalArgumentException("servlet must not be null");
     	DHCPServer server = new DHCPServer(servlet, userProps);
     	server.init();
     	return server;
@@ -132,7 +132,8 @@ public class DHCPServer implements Runnable {
 
             // now integrate provided properties
             if (userProps != null) {
-                props = new Properties(defProps);
+                props = new Properties();
+                props.putAll(defProps);
                 props.putAll(userProps);
             } else {
                 props = defProps;
