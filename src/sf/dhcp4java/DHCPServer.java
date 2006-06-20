@@ -54,7 +54,7 @@ import java.util.logging.Logger;
  * <pre>
  *     public static void main(String[] args) {
  *         try {
- *             DHCPServer server = DHCPServer.initServer(new TrivialDHCPServlet(), null);
+ *             DHCPServer server = DHCPServer.initServer(new DHCPStaticServer(), null);
  *             new Thread(server).start();
  *         } catch (DHCPServerInitException e) {
  *             // die gracefully
