@@ -21,8 +21,9 @@ package sf.dhcp4java.examples;
 
 import java.util.Random;
 
-import sf.dhcp4java.DHCPConstants;
 import sf.dhcp4java.DHCPPacket;
+
+import static sf.dhcp4java.DHCPConstants.*;
 
 
 /**
@@ -41,8 +42,8 @@ public class DHCPClient {
         // first send discover
         DHCPPacket discover = new DHCPPacket();
         
-        discover.setOp(DHCPConstants.BOOTREQUEST);
-        discover.setHtype(DHCPConstants.HTYPE_ETHER);
+        discover.setOp(BOOTREQUEST);
+        discover.setHtype(HTYPE_ETHER);
         discover.setHlen((byte) 6);
         discover.setHops((byte) 0);
         discover.setXid( (new Random()).nextInt() );
