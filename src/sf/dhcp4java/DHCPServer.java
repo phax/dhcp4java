@@ -24,8 +24,12 @@ import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-import java.util.LinkedList;
 import java.util.Properties;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -70,7 +74,8 @@ public class DHCPServer implements Runnable {
     
     protected DHCPServlet servlet = null; // the servlet it must run
     
-    protected WorkQueue workQueue = null; // working threads pool
+//    protected WorkQueue workQueue = null; // working threads pool
+    protected ThreadPoolExecutor threadPool = null;
 
     protected Properties props = null; // consolidated parameters of the server
 
@@ -79,6 +84,7 @@ public class DHCPServer implements Runnable {
     private DatagramSocket serverSocket = null; // the socket for receiving and sending
 
     static protected final int PACKET_SIZE = 1500; // default MTU for ethernet
+    static private final int BOUNDED_QUEUE_SIZE = 20;
 
     /**
      * Constructor
@@ -149,9 +155,13 @@ public class DHCPServer implements Runnable {
             if (serverSocket == null)
             	throw new DHCPServerInitException("Cannot open client-side socket");
 
-            // initialize work queue
+            // initialize Thread Pool
             int nbTthreads = Integer.valueOf(props.getProperty(SERVER_THREADS)).intValue();
-            workQueue = new WorkQueue(nbTthreads);
+            threadPool = new ThreadPoolExecutor(nbTthreads, nbTthreads,
+            		Long.MAX_VALUE, TimeUnit.MILLISECONDS,
+            		new ArrayBlockingQueue<Runnable>(BOUNDED_QUEUE_SIZE),
+            		new ServerThreadFactory());
+            threadPool.prestartAllCoreThreads();
             
             // now intialize the servlet
             servlet.init(props);
@@ -185,7 +195,7 @@ public class DHCPServer implements Runnable {
 
             // send work to thread pool
             ServletDispatcher dispatcher = new ServletDispatcher(this, servlet, requestDatagram);
-            workQueue.execute(dispatcher);
+            threadPool.execute(dispatcher);
         } catch (IOException e) {
 	        logger.log(Level.SEVERE, "IOException", e);
         }
@@ -285,82 +295,42 @@ public class DHCPServer implements Runnable {
         DEF_PROPS.put(SERVER_THREADS, SERVER_THREADS_DEFAULT);
     }
 
-}
+    static class ServerThreadFactory implements ThreadFactory {
+        static final AtomicInteger poolNumber = new AtomicInteger(1);
+        final AtomicInteger threadNumber = new AtomicInteger(1);
+        final String namePrefix;
 
-// Threads pool working queue
-// http://www-128.ibm.com/developerworks/library/j-jtp0730.html
-//
-
-class ServletDispatcher implements Runnable {
-    private static final Logger logger = Logger.getLogger("sf.dhcp4java.dhcpserver.servletdispatcher");
-    
-	private final DHCPServer server;
-    private final DHCPServlet dispatchServlet;
-    private final DatagramPacket dispatchPacket;
-    
-    public ServletDispatcher(DHCPServer server, DHCPServlet servlet, DatagramPacket req) {
-    	this.server = server;
-        this.dispatchServlet = servlet;
-        this.dispatchPacket = req;
-    }
-    
-    public void run() {
-        try {
-            DatagramPacket response = dispatchServlet.serviceDatagram(dispatchPacket);
-            server.sendResponse(response);		// invoke callback method
-        } catch (Exception e) {
-            logger.log(Level.FINE, "Exception in dispatcher", e);
+        ServerThreadFactory() {
+            namePrefix = "DHCPServer-" + poolNumber.getAndIncrement() + "-thread-";
         }
-    }
-}
-
-class WorkQueue {
-    private final PoolWorker[] threads;
-
-    private final LinkedList<Runnable> queue;
-
-    public WorkQueue(int nThreads) {
-        queue = new LinkedList<Runnable>();
-        threads = new PoolWorker[nThreads];
-
-        for (int i = 0; i < nThreads; i++) {
-            threads[i] = new PoolWorker();
-            threads[i].setName("DHCPServlet-"+i);
-            threads[i].start();
+        
+        public Thread newThread(Runnable r) {
+            return new Thread(r, namePrefix + threadNumber.getAndIncrement());
         }
+    	
     }
 
-    public void execute(Runnable r) {
-        synchronized (queue) {
-            queue.addLast(r);
-            queue.notify();
+    static class ServletDispatcher implements Runnable {
+        private static final Logger logger = Logger.getLogger("sf.dhcp4java.dhcpserver.servletdispatcher");
+        
+    	private final DHCPServer server;
+        private final DHCPServlet dispatchServlet;
+        private final DatagramPacket dispatchPacket;
+        
+        public ServletDispatcher(DHCPServer server, DHCPServlet servlet, DatagramPacket req) {
+        	this.server = server;
+            this.dispatchServlet = servlet;
+            this.dispatchPacket = req;
         }
-    }
-
-    private class PoolWorker extends Thread {
+        
         public void run() {
-            Runnable r;
-
-            while (true) {
-                synchronized (queue) {
-                    while (queue.isEmpty()) {
-                        try {
-                            queue.wait();
-                        } catch (InterruptedException ignored) {
-                        }
-                    }
-
-                    r = (Runnable) queue.removeFirst();
-                }
-
-                // If we don't catch RuntimeException,
-                // the pool could leak threads
-                try {
-                    r.run();
-                } catch (RuntimeException e) {
-                    // You might want to log something here
-                }
+            try {
+                DatagramPacket response = dispatchServlet.serviceDatagram(dispatchPacket);
+                server.sendResponse(response);		// invoke callback method
+            } catch (Exception e) {
+                logger.log(Level.FINE, "Exception in dispatcher", e);
             }
         }
     }
 }
+
