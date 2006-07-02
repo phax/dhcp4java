@@ -29,9 +29,10 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import sf.dhcp4java.DHCPConstants;
 import sf.dhcp4java.DHCPOption;
 import sf.dhcp4java.DHCPPacket;
+
+import static sf.dhcp4java.DHCPConstants.*;
 
 /**
  * A simple generic DHCP Relay.
@@ -182,7 +183,7 @@ public class DHCPRelay {
 
         public DHCPPacket service(DHCPPacket request) {
             try {
-                if (request.getOp() != DHCPConstants.BOOTREQUEST) {
+                if (request.getOp() != BOOTREQUEST) {
                     logger.warning("Packet received from client is not BOOTREQUEST");
                     return null;
                 }
@@ -193,7 +194,7 @@ public class DHCPRelay {
                 response.setPort(targetPort);
                 
                 response.setGiaddrRaw(giaddr);
-                response.setOptionRaw(DHCPConstants.DHO_DHCP_AGENT_OPTIONS, option82);
+                response.setOptionRaw(DHO_DHCP_AGENT_OPTIONS, option82);
                 
                 return response;
                 
@@ -210,18 +211,18 @@ public class DHCPRelay {
         
         public DHCPPacket service(DHCPPacket request) {
             try {
-                if (request.getOp() != DHCPConstants.BOOTREPLY) {
+                if (request.getOp() != BOOTREPLY) {
                     logger.warning("Packet received from client is not BOOTREQUEST");
                     return null;
                 }
                 
                 DHCPPacket response = (DHCPPacket) request.clone();
                 
-                response.setAddress(DHCPConstants.INADDR_BROADCAST);
+                response.setAddress(INADDR_BROADCAST);
                 response.setPort(68);
                 
                 response.setGiaddrRaw(giaddrEmpy);
-                response.removeOption(DHCPConstants.DHO_DHCP_AGENT_OPTIONS);
+                response.removeOption(DHO_DHCP_AGENT_OPTIONS);
                 
                 return response;
                 
