@@ -25,23 +25,24 @@ import sf.dhcp4java.DHCPPacket;
 
 import static sf.dhcp4java.DHCPConstants.*;
 
-
 /**
  * Example of DHCP Client (under construction).
- * 
+ *
  * @author Stephan Hadinger
  * @version 0.50
  */
 public class DHCPClient {
-    static byte[] macAddress = {
-            (byte) 0x00, (byte) 0x01, (byte) 0x02, (byte) 0x03,
-            (byte) 0x04, (byte) 0x05
+    private static byte[] macAddress = {
+        (byte) 0x00, (byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04, (byte) 0x05
     };
+
+    private DHCPClient() {
+    }
 
     public static void main(String[] args) {
         // first send discover
         DHCPPacket discover = new DHCPPacket();
-        
+
         discover.setOp(BOOTREQUEST);
         discover.setHtype(HTYPE_ETHER);
         discover.setHlen((byte) 6);
