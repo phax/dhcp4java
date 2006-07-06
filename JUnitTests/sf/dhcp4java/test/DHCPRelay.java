@@ -43,19 +43,19 @@ import static sf.dhcp4java.DHCPConstants.*;
 public class DHCPRelay {
 
     // instances of relays
-    private RelayThread serverToClientThread = null;
-    private RelayThread clientToServerThread = null;
+    private RelayThread serverToClientThread;
+    private RelayThread clientToServerThread;
     
-    private DatagramSocket serverSocket = null;
-    private DatagramSocket relaySocket = null;
-    static protected final int PACKET_SIZE = 1500; // default MTU for ethernet
+    private DatagramSocket serverSocket;
+    private DatagramSocket relaySocket;
+    protected static final int PACKET_SIZE = 1500; // default MTU for ethernet
     
-    private InetAddress targetServer = null;
-    private int targetPort = 0;
+    private InetAddress targetServer;
+    private int targetPort;
     
-    private byte[] giaddr = null;
+    private byte[] giaddr;
     private byte[] giaddrEmpy = { (byte) 0, (byte) 0, (byte) 0, (byte) 0 };
-    private byte[] option82 = null;
+    private byte[] option82;
 
     private static final Logger logger = Logger.getLogger("sf.dhcp4java.genericdhcprelay");
 
@@ -64,8 +64,8 @@ public class DHCPRelay {
      */
     public DHCPRelay() {
         super();
-        serverToClientThread = new ServerToClientThread();
-        clientToServerThread = new ClientToServerThread();
+        this.serverToClientThread = new ServerToClientThread();
+        this.clientToServerThread = new ClientToServerThread();
     }
     /**
      * 
@@ -79,29 +79,29 @@ public class DHCPRelay {
             
             InetAddress saddress = InetAddress.getByName(props.getProperty(SERVER_ADDRESS, SERVER_ADDRESS_DEFAULT));
             int sport = Integer.parseInt(props.getProperty(SERVER_PORT, SERVER_PORT_DEFAULT));
-            serverSocket = new DatagramSocket(sport, saddress);
+            this.serverSocket = new DatagramSocket(sport, saddress);
             
             InetAddress raddress = InetAddress.getByName(props.getProperty(RELAY_ADDRESS, RELAY_ADDRESS_DEFAULT));
             int rport = Integer.parseInt(props.getProperty(RELAY_PORT, RELAY_PORT_DEFAULT));
-            relaySocket = new DatagramSocket(rport, raddress);
-            
-            clientToServerThread.setImplThreads(serverSocket, relaySocket);
-            serverToClientThread.setImplThreads(relaySocket, serverSocket);
-            
-            targetServer = InetAddress.getByName(props.getProperty(TARGET_ADDRESS));
-            targetPort = Integer.parseInt(props.getProperty(TARGET_PORT));
-            
-            giaddr = InetAddress.getByName(props.getProperty(GIADDR)).getAddress();
+            this.relaySocket = new DatagramSocket(rport, raddress);
+
+            this.clientToServerThread.setImplThreads(this.serverSocket, this.relaySocket);
+            this.serverToClientThread.setImplThreads(this.relaySocket, this.serverSocket);
+
+            this.targetServer = InetAddress.getByName(props.getProperty(TARGET_ADDRESS));
+            this.targetPort = Integer.parseInt(props.getProperty(TARGET_PORT));
+
+            this.giaddr = InetAddress.getByName(props.getProperty(GIADDR)).getAddress();
             
             String clid = props.getProperty(CLID);
             int clidSub = Integer.parseInt(props.getProperty(CLID_SUB));
             LinkedHashMap<Byte, String> map = new LinkedHashMap<Byte, String>();
             map.put((byte) clidSub, clid);
-            option82 = DHCPOption.agentOptionToRaw(map);
+            this.option82 = DHCPOption.agentOptionToRaw(map);
             
         } catch (Exception e) {
-            serverSocket = null;
-            relaySocket = null;
+            this.serverSocket = null;
+            this.relaySocket = null;
             logger.log(Level.SEVERE, "Cannot open socket", e);
         }
     }
@@ -111,8 +111,8 @@ public class DHCPRelay {
      * 
      */
     public void run() {
-        serverToClientThread.start();
-        clientToServerThread.start();
+        this.serverToClientThread.start();
+        this.clientToServerThread.start();
         try {
             //serverToClientThread.join();
             //clientToServerThread.join();
@@ -121,55 +121,49 @@ public class DHCPRelay {
         }
     }
     
-    private abstract class RelayThread extends Thread {
+    private static abstract class RelayThread extends Thread {
         
-        protected DatagramSocket listenSocket = null;
-        protected DatagramSocket sendSocket = null;
+        protected DatagramSocket listenSocket;
+        protected DatagramSocket sendSocket;
         
         public RelayThread() {
-            super();
         }
         
         public void setImplThreads(DatagramSocket listen, DatagramSocket send) {
-            listenSocket = listen;
-            sendSocket = send;
+            this.listenSocket = listen;
+            this.sendSocket = send;
         }
-        
-        /**
-         * 
-         * @author yshi7355
-         *
-         * TODO To change the template for this generated type comment go to
-         * Window - Preferences - Java - Code Style - Code Templates
-         */
+
         public void run() {
             while (true) {
-                dispatch();
+                this.dispatch();
             }
         }
         
         public void dispatch() {
             try {
-    	        DatagramPacket requestDatagram = new DatagramPacket(new byte[PACKET_SIZE], PACKET_SIZE);
-    	        InetAddress address;
-    	        int port;
-    	        
-    	        listenSocket.receive(requestDatagram);
+                DatagramPacket requestDatagram = new DatagramPacket(new byte[PACKET_SIZE], PACKET_SIZE);
+                InetAddress    address;
+                int            port;
+
+                this.listenSocket.receive(requestDatagram);
     	        DHCPPacket request = DHCPPacket.getPacket(requestDatagram);
-    	        if (logger.isLoggable(Level.FINER))
-    	            logger.fine(request.toString());
+    	        if (logger.isLoggable(Level.FINER)) {
+                    logger.fine(request.toString());
+                }
     	        
-    	        DHCPPacket response = service(request); // call service function
+    	        DHCPPacket response = this.service(request); // call service function
     	        if (response != null) {
     	            // we have something to send back
     	            byte[] responseBuf = response.serialize();
     	            address = response.getAddress();
-    	            if (address == null)
-    	                throw new IllegalArgumentException("Address needed in response");
+    	            if (address == null) {
+                        throw new IllegalArgumentException("Address needed in response");
+                    }
     	            port = response.getPort();
     	            
     	            DatagramPacket responseDatagram = new DatagramPacket(responseBuf, responseBuf.length, address, port);
-    	            sendSocket.send(responseDatagram);
+                    this.sendSocket.send(responseDatagram);
     	        }
             } catch (IOException e) {
                 logger.log(Level.SEVERE, "Skipping", e);
@@ -188,41 +182,41 @@ public class DHCPRelay {
                     return null;
                 }
                 
-                DHCPPacket response = (DHCPPacket) request.clone();
+                DHCPPacket response = request.clone();
                 
-                response.setAddress(targetServer);
-                response.setPort(targetPort);
+                response.setAddress(DHCPRelay.this.targetServer);
+                response.setPort(DHCPRelay.this.targetPort);
                 
-                response.setGiaddrRaw(giaddr);
-                response.setOptionRaw(DHO_DHCP_AGENT_OPTIONS, option82);
-                
+                response.setGiaddrRaw(this.giaddr);
+                response.setOptionRaw(DHCPConstants.DHO_DHCP_AGENT_OPTIONS, option82);
+
                 return response;
-                
+
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Unexpected exception", e);
             }
-            
-            
+
+
             return null;
         }
     }
 
     private class ServerToClientThread extends RelayThread {
-        
+
         public DHCPPacket service(DHCPPacket request) {
             try {
                 if (request.getOp() != BOOTREPLY) {
                     logger.warning("Packet received from client is not BOOTREQUEST");
                     return null;
                 }
-                
-                DHCPPacket response = (DHCPPacket) request.clone();
-                
+
+                DHCPPacket response = request.clone();
+
                 response.setAddress(INADDR_BROADCAST);
                 response.setPort(68);
-                
-                response.setGiaddrRaw(giaddrEmpy);
-                response.removeOption(DHO_DHCP_AGENT_OPTIONS);
+
+                response.setGiaddrRaw(this.giaddrEmpy);
+                response.removeOption(DHCPConstants.DHO_DHCP_AGENT_OPTIONS);
                 
                 return response;
                 
