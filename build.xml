@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project name="DHCPd-J"
+         default="make"
+         basedir=".">
+    <property name="root.dir"         value="." />
+    <property name="src.dir"          value="${root.dir}/src" />
+    <property name="classes.dir"      value="${root.dir}/classes" />
+    <property name="javadoc.dir"      value="${root.dir}/doc" />
+    <property name="lib.dir"          value="${root.dir}/../" />
+    <property name="verbose"          value="false"/>
+    <property name="JAR.filename"     value="DHCPd-J" />
+
+    <!-- The classpath to be used to compile the project -->
+    <path id="base.classpath">
+        <pathelement location="${classes.dir}" />
+    </path>
+
+    <!-- Delete the generated directories -->
+    <target name="clean"
+            description="Removes all the generated files or directories"
+            depends="clean-classes">
+        <delete dir="${JAR.filename}" />
+    </target>
+
+    <!-- Removes all the compiled Java classes -->
+    <target name="clean-classes"
+            description="Removes all the compiled Java classes">
+        <delete dir="${classes.dir}" />
+    </target>
+
+    <!-- Directories building -->
+    <target name="init"
+            description="Creates building directories">
+        <mkdir dir="${classes.dir}" />
+    </target>
+
+    <!-- Compile classes -->
+    <target name="compile"
+            description="Compiles the project classes"
+            depends="init">
+        <javac destdir="${classes.dir}"
+               deprecation="on"
+               verbose="${verbose}"
+               debug="on">
+            <src path="${src.dir}"/>
+            <include name="com/francetelecom/**"/>
+            <include name="sf/**"/>
+            <classpath>
+                <path refid="base.classpath" />
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- Copy properties to classes dir (needed to run webapp) -->
+    <target name="copy"
+            description="Copies the properties files in the classes directory">
+        <copy todir="${classes.dir}" flatten="yes">
+            <fileset dir="${src.dir}">
+                <include name="*.properties" />
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- Creates the Jar file -->
+    <target name="jar"
+            description="Builds the JAR file"
+            depends="init, compile, copy">
+        <jar destfile="${JAR.filename}.jar">
+            <fileset dir="${classes.dir}">
+                <include name="**/*"/>
+                <exclude name="**/*Test"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <!-- Creates the Javadoc -->
+    <target name="javadoc"
+            description="Create the javadoc">
+        <javadoc destdir="${javadoc.dir}/">
+            <fileset dir="${src.dir}">
+                <include name="**/*"/>
+                <exclude name="**/*Test"/>
+            </fileset>
+        </javadoc>
+    </target>
+
+    <!-- Creates the Live Autonome JAR (DEV) -->
+    <target name="make"
+            description="Creates the WAR file for Live Autonome"
+            depends="jar"/>
+
+    <target name="install"
+            description="Deploys the webapps"
+            depends="make"/>
+
+    <target name="rebuild-all"
+            description="Cleans building directories then rebuilds and install a new WAR file"
+            depends="clean, make"/>
+</project>
