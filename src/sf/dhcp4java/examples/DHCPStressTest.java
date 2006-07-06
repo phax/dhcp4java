@@ -52,7 +52,7 @@ public class DHCPStressTest {
 	private DatagramPacket offerPacket = new DatagramPacket(new byte[1500], 1500);
 	private DatagramPacket requestPacket;
 	private DatagramPacket ackPacket = new DatagramPacket(new byte[1500], 1500);
-    private DatagramSocket socket = null;
+    private DatagramSocket socket;
     
     private static final int NB_ITERATIONS = 100000;
     private static final String SERVER_ADDR = "127.0.0.1";
@@ -63,32 +63,32 @@ public class DHCPStressTest {
 	private void init() {
 		try {
 			InetAddress serverAddr = InetAddress.getByName(CLIENT_ADDR);
-			
-			discover = new DHCPPacket();
-	
-	        discover.setOp(BOOTREQUEST);
-	        discover.setHtype(HTYPE_ETHER);
-	        discover.setHlen((byte) 6);
-	        discover.setHops((byte) 0);
-	        discover.setXid( (new Random()).nextInt() );
-	        discover.setSecs((short) 0);
-	        discover.setFlags((short) 0);
-	        discover.setChaddrHex("000802E7BFA5");
-	        
-	        discover.setDHCPMessageType(DHCPDISCOVER);
-	        discover.setOptionAsString(DHO_VENDOR_CLASS_IDENTIFIER, "MSFT5.0");
-	        
-	        byte[] discoverBytes = discover.serialize();
-	        discoverPacket = new DatagramPacket(discoverBytes, discoverBytes.length, serverAddr, SERVER_PORT);
-	        
-	        request = discover.clone();
-	        request.setDHCPMessageType(DHCPREQUEST);
-	        request.setCiaddr("10.0.0.1");
-	        
-	        byte[] requestBytes = request.serialize();
-	        requestPacket = new DatagramPacket(requestBytes, requestBytes.length, serverAddr, SERVER_PORT);
 
-	        socket = new DatagramSocket(CLIENT_PORT);
+            this.discover = new DHCPPacket();
+
+            this.discover.setOp(BOOTREQUEST);
+            this.discover.setHtype(HTYPE_ETHER);
+            this.discover.setHlen((byte) 6);
+            this.discover.setHops((byte) 0);
+            this.discover.setXid( (new Random()).nextInt() );
+            this.discover.setSecs((short) 0);
+            this.discover.setFlags((short) 0);
+            this.discover.setChaddrHex("000802E7BFA5");
+
+            this.discover.setDHCPMessageType(DHCPDISCOVER);
+            this.discover.setOptionAsString(DHO_VENDOR_CLASS_IDENTIFIER, "MSFT5.0");
+	        
+	        byte[] discoverBytes = this.discover.serialize();
+            this.discoverPacket = new DatagramPacket(discoverBytes, discoverBytes.length, serverAddr, SERVER_PORT);
+
+            this.request = this.discover.clone();
+            this.request.setDHCPMessageType(DHCPREQUEST);
+            this.request.setCiaddr("10.0.0.1");
+	        
+	        byte[] requestBytes = this.request.serialize();
+            this.requestPacket = new DatagramPacket(requestBytes, requestBytes.length, serverAddr, SERVER_PORT);
+
+            this.socket = new DatagramSocket(CLIENT_PORT);
 	        
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
@@ -101,20 +101,20 @@ public class DHCPStressTest {
 			// warm-up
 			
 			for (int i=0; i<1000; i++) {
-				socket.send(discoverPacket);
-		        socket.receive(offerPacket);
-		        
-		        socket.send(requestPacket);
-		        socket.receive(ackPacket);
+                this.socket.send(this.discoverPacket);
+                this.socket.receive(this.offerPacket);
+
+                this.socket.send(this.requestPacket);
+                this.socket.receive(this.ackPacket);
 			}
 			
 			Date timeBegin = new Date();
 			for (int i=0; i<NB_ITERATIONS; i++) {
-				socket.send(discoverPacket);
-		        socket.receive(offerPacket);
-		        
-		        socket.send(requestPacket);
-		        socket.receive(ackPacket);
+                this.socket.send(this.discoverPacket);
+                this.socket.receive(this.offerPacket);
+
+                this.socket.send(this.requestPacket);
+                this.socket.receive(this.ackPacket);
 			}
 			
 			Date timeEnd = new Date();
@@ -130,7 +130,7 @@ public class DHCPStressTest {
 	 */
 	private void startServer() throws DHCPServerInitException {
 	    Properties stressProperties = new Properties();
-	    stressProperties.put(DHCPServer.SERVER_ADDRESS, SERVER_ADDR+":"+SERVER_PORT);
+	    stressProperties.put(DHCPServer.SERVER_ADDRESS, SERVER_ADDR+ ':' +SERVER_PORT);
 	    stressProperties.put(DHCPServer.SERVER_THREADS, "1");
         DHCPServer server = DHCPServer.initServer(new DHCPStaticServer(), stressProperties);
         new Thread(server).start();

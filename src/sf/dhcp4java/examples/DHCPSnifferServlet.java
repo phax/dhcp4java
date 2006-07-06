@@ -28,11 +28,12 @@ import sf.dhcp4java.DHCPServerInitException;
 
 /**
  * A simple DHCP sniffer based on DHCP servlets.
- * 
+ *
  * @author Stephan Hadinger
  * @version 0.50
  */
 public class DHCPSnifferServlet extends DHCPServlet {
+
     private static final Logger logger = Logger.getLogger("sf.dhcp4java.examples.dhcpsnifferservlet");
     
     /**

@@ -49,5 +49,4 @@ public class DHCPServerInitException extends Exception {
     public DHCPServerInitException(String message, Throwable cause) {
         super(message, cause);
     }
-
 }

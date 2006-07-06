@@ -70,41 +70,47 @@ public class DHCPServlet {
      * @return response the datagram to send back, or <tt>null</tt> if no answer
      */
     public DatagramPacket serviceDatagram(DatagramPacket requestDatagram) {
-    	DatagramPacket responseDatagram = null;
+        DatagramPacket responseDatagram;
     	
-    	if (requestDatagram == null) return null;
-        
+        if (requestDatagram == null) { return null; }
+
         try {
-	        // parse DHCP request
-	        DHCPPacket request = DHCPPacket.getPacket(requestDatagram);
-	        if (request == null)	return null;	// nothing much we can do
+            // parse DHCP request
+            DHCPPacket request = DHCPPacket.getPacket(requestDatagram);
 
-	        if (logger.isLoggable(Level.FINER)) logger.finer(request.toString());
+            if (request == null) { return null; }	// nothing much we can do
 
-	        // do the real work
-	        DHCPPacket response = service(request); // call service function
-	        // done
-	        if (logger.isLoggable(Level.FINER)) logger.finer("service() done");
-	        if (response == null)	return null;
+            if (logger.isLoggable(Level.FINER)) {
+                logger.finer(request.toString());
+            }
 
-	        // check address/port
-	        InetAddress address = response.getAddress();
-	        if (address == null) {
-	            logger.warning("Address needed in response");
-	            return null;
-	        }
-	        int port = response.getPort();
-	        
-	        // we have something to send back
-	        byte[] responseBuf = response.serialize();
-	        if (logger.isLoggable(Level.FINER)) logger.finer("Buffer is "+responseBuf.length+" bytes long");
-	    
-	        responseDatagram = new DatagramPacket(responseBuf, responseBuf.length, address, port);
-	        if (logger.isLoggable(Level.FINER))
-	            logger.finer("Sending back to"+address.getHostAddress()+"("+port+")");
-	        postProcess(requestDatagram, responseDatagram);
-	        return responseDatagram;
-	        
+            // do the real work
+            DHCPPacket response = this.service(request); // call service function
+            // done
+            if (logger.isLoggable(Level.FINER)) {
+                logger.finer("service() done");
+            }
+            if (response == null) { return null; }
+
+            // check address/port
+            InetAddress address = response.getAddress();
+            if (address == null) {
+                logger.warning("Address needed in response");
+                return null;
+            }
+            int port = response.getPort();
+
+            // we have something to send back
+            byte[] responseBuf = response.serialize();
+
+            if (logger.isLoggable(Level.FINER)) { logger.finer("Buffer is " + responseBuf.length + " bytes long"); }
+
+            responseDatagram = new DatagramPacket(responseBuf, responseBuf.length, address, port);
+            if (logger.isLoggable(Level.FINER)) {
+                logger.finer("Sending back to" + address.getHostAddress() + '(' + port + ')');
+            }
+            this.postProcess(requestDatagram, responseDatagram);
+            return responseDatagram;
         } catch (DHCPBadPacketException e) {
             logger.log(Level.INFO, "Invalid DHCP packet received", e);
         } catch (IOException e) {
@@ -112,10 +118,11 @@ public class DHCPServlet {
         } catch (Exception e) {
             logger.log(Level.INFO, "Unexpected Exception", e);
         }
+
         // general fallback, we do nothing
         return null;
     }
-    
+
     /**
      * General method for parsing a DHCP request.
      * 
@@ -129,34 +136,31 @@ public class DHCPServlet {
      */
     protected DHCPPacket service(DHCPPacket request) {
         Byte dhcpMessageType;
-        
-        if (request == null) return null;
-        
+
+        if (request == null) { return null; }
+
         if (!request.isDhcp()) {
             logger.info("BOOTP packet rejected");
             return null;		// skipping old BOOTP
-        } else {
-            dhcpMessageType = request.getDHCPMessageType();
-            if (dhcpMessageType == null) {
-                logger.info("no DHCP message type");
-                return null;
-            }
         }
-        
+
+        dhcpMessageType = request.getDHCPMessageType();
+
+        if (dhcpMessageType == null) {
+            logger.info("no DHCP message type");
+            return null;
+        }
+
         if (request.getOp() == BOOTREQUEST) {
             switch (dhcpMessageType) {
-            	case DHCPDISCOVER:
-            	    return doDiscover(request);
-            	case DHCPREQUEST:
-            	    return doRequest(request);
-            	case DHCPINFORM:
-            	    return doInform(request);
-            	case DHCPDECLINE:
-            	    return doDecline(request);
-            	case DHCPRELEASE:
-            	    return doRelease(request);
+            	case DHCPDISCOVER: return this.doDiscover(request);
+            	case DHCPREQUEST:  return this.doRequest(request);
+            	case DHCPINFORM:   return this.doInform(request);
+            	case DHCPDECLINE:  return this.doDecline(request);
+            	case DHCPRELEASE:  return this.doRelease(request);
+
             	default:
-            	    logger.info("Unsupported message type "+dhcpMessageType);
+            	    logger.info("Unsupported message type " + dhcpMessageType);
             	    return null;
             }
         } else if (request.getOp() == BOOTREPLY) {
@@ -164,10 +168,11 @@ public class DHCPServlet {
             logger.info("BOOTREPLY received from client");
             return null;
         } else {
-            logger.warning("Unknown Op: "+request.getOp());
+            logger.warning("Unknown Op: " + request.getOp());
             return null;	// ignore
         }
     }
+
     /**
      * Process DISCOVER request.
      * 
@@ -178,6 +183,7 @@ public class DHCPServlet {
         logger.fine("DISCOVER packet received");
         return null;
     }
+
     /**
      * Process REQUEST request.
      * 
@@ -188,6 +194,7 @@ public class DHCPServlet {
         logger.fine("REQUEST packet received");
         return null;
     }
+
     /**
      * Process INFORM request.
      * 
@@ -198,6 +205,7 @@ public class DHCPServlet {
         logger.fine("INFORM packet received");
         return null;
     }
+
     /**
      * Process DECLINE request.
      * 
@@ -208,6 +216,7 @@ public class DHCPServlet {
         logger.fine("DECLINE packet received");
         return null;
     }
+
     /**
      * Process RELEASE request.
      * 
@@ -218,6 +227,7 @@ public class DHCPServlet {
         logger.fine("RELEASE packet received");
         return null;
     }
+
     /**
      * You have a chance to catch response before it is sent back to client.
      * 

@@ -25,36 +25,35 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.util.Properties;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 /**
  * A simple generic DHCP Server.
- * 
+ *
  * The DHCP Server provided is based on a multi-thread model. The main thread listens
  * at the socket, then dispatches work to a pool of threads running the servlet.
- * 
+ *
  * <p>Configuration: the Server reads the following properties in "/DHCPd.properties"
  * at the root of the class path. You can however provide a properties set when
  * contructing the server. Default values are:
- * 
+ *
  * <blockquote>
  * <tt>serverAddress=127.0.0.1:67</tt> <i>[address:port]</i>
  * <br>
  * <tt>serverThreads=2</tt> <i>[number of concurrent threads for servlets]</i>
  * </blockquote>
- * 
+ *
  * <p>Note: this class implements <tt>Runnable</tt> allowing it to be run
  * in a dedicated thread.
- * 
+ *
  * <p>Example:
- * 
+ *
  * <pre>
  *     public static void main(String[] args) {
  *         try {
@@ -65,42 +64,45 @@ import java.util.logging.Logger;
  *         }
  *     }
  * </pre>
- * 
+ *
  * @author Stephan Hadinger
  * @version 0.51
  */
 public class DHCPServer implements Runnable {
-    private static final Logger logger = Logger.getLogger("sf.dhcp4java.dhcpserver");
-    
-    protected DHCPServlet servlet = null; // the servlet it must run
-    
-//    protected WorkQueue workQueue = null; // working threads pool
-    protected ThreadPoolExecutor threadPool = null;
 
-    protected Properties props = null; // consolidated parameters of the server
+    private   static final Logger logger             = Logger.getLogger("sf.dhcp4java.dhcpserver");
+    private   static final int    BOUNDED_QUEUE_SIZE = 20;
 
-    protected Properties userProps = null; // reference of user-provided parameters
+    /** default MTU for ethernet */
+    protected static final int    PACKET_SIZE        = 1500;
 
-    private DatagramSocket serverSocket = null; // the socket for receiving and sending
-
-    static protected final int PACKET_SIZE = 1500; // default MTU for ethernet
-    static private final int BOUNDED_QUEUE_SIZE = 20;
+    /** the servlet it must run */
+    protected DHCPServlet        servlet;
+    /** working threads pool. */
+    protected ThreadPoolExecutor threadPool;
+    /** Consolidated parameters of the server. */
+    protected Properties         properties;
+    /** Reference of user-provided parameters */
+    protected Properties         userProps;
+    /** The socket for receiving and sending. */
+    private   DatagramSocket     serverSocket;
 
     /**
      * Constructor
-     * 
+     *
      * <p>Constructor shall not be called directly. New servers are created through
      * <tt>initServer()</tt> factory.
      */
-    private DHCPServer(DHCPServlet servlet, Properties userProps) throws DHCPServerInitException {
+    private DHCPServer(DHCPServlet servlet, Properties userProps) {
         this.servlet = servlet;
         this.userProps = userProps;
     }
+
     /**
      * Creates and initializes a new DHCP Server.
-     * 
+     *
      * <p>It instanciates the object, then calls <tt>init()</tt> method.
-     * 
+     *
      * @param servlet the <tt>DHCPServlet</tt> instance processing incoming requests,
      * 			must not be <tt>null</tt>.
      * @param userProps specific properties, overriding file and default properties,
@@ -109,19 +111,21 @@ public class DHCPServer implements Runnable {
      * @throws DHCPServerInitException unable to start the server.
      */
     public static DHCPServer initServer(DHCPServlet servlet, Properties userProps) throws DHCPServerInitException {
-    	if (servlet == null)
-    		throw new IllegalArgumentException("servlet must not be null");
+    	if (servlet == null) {
+            throw new IllegalArgumentException("servlet must not be null");
+        }
     	DHCPServer server = new DHCPServer(servlet, userProps);
     	server.init();
     	return server;
     }
     /**
      * Initialize the server context from the Properties, and open socket.
-     *  
+     *
      */
     protected void init() throws DHCPServerInitException {
-        if (serverSocket != null)
+        if (this.serverSocket != null) {
             throw new IllegalStateException("Server already initialized");
+        }
 
         try {
             // default built-in minimal properties
@@ -137,38 +141,37 @@ public class DHCPServer implements Runnable {
             }
 
             // now integrate provided properties
-            if (userProps != null) {
-                props = new Properties();
-                props.putAll(defProps);
-                props.putAll(userProps);
+            if (this.userProps != null) {
+                this.properties = new Properties();
+                this.properties.putAll(defProps);
+                this.properties.putAll(this.userProps);
             } else {
-                props = defProps;
+                this.properties = defProps;
             }
 
             // load socket address, this method may be overriden
-            InetSocketAddress sockAddress = getInetSocketAddress(props);
-            if (sockAddress == null)
-            	throw new DHCPServerInitException("Cannot find which SockAddress to open");
+            InetSocketAddress sockAddress = this.getInetSocketAddress(this.properties);
+            if (sockAddress == null) {
+                throw new DHCPServerInitException("Cannot find which SockAddress to open");
+            }
 
             // open socket for listening and sending
-            serverSocket = new DatagramSocket(sockAddress);
-            if (serverSocket == null)
-            	throw new DHCPServerInitException("Cannot open client-side socket");
+            this.serverSocket = new DatagramSocket(sockAddress);
 
             // initialize Thread Pool
-            int nbTthreads = Integer.valueOf(props.getProperty(SERVER_THREADS)).intValue();
-            threadPool = new ThreadPoolExecutor(nbTthreads, nbTthreads,
-            		Long.MAX_VALUE, TimeUnit.MILLISECONDS,
-            		new ArrayBlockingQueue<Runnable>(BOUNDED_QUEUE_SIZE),
-            		new ServerThreadFactory());
-            threadPool.prestartAllCoreThreads();
-            
+            int numThreads = Integer.valueOf(this.properties.getProperty(SERVER_THREADS));
+            this.threadPool = new ThreadPoolExecutor(numThreads, numThreads,
+                                                     Long.MAX_VALUE, TimeUnit.MILLISECONDS,
+                                                     new ArrayBlockingQueue<Runnable>(BOUNDED_QUEUE_SIZE),
+                                                     new ServerThreadFactory());
+            this.threadPool.prestartAllCoreThreads();
+
             // now intialize the servlet
-            servlet.init(props);
+            this.servlet.init(this.properties);
         } catch (DHCPServerInitException e) {
         	throw e;		// transparently re-throw
         } catch (Exception e) {
-            serverSocket = null;
+            this.serverSocket = null;
             logger.log(Level.SEVERE, "Cannot open socket", e);
             throw new DHCPServerInitException("Unable to init server", e);
         }
@@ -176,7 +179,7 @@ public class DHCPServer implements Runnable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Runnable#run()
      */
     protected void dispatch() {
@@ -186,12 +189,17 @@ public class DHCPServer implements Runnable {
             logger.finer("Waiting for packet");
 
             // receive datagram
-            serverSocket.receive(requestDatagram);
+            this.serverSocket.receive(requestDatagram);
 
-            if (logger.isLoggable(Level.FINER))
-                logger.finer("Received packet from "
-                        + DHCPPacket.getHostAddress(requestDatagram.getAddress()) + "("
-                        + requestDatagram.getPort() + ")");
+            if (logger.isLoggable(Level.FINER)) {
+                StringBuilder sbuf = new StringBuilder("Received packet from ");
+
+                DHCPPacket.appendHostAddress(sbuf, requestDatagram.getAddress());
+                sbuf.append('(')
+                    .append(requestDatagram.getPort())
+                    .append(')');
+                logger.finer(sbuf.toString());
+            }
 
             // send work to thread pool
             ServletDispatcher dispatcher = new ServletDispatcher(this, servlet, requestDatagram);
@@ -202,77 +210,83 @@ public class DHCPServer implements Runnable {
     }
     /**
      * Send back response packet to client.
-     * 
+     *
      * <p>This is a callback method used by servlet dispatchers to send back responses.
      */
     protected void sendResponse(DatagramPacket responseDatagram) {
-        if (responseDatagram == null)
+        if (responseDatagram == null) {
             return; // skipping
+        }
 
         try {
 	        // sending back
-	        serverSocket.send(responseDatagram);
+            this.serverSocket.send(responseDatagram);
 	    } catch (IOException e) {
 	        logger.log(Level.SEVERE, "IOException", e);
 	    }
     }
     /**
      * Returns the <tt>InetSocketAddress</tt> for the server (client-side).
-     * 
+     *
      * <pre>
-     * 
+     *
      *  serverAddress (default 127.0.0.1)
      *  serverPort (default 67)
-     *  
+     *
      * </pre>
-     * 
+     *
      * <p>
      * This method can be overriden to specify an non default socket behaviour
-     * 
+     *
      * @param props Properties loaded from /DHCPd.properties
      * @return the socket address, null if there was a problem
      */
     protected InetSocketAddress getInetSocketAddress(Properties props) {
-        if (props == null)
+        if (props == null) {
             throw new IllegalArgumentException("null props not allowed");
+        }
         String serverAddress = props.getProperty(SERVER_ADDRESS);
-        if (serverAddress == null)
-        	throw new IllegalStateException("Cannot load SERVER_ADDRESS property");
+        if (serverAddress == null) {
+            throw new IllegalStateException("Cannot load SERVER_ADDRESS property");
+        }
         return parseSocketAddress(serverAddress);
     }
 
     /**
      * Parse a string of the form 'server:port' or '192.168.1.10:67'.
-     * 
-     * @param s string to parse
+     *
+     * @param address string to parse
      * @return InetSocketAddress newly created
      * @throws IllegalArgumentException if unable to parse string
      */
-    public static final InetSocketAddress parseSocketAddress(String s) {
-        if (s == null)
+    public static InetSocketAddress parseSocketAddress(String address) {
+        if (address == null) {
             throw new IllegalArgumentException("Null address not allowed");
-        int i = s.indexOf(':');
-        if (i <= 0)
-            throw new IllegalArgumentException(
-                    "semicolon missing for port number");
+        }
+        int index = address.indexOf(':');
+        if (index <= 0) {
+            throw new IllegalArgumentException("semicolon missing for port number");
+        }
 
-        String serverStr = s.substring(0, i);
-        String portStr = s.substring(i + 1, s.length());
-        int port = Integer.parseInt(portStr);
+        String serverStr = address.substring(0, index);
+        String portStr   = address.substring(index + 1, address.length());
+        int    port      = Integer.parseInt(portStr);
+
         return new InetSocketAddress(serverStr, port);
     }
 
     /**
      * This is the main loop for accepting new request and delegating work to
      * servlets in different threads.
-     * 
+     *
      */
     public void run() {
-        if (serverSocket == null)
+        if (this.serverSocket == null) {
             throw new IllegalStateException("Listening socket is not open - terminating");
+        }
         while (true) {
             try {
-                dispatch();		// do the stuff
+                this.dispatch();		// do the stuff
             } catch (Exception e) {
                 logger.log(Level.WARNING, "Unexpected Exception", e);
             }
@@ -295,42 +309,18 @@ public class DHCPServer implements Runnable {
         DEF_PROPS.put(SERVER_THREADS, SERVER_THREADS_DEFAULT);
     }
 
-    static class ServerThreadFactory implements ThreadFactory {
-        static final AtomicInteger poolNumber = new AtomicInteger(1);
+    private static class ServerThreadFactory implements ThreadFactory {
+        private static final AtomicInteger poolNumber = new AtomicInteger(1);
+
         final AtomicInteger threadNumber = new AtomicInteger(1);
-        final String namePrefix;
+        final String        namePrefix;
 
         ServerThreadFactory() {
-            namePrefix = "DHCPServer-" + poolNumber.getAndIncrement() + "-thread-";
+            this.namePrefix = "DHCPServer-" + poolNumber.getAndIncrement() + "-thread-";
         }
-        
-        public Thread newThread(Runnable r) {
-            return new Thread(r, namePrefix + threadNumber.getAndIncrement());
-        }
-    	
-    }
 
-    static class ServletDispatcher implements Runnable {
-        private static final Logger logger = Logger.getLogger("sf.dhcp4java.dhcpserver.servletdispatcher");
-        
-    	private final DHCPServer server;
-        private final DHCPServlet dispatchServlet;
-        private final DatagramPacket dispatchPacket;
-        
-        public ServletDispatcher(DHCPServer server, DHCPServlet servlet, DatagramPacket req) {
-        	this.server = server;
-            this.dispatchServlet = servlet;
-            this.dispatchPacket = req;
-        }
-        
-        public void run() {
-            try {
-                DatagramPacket response = dispatchServlet.serviceDatagram(dispatchPacket);
-                server.sendResponse(response);		// invoke callback method
-            } catch (Exception e) {
-                logger.log(Level.FINE, "Exception in dispatcher", e);
-            }
+        public Thread newThread(Runnable runnable) {
+            return new Thread(runnable, this.namePrefix + this.threadNumber.getAndIncrement());
         }
     }
 }
-

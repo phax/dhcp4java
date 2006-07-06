@@ -23,23 +23,29 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
 import sf.dhcp4java.DHCPPacket;
+import sf.dhcp4java.DHCPConstants;
 
 
 /**
  * A simple DHCP sniffer.
- * 
+ *
  * @author Stephan Hadinger
  * @version 0.50
  */
 public class DHCPSniffer {
-    
+    private DHCPSniffer() {
+    }
+
     public static void main(String[] args) {
         try {
-            DatagramSocket socket = new DatagramSocket(67);
+            DatagramSocket socket = new DatagramSocket(DHCPConstants.BOOTP_REQUEST_PORT);
+
             while (true) {
                 DatagramPacket pac = new DatagramPacket(new byte[1500], 1500);
+                DHCPPacket     dhcp;
+
                 socket.receive(pac);
-                DHCPPacket dhcp = DHCPPacket.getPacket(pac);
+                dhcp = DHCPPacket.getPacket(pac);
                 System.out.println(dhcp.toString());
             }
         } catch (Exception e) {

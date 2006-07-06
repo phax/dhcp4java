@@ -46,7 +46,7 @@ public class DHCPStaticServer extends DHCPServlet {
     private static final Logger logger = Logger.getLogger("sf.dhcp4java.examples.trivialdhcpservlet");
     
     private HashMap<String, InetAddress> macIpMap = new HashMap<String, InetAddress>();
-    DHCPOption[] commonOptions = null;
+    DHCPOption[] commonOptions;
     
     private static final String CLIENT_MAC_PREFIX = "client.";
     
@@ -65,7 +65,7 @@ public class DHCPStaticServer extends DHCPServlet {
 					String addrString = (String) props.get(keyObject);
 					try {
 						InetAddress addr = InetAddress.getByName(addrString);
-						macIpMap.put(key.substring(CLIENT_MAC_PREFIX.length()), addr);
+                        this.macIpMap.put(key.substring(CLIENT_MAC_PREFIX.length()), addr);
 					} catch (UnknownHostException e) {
 						logger.log(Level.SEVERE, "Could not parse InetAddress "+addrString, e);
 					}
@@ -80,7 +80,7 @@ public class DHCPStaticServer extends DHCPServlet {
 			temp.setOptionAsInetAddress(DHO_NTP_SERVERS, "10.0.0.10");
 			temp.setOptionAsInetAddress(DHO_WWW_SERVER, "10.0.0.10");
 			// store options in a instance array
-			commonOptions = temp.getOptionsArray();
+            this.commonOptions = temp.getOptionsArray();
 		} catch (UnknownHostException e) {
 			throw new RuntimeException(e);
 		}
@@ -91,14 +91,16 @@ public class DHCPStaticServer extends DHCPServlet {
 	 */
 	@Override
 	protected DHCPPacket doDiscover(DHCPPacket request) {
-		InetAddress clientIp = calcAddrFromMac(request);
-		if (clientIp == null)	return null;
+		InetAddress clientIp = this.calcAddrFromMac(request);
+		if (clientIp == null) {
+            return null;
+        }
 		
 		DHCPPacket response = request.clone();
 		response.setOp(BOOTREPLY);
 		response.setCiaddr(clientIp);
 		response.setDHCPMessageType(DHCPOFFER);
-		response.setOptions(commonOptions);
+		response.setOptions(this.commonOptions);
 
 		return response;
 	}
@@ -108,8 +110,10 @@ public class DHCPStaticServer extends DHCPServlet {
 	 */
 	@Override
 	protected DHCPPacket doRequest(DHCPPacket request) {
-		InetAddress clientIp = calcAddrFromMac(request);
-		if (clientIp == null)	return null;
+		InetAddress clientIp = this.calcAddrFromMac(request);
+		if (clientIp == null) {
+            return null;
+        }
 		
 		DHCPPacket response = request.clone();
 		response.setOp(BOOTREPLY);
@@ -118,7 +122,7 @@ public class DHCPStaticServer extends DHCPServlet {
 		} else {
 			response.setDHCPMessageType(DHCPNAK);
 		}
-		response.setOptions(commonOptions);
+		response.setOptions(this.commonOptions);
 
 		return response;
 	}
@@ -132,16 +136,20 @@ public class DHCPStaticServer extends DHCPServlet {
 	private InetAddress calcAddrFromMac(DHCPPacket request) {
 		// check vendor class
 		String vendor = request.getOptionAsString(DHO_VENDOR_CLASS_IDENTIFIER);
-		if ((vendor == null) || (vendor.indexOf("MSFT5.0") < 0))
-			return null;		// only Microsoft vendor class
+		if ((vendor == null) || (vendor.indexOf("MSFT5.0") < 0)) {
+            return null;        // only Microsoft vendor class
+        }
 
 		// check @MAC address format
-		if ((request.getHtype() != HTYPE_ETHER) && (request.getHlen() != 6))
-			return null;
+		if ((request.getHtype() != HTYPE_ETHER) && (request.getHlen() != 6)) {
+            return null;
+        }
 		
 		// look for map
-		InetAddress clientIp = macIpMap.get(request.getChaddrAsHex().toLowerCase());
-		if (clientIp == null) return null;		// not found
+		InetAddress clientIp = this.macIpMap.get(request.getChaddrAsHex().toLowerCase());
+		if (clientIp == null) {
+            return null;        // not found
+        }
 		
 		return clientIp;
 	}
