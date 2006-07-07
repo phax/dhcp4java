@@ -202,7 +202,7 @@ public class DHCPServer implements Runnable {
             }
 
             // send work to thread pool
-            ServletDispatcher dispatcher = new ServletDispatcher(this, servlet, requestDatagram);
+            DHCPServletDispatcher dispatcher = new DHCPServletDispatcher(this, servlet, requestDatagram);
             threadPool.execute(dispatcher);
         } catch (IOException e) {
 	        logger.log(Level.SEVERE, "IOException", e);

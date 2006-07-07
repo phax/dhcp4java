@@ -26,14 +26,14 @@ import java.net.DatagramPacket;
 /**
  * Servlet dispatcher
  */
-class ServletDispatcher implements Runnable {
+class DHCPServletDispatcher implements Runnable {
     private static final Logger logger = Logger.getLogger("sf.dhcp4java.dhcpserver.servletdispatcher");
 
     private final DHCPServer     server;
     private final DHCPServlet    dispatchServlet;
     private final DatagramPacket dispatchPacket;
 
-    public ServletDispatcher(DHCPServer server, DHCPServlet servlet, DatagramPacket req) {
+    public DHCPServletDispatcher(DHCPServer server, DHCPServlet servlet, DatagramPacket req) {
         this.server          = server;
         this.dispatchServlet = servlet;
         this.dispatchPacket  = req;
