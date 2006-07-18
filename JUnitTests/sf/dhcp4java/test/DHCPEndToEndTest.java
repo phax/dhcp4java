@@ -27,7 +27,7 @@ import org.junit.Test;
 
 import sf.dhcp4java.DHCPServer;
 import sf.dhcp4java.DHCPServerInitException;
-import sf.dhcp4java.examples.DHCPStaticServer;
+import sf.dhcp4java.DHCPStaticServlet;
 
 import junit.framework.JUnit4TestAdapter;
 
@@ -54,7 +54,7 @@ public class DHCPEndToEndTest {
         localProperties.put(DHCPServer.SERVER_ADDRESS, SERVER_ADDR + ':' + SERVER_PORT);
         localProperties.put(DHCPServer.SERVER_THREADS, "1");
 
-        DHCPServer server = DHCPServer.initServer(new DHCPStaticServer(), localProperties);
+        DHCPServer server = DHCPServer.initServer(new DHCPStaticServlet(), localProperties);
 
         new Thread(server).start();
     }

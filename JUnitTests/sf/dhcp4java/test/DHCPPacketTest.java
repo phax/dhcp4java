@@ -90,7 +90,8 @@ public class DHCPPacketTest {
     }
 
     
-    @Test public void compareRefScratch() {
+    @Test
+    public void compareRefScratch() {
     	// compare packet serialized from packet built from scratch
     	// compare DHCPPacket objects
     	Assert.assertEquals(this.refPacketFromHex, this.refPacketFromSratch);
@@ -99,7 +100,8 @@ public class DHCPPacketTest {
                                  this.refPacketFromSratch.serialize()));
     }
     
-    @Test public void testMarshall() throws UnknownHostException {
+    @Test
+    public void testMarshall() throws UnknownHostException {
     	// test if serialized packet has the right parameters
     	DHCPPacket packet = this.refPacketFromHex;
     	
