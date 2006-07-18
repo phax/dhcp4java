@@ -258,15 +258,24 @@ public class DHCPServlet {
      * 
      * <p>Standard behaviour is to set the response packet as follows:
      * <pre>
-     * 		response.set
+     * 		response.setAddrPort(getDefaultSocketAddress(request));
      * </pre>
      *  
      * @param request the client DHCP request
      * @return the ip/port to send back the response
      */
     public InetSocketAddress getDefaultSocketAddress(DHCPPacket request) {
-    	return null; // TODO
+    	// check whether there is a giaddr
+    	byte[] giaddrBytes = request.getGiaddrRaw();
     	
+    	if (giaddrBytes[0] == (byte) 0 &&
+    		giaddrBytes[1] == (byte) 0 &&
+    		giaddrBytes[2] == (byte) 0 &&
+    		giaddrBytes[3] == (byte) 0) {
+    		return new InetSocketAddress(request.getGiaddr(), 67);
+    	} else {
+    		return new InetSocketAddress(request.getAddress(), 68);
+    	}
     }
 
 	/**
