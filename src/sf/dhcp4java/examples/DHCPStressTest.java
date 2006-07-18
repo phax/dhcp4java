@@ -34,11 +34,12 @@ import java.util.logging.Logger;
 import sf.dhcp4java.DHCPPacket;
 import sf.dhcp4java.DHCPServer;
 import sf.dhcp4java.DHCPServerInitException;
+import sf.dhcp4java.DHCPStaticServlet;
 
 import static sf.dhcp4java.DHCPConstants.*;
 
 /**
- * A simple client used for testing DHCPStaticServer under stress conditions.
+ * A simple client used for testing DHCPStaticServlet under stress conditions.
  * 
  * @author Stephan Hadinger
  * @version 0.50
@@ -132,7 +133,7 @@ public class DHCPStressTest {
 	    Properties stressProperties = new Properties();
 	    stressProperties.put(DHCPServer.SERVER_ADDRESS, SERVER_ADDR+ ':' +SERVER_PORT);
 	    stressProperties.put(DHCPServer.SERVER_THREADS, "1");
-        DHCPServer server = DHCPServer.initServer(new DHCPStaticServer(), stressProperties);
+        DHCPServer server = DHCPServer.initServer(new DHCPStaticServlet(), stressProperties);
         new Thread(server).start();
 	}
 	
