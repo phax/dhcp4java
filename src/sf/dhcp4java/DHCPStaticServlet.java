@@ -17,7 +17,7 @@
  *
  * (c) 2006 Stephan Hadinger
  */
-package sf.dhcp4java.examples;
+package sf.dhcp4java;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -26,11 +26,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import sf.dhcp4java.DHCPOption;
-import sf.dhcp4java.DHCPPacket;
-import sf.dhcp4java.DHCPServer;
-import sf.dhcp4java.DHCPServlet;
-import sf.dhcp4java.DHCPServerInitException;
 
 import static sf.dhcp4java.DHCPConstants.*;
 
@@ -41,9 +36,9 @@ import static sf.dhcp4java.DHCPConstants.*;
  * @author Stephan Hadinger
  * @version 0.50
  */
-public class DHCPStaticServer extends DHCPServlet {
+public class DHCPStaticServlet extends DHCPServlet {
 
-    private static final Logger logger = Logger.getLogger("sf.dhcp4java.examples.trivialdhcpservlet");
+    private static final Logger logger = Logger.getLogger("sf.dhcp4java.examplesserver.dhcpstaticserver");
     
     private HashMap<String, InetAddress> macIpMap = new HashMap<String, InetAddress>();
     DHCPOption[] commonOptions;
@@ -86,7 +81,7 @@ public class DHCPStaticServer extends DHCPServlet {
 		}
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see sf.dhcp4java.DHCPServlet#doDiscover(sf.dhcp4java.DHCPPacket)
 	 */
 	@Override
@@ -96,16 +91,26 @@ public class DHCPStaticServer extends DHCPServlet {
             return null;
         }
 		
-		DHCPPacket response = request.clone();
+		DHCPPacket response = new DHCPPacket();
 		response.setOp(BOOTREPLY);
-		response.setCiaddr(clientIp);
+		response.setHtype(request.getHtype());
+		response.setHlen(request.getHlen());
+		response.setHops((byte) 0);
+		response.setXid(request.getXid());
+		response.setSecs((short) 0);
+		response.setYiaddr(clientIp);
+		response.setSiaddr(server.getSockAddress().getAddress());	// serveur identifier
+		response.setFlags(request.getFlags());
+		response.setGiaddrRaw(request.getGiaddrRaw());
+		response.setChaddr(request.getChaddr());
+		
 		response.setDHCPMessageType(DHCPOFFER);
 		response.setOptions(this.commonOptions);
 
 		return response;
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see sf.dhcp4java.DHCPServlet#doRequest(sf.dhcp4java.DHCPPacket)
 	 */
 	@Override
@@ -115,20 +120,52 @@ public class DHCPStaticServer extends DHCPServlet {
             return null;
         }
 		
-		DHCPPacket response = request.clone();
+		DHCPPacket response = new DHCPPacket();
 		response.setOp(BOOTREPLY);
+		response.setHtype(request.getHtype());
+		response.setHlen(request.getHlen());
+		response.setHops((byte) 0);
+		response.setXid(request.getXid());
+		response.setSecs((short) 0);
+		response.setCiaddrRaw(request.getCiaddrRaw());
+		response.setYiaddr(clientIp);
+		response.setSiaddr(server.getSockAddress().getAddress());	// serveur identifier
+		response.setFlags(request.getFlags());
+		response.setGiaddrRaw(request.getGiaddrRaw());
+		response.setChaddr(request.getChaddr());
+		
 		if (request.getCiaddr().equals(clientIp)) {
 			response.setDHCPMessageType(DHCPACK);
 		} else {
 			response.setDHCPMessageType(DHCPNAK);
 		}
 		response.setOptions(this.commonOptions);
-
+		
 		return response;
 	}
 
 	/**
+	 * @see sf.dhcp4java.DHCPServlet#doDecline(sf.dhcp4java.DHCPPacket)
+	 */
+	@Override
+	protected DHCPPacket doDecline(DHCPPacket request) {
+		logger.warning("DHCPDECLINE received:"+request.toString());
+		return null;
+	}
+
+	/**
+	 * @see sf.dhcp4java.DHCPServlet#doRelease(sf.dhcp4java.DHCPPacket)
+	 */
+	@Override
+	protected DHCPPacket doRelease(DHCPPacket request) {
+		logger.info("DHCPRELEASE received:"+request.toString());
+		return null;
+	}
+
+	/**
 	 * Calculate address from packet and @MAC Address.
+	 * 
+	 * <p>Also checks if this client is accepted (Vendor, User...)
 	 * 
 	 * @param request
 	 * @return address for client, or null if ignore
@@ -160,7 +197,7 @@ public class DHCPStaticServer extends DHCPServlet {
 	 */
 	public static void main(String[] args) {
         try {
-            DHCPServer server = DHCPServer.initServer(new DHCPStaticServer(), null);
+            DHCPServer server = DHCPServer.initServer(new DHCPStaticServlet(), null);
             logger.setLevel(Level.OFF);
             new Thread(server).start();
         } catch (DHCPServerInitException e) {

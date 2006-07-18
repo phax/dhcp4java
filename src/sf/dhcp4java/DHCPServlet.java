@@ -22,6 +22,7 @@ package sf.dhcp4java;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,6 +43,9 @@ import static sf.dhcp4java.DHCPConstants.*;
  */
 public class DHCPServlet {
     private static final Logger logger = Logger.getLogger("sf.dhcp4java.dhcpservlet");
+    
+    /** the server instance running this servlet */
+    protected DHCPServer server = null;
     
     /**
      * Initialize servlet. Override this method to implement any initialization you may need.
@@ -244,4 +248,38 @@ public class DHCPServlet {
     protected void postProcess(DatagramPacket requestDatagram, DatagramPacket responseDatagram) {
         // default is nop
     }
+    
+    /**
+     * Calculates the addres/port to which the response must be sent, according to
+     * rfc 2131.
+     * 
+     * <p>If <tt>giaddr</tt> is null, it is the client's addres/68, otherwise
+     * giaddr/67.
+     * 
+     * <p>Standard behaviour is to set the response packet as follows:
+     * <pre>
+     * 		response.set
+     * </pre>
+     *  
+     * @param request the client DHCP request
+     * @return the ip/port to send back the response
+     */
+    public InetSocketAddress getDefaultSocketAddress(DHCPPacket request) {
+    	return null; // TODO
+    	
+    }
+
+	/**
+	 * @return Returns the server.
+	 */
+	public DHCPServer getServer() {
+		return server;
+	}
+
+	/**
+	 * @param server The server to set.
+	 */
+	public void setServer(DHCPServer server) {
+		this.server = server;
+	}
 }

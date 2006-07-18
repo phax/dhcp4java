@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -626,14 +627,27 @@ public class DHCPPacket implements Cloneable, Serializable {
         }
     }
 
-
     /**
      * Converts the object to a byte array ready to be sent on the wire.
+     * 
+     * <p>Default max size of resulting packet is 576, which is the maximum
+     * size a client can accept without explicit notice (option XXX)
      *
      * @return a byte array with information from DHCPMessage object.
      * @throws DHCPBadPacketException the datagram would be malformed (too small, too big...)
      */
-    public synchronized byte[] serialize() {
+    public byte[] serialize() {
+    	return serialize(_DHCP_DEFAULT_MAX_LEN);
+    }
+
+    /**
+     * Converts the object to a byte array ready to be sent on the wire.
+     *
+     * @param maxSize the maximum buffer size in bytes
+     * @return a byte array with information from DHCPMessage object.
+     * @throws DHCPBadPacketException the datagram would be malformed (too small, too big...)
+     */
+    public synchronized byte[] serialize(int maxSize) {
         this.assertInvariants();
         // prepare output buffer, pre-sized to maximum buffer length
         // default buffer is half the maximum size of possible packet
@@ -2069,10 +2083,13 @@ public class DHCPPacket implements Cloneable, Serializable {
      * @throws IllegalArgumentException address is not of <tt>Inet4Address</tt> class.
      */
     public void setAddress(InetAddress address) {
-        if (!(address == null || address instanceof Inet4Address)) {
+    	if (address == null) {
+    		this.address = null;
+    	} else if (!(address instanceof Inet4Address)) {
             throw new IllegalArgumentException("only IPv4 addresses accepted");
+        } else {
+        	this.address = address;
         }
-        this.address = address;
     }
 
     /**
@@ -2093,6 +2110,30 @@ public class DHCPPacket implements Cloneable, Serializable {
      */
     public void setPort(int port) {
         this.port = port;
+    }
+    
+    /**
+     * Syntactic sugar for getAddress/getPort.
+     * 
+     * @return address + port.
+     */
+    public InetSocketAddress getAddrPort() {
+    	return new InetSocketAddress(address, port);
+    }
+    
+    /**
+     * Syntactic sugar for setAddress/setPort.
+     * 
+     * @param addrPort address and port, if <tt>null</t> address is set to null and port to 0
+     */
+    public void setAddrPort(InetSocketAddress addrPort) {
+    	if (addrPort == null) {
+    		setAddress(null);
+    		setPort(0);
+    	} else {
+    		setAddress(addrPort.getAddress());
+    		setPort(addrPort.getPort());
+    	}
     }
 
     // ========================================================================

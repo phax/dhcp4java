@@ -57,7 +57,7 @@ import java.util.logging.Logger;
  * <pre>
  *     public static void main(String[] args) {
  *         try {
- *             DHCPServer server = DHCPServer.initServer(new DHCPStaticServer(), null);
+ *             DHCPServer server = DHCPServer.initServer(new DHCPStaticServlet(), null);
  *             new Thread(server).start();
  *         } catch (DHCPServerInitException e) {
  *             // die gracefully
@@ -70,7 +70,7 @@ import java.util.logging.Logger;
  */
 public class DHCPServer implements Runnable {
 
-    private   static final Logger logger             = Logger.getLogger("sf.dhcp4java.dhcpserver");
+    private   static final Logger logger             = Logger.getLogger("sf.dhcp4java.dhcpservlet");
     private   static final int    BOUNDED_QUEUE_SIZE = 20;
 
     /** default MTU for ethernet */
@@ -84,9 +84,10 @@ public class DHCPServer implements Runnable {
     protected Properties         properties;
     /** Reference of user-provided parameters */
     protected Properties         userProps;
+    /** IP address and port for the server */ 
+    private   InetSocketAddress sockAddress = null;
     /** The socket for receiving and sending. */
     private   DatagramSocket     serverSocket;
-
     /**
      * Constructor
      *
@@ -150,7 +151,7 @@ public class DHCPServer implements Runnable {
             }
 
             // load socket address, this method may be overriden
-            InetSocketAddress sockAddress = this.getInetSocketAddress(this.properties);
+            sockAddress = this.getInetSocketAddress(this.properties);
             if (sockAddress == null) {
                 throw new DHCPServerInitException("Cannot find which SockAddress to open");
             }
@@ -167,6 +168,7 @@ public class DHCPServer implements Runnable {
             this.threadPool.prestartAllCoreThreads();
 
             // now intialize the servlet
+            this.servlet.setServer(this);
             this.servlet.init(this.properties);
         } catch (DHCPServerInitException e) {
         	throw e;		// transparently re-throw
@@ -323,4 +325,11 @@ public class DHCPServer implements Runnable {
             return new Thread(runnable, this.namePrefix + this.threadNumber.getAndIncrement());
         }
     }
+
+	/**
+	 * @return Returns the socket address.
+	 */
+	public InetSocketAddress getSockAddress() {
+		return sockAddress;
+	}
 }
