@@ -123,8 +123,8 @@ public class DHCPConstants {
     public static final byte DHO_DHCP_REBINDING_TIME          =  59;
     public static final byte DHO_VENDOR_CLASS_IDENTIFIER      =  60;
     public static final byte DHO_DHCP_CLIENT_IDENTIFIER       =  61;
-    public static final byte DHO_NWIP_DOMAIN_NAME             =  62;
-    public static final byte DHO_NWIP_SUBOPTIONS              =  63;
+    public static final byte DHO_NWIP_DOMAIN_NAME             =  62; // rfc 2242
+    public static final byte DHO_NWIP_SUBOPTIONS              =  63; // rfc 2242
     public static final byte DHO_NIS_DOMAIN                   =  64;
     public static final byte DHO_NIS_SERVER                   =  65;
     public static final byte DHO_TFTP_SERVER                  =  66;
@@ -141,8 +141,9 @@ public class DHCPConstants {
     public static final byte DHO_USER_CLASS                   =  77; // rfc 3004
     public static final byte DHO_FQDN                         =  81;
     public static final byte DHO_DHCP_AGENT_OPTIONS           =  82; // rfc 3046
-    public static final byte DHO_NDS_SERVERS                  =  85;
-    public static final byte DHO_NDS_TREE_NAME                =  86;
+    public static final byte DHO_NDS_SERVERS                  =  85; // rfc 2241
+    public static final byte DHO_NDS_TREE_NAME                =  86; // rfc 2241
+    public static final byte DHO_NDS_CONTEXT					 =  87; // rfc 2241
     public static final byte DHO_CLIENT_LAST_TRANSACTION_TIME =  91; // rfc 4388
     public static final byte DHO_ASSOCIATED_IP				 =  92; // rfc 4388
     public static final byte DHO_USER_AUTHENTICATION_PROTOCOL =  98;

@@ -1030,6 +1030,7 @@ public class DHCPOption implements Serializable {
             DHO_STDA_SERVER,					OptionFormat.INETS,
             DHO_NDS_SERVERS,					OptionFormat.INETS,
             DHO_NDS_TREE_NAME,					OptionFormat.STRING,
+            DHO_NDS_CONTEXT,					OptionFormat.STRING,
             DHO_CLIENT_LAST_TRANSACTION_TIME,	OptionFormat.INT,
             DHO_ASSOCIATED_IP,					OptionFormat.INETS,
             DHO_USER_AUTHENTICATION_PROTOCOL,	OptionFormat.STRING,
