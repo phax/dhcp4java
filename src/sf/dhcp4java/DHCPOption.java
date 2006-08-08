@@ -1037,6 +1037,7 @@ public class DHCPOption implements Serializable {
             DHO_AUTO_CONFIGURE,					OptionFormat.BYTE,
             DHO_NAME_SERVICE_SEARCH,			OptionFormat.SHORTS,
             DHO_SUBNET_SELECTION,				OptionFormat.INET,
+            DHO_DOMAIN_SEARCH,					OptionFormat.STRING,
             
     };    
     static Map<Byte, OptionFormat> _DHO_FORMATS = new LinkedHashMap<Byte, OptionFormat>();
