@@ -45,6 +45,7 @@ public class DHCPConstants {
     public static final byte HTYPE_ETHER	= 1;
     public static final byte HTYPE_IEEE802	= 6;
     public static final byte HTYPE_FDDI		= 8;
+    public static final byte HTYPE_IEEE1394	= 24;	// rfc 2855
 
     /** DHCP MESSAGE CODES **/
     public static final byte DHCPDISCOVER   =  1;
