@@ -152,6 +152,7 @@ public class DHCPConstants {
     public static final byte DHO_NAME_SERVICE_SEARCH          = 117; // rfc 2937
     public static final byte DHO_SUBNET_SELECTION             = 118; // rfc 3011
     public static final byte DHO_DOMAIN_SEARCH	             = 119; // rfc 3397
+    public static final byte DHO_CLASSLESS_ROUTE				 = 121;	// rfc 3442
     public static final byte DHO_END                          =  -1;
 
     /**
