@@ -56,7 +56,10 @@ public class DHCPConstants {
     public static final byte DHCPRELEASE    =  7;
     public static final byte DHCPINFORM     =  8;
     public static final byte DHCPFORCERENEW =  9;
-    public static final byte DHCPLEASEQUERY = 13; // Cisco extension, draft-ietf-dhc-leasequery-08.txt
+    public static final byte DHCPLEASEQUERY = 10; // RFC 4388
+    public static final byte DHCPLEASEUNASSIGNED = 11; // RFC 4388
+    public static final byte DHCPLEASEUNKNOWN = 12; // RFC 4388
+    public static final byte DHCPLEASEACTIVE = 13; // RFC 4388
 
     /** DHCP OPTIONS CODE **/
     public static final byte DHO_PAD                          =   0;
@@ -140,6 +143,8 @@ public class DHCPConstants {
     public static final byte DHO_DHCP_AGENT_OPTIONS           =  82; // rfc 3046
     public static final byte DHO_NDS_SERVERS                  =  85;
     public static final byte DHO_NDS_TREE_NAME                =  86;
+    public static final byte DHO_CLIENT_LAST_TRANSACTION_TIME =  91; // rfc 4388
+    public static final byte DHO_ASSOCIATED_IP				 =  92; // rfc 4388
     public static final byte DHO_USER_AUTHENTICATION_PROTOCOL =  98;
     public static final byte DHO_AUTO_CONFIGURE               = 116;
     public static final byte DHO_NAME_SERVICE_SEARCH          = 117;
