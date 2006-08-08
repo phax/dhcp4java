@@ -150,7 +150,7 @@ public class DHCPConstants {
     public static final byte DHO_USER_AUTHENTICATION_PROTOCOL =  98;
     public static final byte DHO_AUTO_CONFIGURE               = 116;
     public static final byte DHO_NAME_SERVICE_SEARCH          = 117;
-    public static final byte DHO_SUBNET_SELECTION             = 118;
+    public static final byte DHO_SUBNET_SELECTION             = 118; // rfc 3011
     public static final byte DHO_END                          =  -1;
 
     /**
