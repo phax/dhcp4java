@@ -25,6 +25,7 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 
+import sf.dhcp4java.DHCPBadPacketException;
 import sf.dhcp4java.DHCPPacket;
 
 import junit.framework.Assert;
@@ -148,19 +149,23 @@ public class DHCPPacketTest {
         //throw new Exception("toto");
     }
 
-    @Test public void testSerializeExtremeValues() {
-        testBadPacket(   0, -1,   10);    // bad values
-        testBadPacket(  47,  0,   47);    // packet too small
-        testBadPacket(4700,  0, 4700);    // packet too big
+    @Test (expected=IndexOutOfBoundsException.class)
+    public void testSerializeBadValues() {
+        testPacket(   0, -1,   10);    // bad values
+    }
+    
+    @Test (expected=DHCPBadPacketException.class)
+    public void testSerializeTooSmall() {
+        testPacket(  47,  0,   47);    // packet too small
     }
 
-    private static void testBadPacket(int size, int offset, int length) {
-        try {
-            DHCPPacket.getPacket(new byte[size], offset, length);
-            Assert.assertTrue(false);
-        } catch (IndexOutOfBoundsException e) {
-            // good
-        }
+    @Test (expected=DHCPBadPacketException.class)
+    public void testSerializeTooBig() {
+        testPacket(4700,  0, 4700);    // packet too big
+    }
+    
+    private static void testPacket(int size, int offset, int length) {
+    	DHCPPacket.getPacket(new byte[size], offset, length);
     }
 
     private static final String REF_PACKET =
