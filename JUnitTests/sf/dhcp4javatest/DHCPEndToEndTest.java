@@ -16,7 +16,7 @@
  *	License along with this library; if not, write to the Free Software
  *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package sf.dhcp4java.test;
+package sf.dhcp4javatest;
 
 import java.util.Properties;
 
@@ -47,7 +47,7 @@ public class DHCPEndToEndTest {
      *
      */
     @BeforeClass
-    public void startServer() throws DHCPServerInitException {
+    public static void startServer() throws DHCPServerInitException {
         Properties localProperties = new Properties();
 
         localProperties.put(DHCPServer.SERVER_ADDRESS, SERVER_ADDR + ':' + SERVER_PORT);
@@ -64,7 +64,7 @@ public class DHCPEndToEndTest {
     }
 
     @AfterClass
-    public void shutdownServer() {
+    public static void shutdownServer() {
 
     }
 }
