@@ -32,6 +32,7 @@ import junit.framework.Assert;
 import junit.framework.JUnit4TestAdapter;
 
 import static sf.dhcp4java.DHCPConstants.*;
+import static junit.framework.Assert.*;
 
 /**
  */
@@ -89,7 +90,15 @@ public class DHCPPacketTest {
     public DHCPPacketTest() {
     }
 
-    
+    @Test
+    public void testEqualsTrivial() {
+    	assertTrue(this.refPacketFromHex.equals(this.refPacketFromHex));
+    	assertFalse(this.refPacketFromHex.equals(new Integer(1)));
+    	DHCPPacket pac = this.refPacketFromHex.clone();
+    	assertTrue(this.refPacketFromHex.equals(pac));
+    	pac.setHops((byte)-1);
+    	assertFalse(this.refPacketFromHex.equals(pac));
+    }
     @Test
     public void compareRefScratch() {
     	// compare packet serialized from packet built from scratch
@@ -143,8 +152,18 @@ public class DHCPPacketTest {
     	Assert.assertEquals("10.0.0.6", packet.getOptionAsInetAddrs(DHO_WWW_SERVER)[0].getHostAddress());
     	Assert.assertEquals(null, packet.getOptionAsInetAddrs(DHO_IRC_SERVER));
     }
+    
+    @Test
+    public void testToString() {
+    	assertEquals(REF_PACKET_TO_STRING, this.refPacketFromHex.toString());
+    	DHCPPacket pac = this.refPacketFromHex.clone();
+    	pac.setOp((byte) 129);
+    	pac.setHtype((byte) -2);
+    	assertEquals(REF_PACKET_MOD_TO_STRING, pac.toString());
+    }
 
-    @Test public void testSerialize() throws Exception {
+    @Test
+    public void testSerialize() throws Exception {
         //TODO Implement serialize().
         //throw new Exception("toto");
     }
@@ -187,6 +206,64 @@ public class DHCPPacketTest {
         "0000000000000000000000000000000000000000000000000000000000000000" +
         "0000000000000000000000000000000000000000000000000000000000000000" +
         "0000";
+    private static final String REF_PACKET_TO_STRING =
+    	"DHCP Packet\n"+
+    	"comment=\n"+
+    	"address=null(0)\n"+
+    	"op=BOOTREQUEST(1)\n"+
+    	"htype=HTYPE_ETHER(1)\n"+
+    	"hlen=6\n"+
+    	"hops=0\n"+
+    	"xid=0x11223344\n"+
+    	"secs=0\n"+
+    	"flags=0xffff8000\n"+
+    	"ciaddr=10.0.0.1\n"+
+    	"yiaddr=10.0.0.2\n"+
+    	"siaddr=10.0.0.3\n"+
+    	"giaddr=10.0.0.4\n"+
+    	"chaddr=0x001122334455\n"+
+    	"sname=1234567890123456789012345678901234567890123456789012345678901234\n"+
+    	"file=12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678\n"+
+    	"Options follows:\n"+
+    	"DHO_DHCP_MESSAGE_TYPE(53)=DHCPDISCOVER\n"+
+    	"DHO_DHCP_SERVER_IDENTIFIER(54)=12.34.56.68\n"+
+    	"DHO_DHCP_LEASE_TIME(51)=86400\n"+
+    	"DHO_SUBNET_MASK(1)=255.255.255.0\n"+
+    	"DHO_ROUTERS(3)=10.0.0.254 \n"+ 
+    	"DHO_STATIC_ROUTES(33)=22.33.44.55 10.0.0.254 \n"+ 
+    	"DHO_NTP_SERVERS(42)=10.0.0.5 \n"+ 
+    	"DHO_WWW_SERVER(72)=10.0.0.6 \n"+ 
+    	"padding[256]=00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+
+    private static final String REF_PACKET_MOD_TO_STRING =
+    	"DHCP Packet\n"+
+    	"comment=\n"+
+    	"address=null(0)\n"+
+    	"op=-127\n"+
+    	"htype=-2\n"+
+    	"hlen=6\n"+
+    	"hops=0\n"+
+    	"xid=0x11223344\n"+
+    	"secs=0\n"+
+    	"flags=0xffff8000\n"+
+    	"ciaddr=10.0.0.1\n"+
+    	"yiaddr=10.0.0.2\n"+
+    	"siaddr=10.0.0.3\n"+
+    	"giaddr=10.0.0.4\n"+
+    	"chaddr=0x001122334455\n"+
+    	"sname=1234567890123456789012345678901234567890123456789012345678901234\n"+
+    	"file=12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678\n"+
+    	"Options follows:\n"+
+    	"DHO_DHCP_MESSAGE_TYPE(53)=DHCPDISCOVER\n"+
+    	"DHO_DHCP_SERVER_IDENTIFIER(54)=12.34.56.68\n"+
+    	"DHO_DHCP_LEASE_TIME(51)=86400\n"+
+    	"DHO_SUBNET_MASK(1)=255.255.255.0\n"+
+    	"DHO_ROUTERS(3)=10.0.0.254 \n"+ 
+    	"DHO_STATIC_ROUTES(33)=22.33.44.55 10.0.0.254 \n"+ 
+    	"DHO_NTP_SERVERS(42)=10.0.0.5 \n"+ 
+    	"DHO_WWW_SERVER(72)=10.0.0.6 \n"+ 
+    	"padding[256]=00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+
     private static final String STR200 = 
     	"12345678901234567890123456789012345678901234567890" + //50
     	"12345678901234567890123456789012345678901234567890" + //50
