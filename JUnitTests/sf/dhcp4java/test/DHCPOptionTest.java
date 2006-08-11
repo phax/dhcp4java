@@ -78,6 +78,7 @@ public class DHCPOptionTest {
 		
 		assertTrue(opt1.equals(opt1));
 		assertTrue(opt1.equals(opt2));
+		assertTrue(opt2.equals(opt1));
 		assertFalse(opt1.equals(null));
 		assertFalse(opt1.equals(new Integer(1)));
 	}
