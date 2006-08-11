@@ -18,6 +18,8 @@
  */
 package sf.dhcp4java.test;
 
+import org.junit.Test;
+
 import junit.framework.JUnit4TestAdapter;
 
 /**
@@ -33,6 +35,9 @@ public class DHCPCoverageComplement {
 	       return new JUnit4TestAdapter(DHCPCoverageComplement.class);
 	    }
 		
-
+	@Test
+	public void testVoid() {
+		// TODO waiting for a real test
+	}
 
 }
