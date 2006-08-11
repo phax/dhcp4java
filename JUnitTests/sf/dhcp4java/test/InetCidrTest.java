@@ -27,13 +27,40 @@ import sf.dhcp4java.Util;
 
 import junit.framework.JUnit4TestAdapter;
 
-import static org.junit.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 public class InetCidrTest {
 
 	public static junit.framework.Test suite() {
        return new JUnit4TestAdapter(InetCidrTest.class);
     }
+	
+	@Test
+	public void testConstructor() throws Exception {
+		InetCidr cidr = new InetCidr(InetAddress.getByName("224.17.252.127"), 24);
+		assertEquals(InetAddress.getByName("224.17.252.0"), cidr.getAddr());
+		assertEquals(24, cidr.getMask());
+		
+	}
+	@Test (expected=IllegalArgumentException.class)
+	public void testConstructorBadArgNull() {
+		new InetCidr(null, 20);
+	}
+	
+	@Test (expected=IllegalArgumentException.class)
+	public void testConstructorBadArgIPv6() throws Exception {
+		new InetCidr(InetAddress.getByName("1080:0:0:0:8:800:200C:417A"), 20);
+	}
+	@Test (expected=IllegalArgumentException.class)
+	public void testConstructorBadArgMaskTooSmall() throws Exception {
+		new InetCidr(InetAddress.getByName("16.17.18.19"), 0);
+	}
+	@Test (expected=IllegalArgumentException.class)
+	public void testConstructorBadArgMaskTooBig() throws Exception {
+		new InetCidr(InetAddress.getByName("16.17.18.19"), 33);
+	}
 
 	@Test
 	public void testAddrmask2CidrGood() {
@@ -43,29 +70,47 @@ public class InetCidrTest {
 		assertEquals(cidr1, cidr2);
 	}
 	
-	@Test (expected=IllegalArgumentException.class)
-	public void testAddrmask2CidrFail() {
-		InetAddress ip = Util.int2InetAddress(0x12345678);
-		InetCidr.addrmask2Cidr(ip, ip);		// exception should be raised here
+	@Test
+	public void testToString() throws Exception {
+		InetCidr cidr = new InetCidr(InetAddress.getByName("16.17.18.19"), 20);
+		assertEquals("16.17.16.0/20", cidr.toString());
 	}
 	
 	@Test
-	public void testBasic() {
-		try {
-			new InetCidr(null, 0);
-			assertTrue(false);
-		} catch (IllegalArgumentException e) {
-			// good
-		}
-		try {
-			new InetCidr(Util.int2InetAddress(0), 34);
-			assertTrue(false);
-		} catch (IllegalArgumentException e) {
-			// good
-		}
-		InetCidr cidr = new InetCidr(Util.int2InetAddress(0x12345678), 10);
-		assertEquals(cidr.getAddr(), Util.int2InetAddress(0x12000000));
-		assertEquals(cidr.getMask(), 10);
+	public void testHashCode() throws Exception {
+		int hash1 = (new InetCidr(InetAddress.getByName("224.17.252.127"), 24)).hashCode();
+		int hash2 = (new InetCidr(InetAddress.getByName("224.17.252.127"), 20)).hashCode();
+		assertTrue(hash1 != 0);
+		assertTrue(hash2 != 0);
+		assertTrue(hash1 != hash2);
+	}
+	
+	@Test
+	public void testEquals() throws Exception {
+		InetCidr cidr1 = new InetCidr(InetAddress.getByName("224.17.252.127"), 24);
+		InetCidr cidr2 = new InetCidr(InetAddress.getByName("224.17.252.0"), 24);
+		
+		assertTrue(cidr1.equals(cidr1));
+		assertTrue(cidr1.equals(cidr2));
+		assertTrue(cidr2.equals(cidr1));
+		assertFalse(cidr1.equals(null));
+		assertFalse(cidr1.equals(new Integer(1)));
+		assertFalse(cidr1.equals(new InetCidr(InetAddress.getByName("224.17.252.0"), 25)));
+		assertFalse(cidr1.equals(new InetCidr(InetAddress.getByName("225.17.252.0"), 24)));
+	}
+	
+	@Test (expected=IllegalArgumentException.class)
+	public void testAddrmask2CidrAddrNull() {
+		InetCidr.addrmask2Cidr(null, Util.int2InetAddress(0x12345678));
+	}
+	@Test (expected=IllegalArgumentException.class)
+	public void testAddrmask2CidrAddrMask() {
+		InetCidr.addrmask2Cidr(Util.int2InetAddress(0x12345678), null);
+	}
+	@Test (expected=IllegalArgumentException.class)
+	public void testAddrmask2CidrBadMask() {
+		InetAddress ip = Util.int2InetAddress(0x12345678);
+		InetCidr.addrmask2Cidr(ip, ip);		// exception should be raised here
 	}
 	
 	@Test
@@ -83,5 +128,13 @@ public class InetCidrTest {
 			ip = ip << 1;
 			mask--;
 		}
+	}
+	@Test (expected=IllegalArgumentException.class)
+	public void testAddr2CidrNull() {
+		InetCidr.addr2Cidr(null);
+	}
+	@Test (expected=IllegalArgumentException.class)
+	public void testAddr2CidrIPv6() throws Exception {
+		InetCidr.addr2Cidr(InetAddress.getByName("1080:0:0:0:8:800:200C:417A"));
 	}
 }
