@@ -678,8 +678,13 @@ public class DHCPPacket implements Cloneable, Serializable {
                     assert (opt.getCode() != DHO_PAD);
                     assert (opt.getCode() != DHO_END);
                     assert (opt.getValueFast() != null);
+                    int size = opt.getValueFast().length;
+                    assert (size >= 0);
+                    if (size > 255) {
+                    	throw new DHCPBadPacketException("Options larger than 255 bytes are not yet supported");
+                    }
                     outStream.writeByte(opt.getCode());        // output option code
-                    outStream.writeByte(opt.getValueFast().length);    // output option length
+                    outStream.writeByte(size);    // output option length
                     outStream.write(opt.getValueFast());    // output option data
                 }
                 // mark end of options
