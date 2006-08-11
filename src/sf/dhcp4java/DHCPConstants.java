@@ -32,7 +32,6 @@ import java.util.Map;
  * @version 0.50
  */
 public class DHCPConstants {
-    private DHCPConstants() {}
 
     // ========================================================================
     // DHCP Constants
