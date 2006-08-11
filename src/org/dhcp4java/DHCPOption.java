@@ -16,9 +16,9 @@
  *	License along with this library; if not, write to the Free Software
  *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package sf.dhcp4java;
+package org.dhcp4java;
 
-import static sf.dhcp4java.DHCPConstants.*;
+import static org.dhcp4java.DHCPConstants.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  */
 public class DHCPOption implements Serializable {
 	private static final long   serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("sf.dhcp4java.dhcpoption");
+    private static final Logger logger = Logger.getLogger("org.dhcp4java.dhcpoption");
 
     /**
      * The code of the option. 0 is reserved for padding, -1 for end of options.

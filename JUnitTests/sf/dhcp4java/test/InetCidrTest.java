@@ -20,10 +20,10 @@ package sf.dhcp4java.test;
 
 import java.net.InetAddress;
 
+import org.dhcp4java.InetCidr;
+import org.dhcp4java.Util;
 import org.junit.Test;
 
-import sf.dhcp4java.InetCidr;
-import sf.dhcp4java.Util;
 
 import junit.framework.JUnit4TestAdapter;
 

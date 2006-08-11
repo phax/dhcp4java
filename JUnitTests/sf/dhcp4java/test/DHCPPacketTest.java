@@ -22,16 +22,16 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
+import org.dhcp4java.DHCPBadPacketException;
+import org.dhcp4java.DHCPPacket;
 import org.junit.Before;
 import org.junit.Test;
 
-import sf.dhcp4java.DHCPBadPacketException;
-import sf.dhcp4java.DHCPPacket;
 
 import junit.framework.Assert;
 import junit.framework.JUnit4TestAdapter;
 
-import static sf.dhcp4java.DHCPConstants.*;
+import static org.dhcp4java.DHCPConstants.*;
 import static junit.framework.Assert.*;
 
 /**

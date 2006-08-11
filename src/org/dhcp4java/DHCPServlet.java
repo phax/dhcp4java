@@ -16,7 +16,7 @@
  *	License along with this library; if not, write to the Free Software
  *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package sf.dhcp4java;
+package org.dhcp4java;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -26,7 +26,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static sf.dhcp4java.DHCPConstants.*;
+import static org.dhcp4java.DHCPConstants.*;
 
 /**
  * General Interface for a "DHCP Servlet"
@@ -41,7 +41,7 @@ import static sf.dhcp4java.DHCPConstants.*;
  * @version 0.50
  */
 public class DHCPServlet {
-    private static final Logger logger = Logger.getLogger("sf.dhcp4java.dhcpservlet");
+    private static final Logger logger = Logger.getLogger("org.dhcp4java.dhcpservlet");
     
     /** the server instance running this servlet */
     protected DHCPServer server = null;

@@ -20,10 +20,11 @@ package sf.dhcp4java.examples;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import sf.dhcp4java.DHCPPacket;
-import sf.dhcp4java.DHCPServer;
-import sf.dhcp4java.DHCPServlet;
-import sf.dhcp4java.DHCPServerInitException;
+import org.dhcp4java.DHCPPacket;
+import org.dhcp4java.DHCPServer;
+import org.dhcp4java.DHCPServerInitException;
+import org.dhcp4java.DHCPServlet;
+
 
 /**
  * A simple DHCP sniffer based on DHCP servlets.
@@ -33,12 +34,12 @@ import sf.dhcp4java.DHCPServerInitException;
  */
 public class DHCPSnifferServlet extends DHCPServlet {
 
-    private static final Logger logger = Logger.getLogger("sf.dhcp4java.examples.dhcpsnifferservlet");
+    private static final Logger logger = Logger.getLogger("org.dhcp4java.examples.dhcpsnifferservlet");
     
     /**
      * Print received packet as INFO log, and do not respnd.
      * 
-     * @see sf.dhcp4java.DHCPServlet#service(sf.dhcp4java.DHCPPacket)
+     * @see org.dhcp4java.DHCPServlet#service(org.dhcp4java.DHCPPacket)
      */
     public DHCPPacket service(DHCPPacket request) {
         logger.info(request.toString());

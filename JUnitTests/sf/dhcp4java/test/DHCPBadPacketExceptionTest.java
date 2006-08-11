@@ -18,9 +18,9 @@
  */
 package sf.dhcp4java.test;
 
+import org.dhcp4java.DHCPBadPacketException;
 import org.junit.Test;
 
-import sf.dhcp4java.DHCPBadPacketException;
 
 import junit.framework.JUnit4TestAdapter;
 

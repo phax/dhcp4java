@@ -22,13 +22,13 @@ import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
+import org.dhcp4java.DHCPBadPacketException;
+import org.dhcp4java.DHCPOption;
 import org.junit.Test;
 
-import sf.dhcp4java.DHCPBadPacketException;
-import sf.dhcp4java.DHCPOption;
 import junit.framework.JUnit4TestAdapter;
 
-import static sf.dhcp4java.DHCPConstants.*;
+import static org.dhcp4java.DHCPConstants.*;
 import static junit.framework.Assert.*;
 
 public class DHCPOptionTest {

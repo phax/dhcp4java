@@ -16,7 +16,7 @@
  *	License along with this library; if not, write to the Free Software
  *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package sf.dhcp4java;
+package org.dhcp4java;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -26,7 +26,7 @@ import java.net.DatagramPacket;
  * Servlet dispatcher
  */
 class DHCPServletDispatcher implements Runnable {
-    private static final Logger logger = Logger.getLogger("sf.dhcp4java.dhcpserver.servletdispatcher");
+    private static final Logger logger = Logger.getLogger("org.dhcp4java.dhcpserver.servletdispatcher");
 
     private final DHCPServer     server;
     private final DHCPServlet    dispatchServlet;

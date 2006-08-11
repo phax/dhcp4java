@@ -21,8 +21,9 @@ package sf.dhcp4java.examples;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
-import sf.dhcp4java.DHCPPacket;
-import sf.dhcp4java.DHCPConstants;
+import org.dhcp4java.DHCPConstants;
+import org.dhcp4java.DHCPPacket;
+
 
 
 /**

@@ -20,9 +20,9 @@ package sf.dhcp4java.test;
 
 import junit.framework.JUnit4TestAdapter;
 
+import org.dhcp4java.DHCPServerInitException;
 import org.junit.Test;
 
-import sf.dhcp4java.DHCPServerInitException;
 
 public class DHCPServerInitExceptionTest {
 

@@ -18,8 +18,7 @@
  */
 package sf.dhcp4java.examples;
 
-import static sf.dhcp4java.DHCPConstants.BOOTREQUEST;
-import static sf.dhcp4java.DHCPConstants.HTYPE_ETHER;
+import static org.dhcp4java.DHCPConstants.*;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -30,12 +29,12 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import sf.dhcp4java.DHCPPacket;
-import sf.dhcp4java.DHCPServer;
-import sf.dhcp4java.DHCPServerInitException;
-import sf.dhcp4java.DHCPStaticServlet;
+import org.dhcp4java.DHCPPacket;
+import org.dhcp4java.DHCPServer;
+import org.dhcp4java.DHCPServerInitException;
+import org.dhcp4java.DHCPStaticServlet;
 
-import static sf.dhcp4java.DHCPConstants.*;
+
 
 /**
  * A simple client used for testing DHCPStaticServlet under stress conditions.
@@ -44,7 +43,7 @@ import static sf.dhcp4java.DHCPConstants.*;
  * @version 0.50
  */
 public class DHCPStressTest {
-	private static final Logger logger = Logger.getLogger("sf.dhcp4java.examples.dhcpstresstest");
+	private static final Logger logger = Logger.getLogger("org.dhcp4java.examples.dhcpstresstest");
 	
 	private DHCPPacket discover;
 	private DHCPPacket request;

@@ -16,7 +16,7 @@
  *	License along with this library; if not, write to the Free Software
  *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package sf.dhcp4java;
+package org.dhcp4java;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -26,7 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-import static sf.dhcp4java.DHCPConstants.*;
+import static org.dhcp4java.DHCPConstants.*;
 
 
 /**
@@ -37,7 +37,7 @@ import static sf.dhcp4java.DHCPConstants.*;
  */
 public class DHCPStaticServlet extends DHCPServlet {
 
-    private static final Logger logger = Logger.getLogger("sf.dhcp4java.examplesserver.dhcpstaticserver");
+    private static final Logger logger = Logger.getLogger("org.dhcp4java.examplesserver.dhcpstaticserver");
     
     private HashMap<String, InetAddress> macIpMap = new HashMap<String, InetAddress>();
     DHCPOption[] commonOptions;
@@ -45,7 +45,7 @@ public class DHCPStaticServlet extends DHCPServlet {
     private static final String CLIENT_MAC_PREFIX = "client.";
     
     /* (non-Javadoc)
-	 * @see sf.dhcp4java.DHCPServlet#init(java.util.Properties)
+	 * @see org.dhcp4java.DHCPServlet#init(java.util.Properties)
 	 */
 	@Override
 	public void init(Properties props) {
@@ -81,7 +81,7 @@ public class DHCPStaticServlet extends DHCPServlet {
 	}
 
 	/**
-	 * @see sf.dhcp4java.DHCPServlet#doDiscover(sf.dhcp4java.DHCPPacket)
+	 * @see org.dhcp4java.DHCPServlet#doDiscover(org.dhcp4java.DHCPPacket)
 	 */
 	@Override
 	protected DHCPPacket doDiscover(DHCPPacket request) {
@@ -112,7 +112,7 @@ public class DHCPStaticServlet extends DHCPServlet {
 	}
 
 	/**
-	 * @see sf.dhcp4java.DHCPServlet#doRequest(sf.dhcp4java.DHCPPacket)
+	 * @see org.dhcp4java.DHCPServlet#doRequest(org.dhcp4java.DHCPPacket)
 	 */
 	@Override
 	protected DHCPPacket doRequest(DHCPPacket request) {
@@ -148,7 +148,7 @@ public class DHCPStaticServlet extends DHCPServlet {
 	}
 
 	/**
-	 * @see sf.dhcp4java.DHCPServlet#doDecline(sf.dhcp4java.DHCPPacket)
+	 * @see org.dhcp4java.DHCPServlet#doDecline(org.dhcp4java.DHCPPacket)
 	 */
 	@Override
 	protected DHCPPacket doDecline(DHCPPacket request) {
@@ -157,7 +157,7 @@ public class DHCPStaticServlet extends DHCPServlet {
 	}
 
 	/**
-	 * @see sf.dhcp4java.DHCPServlet#doRelease(sf.dhcp4java.DHCPPacket)
+	 * @see org.dhcp4java.DHCPServlet#doRelease(org.dhcp4java.DHCPPacket)
 	 */
 	@Override
 	protected DHCPPacket doRelease(DHCPPacket request) {

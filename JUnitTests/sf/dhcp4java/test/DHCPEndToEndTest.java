@@ -20,13 +20,13 @@ package sf.dhcp4java.test;
 
 import java.util.Properties;
 
+import org.dhcp4java.DHCPServer;
+import org.dhcp4java.DHCPServerInitException;
+import org.dhcp4java.DHCPStaticServlet;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import sf.dhcp4java.DHCPServer;
-import sf.dhcp4java.DHCPServerInitException;
-import sf.dhcp4java.DHCPStaticServlet;
 
 import junit.framework.JUnit4TestAdapter;
 

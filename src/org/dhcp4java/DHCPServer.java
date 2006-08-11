@@ -16,7 +16,7 @@
  *	License along with this library; if not, write to the Free Software
  *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package sf.dhcp4java;
+package org.dhcp4java;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,7 +69,7 @@ import java.util.logging.Logger;
  */
 public class DHCPServer implements Runnable {
 
-    private   static final Logger logger             = Logger.getLogger("sf.dhcp4java.dhcpservlet");
+    private   static final Logger logger             = Logger.getLogger("org.dhcp4java.dhcpservlet");
     private   static final int    BOUNDED_QUEUE_SIZE = 20;
 
     /** default MTU for ethernet */

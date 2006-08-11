@@ -20,9 +20,10 @@ package sf.dhcp4java.examples;
 
 import java.util.Random;
 
-import sf.dhcp4java.DHCPPacket;
+import org.dhcp4java.DHCPPacket;
 
-import static sf.dhcp4java.DHCPConstants.*;
+
+import static org.dhcp4java.DHCPConstants.*;
 
 /**
  * Example of DHCP Client (under construction).

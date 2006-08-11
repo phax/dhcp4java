@@ -16,7 +16,7 @@
  *	License along with this library; if not, write to the Free Software
  *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package sf.dhcp4java;
+package org.dhcp4java;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static sf.dhcp4java.DHCPConstants.*;
+import static org.dhcp4java.DHCPConstants.*;
 
 /**
  * The basic class for manipulating DHCP packets.
@@ -290,7 +290,7 @@ import static sf.dhcp4java.DHCPConstants.*;
 public class DHCPPacket implements Cloneable, Serializable {
 	private static final long   serialVersionUID = 1L;
 
-    private static final Logger logger = Logger.getLogger("sf.dhcp4java.dhcppacket");
+    private static final Logger logger = Logger.getLogger("org.dhcp4java.dhcppacket");
 	
     // ----------------------------------------------------------------------
     // user defined comment
