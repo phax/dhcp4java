@@ -119,7 +119,7 @@ public class DHCPOption implements Serializable {
 
 	/**
      * 
-     * @return option value, never <tt>null</tt>. Minimal value is <tt>byte[0]</tt>.
+     * @return option value, can be null.
      */
     public byte[] getValue() {
         return ((this.value == null) ? null : this.value.clone());
@@ -231,7 +231,7 @@ public class DHCPOption implements Serializable {
         	throw new DHCPBadPacketException("option " + this.code + " is wrong size:" + this.value.length + " should be 2");
         }
 
-        return (short) (this.value[0] << 8 | this.value[1]);
+        return (short) ((this.value[0] & 0xff) << 8 | (this.value[1] & 0xFF));
     }
 
     /**
@@ -366,7 +366,7 @@ public class DHCPOption implements Serializable {
         
         short[] shorts = new short[this.value.length / 2];
         for (int i=0, a=0; a< this.value.length; i++, a+=2) {
-            shorts[i] = (short) ((this.value[a]<<8) | this.value[a+1]);
+            shorts[i] = (short) (((this.value[a] & 0xFF)<<8) | (this.value[a+1] & 0xFF));
         }
         return shorts;
     }
@@ -475,6 +475,7 @@ public class DHCPOption implements Serializable {
      * @param val the value
      * @throws IllegalArgumentException the option code is not in the list above.
      */
+    // TODO newOptionAsShorts
     public static DHCPOption newOptionAsShort(byte code, short val) {
     	if (!OptionFormat.SHORT.equals(_DHO_FORMATS.get(code))) {
             throw new IllegalArgumentException("DHCP option type ("+code+") is not short");
@@ -784,6 +785,7 @@ public class DHCPOption implements Serializable {
         if (val == null) {
             return null;
         }
+        
         byte[] buf = new byte[val.length * 4];
         for (int i=0; i<val.length; i++) {
             InetAddress addr = val[i];
@@ -850,6 +852,10 @@ public class DHCPOption implements Serializable {
      * @return printable string.
      */
     public static String agentOptionsToString(byte[] buf) {
+    	if (buf == null) {
+    		return null;
+    	}
+    	
         Map map = agentOptionsToMap(buf);
         Iterator it = map.keySet().iterator();
         StringBuffer s = new StringBuffer();
@@ -885,8 +891,9 @@ public class DHCPOption implements Serializable {
 	            String s = map.get(key);
 	            byte[] bufTemp = DHCPPacket.stringToBytes(s);
 	            int size = bufTemp.length;
+	            assert (size >= 0);
 	            if (size > 255) {
-                    size = 255;
+	            	throw new IllegalArgumentException("Value size is greater then 255 bytes");
                 }
 	            out.writeByte(key.byteValue());
 	            out.writeByte(size);
