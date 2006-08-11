@@ -27,6 +27,14 @@ package sf.dhcp4java;
 public class DHCPServerInitException extends Exception {
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * 
+	 *
+	 */
+	public DHCPServerInitException() {
+		super();
+	}
+	
     /**
      * @param message
      */
