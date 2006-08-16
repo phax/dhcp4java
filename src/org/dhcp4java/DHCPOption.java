@@ -74,9 +74,6 @@ public class DHCPOption implements Serializable {
         if (code == DHO_END) {
     		throw new IllegalArgumentException("code=-1 is not allowed (reserved for End Of Options)");
         }
-        if (value != null && value.length > 255) {
-    		throw new IllegalArgumentException("value lentgth is too big (" + value.length + ") max is 255");
-        }
 
         this.code  = code;
         this.value = value;
