@@ -21,6 +21,7 @@ package org.dhcp4java.test;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 import org.dhcp4java.DHCPBadPacketException;
 import org.dhcp4java.DHCPOption;
@@ -116,6 +117,15 @@ public class DHCPOptionTest {
 		// userClassToList are only tested through their string representation
 		// last test for null only
 		assertNull(DHCPOption.userClassToList(null));
+	}
+	@Test
+	public void testStringListToUserClass() {
+		assertNull(DHCPOption.stringListToUserClass(null));
+		LinkedList<String> list = new LinkedList<String>();
+		list.add("foo");
+		list.add("foobar");
+		assertTrue(Arrays.equals("\03foo\06foobar".getBytes(), DHCPOption.stringListToUserClass(list)));
+		
 	}
 	// ----------------------------------------------------------------------
 	// testing type conversion
