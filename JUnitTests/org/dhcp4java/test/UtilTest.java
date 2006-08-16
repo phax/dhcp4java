@@ -19,11 +19,9 @@
 package org.dhcp4java.test;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.dhcp4java.Util;
 import org.junit.Test;
-
 
 import junit.framework.JUnit4TestAdapter;
 
@@ -36,34 +34,30 @@ public class UtilTest {
     }
 	
 	@Test
-	public void testInt2InetAddress() {
+	public void testInt2InetAddress() throws Exception {
 		InetAddress ip;
 		
-		try {
-			ip = InetAddress.getByName("0.0.0.0");
-			assertEquals(ip, Util.int2InetAddress(0));
-			ip = InetAddress.getByName("255.255.255.255");
-			assertEquals(ip, Util.int2InetAddress(-1));
-			ip = InetAddress.getByName("10.0.0.1");
-			assertEquals(ip, Util.int2InetAddress(0x0A000001));
-		} catch (UnknownHostException e) {
-			assertTrue("UnknownHostException raised", false);
-		}
+		ip = InetAddress.getByName("0.0.0.0");
+		assertEquals(ip, Util.int2InetAddress(0));
+		ip = InetAddress.getByName("255.255.255.255");
+		assertEquals(ip, Util.int2InetAddress(-1));
+		ip = InetAddress.getByName("10.0.0.1");
+		assertEquals(ip, Util.int2InetAddress(0x0A000001));
 	}
 	
 	@Test
-	public void testInetAddress2Int() {
+	public void testInetAddress2Int() throws Exception {
 		InetAddress ip;
 		
-		try {
-			ip = InetAddress.getByName("0.0.0.0");
-			assertEquals(Util.inetAddress2Int(ip), 0);
-			ip = InetAddress.getByName("255.255.255.255");
-			assertEquals(Util.inetAddress2Int(ip), -1);
-			ip = InetAddress.getByName("10.0.0.1");
-			assertEquals(Util.inetAddress2Int(ip), 0x0A000001);
-		} catch (UnknownHostException e) {
-			assertTrue("UnknownHostException raised", false);
-		}
+		ip = InetAddress.getByName("0.0.0.0");
+		assertEquals(Util.inetAddress2Int(ip), 0);
+		ip = InetAddress.getByName("255.255.255.255");
+		assertEquals(Util.inetAddress2Int(ip), -1);
+		ip = InetAddress.getByName("10.0.0.1");
+		assertEquals(Util.inetAddress2Int(ip), 0x0A000001);
+	}
+	@Test (expected=IllegalArgumentException.class)
+	public void testInetAddress2IntIPv6() throws Exception {
+		Util.inetAddress2Int(InetAddress.getByName("1080:0:0:0:8:800:200C:417A"));
 	}
 }
