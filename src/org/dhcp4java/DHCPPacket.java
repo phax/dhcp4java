@@ -736,7 +736,7 @@ public class DHCPPacket implements Cloneable, Serializable {
                   .append("\ncomment=")
                   .append(this.comment)
                   .append("\naddress=")
-                  .append(this.address.getHostAddress())
+                  .append(this.address != null ? this.address.getHostAddress() : "")
                   .append('(')
                   .append(this.port)
                   .append(')')
@@ -857,7 +857,7 @@ public class DHCPPacket implements Cloneable, Serializable {
      * @return the string buffer.
      */
     private StringBuilder appendChaddrAsHex(StringBuilder buffer) {
-        appendHex(buffer, this.chaddr, 0, this.hlen);
+        appendHex(buffer, this.chaddr, 0, this.hlen & 0xFF);
         return buffer;
     }
 
@@ -870,7 +870,7 @@ public class DHCPPacket implements Cloneable, Serializable {
      * @return the chaddr field as hex string.
      */
     public String getChaddrAsHex() {
-        return this.appendChaddrAsHex(new StringBuilder(this.hlen)).toString();
+        return this.appendChaddrAsHex(new StringBuilder(this.hlen & 0xFF)).toString();
     }
     /**
      * Sets the chaddr field (Client hardware address - typically MAC address).
