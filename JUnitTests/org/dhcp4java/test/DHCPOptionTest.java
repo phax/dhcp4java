@@ -48,11 +48,7 @@ public class DHCPOptionTest {
 	public void testConstructorFailEnd(){
 		new DHCPOption(DHO_END, null);
 	}
-	@Test (expected=IllegalArgumentException.class)
-	public void testConstructorFailTooBig(){
-		new DHCPOption(DHO_DHCP_MESSAGE_TYPE, new byte[256]);
-	}
-	
+
 	@Test
 	public void testConstructor() {
 		DHCPOption opt = new DHCPOption(DHO_DHCP_MESSAGE, buf);
