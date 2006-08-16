@@ -843,6 +843,35 @@ public class DHCPOption implements Serializable {
         return s.toString();
     }
     /**
+     * Converts this list of strings to a DHO_USER_CLASS (77) option.
+     *
+     * @param list the list of strings
+     * @return byte[] buffer to use with <tt>setOptionRaw</tt>, <tt>null</tt> if list is null
+     * @throws IllegalArgumentException if List contains anything else than String
+     */
+    public static byte[] stringListToUserClass(List<String> list) {
+        if (list == null) { return null; }
+
+        ByteArrayOutputStream buf = new ByteArrayOutputStream(32);
+        DataOutputStream      out = new DataOutputStream(buf);
+
+        try {
+            for (String s : list) {
+                byte[] bytes = DHCPPacket.stringToBytes(s);
+                int    size  = bytes.length;
+
+                if (size > 255) { size = 255; }
+                out.writeByte(size);
+                out.write(bytes, 0, size);
+            }
+            return buf.toByteArray();
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Unexpected IOException", e);
+            return buf.toByteArray();
+        }
+    }
+
+    /**
      * Converts DHO_DHCP_AGENT_OPTIONS (82) option type to a printable string
      * 
      * @param buf option value of type Agent Option.

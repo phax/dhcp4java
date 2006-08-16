@@ -33,7 +33,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -2036,35 +2035,6 @@ public class DHCPPacket implements Cloneable, Serializable {
      */
     public void removeAllOptions() {
         this.options.clear();
-    }
-
-    /**
-     * Converts this list of strings to a DHO_USER_CLASS (77) option.
-     *
-     * @param list the list of strings
-     * @return byte[] buffer to use with <tt>setOptionRaw</tt>, <tt>null</tt> if list is null
-     * @throws IllegalArgumentException if List contains anything else than String
-     */
-    public static byte[] stringListToUserClass(List<String> list) {
-        if (list == null) { return null; }
-
-        ByteArrayOutputStream buf = new ByteArrayOutputStream(32);
-        DataOutputStream      out = new DataOutputStream(buf);
-
-        try {
-            for (String s : list) {
-                byte[] bytes = stringToBytes(s);
-                int    size  = bytes.length;
-
-                if (size > 255) { size = 255; }
-                out.writeByte(size);
-                out.write(bytes, 0, size);
-            }
-            return buf.toByteArray();
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Unexpected IOException", e);
-            return buf.toByteArray();
-        }
     }
 
     /**
