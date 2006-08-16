@@ -344,7 +344,7 @@ public class DHCPPacket implements Cloneable, Serializable {
     public DHCPPacket() {
         this.comment = "";
         this.op      = BOOTREPLY;
-        this.htype   = DHCPConstants.HTYPE_ETHER;
+        this.htype   = HTYPE_ETHER;
         this.hlen    = 6;
         this.ciaddr  = new byte[  4];
         this.yiaddr  = new byte[  4];
@@ -508,7 +508,6 @@ public class DHCPPacket implements Cloneable, Serializable {
             assert(opt != null);
             assert(opt.getCode() == key);
             assert(opt.getValueFast() != null);
-            assert(opt.getValueFast().length < 256);
         }
     }
     /** 
@@ -635,7 +634,7 @@ public class DHCPPacket implements Cloneable, Serializable {
      * @throws DHCPBadPacketException the datagram would be malformed (too small, too big...)
      */
     public byte[] serialize() {
-    	return serialize(_DHCP_DEFAULT_MAX_LEN);
+    	return serialize(_BOOTP_MIN_LEN, _DHCP_DEFAULT_MAX_LEN);
     }
 
     /**
@@ -645,7 +644,7 @@ public class DHCPPacket implements Cloneable, Serializable {
      * @return a byte array with information from DHCPMessage object.
      * @throws DHCPBadPacketException the datagram would be malformed (too small, too big...)
      */
-    public synchronized byte[] serialize(int maxSize) {
+    public byte[] serialize(int minSize, int maxSize) {
         this.assertInvariants();
         // prepare output buffer, pre-sized to maximum buffer length
         // default buffer is half the maximum size of possible packet
@@ -695,7 +694,7 @@ public class DHCPPacket implements Cloneable, Serializable {
             outStream.write(this.padding);
 
             // add padding if the packet is too small
-            int min_padding = _BOOTP_MIN_LEN - outBStream.size();
+            int min_padding = minSize - outBStream.size();
             if (min_padding > 0) {
                 byte[] add_padding = new byte[min_padding];
                 outStream.write(add_padding);
@@ -737,7 +736,7 @@ public class DHCPPacket implements Cloneable, Serializable {
                   .append("\ncomment=")
                   .append(this.comment)
                   .append("\naddress=")
-                  .append(this.address)
+                  .append(this.address.getHostAddress())
                   .append('(')
                   .append(this.port)
                   .append(')')
