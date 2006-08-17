@@ -27,7 +27,6 @@ import junit.framework.JUnit4TestAdapter;
 import org.dhcp4java.DHCPServer;
 import org.dhcp4java.DHCPServlet;
 import org.dhcp4java.DHCPServerInitException;
-import org.dhcp4java.server.DHCPStaticServlet;
 import org.junit.After;
 import org.junit.Test;
 
@@ -63,8 +62,8 @@ public class DHCPServerTest {
         localProperties.put(DHCPServer.SERVER_ADDRESS, SERVER_ADDR + ':' + SERVER_PORT);
         localProperties.put(DHCPServer.SERVER_THREADS, "1");
 
-        server = DHCPServer.initServer(new DHCPStaticServlet(), localProperties);
-        DHCPServer.initServer(new DHCPStaticServlet(), localProperties);
+        server = DHCPServer.initServer(new DHCPServerTestServlet(), localProperties);
+        DHCPServer.initServer(new DHCPServerTestServlet(), localProperties);
     }
     
     @Test
@@ -80,7 +79,7 @@ public class DHCPServerTest {
         localProperties.put(DHCPServer.SERVER_ADDRESS, SERVER_ADDR + ':' + SERVER_PORT);
         localProperties.put(DHCPServer.SERVER_THREADS, "1");
 
-        DHCPServer server = DHCPServer.initServer(new DHCPStaticServlet(), localProperties);
+        DHCPServer server = DHCPServer.initServer(new DHCPServerTestServlet(), localProperties);
         new Thread(server).start();
         synchronized (this) {
         	wait(300);

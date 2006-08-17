@@ -23,7 +23,6 @@ import java.util.Properties;
 import org.dhcp4java.DHCPServer;
 import org.dhcp4java.DHCPServerInitException;
 import org.dhcp4java.DHCPServlet;
-import org.dhcp4java.server.DHCPStaticServlet;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -56,7 +55,7 @@ public class DHCPEndToEndTest {
         localProperties.put(DHCPServer.SERVER_ADDRESS, SERVER_ADDR + ':' + SERVER_PORT);
         localProperties.put(DHCPServer.SERVER_THREADS, "1");
 
-        server = DHCPServer.initServer(new DHCPStaticServlet(), localProperties);
+        server = DHCPServer.initServer(new DHCPEndToEndTestServlet(), localProperties);
 
         new Thread(server).start();
     }
