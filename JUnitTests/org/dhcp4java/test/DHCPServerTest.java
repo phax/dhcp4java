@@ -61,15 +61,17 @@ public class DHCPServerTest {
 
         localProperties.put(DHCPServer.SERVER_ADDRESS, SERVER_ADDR + ':' + SERVER_PORT);
         localProperties.put(DHCPServer.SERVER_THREADS, "1");
-
+        
         server = DHCPServer.initServer(new DHCPServerTestServlet(), localProperties);
         DHCPServer.initServer(new DHCPServerTestServlet(), localProperties);
+        
     }
     
     @Test
     public void testInitServerNullProps() throws Exception {
     	DHCPServer server = DHCPServer.initServer(new DHCPServerTestServlet(), null);
     	assertNotNull(server);
+    	server.stopServer();
     }
     
     @Test

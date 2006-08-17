@@ -18,17 +18,21 @@
  */
 package org.dhcp4java.test;
 
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.Properties;
 
+import org.dhcp4java.DHCPPacket;
 import org.dhcp4java.DHCPServer;
-import org.dhcp4java.DHCPServerInitException;
 import org.dhcp4java.DHCPServlet;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-
 import junit.framework.JUnit4TestAdapter;
+
+import static org.dhcp4java.DHCPConstants.*;
 
 /**
  * @author Stephan Hadinger
@@ -37,8 +41,10 @@ public class DHCPEndToEndTest {
 
     private static final String SERVER_ADDR = "127.0.0.1";
     private static final int    SERVER_PORT = 6767;
+    private static final int    CLIENT_PORT = 6768;
     
     private static DHCPServer server = null;
+    private static DatagramSocket socket = null;
     
     public static junit.framework.Test suite() {
         return new JUnit4TestAdapter(DHCPEndToEndTest.class);
@@ -49,7 +55,7 @@ public class DHCPEndToEndTest {
      *
      */
     @BeforeClass
-    public static void startServer() throws DHCPServerInitException {
+    public static void startServer() throws Exception {
         Properties localProperties = new Properties();
 
         localProperties.put(DHCPServer.SERVER_ADDRESS, SERVER_ADDR + ':' + SERVER_PORT);
@@ -58,15 +64,32 @@ public class DHCPEndToEndTest {
         server = DHCPServer.initServer(new DHCPEndToEndTestServlet(), localProperties);
 
         new Thread(server).start();
+        
+        socket = new DatagramSocket(CLIENT_PORT);
     }
 
-    @Test
-    public void testDiscover() {
-
+    @Test (timeout=1000)
+    public void testDiscover() throws Exception {
+    	byte[] buf;
+    	DatagramPacket udp;
+    	DHCPPacket pac = new DHCPPacket();
+    	pac.setOp(BOOTREQUEST);
+    	buf = pac.serialize();
+    	udp = new DatagramPacket(buf, buf.length);
+    	udp.setAddress(InetAddress.getByName(SERVER_ADDR));
+    	udp.setPort(SERVER_PORT);
+    	socket.send(udp);
+    	udp = new DatagramPacket(new byte[1500], 1500);
+    	// TODO
+    	// socket.receive(udp);
     }
 
     @AfterClass
     public static void shutdownServer() {
+    	if (socket != null) {
+    		socket.close();
+    		socket = null;
+    	}
     	if (server != null) {		// do some cleanup
     		server.stopServer();
     		server = null;
