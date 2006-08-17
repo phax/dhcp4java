@@ -26,8 +26,8 @@ import junit.framework.JUnit4TestAdapter;
 
 import org.dhcp4java.DHCPServer;
 import org.dhcp4java.DHCPServlet;
-import org.dhcp4java.DHCPStaticServlet;
 import org.dhcp4java.DHCPServerInitException;
+import org.dhcp4java.server.DHCPStaticServlet;
 import org.junit.After;
 import org.junit.Test;
 

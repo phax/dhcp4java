@@ -22,7 +22,8 @@ import java.util.Properties;
 
 import org.dhcp4java.DHCPServer;
 import org.dhcp4java.DHCPServerInitException;
-import org.dhcp4java.DHCPStaticServlet;
+import org.dhcp4java.DHCPServlet;
+import org.dhcp4java.server.DHCPStaticServlet;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -72,4 +73,10 @@ public class DHCPEndToEndTest {
     		server = null;
     	}
     }
+}
+
+class DHCPEndToEndTestServlet extends DHCPServlet {
+	
+	
+	
 }
