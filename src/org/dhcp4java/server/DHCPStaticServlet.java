@@ -112,7 +112,7 @@ public class DHCPStaticServlet extends DHCPServlet {
 		response.setDHCPMessageType(DHCPOFFER);
 		response.setOptions(this.commonOptions);
 		
-		response.setAddrPort(getDefaultSocketAddress(request));
+		response.setAddrPort(getDefaultSocketAddress(request, response.getOp()));
 
 		return response;
 	}
@@ -148,7 +148,7 @@ public class DHCPStaticServlet extends DHCPServlet {
 		}
 		response.setOptions(this.commonOptions);
 		
-		response.setAddrPort(getDefaultSocketAddress(request));
+		response.setAddrPort(getDefaultSocketAddress(request, response.getOp()));
 		
 		return response;
 	}
