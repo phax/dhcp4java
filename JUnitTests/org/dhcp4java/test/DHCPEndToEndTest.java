@@ -38,6 +38,8 @@ public class DHCPEndToEndTest {
     private static final String SERVER_ADDR = "127.0.0.1";
     private static final int    SERVER_PORT = 6767;
     
+    private static DHCPServer server = null;
+    
     public static junit.framework.Test suite() {
         return new JUnit4TestAdapter(DHCPEndToEndTest.class);
     }
@@ -53,7 +55,7 @@ public class DHCPEndToEndTest {
         localProperties.put(DHCPServer.SERVER_ADDRESS, SERVER_ADDR + ':' + SERVER_PORT);
         localProperties.put(DHCPServer.SERVER_THREADS, "1");
 
-        DHCPServer server = DHCPServer.initServer(new DHCPStaticServlet(), localProperties);
+        server = DHCPServer.initServer(new DHCPStaticServlet(), localProperties);
 
         new Thread(server).start();
     }
@@ -65,6 +67,9 @@ public class DHCPEndToEndTest {
 
     @AfterClass
     public static void shutdownServer() {
-
+    	if (server != null) {		// do some cleanup
+    		server.stopServer();
+    		server = null;
+    	}
     }
 }

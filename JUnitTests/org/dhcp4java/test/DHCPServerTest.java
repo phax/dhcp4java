@@ -48,6 +48,7 @@ public class DHCPServerTest {
     public void stopServer() {
     	if (server != null) {
     		server.stopServer();
+    		server = null;
     	}
     }
     
