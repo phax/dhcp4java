@@ -263,7 +263,7 @@ public class DHCPServlet {
      * @param request the client DHCP request
      * @return the ip/port to send back the response
      */
-    public InetSocketAddress getDefaultSocketAddress(DHCPPacket request) {
+    public static InetSocketAddress getDefaultSocketAddress(DHCPPacket request) {
     	// check whether there is a giaddr
     	byte[] giaddrBytes = request.getGiaddrRaw();
     	
