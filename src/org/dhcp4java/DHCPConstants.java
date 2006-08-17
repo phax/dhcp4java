@@ -154,12 +154,21 @@ public class DHCPConstants {
     public static final byte DHO_CLASSLESS_ROUTE				 = 121;	// rfc 3442
     public static final byte DHO_END                          =  -1;
 
-    /**
-     * Broadcast Address
-     */
+    /** Any address */
+    public static final InetAddress INADDR_ANY = getInaddrAny();
+    /** Broadcast Address */
     public static final InetAddress INADDR_BROADCAST = getInaddrBroadcast();
 
-    private static InetAddress getInaddrBroadcast() {
+    private static final InetAddress getInaddrAny() {
+    	try {
+    		final byte[] rawAddr = { (byte)0, (byte)0, (byte)0, (byte)0 };
+    		return InetAddress.getByAddress(rawAddr);
+    	} catch (UnknownHostException e) {
+    		// bad luck
+    		throw new IllegalStateException("Unable to generate INADDR_ANY");
+    	}
+    }
+    private static final InetAddress getInaddrBroadcast() {
     	try {
             final byte[] rawAddr = { (byte) -1, (byte) -1, (byte) -1, (byte) -1 };
     		return InetAddress.getByAddress(rawAddr);
