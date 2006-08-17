@@ -250,34 +250,59 @@ public class DHCPServlet {
     
     /**
      * Calculates the addres/port to which the response must be sent, according to
-     * rfc 2131.
+     * rfc 2131, section 4.1.
+     * 
+     * <p>This is a method ready to use for *standard* behaviour for any RFC
+     * compliant DHCP Server.
      * 
      * <p>If <tt>giaddr</tt> is null, it is the client's addres/68, otherwise
      * giaddr/67.
      * 
      * <p>Standard behaviour is to set the response packet as follows:
      * <pre>
-     * 		response.setAddrPort(getDefaultSocketAddress(request));
+     * 		response.setAddrPort(getDefaultSocketAddress(request), response.getOp());
      * </pre>
      *  
      * @param request the client DHCP request
+     * @param responseType the DHCP Message Type the servers wants to send (DHCPOFFER,
+     * 							DHCPACK, DHCPNAK)
      * @return the ip/port to send back the response
+     * @throws IllegalArgumentException if request is <tt>null</tt>.
+     * @throws IllegalArgumentException if responseType is not valid.
      */
-    public static InetSocketAddress getDefaultSocketAddress(DHCPPacket request) {
+    public static InetSocketAddress getDefaultSocketAddress(DHCPPacket request, byte responseType) {
     	if (request == null) {
     		throw new IllegalArgumentException("request is null");
     	}
+    	InetSocketAddress sockAdr;
+    	InetAddress giaddr = request.getGiaddr();
+    	InetAddress ciaddr = request.getCiaddr();
     	// check whether there is a giaddr
-    	byte[] giaddrBytes = request.getGiaddrRaw();
     	
-    	if (giaddrBytes[0] == (byte) 0 &&
-    		giaddrBytes[1] == (byte) 0 &&
-    		giaddrBytes[2] == (byte) 0 &&
-    		giaddrBytes[3] == (byte) 0) {
-    		return new InetSocketAddress(request.getAddress(), 67);
-    	} else {
-    		return new InetSocketAddress(request.getGiaddr(), 68);
+    	switch (responseType) {
+    	case DHCPOFFER:
+    	case DHCPACK:
+        	if (INADDR_ANY.equals(giaddr)) {
+        		if (INADDR_ANY.equals(ciaddr)) {	// broadcast to LAN
+            		sockAdr = new InetSocketAddress(request.getGiaddr(), 68);
+        		} else {
+        			sockAdr = new InetSocketAddress(ciaddr, 68);
+        		}
+        	} else {							// unicast to relay
+        		sockAdr = new InetSocketAddress(giaddr, 67);
+        	}
+    		break;
+    	case DHCPNAK:
+        	if (INADDR_ANY.equals(giaddr)) {	// always broadcast
+        		sockAdr = new InetSocketAddress(INADDR_ANY, 68);
+        	} else {							// unicast to relay
+        		sockAdr = new InetSocketAddress(giaddr, 67);
+        	}
+    		break;
+    	default:
+    		throw new IllegalArgumentException("responseType not valid");
     	}
+    	return sockAdr;
     }
 
 	/**
