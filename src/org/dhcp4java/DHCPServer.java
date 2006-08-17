@@ -87,6 +87,8 @@ public class DHCPServer implements Runnable {
     private   InetSocketAddress sockAddress = null;
     /** The socket for receiving and sending. */
     private   DatagramSocket     serverSocket;
+    /** do we need to stop the server? */
+    private   boolean			 stopped = false;
     /**
      * Constructor
      *
@@ -206,7 +208,7 @@ public class DHCPServer implements Runnable {
             DHCPServletDispatcher dispatcher = new DHCPServletDispatcher(this, servlet, requestDatagram);
             threadPool.execute(dispatcher);
         } catch (IOException e) {
-	        logger.log(Level.SEVERE, "IOException", e);
+	        logger.log(Level.FINE, "IOException", e);
         }
     }
     /**
@@ -285,13 +287,21 @@ public class DHCPServer implements Runnable {
         if (this.serverSocket == null) {
             throw new IllegalStateException("Listening socket is not open - terminating");
         }
-        while (true) {
+        while (!this.stopped) {
             try {
                 this.dispatch();		// do the stuff
             } catch (Exception e) {
                 logger.log(Level.WARNING, "Unexpected Exception", e);
             }
         }
+    }
+    /**
+     * This method stops the server and closes the socket.
+     *
+     */
+    public void stopServer() {
+    	this.stopped = true;
+    	this.serverSocket.close();		// this generates an exception when trying to receive
     }
 
     private static final Properties DEF_PROPS = new Properties();
