@@ -16,7 +16,7 @@
  *	License along with this library; if not, write to the Free Software
  *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.dhcp4java;
+package org.dhcp4java.server;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -24,6 +24,12 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.dhcp4java.DHCPOption;
+import org.dhcp4java.DHCPPacket;
+import org.dhcp4java.DHCPServer;
+import org.dhcp4java.DHCPServerInitException;
+import org.dhcp4java.DHCPServlet;
 
 
 import static org.dhcp4java.DHCPConstants.*;
