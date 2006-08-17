@@ -264,6 +264,9 @@ public class DHCPServlet {
      * @return the ip/port to send back the response
      */
     public static InetSocketAddress getDefaultSocketAddress(DHCPPacket request) {
+    	if (request == null) {
+    		throw new IllegalArgumentException("request is null");
+    	}
     	// check whether there is a giaddr
     	byte[] giaddrBytes = request.getGiaddrRaw();
     	
@@ -271,9 +274,9 @@ public class DHCPServlet {
     		giaddrBytes[1] == (byte) 0 &&
     		giaddrBytes[2] == (byte) 0 &&
     		giaddrBytes[3] == (byte) 0) {
-    		return new InetSocketAddress(request.getGiaddr(), 67);
+    		return new InetSocketAddress(request.getAddress(), 67);
     	} else {
-    		return new InetSocketAddress(request.getAddress(), 68);
+    		return new InetSocketAddress(request.getGiaddr(), 68);
     	}
     }
 
