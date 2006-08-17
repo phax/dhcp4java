@@ -14,6 +14,14 @@
   to Internet hosts. DHCP consists of two components: a protocol for delivering 
   host-specific configuration parameters from a DHCP server to a host and a mechanism 
   for allocation of network addresses to hosts.</p>
+<h4>Where can I find information about the DHCP protocol?</h4>
+<p>The first source of information are the RFCs themselves. See below about RFC 
+  compliance.</p>
+<p>I suggest an excellent book on DHCP: The DHCP Handbook (2nd edition), Ralph 
+  Droms and Ted Lemon.</p>
+<h4>Is DHCP4Java free to use?</h4>
+<p>Yes. It is provided under L-GPL licence, which means that you can you it in 
+  any code, open-source or not.</p>
 <h4>What is a DHCP static/dynamic/algorithmic server?</h4>
 <p>There are three basic ways to allocate IP addresses to clients: static (pre-configured 
   client by client), dynamic (allocated from address pools), algorithmic (calculated 
@@ -51,7 +59,7 @@
 <p>Java offers unique opportunities to server development such as: easy multi-threading/multi-CPU/mutli-core 
   support, wide variety of connectivity APIs to databases through JDBC, wide community 
   of developers...</p>
-<h4>Are there limitations introduced by Java</h4>
+<h4>Are there limitations introduced by Java?</h4>
 <p>Very few.</p>
 <p>The UdpDatagram API does not allow to send datagrams to 255.255.255.255 IP 
   address (broadcast) using Ethernet unicast to a specific MAC address. This means 
@@ -62,7 +70,40 @@
 <p>It is not possible to develop a DHCP Client in pure Java, due to a lack of 
   API to read the MAC address of the network link. You can still develop a test 
   Client or use system specific command/API.</p>
-<h4>Does Java offer enough performance compared to C</h4>
+<h4>What version of Java is supported?</h4>
+<p>DHCP4Java requires Java5 (J2SE or J2EE), aka Java 1.5.</p>
+<p>I switched to Java5 early in the development stage and I will not go back (do 
+  not ask!). Java5 simplifies the code dramatically thanks to generics, static 
+  imports, boxing/unboxing and concurrency libraries. This API will be mainly 
+  used to develop new servers, and I cannot see any use case of using this API 
+  in existing code prior to Java5.</p>
+<h4>Does DHCP4Java support J2ME?</h4>
+<p>Not currently. However it should be relatively easy to simplify the API for 
+  a J2ME version. Let me know if there is such a need.</p>
+<h4>Can DHCP4Java be used to implement a DHCP Client?</h4>
+<p>Yes at the protocol level. No for Java implementation reasons.</p>
+<p>There is no standard way in Java to retrieve the MAC address of a network interface. 
+  This requires non-portable system specific calls.</p>
+<p><em>By the way, if you some way to develop a 100% Java DHCP client, please 
+  let me know.</em></p>
+<h4>Do you provide a DHCP Client?</h4>
+<p>No, please so above about the Java limitations.</p>
+<p>You can find sample code for DHCP client in the examples package, but it is 
+  merely for server testing purpose.</p>
+<h4>Do you provide a DHCP Relay?</h4>
+<p>Not currently. First option would be to develop an independant relay such as 
+  the one from ISC. My plans are to provide a &quot;proxy-mode&quot; to the DHCP 
+  Server to allow DHCP requests relaying. This mode would be similar to the mod_proxy 
+  module for the Apache server.</p>
+<h4>Do you proviude a DHCP Server?</h4>
+<p>Yes [very soon].</p>
+<p>A static server will come first, then a complete dynamic server.</p>
+<h4>Do you provide a BOOTP client or server?</h4>
+<p>No. BOOTP is supported only at the API level, but largely untested.</p>
+<h4>Do you support IPv6?</h4>
+<p>No. DHCP4Java only supports IPv4.</p>
+<p>DHCP for IPv6 is a totally different story, maybe someday?</p>
+<h4>Does Java offer enough performance compared to C?</h4>
 <p>Yes. Comparative tests are planned, but Java performance is largely enough 
   even for high volume DHCP servers, see right below.</p>
 <h4>How fast is DHCP4Java?</h4>
