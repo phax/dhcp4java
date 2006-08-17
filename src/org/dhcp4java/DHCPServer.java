@@ -158,7 +158,9 @@ public class DHCPServer implements Runnable {
             }
 
             // open socket for listening and sending
-            this.serverSocket = new DatagramSocket(sockAddress);
+            this.serverSocket = new DatagramSocket();
+            this.serverSocket.setBroadcast(true);		// allow sending broadcast
+            this.serverSocket.bind(sockAddress);
 
             // initialize Thread Pool
             int numThreads = Integer.valueOf(this.properties.getProperty(SERVER_THREADS));
