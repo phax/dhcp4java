@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPOption;
 import org.dhcp4java.DHCPPacket;
+import org.dhcp4java.DHCPResponseFactory;
 import org.dhcp4java.DHCPServer;
 import org.dhcp4java.DHCPServerInitException;
 import org.dhcp4java.DHCPServlet;
@@ -112,7 +113,7 @@ public class DHCPStaticServlet extends DHCPServlet {
 		response.setDHCPMessageType(DHCPOFFER);
 		response.setOptions(this.commonOptions);
 		
-		response.setAddrPort(getDefaultSocketAddress(request, response.getOp()));
+		response.setAddrPort(DHCPResponseFactory.getDefaultSocketAddress(request, response.getOp()));
 
 		return response;
 	}
@@ -148,7 +149,7 @@ public class DHCPStaticServlet extends DHCPServlet {
 		}
 		response.setOptions(this.commonOptions);
 		
-		response.setAddrPort(getDefaultSocketAddress(request, response.getOp()));
+		response.setAddrPort(DHCPResponseFactory.getDefaultSocketAddress(request, response.getOp()));
 		
 		return response;
 	}

@@ -20,7 +20,6 @@ package org.dhcp4java.test;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 
 import org.dhcp4java.DHCPBadPacketException;
 import org.dhcp4java.DHCPPacket;
@@ -124,46 +123,6 @@ public class DHCPServletTest {
     	servlet2.portToReturn = 67;
     	assertNotNull(servlet2.serviceDatagram(udp));
     	assertTrue(servlet2.postProcessPassed);
-    }
-
-    // test getDefaultSocketAddress
-    @Test
-    public void testGetDefaultSocketAddress() throws Exception {
-    	InetAddress adr = InetAddress.getByName("252.10.0.200");
-    	// RFC 2131 compliance
-    	// sorry we ignore the broadcast bit
-    	// fully broadcast by client
-    	getDefaultSocketAddressTester(INADDR_ANY, INADDR_ANY, DHCPOFFER, INADDR_ANY, 68);
-    	getDefaultSocketAddressTester(INADDR_ANY, INADDR_ANY, DHCPACK, INADDR_ANY, 68);
-    	getDefaultSocketAddressTester(INADDR_ANY, INADDR_ANY, DHCPNAK, INADDR_ANY, 68);
-    	// unicast from client
-    	getDefaultSocketAddressTester(adr, INADDR_ANY, DHCPOFFER, adr, 68);
-    	getDefaultSocketAddressTester(adr, INADDR_ANY, DHCPACK, adr, 68);
-    	getDefaultSocketAddressTester(adr, INADDR_ANY, DHCPNAK, INADDR_ANY, 68);
-    	// when though a relay
-    	getDefaultSocketAddressTester(INADDR_ANY, adr, DHCPOFFER, adr, 67);
-    	getDefaultSocketAddressTester(INADDR_ANY, adr, DHCPACK, adr, 67);
-    	getDefaultSocketAddressTester(INADDR_ANY, adr, DHCPNAK, adr, 67);
-    }
-    @Test (expected=IllegalArgumentException.class)
-    public void testGetDefaultSocketAddressNull() {
-    	DHCPServlet.getDefaultSocketAddress(null, DHCPOFFER);
-    }
-    @Test (expected=IllegalArgumentException.class)
-    public void testGetDefaultSocketAddressBadType() throws Exception {
-    	getDefaultSocketAddressTester(INADDR_ANY, INADDR_ANY, (byte)-10, INADDR_ANY, 68);
-    }
-    private static final void getDefaultSocketAddressTester(
-    		InetAddress ciaddr, InetAddress giaddr, byte responseType,
-    		InetAddress expectedAddress, int expectedPort) throws Exception {
-    	DHCPPacket pac = new DHCPPacket();
-    	InetSocketAddress sockAdr;
-    	pac.setCiaddr(ciaddr);
-    	pac.setGiaddr(giaddr);
-    	sockAdr = DHCPServlet.getDefaultSocketAddress(pac, responseType);
-    	assertNotNull(sockAdr);
-    	assertEquals(expectedAddress, sockAdr.getAddress());
-    	assertEquals(expectedPort, sockAdr.getPort());
     }
 }
 
