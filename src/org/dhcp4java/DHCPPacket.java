@@ -374,24 +374,30 @@ public class DHCPPacket implements Cloneable, Serializable {
         DHCPPacket packet = new DHCPPacket();
         // all parameters are checked in marshall()
         packet.marshall(datagram.getData(), datagram.getOffset(), datagram.getLength(),
-                        datagram.getAddress(), datagram.getPort());
+                        datagram.getAddress(), datagram.getPort(),
+                        true);		// strict mode by default
         return packet;
     }
 
     /**
      * Factory for creating <tt>DHCPPacket</tt> objects by parsing a
      * <tt>byte[]</tt> e.g. from a datagram.
+     * 
+     * <p>This method allows you to specify non-strict mode which is much more
+     * tolerant for packet options. By default, any problem seen during DHCP option
+     * parsing causes a DHCPBadPacketException to be thrown.
      *
      * @param buf buffer for holding the incoming datagram.
      * @param offset the offset for the buffer.
      * @param length the number of bytes to read.
+     * @param strict do we parse in strict mode?
      * @return the newly create <tt>DHCPPacket</tt> instance
      * @throws DHCPBadPacketException the datagram is malformed.
      */
-    public static DHCPPacket getPacket(byte[] buf, int offset, int length) throws DHCPBadPacketException {
+    public static DHCPPacket getPacket(byte[] buf, int offset, int length, boolean strict) throws DHCPBadPacketException {
         DHCPPacket packet = new DHCPPacket();
         // all parameters are checked in marshall()
-        packet.marshall(buf, offset, length, null, 0);
+        packet.marshall(buf, offset, length, null, 0, strict);
         return packet;
     }
 
@@ -515,12 +521,17 @@ public class DHCPPacket implements Cloneable, Serializable {
      * 
      * @return a DHCPMessage object with information from byte array.
      * @param  buffer  byte array to convert to a DHCPMessage object
+     * @param  offset starting offset for the buffer
+     * @param  length length of the buffer
+     * @param  address the address from which the packet was sent, or <tt>null</tt>
+     * @param  port the port from which the packet was sent
+     * @param  strict do we read in strict mode?
      * @throws IllegalArgumentException if buffer is <tt>null</tt>...
      * @throws IndexOutOfBoundsException offset..offset+length is out of buffer bounds
      * @throws DHCPBadPacketException datagram is malformed
      */
     protected DHCPPacket marshall(byte[] buffer, int offset, int length,
-                                  InetAddress address, int port) {
+                                  InetAddress address, int port, boolean strict) {
         // do some basic sanity checks
         // ibuff, offset & length are valid?
         if (buffer == null) {
@@ -608,6 +619,9 @@ public class DHCPPacket implements Cloneable, Serializable {
                     this.setOption(new DHCPOption((byte) type, unit_opt));  // store option
                 }
                 this.truncated = (type != DHO_END); // truncated options?
+                if (strict && this.truncated) {
+                	throw new DHCPBadPacketException("Packet seams to be truncated");
+                }
             }
 
             // put the remaining in padding
@@ -1568,7 +1582,8 @@ public class DHCPPacket implements Cloneable, Serializable {
 
     /**
      * Indicates that the DHCP packet has been truncated and did not finished
-     * with a 0xFF option.
+     * with a 0xFF option. This parameter is set only when parsing packets in
+     * non-strict mode (which is not the default behaviour).
      *
      * <p>This field is read-only and can be <tt>true</tt> only with objects created
      * by parsing a Datagram - getPacket() methods.

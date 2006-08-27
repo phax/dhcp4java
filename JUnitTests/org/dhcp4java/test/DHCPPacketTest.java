@@ -60,7 +60,7 @@ public class DHCPPacketTest {
     public static void setUpOnce() throws Exception {
     	byte[] refBuf = HexUtils.hexToBytes(REF_PACKET);
 
-        refPacketFromHex = DHCPPacket.getPacket(refBuf, 0, refBuf.length);
+        refPacketFromHex = DHCPPacket.getPacket(refBuf, 0, refBuf.length, true);
         refPacketFromHex.setComment("foobar");
         refPacketFromHex.setAddress(InetAddress.getByName("10.11.12.13"));
         refPacketFromHex.setPort(6767);
@@ -156,32 +156,32 @@ public class DHCPPacketTest {
     // marshall
     @Test (expected=IllegalArgumentException.class)
     public void testMarshallNull() {
-    	DHCPPacket.getPacket(null, 0, 256);
+    	DHCPPacket.getPacket(null, 0, 256, true);
     }
     @Test (expected=IndexOutOfBoundsException.class)
     public void testMarshallNegativeOffset() {
-    	DHCPPacket.getPacket(new byte[256], -1, 256);
+    	DHCPPacket.getPacket(new byte[256], -1, 256, true);
     }
     @Test (expected=IllegalArgumentException.class)
     public void testMarshallNegativeLength() {
-    	DHCPPacket.getPacket(new byte[256], 0, -1);
+    	DHCPPacket.getPacket(new byte[256], 0, -1, true);
     }
     @Test (expected=IndexOutOfBoundsException.class)
     public void testMarshallLentghTooLong() {
-    	DHCPPacket.getPacket(new byte[256], 1, 256);
+    	DHCPPacket.getPacket(new byte[256], 1, 256, true);
     }
     @Test
     public void testMarshallUnderLimits() {
-    	DHCPPacket.getPacket(new byte[300], 0, 300);
-    	DHCPPacket.getPacket(new byte[1500], 0, 1500);
+    	DHCPPacket.getPacket(new byte[300], 0, 300, true);
+    	DHCPPacket.getPacket(new byte[1500], 0, 1500, true);
     }
     @Test (expected=DHCPBadPacketException.class)
     public void testMarshallLentghPacketTooSmall() {
-    	DHCPPacket.getPacket(new byte[299], 0, 299);
+    	DHCPPacket.getPacket(new byte[299], 0, 299, true);
     }
     @Test (expected=DHCPBadPacketException.class)
     public void testMarshallLentghPacketTooBig() {
-    	DHCPPacket.getPacket(new byte[1501], 0, 1501);
+    	DHCPPacket.getPacket(new byte[1501], 0, 1501, true);
     }
     // serialize
     @Test
@@ -404,6 +404,17 @@ public class DHCPPacketTest {
     	assertTrue(Arrays.equals(hexToBytes(EMPTY_BOOTP), pac.serialize()));
     }
     
+    @Test (expected=DHCPBadPacketException.class)
+    public void testMarshallInNonStrictMode() {
+    	byte[] buf = hexToBytes(REF_PACKET_WITHOUT_DHO_END);
+    	DHCPPacket.getPacket(buf, 0, buf.length, true);
+    }
+    @Test
+    public void testMarshallInStrictMode() {
+    	byte[] buf = hexToBytes(REF_PACKET_WITHOUT_DHO_END);
+    	DHCPPacket.getPacket(buf, 0, buf.length, false);
+    }
+    
     // padding
     @Test
     public void testSetPaddingWithZeroes() {
@@ -583,7 +594,7 @@ public class DHCPPacketTest {
     }
     
     private static void testPacket(int size, int offset, int length) {
-    	DHCPPacket.getPacket(new byte[size], offset, length);
+    	DHCPPacket.getPacket(new byte[size], offset, length, true);
     }
     
     // utility functions
@@ -617,6 +628,25 @@ public class DHCPPacketTest {
         "3738393031323334353637386382536335010136040c22384433040001518001" +
         "04ffffff0003040a0000fe210816212c370a0000fe2a040a00000548040a0000" +
         "06ff000000000000000000000000000000000000000000000000000000000000" +
+        "0000000000000000000000000000000000000000000000000000000000000000" +
+        "0000000000000000000000000000000000000000000000000000000000000000" +
+        "0000000000000000000000000000000000000000000000000000000000000000" +
+        "0000000000000000000000000000000000000000000000000000000000000000" +
+        "0000000000000000000000000000000000000000000000000000000000000000" +
+        "0000000000000000000000000000000000000000000000000000000000000000" +
+        "0000000000000000000000000000000000000000000000000000000000000000" +
+        "0000";
+    private static final String REF_PACKET_WITHOUT_DHO_END =
+        "0101060011223344000080000a0000010a0000020a0000030a00000400112233" +
+        "445566778899aabbccddeeff3132333435363738393031323334353637383930" +
+        "3132333435363738393031323334353637383930313233343536373839303132" +
+        "3334353637383930313233343132333435363738393031323334353637383930" +
+        "3132333435363738393031323334353637383930313233343536373839303132" +
+        "3334353637383930313233343536373839303132333435363738393031323334" +
+        "3536373839303132333435363738393031323334353637383930313233343536" +
+        "3738393031323334353637386382536335010136040c22384433040001518001" +
+        "04ffffff0003040a0000fe210816212c370a0000fe2a040a00000548040a0000" +
+        "0600000000000000000000000000000000000000000000000000000000000000" +
         "0000000000000000000000000000000000000000000000000000000000000000" +
         "0000000000000000000000000000000000000000000000000000000000000000" +
         "0000000000000000000000000000000000000000000000000000000000000000" +
