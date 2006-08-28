@@ -18,11 +18,9 @@
  */
 package org.dhcp4java;
 
-import static org.dhcp4java.DHCPConstants.DHCPACK;
-import static org.dhcp4java.DHCPConstants.DHCPNAK;
-import static org.dhcp4java.DHCPConstants.DHCPOFFER;
-import static org.dhcp4java.DHCPConstants.INADDR_ANY;
+import static org.dhcp4java.DHCPConstants.*;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
@@ -37,6 +35,48 @@ import java.net.InetSocketAddress;
  */
 public final class DHCPResponseFactory {
 
+	
+	public DHCPPacket initDHCPOffer(
+			DHCPPacket request,
+			InetAddress offeredAddress,
+			DHCPOption[] options) {
+		if (offeredAddress == null) {
+			throw new IllegalArgumentException("offeredAddress must not be null");
+		}
+		if (!(offeredAddress instanceof Inet4Address)) {
+			throw new IllegalArgumentException("offeredAddress must be IPv4");
+		}
+		
+		DHCPPacket resp = new DHCPPacket();
+		
+		resp.setOp(BOOTREPLY);
+		resp.setHtype(request.getHtype());
+		resp.setHlen(request.getHlen());
+		// Hops is left to 0
+		resp.setXid(request.getXid());
+		// Secs is left to 0
+		resp.setFlags(request.getFlags());
+		// Ciaddr is left to 0.0.0.0
+		resp.setYiaddr(offeredAddress);
+		// Siaddr ?
+		resp.setGiaddrRaw(request.getGiaddrRaw());
+		resp.setChaddr(request.getChaddr());
+		// sname left empty
+		// file left empty
+		
+		// we set the DHCPOFFER type
+		resp.setDHCPMessageType(DHCPOFFER);
+		
+		for (DHCPOption opt : options) {
+			resp.setOption(opt);
+		}
+		
+		// we set address/port according to rfc
+		resp.setAddrPort(getDefaultSocketAddress(request, DHCPOFFER));
+		
+		return null;
+	}
+	
     /**
      * Calculates the addres/port to which the response must be sent, according to
      * rfc 2131, section 4.1.
