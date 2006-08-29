@@ -8,7 +8,7 @@
     <property name="javadoc.dir"      value="${root.dir}/doc" />
     <property name="lib.dir"          value="${root.dir}/../" />
     <property name="verbose"          value="false"/>
-    <property name="JAR.filename"     value="DHCPd-J" />
+    <property name="JAR.filename"     value="dhcp4java" />
 
     <!-- The classpath to be used to compile the project -->
     <path id="base.classpath">
@@ -43,8 +43,7 @@
                verbose="${verbose}"
                debug="on">
             <src path="${src.dir}"/>
-            <include name="com/francetelecom/**"/>
-            <include name="sf/**"/>
+            <include name="org/**"/>
             <classpath>
                 <path refid="base.classpath" />
             </classpath>
