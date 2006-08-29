@@ -125,7 +125,7 @@ public class InetCidr implements Serializable {
      * <p>The array is ordered from the most specific to the most general mask.
      * 
      * @param addr
-     * @return
+     * @return array of all cidr possible with this address
      */
     public static InetCidr[] addr2Cidr(InetAddress addr) {
     	if (addr == null) {
