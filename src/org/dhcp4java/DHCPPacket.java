@@ -43,7 +43,7 @@ import static org.dhcp4java.DHCPConstants.*;
  * The basic class for manipulating DHCP packets.
  * 
  * @author Stephan Hadinger
- * @version 0.50
+ * @version 0.60
  *
  * <p>There are two basic ways to build a new DHCPPacket object.
  * <p>First one is to build an object from scratch using the constructor and setters.

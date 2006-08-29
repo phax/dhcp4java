@@ -40,7 +40,7 @@ import java.util.logging.Logger;
  * Class for manipulating DHCP options (used internally).
  * 
  * @author Stephan Hadinger
- * @version 0.50
+ * @version 0.60
  * 
  * Immutable object.
  */

@@ -40,7 +40,7 @@ import static org.dhcp4java.DHCPConstants.*;
  * A sample DHCP servlet (under construction).
  * 
  * @author Stephan Hadinger
- * @version 0.50
+ * @version 0.60
  */
 public class DHCPStaticServlet extends DHCPServlet {
 
