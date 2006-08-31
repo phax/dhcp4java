@@ -36,7 +36,7 @@ import java.net.InetSocketAddress;
 public final class DHCPResponseFactory {
 
 	
-	public DHCPPacket makeDHCPOffer(
+	public static final DHCPPacket makeDHCPOffer(
 			DHCPPacket request,
 			InetAddress offeredAddress,
 			DHCPOption[] options) {
