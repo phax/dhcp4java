@@ -22,6 +22,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPPacket;
 import org.dhcp4java.DHCPServer;
@@ -50,6 +52,10 @@ public class DHCPEndToEndTest {
         return new JUnit4TestAdapter(DHCPEndToEndTest.class);
     }
 
+    @BeforeClass
+    public static void setLoggingAll() {
+    	Logger.getLogger("org.dhcp4java").setLevel(Level.ALL);
+    }
     /**
      * Start Server.
      *

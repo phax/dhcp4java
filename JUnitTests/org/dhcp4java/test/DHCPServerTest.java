@@ -21,6 +21,8 @@ package org.dhcp4java.test;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import junit.framework.JUnit4TestAdapter;
 
@@ -28,6 +30,7 @@ import org.dhcp4java.DHCPServer;
 import org.dhcp4java.DHCPServlet;
 import org.dhcp4java.DHCPServerInitException;
 import org.junit.After;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -41,6 +44,11 @@ public class DHCPServerTest {
     
     public static junit.framework.Test suite() {
         return new JUnit4TestAdapter(DHCPServerTest.class);
+    }
+    
+    @BeforeClass
+    public static void setLoggingAll() {
+    	Logger.getLogger("org.dhcp4java.dhcpserver").setLevel(Level.ALL);
     }
     
     @After
