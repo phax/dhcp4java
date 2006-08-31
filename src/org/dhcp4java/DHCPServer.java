@@ -69,7 +69,7 @@ import java.util.logging.Logger;
  */
 public class DHCPServer implements Runnable {
 
-    private   static final Logger logger             = Logger.getLogger("org.dhcp4java.dhcpservlet");
+    private   static final Logger logger             = Logger.getLogger("org.dhcp4java.dhcpserver");
     private   static final int    BOUNDED_QUEUE_SIZE = 20;
 
     /** default MTU for ethernet */
