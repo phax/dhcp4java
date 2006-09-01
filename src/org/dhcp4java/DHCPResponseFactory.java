@@ -35,7 +35,20 @@ import java.net.InetSocketAddress;
  */
 public final class DHCPResponseFactory {
 
-	
+	/**
+	 * Create a populated DHCPOFFER response.
+	 * 
+	 * <p>Reponse is populated according to the DHCP request received (must be
+	 * DHCPDISCOVER), the proposed client address and a set of pre-set options.
+	 * 
+	 * <p>Note: <tt>getDefaultSocketAddress</tt> is called internally to populate
+	 * address and port number to which response should be sent.
+	 * 
+	 * @param request
+	 * @param offeredAddress
+	 * @param options
+	 * @return
+	 */
 	public static final DHCPPacket makeDHCPOffer(
 			DHCPPacket request,
 			InetAddress offeredAddress,
@@ -46,6 +59,7 @@ public final class DHCPResponseFactory {
 		if (!(offeredAddress instanceof Inet4Address)) {
 			throw new IllegalArgumentException("offeredAddress must be IPv4");
 		}
+		// TODO test for request being a DISCOVER
 		
 		DHCPPacket resp = new DHCPPacket();
 		
@@ -67,14 +81,16 @@ public final class DHCPResponseFactory {
 		// we set the DHCPOFFER type
 		resp.setDHCPMessageType(DHCPOFFER);
 		
-		for (DHCPOption opt : options) {
-			resp.setOption(opt);
+		if (options != null) {
+			for (DHCPOption opt : options) {
+				resp.setOption(opt);
+			}
 		}
 		
 		// we set address/port according to rfc
 		resp.setAddrPort(getDefaultSocketAddress(request, DHCPOFFER));
 		
-		return null;
+		return resp;
 	}
 	
     /**
