@@ -539,6 +539,26 @@ public class DHCPOptionTest {
 	// append
 	
 	@Test
+	public void testAppendNullValue() {
+		StringBuilder buf;
+		DHCPOption opt;
+
+		buf = new StringBuilder();
+		opt = new DHCPOption((byte) -2, null);
+		opt.append(buf);
+		assertEquals("(254)=<null>", buf.toString());
+
+		buf = new StringBuilder();
+		opt = new DHCPOption(DHO_DHCP_MESSAGE_TYPE, null);
+		opt.append(buf);
+		assertEquals("DHO_DHCP_MESSAGE_TYPE(53)=<null>", buf.toString());
+		
+		buf = new StringBuilder();
+		opt = new DHCPOption(DHO_DHCP_LEASE_TIME, null);
+		opt.append(buf);
+		assertEquals("DHO_DHCP_LEASE_TIME(51)=<null>", buf.toString());
+	}
+	@Test
 	public void testAppend() throws Exception {
 		StringBuilder buf;
 		DHCPOption opt;

@@ -657,7 +657,9 @@ public class DHCPOption implements Serializable {
               .append(")=");
 
         // check for value printing
-        if (this.code == DHO_DHCP_MESSAGE_TYPE) {
+        if (this.value == null) {
+        	buffer.append("<null>");
+        } else if (this.code == DHO_DHCP_MESSAGE_TYPE) {
         	Byte cmd = this.getValueAsByte();
         	if (_DHCP_CODES.containsKey(cmd)) {
         		buffer.append(_DHCP_CODES.get(cmd));
