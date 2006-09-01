@@ -78,6 +78,19 @@ public class DHCPOptionTest {
 		assertTrue(opt2.equals(opt1));
 		assertFalse(opt1.equals(null));
 		assertFalse(opt1.equals(new Integer(1)));
+		assertFalse(opt1.equals(new DHCPOption(DHO_BOOTFILE, null)));
+	}
+	@Test
+	public void testEqualsNull() {
+		DHCPOption opt1 = new DHCPOption(DHO_BOOTFILE, null);
+		DHCPOption opt2 = new DHCPOption(DHO_BOOTFILE, null);
+		
+		assertTrue(opt1.equals(opt1));
+		assertTrue(opt1.equals(opt2));
+		assertTrue(opt2.equals(opt1));
+		assertFalse(opt1.equals(null));
+		assertFalse(opt1.equals(new Integer(1)));
+		assertFalse(opt1.equals(new DHCPOption(DHO_BOOTFILE, buf)));
 	}
 	
 	@Test
