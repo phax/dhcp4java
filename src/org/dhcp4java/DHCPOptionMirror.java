@@ -40,6 +40,7 @@ public class DHCPOptionMirror extends DHCPOption {
 	 * removes an already set option (since value is null).
 	 * 
 	 * @param code the option code to mirror
+	 * @throws IllegalArgumentException if code is 0 (padding) or 0xFF (end of options)
 	 */
 	public DHCPOptionMirror(byte code) {
 		super(code, null);
@@ -52,6 +53,7 @@ public class DHCPOptionMirror extends DHCPOption {
 	 * 
 	 * @param request the client's DHCP requets
 	 * @return the value of the specific option in the client request
+	 * @throws NullPointerException if <tt>request</tt> is <tt>null</tt>.
 	 */
 	public byte[] getMirrorValue(DHCPPacket request) {
 		if (request == null) {
