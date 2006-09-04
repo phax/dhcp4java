@@ -27,7 +27,7 @@ package org.dhcp4java;
  * @author Stephan Hadinger
  *
  */
-public class DHCPOptionMirror extends DHCPOption {
+public class DHCPMirrorOption extends DHCPOption {
 	
 	private static final long   serialVersionUID = 2L;
 
@@ -42,7 +42,7 @@ public class DHCPOptionMirror extends DHCPOption {
 	 * @param code the option code to mirror
 	 * @throws IllegalArgumentException if code is 0 (padding) or 0xFF (end of options)
 	 */
-	public DHCPOptionMirror(byte code) {
+	public DHCPMirrorOption(byte code) {
 		super(code, null);
 	}
 	
@@ -55,11 +55,11 @@ public class DHCPOptionMirror extends DHCPOption {
 	 * @return the value of the specific option in the client request
 	 * @throws NullPointerException if <tt>request</tt> is <tt>null</tt>.
 	 */
-	public byte[] getMirrorValue(DHCPPacket request) {
+	public DHCPOption getMirrorValue(DHCPPacket request) {
 		if (request == null) {
 			throw new NullPointerException("request is null");
 		}
-		return request.getOptionRaw(this.getCode());
+		return request.getOption(this.getCode());
 	}
 
 }

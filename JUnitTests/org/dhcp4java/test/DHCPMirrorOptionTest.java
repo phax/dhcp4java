@@ -21,7 +21,7 @@ package org.dhcp4java.test;
 import java.util.Arrays;
 
 import org.dhcp4java.DHCPOption;
-import org.dhcp4java.DHCPOptionMirror;
+import org.dhcp4java.DHCPMirrorOption;
 import org.dhcp4java.DHCPPacket;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,26 +31,26 @@ import static org.junit.Assert.*;
 
 import static org.dhcp4java.DHCPConstants.*;
 
-public class DHCPOptionMirrorTest {
+public class DHCPMirrorOptionTest {
 
     public static junit.framework.Test suite() {
-        return new JUnit4TestAdapter(DHCPOptionMirrorTest.class);
+        return new JUnit4TestAdapter(DHCPMirrorOptionTest.class);
     }
     
-    private DHCPOptionMirror opt = null;
+    private DHCPMirrorOption opt = null;
     
     @Test (expected=IllegalArgumentException.class)
     public void testConstructorPad() {
-    	new DHCPOptionMirror((byte)0);		// 0 is reserved for padding
+    	new DHCPMirrorOption((byte)0);		// 0 is reserved for padding
     }
     @Test (expected=IllegalArgumentException.class)
     public void testConstructorEnd() {
-    	new DHCPOptionMirror((byte)0xFF);	// 0xFF is reserved for "end of options"
+    	new DHCPMirrorOption((byte)0xFF);	// 0xFF is reserved for "end of options"
     }
 
     @Before
     public void setupOpt() {
-    	opt = new DHCPOptionMirror(DHO_DHCP_LEASE_TIME);
+    	opt = new DHCPMirrorOption(DHO_DHCP_LEASE_TIME);
     }
     
     @Test
@@ -62,17 +62,20 @@ public class DHCPOptionMirrorTest {
     
     @Test
     public void testGetMirrorValue() {
-    	byte[] buf;
+    	DHCPOption mirrorOpt;
     	DHCPPacket pac = new DHCPPacket();
     	assertNull(opt.getMirrorValue(pac));
     	
     	pac.setOptionAsInt(DHO_DHCP_LEASE_TIME, 86400);
-    	buf = opt.getMirrorValue(pac);
-    	assertTrue(Arrays.equals(DHCPOption.int2Bytes(86400), buf));
+    	
+    	mirrorOpt = opt.getMirrorValue(pac);
+    	assertEquals(DHO_DHCP_LEASE_TIME, mirrorOpt.getCode());
+    	assertTrue(Arrays.equals(DHCPOption.int2Bytes(86400), mirrorOpt.getValue()));
     	
     	pac.setOptionRaw(DHO_DHCP_LEASE_TIME, new byte[0]);
-    	buf = opt.getMirrorValue(pac);
-    	assertTrue(Arrays.equals(new byte[0], buf));
+    	mirrorOpt = opt.getMirrorValue(pac);
+    	assertEquals(DHO_DHCP_LEASE_TIME, mirrorOpt.getCode());
+    	assertTrue(Arrays.equals(new byte[0], mirrorOpt.getValue()));
     }
     @Test (expected=NullPointerException.class)
     public void testGetMirrorValueNull() {
