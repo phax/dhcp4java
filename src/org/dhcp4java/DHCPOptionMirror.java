@@ -31,11 +31,32 @@ public class DHCPOptionMirror extends DHCPOption {
 	
 	private static final long   serialVersionUID = 2L;
 
+	/**
+	 * Constructor. The only parameter is the option code. There is no value since the request's value
+	 * is returned (context based).
+	 * 
+	 * <p>Internally, a <tt>null</tt> value is set in the option. This means that you cannot request
+	 * values as byte, int... without getting an exception. If you set this option to a packet, this
+	 * removes an already set option (since value is null).
+	 * 
+	 * @param code the option code to mirror
+	 */
 	public DHCPOptionMirror(byte code) {
 		super(code, null);
 	}
 	
+	/**
+	 * Get the option value based on the context, i.e. the client's request.
+	 * 
+	 * <p>This should be the only method used with this class to get relevant values.
+	 * 
+	 * @param request the client's DHCP requets
+	 * @return the value of the specific option in the client request
+	 */
 	public byte[] getMirrorValue(DHCPPacket request) {
+		if (request == null) {
+			throw new NullPointerException("request is null");
+		}
 		return request.getOptionRaw(this.getCode());
 	}
 
