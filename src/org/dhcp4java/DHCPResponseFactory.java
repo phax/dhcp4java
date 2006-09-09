@@ -83,11 +83,12 @@ public final class DHCPResponseFactory {
 		
 		if (options != null) {
 			for (DHCPOption opt : options) {
-				if (opt instanceof DHCPMirrorOption) {
+				if (opt.isMirror()) {
 					// we mirror the value of the request
-					resp.setOption(((DHCPMirrorOption)opt).getMirrorValue(request));
+					resp.setOption(opt.getMirrorValue(request));
+				} else {
+					resp.setOption(opt);
 				}
-				resp.setOption(opt);
 			}
 		}
 		
