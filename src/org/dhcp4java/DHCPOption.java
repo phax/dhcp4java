@@ -45,7 +45,7 @@ import java.util.logging.Logger;
  * Immutable object.
  */
 public class DHCPOption implements Serializable {
-	private static final long   serialVersionUID = 1L;
+	private static final long   serialVersionUID = 2L;
     private static final Logger logger = Logger.getLogger("org.dhcp4java.dhcpoption");
 
     /**
@@ -60,14 +60,30 @@ public class DHCPOption implements Serializable {
     private final byte[] value;
     
     /**
+     * Used to mark an option as having a mirroring behaviour. This means that
+     * this option if used by a server will first mirror the option the client sent
+     * then provide a default value if this option was not present in the request.
+     * 
+     * <p>This is only meant to be used by servers through the <tt>getMirrorValue</tt>
+     * method.
+     */
+    private final boolean mirror;
+    
+    /**
      * Constructor for <tt>DHCPOption</tt>.
+     * 
+     * <p>Note: you must not prefix the value by a length-byte. The length prefix
+     * will be added automatically by the API.
      * 
      * <p>If value is <tt>null</tt> it is considered as an empty option.
      * If you add an empty option to a DHCPPacket, it removes the option from the packet.
-     * @param code
-     * @param value
+     * 
+     * <p>This constructor adds a parameter to mark the option as "mirror". See comments above.
+     * 
+     * @param code DHCP option code
+     * @param value DHCP option value as a byte array.
      */
-    public DHCPOption(byte code, byte[] value) {
+    public DHCPOption(byte code, byte[] value, boolean mirror) {
     	if (code == DHO_PAD) {
     		throw new IllegalArgumentException("code=0 is not allowed (reserved for padding");
         }
@@ -77,8 +93,25 @@ public class DHCPOption implements Serializable {
 
         this.code  = code;
         this.value = value;
+        this.mirror = mirror;
     }
 
+    /**
+     * Constructor for <tt>DHCPOption</tt>. This is the default constructor.
+     * 
+     * <p>Note: you must not prefix the value by a length-byte. The length prefix
+     * will be added automatically by the API.
+     * 
+     * <p>If value is <tt>null</tt> it is considered as an empty option.
+     * If you add an empty option to a DHCPPacket, it removes the option from the packet.
+     * 
+     * @param code DHCP option code
+     * @param value DHCP option value as a byte array.
+     */
+    public DHCPOption(byte code, byte[] value) {
+    	this(code, value, false);
+    }
+    
     /**
      * Return the <tt>code</tt> field (byte).
      * 
@@ -101,6 +134,7 @@ public class DHCPOption implements Serializable {
         }
         DHCPOption opt = (DHCPOption) o;
         return ((opt.code == this.code) &&
+        		 (opt.mirror == this.mirror) &&
         		 Arrays.equals(opt.value, this.value));
     	
     }
@@ -111,7 +145,8 @@ public class DHCPOption implements Serializable {
 	 */
 	@Override
 	public int hashCode() {
-		return this.code ^ Arrays.hashCode(this.value);
+		return this.code ^ Arrays.hashCode(this.value) ^
+			    (this.mirror ? 0x80000000 : 0);
 	}
 
 	/**
@@ -130,6 +165,18 @@ public class DHCPOption implements Serializable {
         return this.value;
     }
 
+    /**
+     * Returns whether the option is marked as "mirror", meaning it should mirror
+     * the option value in the client request.
+     * 
+     * <p>To be used only in servers.
+     * 
+     * @return is the option marked is mirror?
+     */
+    public boolean isMirror() {
+    	return this.mirror;
+    }
+    
     /**
      * Creates a DHCP Option as Byte format.
      * 
@@ -639,6 +686,27 @@ public class DHCPOption implements Serializable {
     	return new DHCPOption(code, DHCPPacket.stringToBytes(val));
     }
 
+	/**
+	 * Get the option value based on the context, i.e. the client's request.
+	 * 
+	 * <p>This should be the only method used with this class to get relevant values.
+	 * 
+	 * @param request the client's DHCP requets
+	 * @return the value of the specific option in the client request
+	 * @throws NullPointerException if <tt>request</tt> is <tt>null</tt>.
+	 */
+	public DHCPOption getMirrorValue(DHCPPacket request) {
+		if (request == null) {
+			throw new NullPointerException("request is null");
+		}
+		if (this.mirror) {
+			DHCPOption res = request.getOption(this.getCode());
+			return (res != null ? res : this);	// return res or this
+		} else {
+			return this;
+		}
+	}
+	
     /**
      * Appends to this string builder a detailed string representation of the DHCP datagram.
      *
@@ -655,6 +723,10 @@ public class DHCPOption implements Serializable {
         buffer.append('(')
               .append(unsignedByte(this.code))
               .append(")=");
+        
+        if (this.mirror) {
+        	buffer.append("<mirror>");
+        }
 
         // check for value printing
         if (this.value == null) {

@@ -55,6 +55,7 @@ public class DHCPOptionTest {
 		DHCPOption opt = new DHCPOption(DHO_DHCP_MESSAGE, buf);
 		
 		assertEquals(opt.getCode(), DHO_DHCP_MESSAGE);
+		assertFalse(opt.isMirror());
 		assertTrue(Arrays.equals(opt.getValue(), buf));
 		assertTrue(opt.getValue() != buf);		// value should be cloned
 		assertTrue(opt.getValueFast() == buf);	// but fast variant should not clone
@@ -65,6 +66,7 @@ public class DHCPOptionTest {
 		DHCPOption opt = new DHCPOption(DHO_DHCP_MESSAGE, null);
 		
 		assertEquals(opt.getCode(), DHO_DHCP_MESSAGE);
+		assertFalse(opt.isMirror());
 		assertEquals(opt.getValue(), null);
 	}
 	
@@ -91,6 +93,24 @@ public class DHCPOptionTest {
 		assertFalse(opt1.equals(null));
 		assertFalse(opt1.equals(new Integer(1)));
 		assertFalse(opt1.equals(new DHCPOption(DHO_BOOTFILE, buf)));
+	}
+	@Test
+	public void testEqualsMirror() {
+		DHCPOption opt1 = new DHCPOption(DHO_BOOTFILE, null);
+		DHCPOption opt2 = new DHCPOption(DHO_BOOTFILE, null, false);
+		DHCPOption opt3 = new DHCPOption(DHO_BOOTFILE, null, true);
+		DHCPOption opt4 = new DHCPOption(DHO_BOOTFILE, null, true);
+		
+		assertTrue(opt1.equals(opt1));
+		assertTrue(opt1.equals(opt2));
+		assertTrue(opt2.equals(opt1));
+		
+		assertTrue(opt3.equals(opt3));
+		assertTrue(opt3.equals(opt4));
+		assertTrue(opt4.equals(opt3));
+		
+		assertFalse(opt1.equals(opt3));
+		assertFalse(opt3.equals(opt1));
 	}
 	
 	@Test
