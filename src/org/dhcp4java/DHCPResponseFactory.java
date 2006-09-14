@@ -52,14 +52,31 @@ public final class DHCPResponseFactory {
 	public static final DHCPPacket makeDHCPOffer(
 			DHCPPacket request,
 			InetAddress offeredAddress,
+			int leaseTime,
+			InetAddress serverIdentifier,
+			String message,
 			DHCPOption[] options) {
+		// check request
+		if (request == null) {
+			throw new NullPointerException("request is null");
+		}
+		if (!request.isDhcp()) {
+			throw new DHCPBadPacketException("request is BOOTP");
+		}
+		Byte requestMessageType = request.getDHCPMessageType();
+		if (requestMessageType == null) {
+			throw new DHCPBadPacketException("request has no message type");
+		}
+		if (requestMessageType != DHCPDISCOVER) {
+			throw new DHCPBadPacketException("request is not DHCPDISCOVER");
+		}
+		// check offeredAddress
 		if (offeredAddress == null) {
 			throw new IllegalArgumentException("offeredAddress must not be null");
 		}
 		if (!(offeredAddress instanceof Inet4Address)) {
 			throw new IllegalArgumentException("offeredAddress must be IPv4");
 		}
-		// TODO test for request being a DISCOVER
 		
 		DHCPPacket resp = new DHCPPacket();
 		
@@ -81,6 +98,11 @@ public final class DHCPResponseFactory {
 		// we set the DHCPOFFER type
 		resp.setDHCPMessageType(DHCPOFFER);
 		
+		// set standard options
+		resp.setOptionAsInt(DHO_DHCP_LEASE_TIME, leaseTime);
+		resp.setOptionAsInetAddress(DHO_DHCP_SERVER_IDENTIFIER, serverIdentifier);
+		resp.setOptionAsString(DHO_DHCP_MESSAGE, message);	// if null, it is removed
+		
 		if (options != null) {
 			for (DHCPOption opt : options) {
 				if (opt.isMirror()) {
@@ -97,7 +119,160 @@ public final class DHCPResponseFactory {
 		
 		return resp;
 	}
-	
+
+	/**
+	 * Create a populated DHCPACK response.
+	 * 
+	 * <p>Reponse is populated according to the DHCP request received (must be
+	 * DHCPREQUEST), the proposed client address and a set of pre-set options.
+	 * 
+	 * <p>Note: <tt>getDefaultSocketAddress</tt> is called internally to populate
+	 * address and port number to which response should be sent.
+	 * 
+	 * @param request
+	 * @param offeredAddress
+	 * @param options
+	 * @return
+	 */
+	public static final DHCPPacket makeDHCPAck(
+			DHCPPacket request,
+			InetAddress offeredAddress,
+			int leaseTime,
+			InetAddress serverIdentifier,
+			String message,
+			DHCPOption[] options) {
+		// check request
+		if (request == null) {
+			throw new NullPointerException("request is null");
+		}
+		if (!request.isDhcp()) {
+			throw new DHCPBadPacketException("request is BOOTP");
+		}
+		Byte requestMessageType = request.getDHCPMessageType();
+		if (requestMessageType == null) {
+			throw new DHCPBadPacketException("request has no message type");
+		}
+		if ((requestMessageType != DHCPREQUEST) &&
+			(requestMessageType != DHCPINFORM)) {
+			throw new DHCPBadPacketException("request is not DHCPREQUEST/DHCPINFORM");
+		}
+		// check offered address
+		if (offeredAddress == null) {
+			throw new IllegalArgumentException("offeredAddress must not be null");
+		}
+		if (!(offeredAddress instanceof Inet4Address)) {
+			throw new IllegalArgumentException("offeredAddress must be IPv4");
+		}
+		
+		
+		DHCPPacket resp = new DHCPPacket();
+		
+		resp.setOp(BOOTREPLY);
+		resp.setHtype(request.getHtype());
+		resp.setHlen(request.getHlen());
+		// Hops is left to 0
+		resp.setXid(request.getXid());
+		// Secs is left to 0
+		resp.setFlags(request.getFlags());
+		resp.setCiaddrRaw(request.getCiaddrRaw());
+		resp.setYiaddr(offeredAddress);
+		// Siaddr ?
+		resp.setGiaddrRaw(request.getGiaddrRaw());
+		resp.setChaddr(request.getChaddr());
+		// sname left empty
+		// file left empty
+		
+		// we set the DHCPOFFER type
+		resp.setDHCPMessageType(DHCPACK);
+		
+		// set standard options
+		if (requestMessageType == DHCPREQUEST) {			// rfc 2131
+			resp.setOptionAsInt(DHO_DHCP_LEASE_TIME, leaseTime);
+		}
+		resp.setOptionAsInetAddress(DHO_DHCP_SERVER_IDENTIFIER, serverIdentifier);
+		resp.setOptionAsString(DHO_DHCP_MESSAGE, message);	// if null, it is removed
+		
+		if (options != null) {
+			for (DHCPOption opt : options) {
+				if (opt.isMirror()) {
+					// we mirror the value of the request
+					resp.setOption(opt.getMirrorValue(request));
+				} else {
+					resp.setOption(opt);
+				}
+			}
+		}
+		
+		// we set address/port according to rfc
+		resp.setAddrPort(getDefaultSocketAddress(request, DHCPACK));
+		
+		return resp;
+	}
+
+	/**
+	 * Create a populated DHCPNAK response.
+	 * 
+	 * <p>Reponse is populated according to the DHCP request received (must be
+	 * DHCPREQUEST), the proposed client address and a set of pre-set options.
+	 * 
+	 * <p>Note: <tt>getDefaultSocketAddress</tt> is called internally to populate
+	 * address and port number to which response should be sent.
+	 * 
+	 * @param request
+	 * @param offeredAddress
+	 * @param options
+	 * @return
+	 */
+	public static final DHCPPacket makeDHCPNak(
+			DHCPPacket request,
+			InetAddress serverIdentifier,
+			String message) {
+		// check request
+		if (request == null) {
+			throw new NullPointerException("request is null");
+		}
+		if (!request.isDhcp()) {
+			throw new DHCPBadPacketException("request is BOOTP");
+		}
+		Byte requestMessageType = request.getDHCPMessageType();
+		if (requestMessageType == null) {
+			throw new DHCPBadPacketException("request has no message type");
+		}
+		if (requestMessageType != DHCPREQUEST) {
+			throw new DHCPBadPacketException("request is not DHCPREQUEST");
+		}
+		
+		DHCPPacket resp = new DHCPPacket();
+		
+		resp.setOp(BOOTREPLY);
+		resp.setHtype(request.getHtype());
+		resp.setHlen(request.getHlen());
+		// Hops is left to 0
+		resp.setXid(request.getXid());
+		// Secs is left to 0
+		resp.setFlags(request.getFlags());
+		// ciaddr left to 0
+		// yiaddr left to 0
+		// Siaddr ?
+		resp.setGiaddrRaw(request.getGiaddrRaw());
+		resp.setChaddr(request.getChaddr());
+		// sname left empty
+		// file left empty
+		
+		// we set the DHCPOFFER type
+		resp.setDHCPMessageType(DHCPNAK);
+
+		// set standard options
+		resp.setOptionAsInetAddress(DHO_DHCP_SERVER_IDENTIFIER, serverIdentifier);
+		resp.setOptionAsString(DHO_DHCP_MESSAGE, message);	// if null, it is removed
+		
+		// we do not set other options for this type of message
+		
+		// we set address/port according to rfc
+		resp.setAddrPort(getDefaultSocketAddress(request, DHCPNAK));
+		
+		return resp;
+	}
     /**
      * Calculates the addres/port to which the response must be sent, according to
      * rfc 2131, section 4.1.

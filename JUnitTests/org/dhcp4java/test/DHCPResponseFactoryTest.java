@@ -45,12 +45,18 @@ public class DHCPResponseFactoryTest {
     public void testMakeDHCPOfferNull() throws Exception {
     	makeDHCPOffer(new DHCPPacket(),
     				  null,			// this causes the Exception
+    				  86400,
+    				  InetAddress.getByName("10.11.12.13"),
+    				  null,
     				  new DHCPOption[0]);
     }
     @Test (expected=IllegalArgumentException.class)
     public void testMakeDHCPOfferIPv6() throws Exception {
     	makeDHCPOffer(new DHCPPacket(),
     				  InetAddress.getByName("1080:0:0:0:8:800:200C:417A"),// Exception
+    				  86400,
+    				  InetAddress.getByName("10.11.12.13"),
+    				  null,
     				  new DHCPOption[0]);
     }
     @Test
@@ -64,7 +70,7 @@ public class DHCPResponseFactoryTest {
     	req.setFlags((short)0X8000);
     	req.setGiaddr("11.12.156.1");
     	req.setChaddrHex("001122334455");
-    	resp = makeDHCPOffer(req, offeredAddress, opts);
+    	resp = makeDHCPOffer(req, offeredAddress, 86400, null, null, opts);
 
     	assertEquals("", resp.getComment());
     	assertEquals(BOOTREPLY, resp.getOp());
