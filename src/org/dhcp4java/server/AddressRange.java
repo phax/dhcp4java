@@ -36,12 +36,15 @@ import org.dhcp4java.Util;
  */
 public final class AddressRange implements Serializable {
 
+	/*
+	 * Invariant: rangeStart <= rangeEnd
+	 */
     private static final long serialVersionUID = 1L;
 
     private static final Logger logger = Logger.getLogger(AddressRange.class.getName().toLowerCase());
     
-    private final InetAddress rangeStart;
-    private final InetAddress rangeEnd;
+    private final int rangeStart;
+    private final int rangeEnd;
     
     public AddressRange(InetAddress rangeStart, InetAddress rangeEnd) {
     	if ((rangeStart == null) || (rangeEnd == null)) {
@@ -49,8 +52,11 @@ public final class AddressRange implements Serializable {
     	}
     	
     	// TODO check parameters
-    	this.rangeStart = rangeStart;
-    	this.rangeEnd = rangeEnd;
+    	this.rangeStart = Util.inetAddress2Int(rangeStart);
+    	this.rangeEnd = Util.inetAddress2Int(rangeEnd);
+    	if ((this.rangeStart & 0xFFFFFFFFL) > (this.rangeEnd & 0xFFFFFFFFL)) {
+    		throw new IllegalArgumentException("rangeStart is greater than rangeEnd");
+    	}
     }
     
     public boolean isInRange(InetAddress adr) {
@@ -61,8 +67,8 @@ public final class AddressRange implements Serializable {
     		throw new IllegalArgumentException("adr is not IPv4 address");
     	}
     	// convert to long to do some unsigned int comparisons
-    	long startL = Util.inetAddress2Int(rangeStart) & 0xFFFFFFFFL;
-    	long endL = Util.inetAddress2Int(rangeEnd) & 0xFFFFFFFFL;
+    	long startL = rangeStart & 0xFFFFFFFFL;
+    	long endL = rangeEnd & 0xFFFFFFFFL;
     	long adrL = Util.inetAddress2Int(adr) & 0xFFFFFFFFL;
     	
     	return (adrL >= startL) && (adrL <= endL);
@@ -72,14 +78,14 @@ public final class AddressRange implements Serializable {
 	 * @return Returns the rangeEnd.
 	 */
 	public InetAddress getRangeEnd() {
-		return rangeEnd;
+		return Util.int2InetAddress(rangeEnd);
 	}
 
 	/**
 	 * @return Returns the rangeStart.
 	 */
 	public InetAddress getRangeStart() {
-		return rangeStart;
+		return Util.int2InetAddress(rangeStart);
 	}
 
 	/* (non-Javadoc)
@@ -91,8 +97,8 @@ public final class AddressRange implements Serializable {
             return false;
         }
         AddressRange range = (AddressRange) obj;
-        return this.rangeStart.equals(range.rangeStart) &&
-        		this.rangeEnd.equals(range.rangeEnd);
+        return (this.rangeStart == range.rangeStart) &&
+        		(this.rangeEnd == range.rangeEnd);
 	}
 
 	/* (non-Javadoc)
@@ -100,7 +106,7 @@ public final class AddressRange implements Serializable {
 	 */
 	@Override
 	public int hashCode() {
-		return rangeStart.hashCode() ^ (rangeEnd.hashCode() >> 2);
+		return rangeStart ^ (rangeEnd >> 2);
 	}
 
 	/* (non-Javadoc)
@@ -108,7 +114,7 @@ public final class AddressRange implements Serializable {
 	 */
 	@Override
 	public String toString() {
-		return rangeStart.getHostAddress() + "-" + rangeEnd.getHostAddress();
+		return Util.int2InetAddress(rangeStart).getHostAddress() + "-" + Util.int2InetAddress(rangeEnd).getHostAddress();
 	}
 
 	
