@@ -62,6 +62,7 @@ public class DHCPResponseFactoryTest {
     @Test
     public void testMakeDHCPOffer() throws Exception {
     	DHCPPacket req = new DHCPPacket();
+    	req.setDHCPMessageType(DHCPDISCOVER);
     	InetAddress offeredAddress = InetAddress.getByName("10.254.0.1");
     	DHCPOption[] opts = null;
     	DHCPPacket resp;
@@ -87,7 +88,8 @@ public class DHCPResponseFactoryTest {
     	assertEquals("", resp.getSname());
     	assertEquals("", resp.getFile());
     	assertEquals(DHCPOFFER, resp.getDHCPMessageType());
-    	assertEquals(1, resp.getOptionsArray().length);	// no other options
+    	assertEquals(new Integer(86400), resp.getOptionAsInteger(DHO_DHCP_LEASE_TIME));
+    	assertEquals(2, resp.getOptionsArray().length);	// no other options
     	assertEquals(InetAddress.getByName("11.12.156.1"), resp.getAddress());
     	assertEquals(67, resp.getPort());
     }
