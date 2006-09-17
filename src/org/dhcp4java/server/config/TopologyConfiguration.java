@@ -19,6 +19,7 @@
 package org.dhcp4java.server.config;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -46,6 +47,9 @@ public class TopologyConfiguration implements Serializable {
     /** highest mask value in all subnets declared */
     private int highestMask = -1;
     
+    /** provide a fast search for subnets via an associated giaddr */
+    private final Map<InetAddress, Subnet> subnetsByGiaddr = new HashMap<InetAddress, Subnet>();
+    
     /**
      * Constructor
      *
@@ -56,5 +60,21 @@ public class TopologyConfiguration implements Serializable {
     
     public Subnet findSubnetByCidr(InetCidr cidr) {
     	return subnetsByCidr.get(cidr);
+    }
+    
+    public Subnet findSubnetByGiaddr(InetAddress giaddr) {
+    	return subnetsByGiaddr.get(giaddr);
+    }
+    
+    public void addSubnet(Subnet subnet) {
+    	// TODO check consistence with already existing subnets
+    	subnetsByCidr.put(subnet.getCidr(), subnet);
+    	int mask = subnet.getCidr().getMask();
+    	if (mask < lowestMask) {
+    		lowestMask = mask;
+    	}
+    	if (mask > highestMask) {
+    		highestMask = mask;
+    	}
     }
 }
