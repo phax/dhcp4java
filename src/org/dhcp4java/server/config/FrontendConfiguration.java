@@ -19,42 +19,17 @@
 package org.dhcp4java.server.config;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
-
-import org.dhcp4java.InetCidr;
-import org.dhcp4java.server.Subnet;
 
 /**
  * 
  * @author Stephan Hadinger
  * @version 0.60
  */
-public class TopologyConfiguration implements Serializable {
-	
+public class FrontendConfiguration implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = Logger.getLogger(GlobalConfiguration.class.getName().toLowerCase());
+    private static final Logger logger = Logger.getLogger(FrontendConfiguration.class.getName().toLowerCase());
 
-    /** list of subnets hashed by their cidr */
-    private final Map<InetCidr, Subnet> subnetsByCidr = new HashMap<InetCidr, Subnet>();
-    
-    /** lowest mask value in all subnets declared */
-    private int lowestMask = 32;
-    
-    /** highest mask value in all subnets declared */
-    private int highestMask = -1;
-    
-    /**
-     * Constructor
-     *
-     */
-    public TopologyConfiguration() {
-    	
-    }
-    
-    public Subnet findSubnetByCidr(InetCidr cidr) {
-    	return subnetsByCidr.get(cidr);
-    }
 }

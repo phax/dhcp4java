@@ -4,5 +4,6 @@
 	<classpathentry kind="src" path="JUnitTests"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry sourcepath="C:/appFT/junit4.1/junit-4.1-src.jar" kind="lib" path="C:/appFT/junit4.1/junit-4.1.jar"/>
+	<classpathentry kind="lib" path="lib/xom-1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

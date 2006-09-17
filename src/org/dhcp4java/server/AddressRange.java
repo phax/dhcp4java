@@ -34,7 +34,7 @@ import org.dhcp4java.Util;
  * @author Stephan Hadinger
  * @version 0.60
  */
-public final class AddressRange implements Serializable {
+public final class AddressRange implements Serializable, Comparable {
 
 	/*
 	 * Invariant: rangeStart <= rangeEnd
@@ -117,5 +117,28 @@ public final class AddressRange implements Serializable {
 		return Util.int2InetAddress(rangeStart).getHostAddress() + "-" + Util.int2InetAddress(rangeEnd).getHostAddress();
 	}
 
-	
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(T)
+	 */
+	public int compareTo(Object o) {
+		if (o == null) {
+			throw new NullPointerException();
+		}
+		AddressRange range = (AddressRange) o;
+		if (unsignedInt(range.rangeStart) < unsignedInt(this.rangeStart)) {
+			return -1;
+		} else if (unsignedInt(range.rangeStart) > unsignedInt(this.rangeStart)) {
+			return 1;
+		} else if (unsignedInt(range.rangeEnd) < unsignedInt(this.rangeEnd)) {
+			return -1;
+		} else if (unsignedInt(range.rangeEnd) > unsignedInt(this.rangeEnd)) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+
+	private static final long unsignedInt(int i) {
+		return i & 0xFFFFFFFFL;
+	}
 }

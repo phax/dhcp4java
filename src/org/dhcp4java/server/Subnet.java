@@ -19,8 +19,15 @@
 package org.dhcp4java.server;
 
 import java.io.Serializable;
+import java.net.InetAddress;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
+import org.dhcp4java.DHCPOption;
 import org.dhcp4java.InetCidr;
 import org.dhcp4java.server.config.GlobalConfiguration;
 /**
@@ -39,6 +46,15 @@ public class Subnet implements Serializable {
     
     /** network range of the subnet = CIDR */
     private InetCidr cidr = null;
+    
+    /** giaddr pointing to this Subnet */
+    private Collection<InetAddress> giaddrs = new LinkedList<InetAddress>();
+    
+    /** list of address ranges, sorted */
+    private SortedSet<AddressRange> adrRanges = new TreeSet<AddressRange>();
+    
+    /** list of dhcp options */
+    private List<DHCPOption> dhcpOptions = new LinkedList<DHCPOption>();
 
     /**
      * 
