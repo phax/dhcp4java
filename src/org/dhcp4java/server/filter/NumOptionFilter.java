@@ -22,33 +22,53 @@ import org.dhcp4java.DHCPPacket;
 
 /**
  * 
- * <p>By convention the result is false except if at least one sub-filter is true.
- * This means that the result is false if the sub-filter list is empty.
+ * Class is immutable.
  * 
  * @author Stephan Hadinger
+ * @version 0.60
  *
  */
-public final class OrFilter implements RequestFilter {
-	
-	private final RequestFilter[] filters;
-	
-	public OrFilter(RequestFilter[] filters) {
-		if (filters == null) {
-			throw new NullPointerException("filters is null");
-		}
-		this.filters = filters;
-	}
+public final class NumOptionFilter implements RequestFilter {
 
+	public enum CompareOp { EQ, NE, GT, LT, GE, LE };
+	
+	private final byte code;
+	private final CompareOp compareOp;
+	private final int compareValue;
+	
+	public NumOptionFilter(byte code, int compareValue, CompareOp compareOp) {
+		this.code = code;
+		this.compareValue = compareValue;
+		this.compareOp = compareOp;
+	}
+	
 	/* (non-Javadoc)
-	 * @see org.dhcp4java.server.filter.RequestFilter#filter(org.dhcp4java.DHCPPacket)
+	 * @see org.dhcp4java.server.filter.RequestFilter#isRequestAccepted(org.dhcp4java.DHCPPacket)
 	 */
 	public boolean isRequestAccepted(DHCPPacket request) {
-		for (RequestFilter filter : this.filters) {
-			if ((filter != null) && (filter.isRequestAccepted(request))) {
-				return true;
-			}
+		if (request == null) {
+			throw new NullPointerException("request is null");
 		}
-		return false;
+		Integer value = request.getOptionAsNum(code);
+		if (value == null) {
+			return false;
+		}
+		switch (compareOp) {
+		case EQ:
+			return value == compareValue;
+		case NE:
+			return value != compareValue;
+		case GT:
+			return value >  compareValue;
+		case LT:
+			return value <  compareValue;
+		case GE:
+			return value >= compareValue;
+		case LE:
+			return value <= compareValue;
+		default:
+			return false;
+		}
 	}
 
 	
