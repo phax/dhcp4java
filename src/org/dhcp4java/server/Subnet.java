@@ -67,6 +67,13 @@ public class Subnet implements Serializable {
 		
 		return buf.toString();
 	}
+
+	/**
+	 * @return Returns the cidr.
+	 */
+	public InetCidr getCidr() {
+		return cidr;
+	}
     
     
 }
