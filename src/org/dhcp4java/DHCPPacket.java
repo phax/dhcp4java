@@ -1596,6 +1596,11 @@ public class DHCPPacket implements Cloneable, Serializable {
         return this.truncated;
     }
 
+    // TODO
+    public int getOptionAsNum(byte code) throws IllegalArgumentException {
+    	DHCPOption opt = this.getOption(code);
+    	return (opt == null) ? null : opt.getValueAsNum(); 
+    }
     /**
      * Returns a DHCP Option as Byte format.
      *

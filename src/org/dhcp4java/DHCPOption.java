@@ -312,6 +312,25 @@ public class DHCPOption implements Serializable {
                 (this.value[3] & 0xFF));
     }
 
+    // TODO
+    public Integer getValueAsNum() throws IllegalArgumentException {
+    	if (value == null) {
+    		return null;
+    	}
+    	if (value.length == 1) {			// byte
+            return value[0] & 0xFF;
+    	} else if (value.length == 2) {		// short
+            return ((value[0] & 0xff) << 8 | (value[1] & 0xFF));
+    	} else if (value.length == 4) {
+            return ((this.value[0] & 0xFF) << 24 |
+                    (this.value[1] & 0xFF) << 16 |
+                    (this.value[2] & 0xFF) <<  8 |
+                    (this.value[3] & 0xFF));
+    	} else {
+    		return null;
+    	}
+    }
+    
     /**
      * Returns a DHCP Option as InetAddress format.
      * 
