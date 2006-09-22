@@ -28,9 +28,6 @@ public final class NandFilter implements RequestFilter {
 		if (filters == null) {
 			throw new NullPointerException("filters is null");
 		}
-		if (filters.length == 0) {
-			throw new IllegalArgumentException("filters is empty");
-		}
 		this.filters = filters;
 	}
 
@@ -39,7 +36,7 @@ public final class NandFilter implements RequestFilter {
 	 */
 	public boolean isRequestAccepted(DHCPPacket request) {
 		for (RequestFilter filter : this.filters) {
-			if (!filter.isRequestAccepted(request)) {
+			if ((filter != null) && (!filter.isRequestAccepted(request))) {
 				return true;
 			}
 		}

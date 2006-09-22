@@ -20,6 +20,14 @@ package org.dhcp4java.server.filter;
 
 import org.dhcp4java.DHCPPacket;
 
+/**
+ * 
+ * <p>By convention the result is false except if at least one sub-filter is true.
+ * This means that the result is false if the sub-filter list is empty.
+ * 
+ * @author yshi7355
+ *
+ */
 public final class OrFilter implements RequestFilter {
 	
 	private final RequestFilter[] filters;
@@ -27,9 +35,6 @@ public final class OrFilter implements RequestFilter {
 	public OrFilter(RequestFilter[] filters) {
 		if (filters == null) {
 			throw new NullPointerException("filters is null");
-		}
-		if (filters.length == 0) {
-			throw new IllegalArgumentException("filters is empty");
 		}
 		this.filters = filters;
 	}
@@ -39,7 +44,7 @@ public final class OrFilter implements RequestFilter {
 	 */
 	public boolean isRequestAccepted(DHCPPacket request) {
 		for (RequestFilter filter : this.filters) {
-			if (filter.isRequestAccepted(request)) {
+			if ((filter != null) && (filter.isRequestAccepted(request))) {
 				return true;
 			}
 		}
