@@ -27,11 +27,11 @@ import java.util.logging.Logger;
  * @author Stephan Hadinger
  * @version 0.60
  */
-public class GlobalConfiguration implements Serializable {
+public class GlobalConfig implements Serializable {
 	
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = Logger.getLogger(GlobalConfiguration.class.getName().toLowerCase());
+    private static final Logger logger = Logger.getLogger(GlobalConfig.class.getName().toLowerCase());
 
     /*
      * Private data
@@ -55,7 +55,7 @@ public class GlobalConfiguration implements Serializable {
      * Constructor of server's global configuration object.
      * 
      */
-    public GlobalConfiguration() {
+    public GlobalConfig() {
     	
     }
 

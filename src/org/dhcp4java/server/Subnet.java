@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPOption;
 import org.dhcp4java.InetCidr;
-import org.dhcp4java.server.config.GlobalConfiguration;
+import org.dhcp4java.server.config.GlobalConfig;
 /**
  * 
  * @author Stephan Hadinger
@@ -39,7 +39,7 @@ public class Subnet implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = Logger.getLogger(GlobalConfiguration.class.getName().toLowerCase());
+    private static final Logger logger = Logger.getLogger(GlobalConfig.class.getName().toLowerCase());
 
     /** freely usable comment */
     private String comment = null;

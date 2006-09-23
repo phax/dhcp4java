@@ -36,7 +36,7 @@ public class TopologyConfiguration implements Serializable {
 	
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = Logger.getLogger(GlobalConfiguration.class.getName().toLowerCase());
+    private static final Logger logger = Logger.getLogger(GlobalConfig.class.getName().toLowerCase());
 
     /** list of subnets hashed by their cidr */
     private final Map<InetCidr, Subnet> subnetsByCidr = new HashMap<InetCidr, Subnet>();
