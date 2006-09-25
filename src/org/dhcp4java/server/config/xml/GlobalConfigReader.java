@@ -20,7 +20,9 @@ package org.dhcp4java.server.config.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.dhcp4java.server.config.ConfigException;
@@ -28,6 +30,8 @@ import org.dhcp4java.server.config.GlobalConfig;
 
 import nu.xom.Builder;
 import nu.xom.Document;
+import nu.xom.Node;
+import nu.xom.Nodes;
 import nu.xom.ParsingException;
 
 /**
@@ -49,6 +53,23 @@ public final class GlobalConfigReader {
 			Builder parser = new Builder();
 			Document doc = parser.build(xml);
 			
+			Nodes root = doc.query("/dhcp-server");
+			if (root.size() != 1) {
+				throw new ConfigException("no root element: dhcp-server");
+			}
+			
+			// parse subnets
+			Nodes subnets = doc.query("/dhcp-server/subnet");
+			logger.fine("xp:/dhcp-server/subnet, "+subnets.size()+" found");
+			
+			for (int i=0; i<subnets.size(); i++) {
+				Node subnet = subnets.get(i);
+				
+				// TODO -> expect1Node
+				Nodes addresses = subnet.query("@address");
+				logger.fine("xp:@addresses "+addresses.size()+" found");
+			}
+			
 			return null;
 		} catch (ParsingException e) {
 			logger.log(Level.FINE, "parsing exception", e);
@@ -60,7 +81,12 @@ public final class GlobalConfigReader {
 	}
 	
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+    	LogManager.getLogManager().readConfiguration(ClassLoader.getSystemResourceAsStream("logging.properties"));
+//    	logger.setLevel(Level.ALL);
+//    	for (Handler handler : logger.getHandlers()) {
+//    		handler.setLevel(Level.ALL);
+//    	}
     	InputStream xml = ClassLoader.getSystemResourceAsStream("org/dhcp4java/server/config/configtest.xml");
     	try {
     		XmlConfigReader(xml);

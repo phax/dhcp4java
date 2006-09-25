@@ -39,7 +39,7 @@ public class Subnet implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = Logger.getLogger(GlobalConfig.class.getName().toLowerCase());
+    private static final Logger logger = Logger.getLogger(Subnet.class.getName().toLowerCase());
 
     /** freely usable comment */
     private String comment = null;

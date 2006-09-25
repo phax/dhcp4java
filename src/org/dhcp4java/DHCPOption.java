@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  */
 public class DHCPOption implements Serializable {
 	private static final long   serialVersionUID = 2L;
-    private static final Logger logger = Logger.getLogger("org.dhcp4java.dhcpoption");
+    private static final Logger logger = Logger.getLogger(DHCPOption.class.getName().toLowerCase());
 
     /**
      * The code of the option. 0 is reserved for padding, -1 for end of options.

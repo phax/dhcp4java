@@ -44,7 +44,7 @@ import static org.dhcp4java.DHCPConstants.*;
  */
 public class DHCPStaticServlet extends DHCPServlet {
 
-    private static final Logger logger = Logger.getLogger("org.dhcp4java.examplesserver.dhcpstaticserver");
+    private static final Logger logger = Logger.getLogger(DHCPStaticServlet.class.getName().toLowerCase());
     
     private HashMap<String, InetAddress> macIpMap = new HashMap<String, InetAddress>();
     DHCPOption[] commonOptions;

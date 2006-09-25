@@ -26,7 +26,7 @@ import java.net.DatagramPacket;
  * Servlet dispatcher
  */
 class DHCPServletDispatcher implements Runnable {
-    private static final Logger logger = Logger.getLogger("org.dhcp4java.dhcpserver.servletdispatcher");
+    private static final Logger logger = Logger.getLogger(DHCPServletDispatcher.class.getName().toLowerCase());
 
     private final DHCPServer     server;
     private final DHCPServlet    dispatchServlet;

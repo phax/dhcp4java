@@ -289,8 +289,8 @@ import static org.dhcp4java.DHCPConstants.*;
 public class DHCPPacket implements Cloneable, Serializable {
 	private static final long   serialVersionUID = 1L;
 
-    private static final Logger logger = Logger.getLogger("org.dhcp4java.dhcppacket");
-	
+    private static final Logger logger = Logger.getLogger(DHCPPacket.class.getName().toLowerCase());
+    
     // ----------------------------------------------------------------------
     // user defined comment
     private String  comment;   // Free user-defined comment
