@@ -44,7 +44,7 @@ public class InetCidrTest {
 		assertEquals(24, cidr.getMask());
 		
 	}
-	@Test (expected=IllegalArgumentException.class)
+	@Test (expected=NullPointerException.class)
 	public void testConstructorBadArgNull() {
 		new InetCidr(null, 20);
 	}

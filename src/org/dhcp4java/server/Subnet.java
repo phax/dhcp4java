@@ -45,7 +45,7 @@ public class Subnet implements Serializable {
     private String comment = null;
     
     /** network range of the subnet = CIDR */
-    private InetCidr cidr = null;
+    private final InetCidr cidr;
     
     /** giaddr pointing to this Subnet */
     private Collection<InetAddress> giaddrs = new LinkedList<InetAddress>();
@@ -56,6 +56,13 @@ public class Subnet implements Serializable {
     /** list of dhcp options */
     private List<DHCPOption> dhcpOptions = new LinkedList<DHCPOption>();
 
+    public Subnet(InetCidr cidr) {
+    	if (cidr == null) {
+    		throw new NullPointerException();
+    	}
+    	this.cidr = cidr;
+    }
+    
     /**
      * 
      */
@@ -66,6 +73,34 @@ public class Subnet implements Serializable {
 		buf.append("comment=").append(comment);
 		
 		return buf.toString();
+	}
+
+	/**
+	 * @return Returns the comment.
+	 */
+	public String getComment() {
+		return comment;
+	}
+
+	/**
+	 * @param comment The comment to set.
+	 */
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
+	/**
+	 * @return Returns the giaddrs.
+	 */
+	public Collection<InetAddress> getGiaddrs() {
+		return giaddrs;
+	}
+
+	/**
+	 * @param giaddrs The giaddrs to set.
+	 */
+	public void setGiaddrs(Collection<InetAddress> giaddrs) {
+		this.giaddrs = giaddrs;
 	}
 
 	/**

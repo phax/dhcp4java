@@ -1,5 +1,4 @@
 <!--This is a tes configuration, used by unit tests-->
 <dhcp-server>
-	<subnet address="192.168.0.0" mask="22">
-		<giaddr>10.11.12.13</giaddr>		<range start="192.168.0.15" end="192.168.0.25"></range>	</subnet>
-	<subnet></subnet></dhcp-server>
+	<subnet address="192.168.0.0" mask="22" comment="Free comment!">
+		<giaddr>10.11.12.13</giaddr>		<range start="192.168.0.15" end="192.168.0.25"></range>	</subnet></dhcp-server>

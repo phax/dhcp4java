@@ -20,16 +20,21 @@ package org.dhcp4java.server.config.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import org.dhcp4java.InetCidr;
+import org.dhcp4java.server.Subnet;
 import org.dhcp4java.server.config.ConfigException;
 import org.dhcp4java.server.config.GlobalConfig;
 
+import nu.xom.Attribute;
 import nu.xom.Builder;
 import nu.xom.Document;
+import nu.xom.Element;
 import nu.xom.Node;
 import nu.xom.Nodes;
 import nu.xom.ParsingException;
@@ -53,20 +58,34 @@ public final class GlobalConfigReader {
 			Builder parser = new Builder();
 			Document doc = parser.build(xml);
 			
-			Nodes root = doc.query("/dhcp-server");
-			if (root.size() != 1) {
-				throw new ConfigException("no root element: dhcp-server");
-			}
+			Element root = expect1Node(doc, "/dhcp-server");		// check root-node
 			
 			// parse subnets
-			Nodes subnets = doc.query("/dhcp-server/subnet");
-			logger.fine("xp:/dhcp-server/subnet, "+subnets.size()+" found");
+			Nodes subnets = root.query("subnet");
+			if (logger.isLoggable(Level.FINE)) {
+				logger.fine("xp:/dhcp-server/subnet, "+subnets.size()+" found");
+			}
 			
 			for (int i=0; i<subnets.size(); i++) {
-				Node subnet = subnets.get(i);
+				Node subnetNode = subnets.get(i);
+				//getElementPath(subnet);
+				
+				String address = get1Attribute(subnetNode, "address");
+				logger.fine("address: "+address);
+				String mask = get1Attribute(subnetNode, "mask");
+				logger.fine("mask: "+mask);
+				
+				String comment = getOptAttribute(subnetNode, "comment");
+				
+				InetCidr cidr = new InetCidr(InetAddress.getByName(address),
+											 InetAddress.getByName(mask));
+				
+				// instantiate the Subnet object
+				Subnet subnet = new Subnet(cidr);
+				subnet.setComment(comment);
 				
 				// TODO -> expect1Node
-				Nodes addresses = subnet.query("@address");
+				Nodes addresses = subnetNode.query("@address");
 				logger.fine("xp:@addresses "+addresses.size()+" found");
 			}
 			
@@ -80,6 +99,96 @@ public final class GlobalConfigReader {
 		}
 	}
 	
+	public static String getElementPath(Node element) {
+		String path = "/";
+		Node child = element;
+		Node parent = element.getParent();
+		while (parent != null) {
+			if (child instanceof Element) {
+				Element childElement = (Element)child;
+				if (parent.getChildCount() == 0) {
+					return "[ERROR]";
+				}
+				int i;
+				int count = -1;
+				for (i=0; i<parent.getChildCount(); i++) {
+					Node iterChild = parent.getChild(i);
+					if (iterChild instanceof Element) {
+						count++;
+						if (parent.getChild(i) == child) {
+							path = "/"+childElement.getLocalName()+"["+count+"]"+path;	// TODO
+							break;
+						}	
+					}
+				}
+				if (i >= parent.getChildCount()) {
+					path = "/[ERROR]"+path;
+				}
+			} else {
+				path = "/{"+parent.getClass().getCanonicalName()+"}"+path;
+			}
+			child = parent;
+			parent = child.getParent();
+		}
+		return path;
+	}
+	
+	/**
+	 * Execute the xPath query and return if there is one and only one Element
+	 * as a result.
+	 * 
+	 * @param base base Node from which to execute the query
+	 * @param query the xPath query
+	 * @return the Element found
+	 * @throws ConfigException	there is not 1 and only 1 element returned by the query
+	 */
+	private static Element expect1Node(Node base, String query) throws ConfigException {
+		Nodes nodes = base.query(query);
+		if (nodes == null) {
+			throw new ConfigException("xp:"+query+" returned null.");
+		}
+		if (logger.isLoggable(Level.FINE)) {
+			logger.fine("xp:"+query+" from "+getElementPath(base)+", returned "+nodes.size()+" node(s)");
+		}
+		if (nodes.size() != 1) {
+			throw new ConfigException("xp:"+query+" returned "+nodes.size()+ "node(s), 1 expected");
+		}
+		Node expectedElement = nodes.get(0);
+		if (!(expectedElement instanceof Element)) {
+			throw new ConfigException("xp:"+query+" is not of type Element");
+		}
+		return (Element) expectedElement;
+	}
+	
+	private static String get1Attribute(Node base, String attributeName) throws ConfigException {
+		if ((base == null) || (attributeName == null)) {
+			throw new NullPointerException();
+		}
+		if (!(base instanceof Element)) {
+			throw new IllegalArgumentException("base must be of Element class");
+		}
+		Attribute attr = ((Element)base).getAttribute(attributeName);
+		if (attr == null) {
+			logger.fine("attr:"+attributeName+" from "+getElementPath(base)+", returned null");
+			throw new ConfigException("attr: "+attributeName+" was not found");
+		}
+		return attr.getValue();
+	}
+	
+	private static String getOptAttribute(Node base, String attributeName) {
+		if ((base == null) || (attributeName == null)) {
+			throw new NullPointerException();
+		}
+		if (!(base instanceof Element)) {
+			throw new IllegalArgumentException("base must be of Element class");
+		}
+		Attribute attr = ((Element)base).getAttribute(attributeName);
+		if (attr == null) {
+			return null;
+		} else {
+			return attr.getValue();			
+		}
+	}
 
     public static void main(String[] args) throws IOException {
     	LogManager.getLogManager().readConfiguration(ClassLoader.getSystemResourceAsStream("logging.properties"));
