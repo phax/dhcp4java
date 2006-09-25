@@ -51,7 +51,7 @@ public class Subnet implements Serializable {
     private final Collection<InetAddress> giaddrs = new LinkedList<InetAddress>();
     
     /** list of address ranges, sorted */
-    private SortedSet<AddressRange> adrRanges = new TreeSet<AddressRange>();
+    private final SortedSet<AddressRange> addrRanges = new TreeSet<AddressRange>();
     
     /** list of dhcp options */
     private List<DHCPOption> dhcpOptions = new LinkedList<DHCPOption>();
@@ -101,6 +101,13 @@ public class Subnet implements Serializable {
 	 */
 	public InetCidr getCidr() {
 		return cidr;
+	}
+
+	/**
+	 * @return Returns the addrRanges.
+	 */
+	public SortedSet<AddressRange> getAddrRanges() {
+		return addrRanges;
 	}
     
     

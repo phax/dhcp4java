@@ -27,6 +27,7 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.dhcp4java.InetCidr;
+import org.dhcp4java.server.AddressRange;
 import org.dhcp4java.server.Subnet;
 import org.dhcp4java.server.config.ConfigException;
 import org.dhcp4java.server.config.GlobalConfig;
@@ -36,6 +37,7 @@ import nu.xom.Attribute;
 import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;
+import nu.xom.Elements;
 import nu.xom.Node;
 import nu.xom.Nodes;
 import nu.xom.ParsingException;
@@ -59,29 +61,32 @@ public final class GlobalConfigReader {
 			Builder parser = new Builder();
 			Document doc = parser.build(xml);
 			
-			GlobalConfig globalConfig = new GlobalConfig();
+			//GlobalConfig globalConfig = new GlobalConfig();
 			TopologyConfiguration topologyConfiguration = new TopologyConfiguration();
 			
-			Element root = expect1Node(doc, "/dhcp-server");		// check root-node
+			Element root = doc.getRootElement();
+			if (!"dhcp-server".equals(root.getLocalName())) {
+				throw new ConfigException("root node is not dhcp-server but "+root.getLocalName());
+			}
 			
 			// parse subnets
-			Nodes subnets = root.query("subnet");
+			Elements subnets = root.getChildElements("subnet");
 			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("xp:/dhcp-server/subnet, "+subnets.size()+" found");
+				logger.fine("subnet: "+subnets.size()+" found");
 			}
 			
 			for (int i=0; i<subnets.size(); i++) {
 				Subnet subnet = null;
 				try {
-					Node subnetNode = subnets.get(i);
+					Element subnetElt = subnets.get(i);
 					//getElementPath(subnet);
 					
-					String address = get1Attribute(subnetNode, "address");
-					logger.fine("address: "+address);
-					String mask = get1Attribute(subnetNode, "mask");
-					logger.fine("mask: "+mask);
+					String address = get1Attribute(subnetElt, "address");
+					logger.finest("address: "+address);
+					String mask = get1Attribute(subnetElt, "mask");
+					logger.finest("mask: "+mask);
 					
-					String comment = getOptAttribute(subnetNode, "comment");
+					String comment = getOptAttribute(subnetElt, "comment");
 					
 					InetCidr cidr = new InetCidr(InetAddress.getByName(address),
 												 InetAddress.getByName(mask));
@@ -91,11 +96,40 @@ public final class GlobalConfigReader {
 					subnet.setComment(comment);
 					
 					// check for giaddrs
-					Nodes giaddrs = subnetNode.query("giaddr");
+					Elements giaddrs = subnetElt.getChildElements("giaddr");
 					
 					for (int j=0; j<giaddrs.size(); j++) {
-						Element giaddr = (Element)giaddrs.get(j);
+						Element giaddr = giaddrs.get(j);
 						subnet.getGiaddrs().add(InetAddress.getByName(giaddr.getValue()));
+					}
+					
+					// look for ranges
+					Elements ranges = subnetElt.getChildElements("range");
+					for (int j=0; j<ranges.size(); j++) {
+						AddressRange range = null;
+						try {
+							Element rangeElt = ranges.get(j);
+							String rangeStart = rangeElt.getAttributeValue("start");
+							String rangeEnd = rangeElt.getAttributeValue("end");
+							if (rangeStart == null) {
+								throw new ConfigException("range @start missing in "+getElementPath(rangeElt));
+							}
+							if (rangeEnd == null) {
+								throw new ConfigException("range @end missing in "+getElementPath(rangeElt));
+							}
+							if (logger.isLoggable(Level.FINEST)) {
+								logger.finest("range start: "+rangeStart+", range end: "+rangeEnd+", from "+getElementPath(rangeElt));
+							}
+							
+							range = new AddressRange(InetAddress.getByName(rangeStart),
+													 InetAddress.getByName(rangeEnd));
+						} catch (ConfigException e) {
+							logger.log(Level.WARNING, "address range is invalide", e);
+						} finally {
+							if (range != null) {
+								subnet.getAddrRanges().add(range);
+							}
+						}
 					}
 
 				} catch (ConfigException e) {
@@ -157,36 +191,29 @@ public final class GlobalConfigReader {
 	 * as a result.
 	 * 
 	 * @param base base Node from which to execute the query
-	 * @param query the xPath query
+	 * @param name the name of the element
 	 * @return the Element found
 	 * @throws ConfigException	there is not 1 and only 1 element returned by the query
 	 */
-	private static Element expect1Node(Node base, String query) throws ConfigException {
-		Nodes nodes = base.query(query);
-		if (nodes == null) {
-			throw new ConfigException("xp:"+query+" returned null.");
+	private static Element expect1Node(Element base, String name) throws ConfigException {
+		Elements elts = base.getChildElements(name);
+		if (elts == null) {
+			throw new NullPointerException("getChildElements returned null");
 		}
 		if (logger.isLoggable(Level.FINE)) {
-			logger.fine("xp:"+query+" from "+getElementPath(base)+", returned "+nodes.size()+" node(s)");
+			logger.finest("element: "+name+" from "+getElementPath(base)+", returned "+elts.size()+" node(s)");
 		}
-		if (nodes.size() != 1) {
-			throw new ConfigException("xp:"+query+" returned "+nodes.size()+ "node(s), 1 expected");
+		if (elts.size() != 1) {
+			throw new ConfigException("xp: "+name+" returned "+elts.size()+ "node(s), 1 expected");
 		}
-		Node expectedElement = nodes.get(0);
-		if (!(expectedElement instanceof Element)) {
-			throw new ConfigException("xp:"+query+" is not of type Element");
-		}
-		return (Element) expectedElement;
+		return elts.get(0);
 	}
 	
-	private static String get1Attribute(Node base, String attributeName) throws ConfigException {
+	private static String get1Attribute(Element base, String attributeName) throws ConfigException {
 		if ((base == null) || (attributeName == null)) {
 			throw new NullPointerException();
 		}
-		if (!(base instanceof Element)) {
-			throw new IllegalArgumentException("base must be of Element class");
-		}
-		Attribute attr = ((Element)base).getAttribute(attributeName);
+		Attribute attr = base.getAttribute(attributeName);
 		if (attr == null) {
 			logger.fine("attr:"+attributeName+" from "+getElementPath(base)+", returned null");
 			throw new ConfigException("attr: "+attributeName+" was not found");
@@ -194,14 +221,11 @@ public final class GlobalConfigReader {
 		return attr.getValue();
 	}
 	
-	private static String getOptAttribute(Node base, String attributeName) {
+	private static String getOptAttribute(Element base, String attributeName) {
 		if ((base == null) || (attributeName == null)) {
 			throw new NullPointerException();
 		}
-		if (!(base instanceof Element)) {
-			throw new IllegalArgumentException("base must be of Element class");
-		}
-		Attribute attr = ((Element)base).getAttribute(attributeName);
+		Attribute attr = base.getAttribute(attributeName);
 		if (attr == null) {
 			return null;
 		} else {
