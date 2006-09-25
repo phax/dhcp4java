@@ -43,9 +43,19 @@ public class InetCidr implements Serializable {
     private final int addr;
     private final int mask;
 
+    /**
+     * Constructor for InetCidr.
+     * 
+     * <p>Takes a network address (IPv4) and a mask length
+     * 
+     * @param addr IPv4 address
+     * @param mask mask lentgh (between 1 and 32)
+     * @throws NullPointerException if addr is null
+     * @throws IllegalArgumentException if addr is not IPv4
+     */
     public InetCidr(InetAddress addr, int mask) {
         if (addr == null) {
-            throw new IllegalArgumentException("addr is null");
+            throw new NullPointerException("addr is null");
         }
         if (!(addr instanceof Inet4Address)) {
             throw new IllegalArgumentException("Only IPv4 addresses supported");
@@ -57,6 +67,23 @@ public class InetCidr implements Serializable {
         // apply mask to address
         this.addr = Util.inetAddress2Int(addr) & gCidrMask[mask];
         this.mask = mask;
+    }
+    
+    public InetCidr(InetAddress addr, InetAddress netMask) {
+    	if ((addr == null) || (netMask == null)) {
+    		throw new NullPointerException();
+    	}
+    	if (!(addr instanceof Inet4Address) ||
+    		!(netMask instanceof Inet4Address)) {
+            throw new IllegalArgumentException("Only IPv4 addresses supported");
+    	}
+    	Integer mask = gCidr.get(netMask);
+    	if (mask == null) {
+    		throw new IllegalArgumentException("netmask: "+netMask+" is not a valid mask");
+    	}
+        this.addr = Util.inetAddress2Int(addr) & gCidrMask[mask];
+        this.mask = mask;
+        // TODO add to unit test
     }
 
     public String toString() {
