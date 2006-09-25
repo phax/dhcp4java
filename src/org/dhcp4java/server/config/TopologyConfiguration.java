@@ -66,7 +66,10 @@ public class TopologyConfiguration implements Serializable {
     	return subnetsByGiaddr.get(giaddr);
     }
     
-    public void addSubnet(Subnet subnet) {
+    public void addSubnet(Subnet subnet) throws ConfigException {
+    	if (subnet == null) {
+    		throw new NullPointerException("subnet is null");
+    	}
     	// TODO check consistence with already existing subnets
     	subnetsByCidr.put(subnet.getCidr(), subnet);
     	int mask = subnet.getCidr().getMask();
@@ -75,6 +78,14 @@ public class TopologyConfiguration implements Serializable {
     	}
     	if (mask > highestMask) {
     		highestMask = mask;
+    	}
+    	// check for giaddrs to hash
+    	for (InetAddress giaddr : subnet.getGiaddrs()) {
+    		if (subnetsByGiaddr.containsKey(giaddr)) {
+    			throw new ConfigException("giaddr: "+giaddr.getHostName()+" already present in subnet "+
+    					subnetsByGiaddr.get(giaddr).getCidr());
+    		}
+    		subnetsByGiaddr.put(giaddr, subnet);
     	}
     }
 }

@@ -48,7 +48,7 @@ public class Subnet implements Serializable {
     private final InetCidr cidr;
     
     /** giaddr pointing to this Subnet */
-    private Collection<InetAddress> giaddrs = new LinkedList<InetAddress>();
+    private final Collection<InetAddress> giaddrs = new LinkedList<InetAddress>();
     
     /** list of address ranges, sorted */
     private SortedSet<AddressRange> adrRanges = new TreeSet<AddressRange>();
@@ -94,13 +94,6 @@ public class Subnet implements Serializable {
 	 */
 	public Collection<InetAddress> getGiaddrs() {
 		return giaddrs;
-	}
-
-	/**
-	 * @param giaddrs The giaddrs to set.
-	 */
-	public void setGiaddrs(Collection<InetAddress> giaddrs) {
-		this.giaddrs = giaddrs;
 	}
 
 	/**

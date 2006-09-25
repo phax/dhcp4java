@@ -30,6 +30,7 @@ import org.dhcp4java.InetCidr;
 import org.dhcp4java.server.Subnet;
 import org.dhcp4java.server.config.ConfigException;
 import org.dhcp4java.server.config.GlobalConfig;
+import org.dhcp4java.server.config.TopologyConfiguration;
 
 import nu.xom.Attribute;
 import nu.xom.Builder;
@@ -58,6 +59,9 @@ public final class GlobalConfigReader {
 			Builder parser = new Builder();
 			Document doc = parser.build(xml);
 			
+			GlobalConfig globalConfig = new GlobalConfig();
+			TopologyConfiguration topologyConfiguration = new TopologyConfiguration();
+			
 			Element root = expect1Node(doc, "/dhcp-server");		// check root-node
 			
 			// parse subnets
@@ -67,26 +71,41 @@ public final class GlobalConfigReader {
 			}
 			
 			for (int i=0; i<subnets.size(); i++) {
-				Node subnetNode = subnets.get(i);
-				//getElementPath(subnet);
-				
-				String address = get1Attribute(subnetNode, "address");
-				logger.fine("address: "+address);
-				String mask = get1Attribute(subnetNode, "mask");
-				logger.fine("mask: "+mask);
-				
-				String comment = getOptAttribute(subnetNode, "comment");
-				
-				InetCidr cidr = new InetCidr(InetAddress.getByName(address),
-											 InetAddress.getByName(mask));
-				
-				// instantiate the Subnet object
-				Subnet subnet = new Subnet(cidr);
-				subnet.setComment(comment);
-				
-				// TODO -> expect1Node
-				Nodes addresses = subnetNode.query("@address");
-				logger.fine("xp:@addresses "+addresses.size()+" found");
+				Subnet subnet = null;
+				try {
+					Node subnetNode = subnets.get(i);
+					//getElementPath(subnet);
+					
+					String address = get1Attribute(subnetNode, "address");
+					logger.fine("address: "+address);
+					String mask = get1Attribute(subnetNode, "mask");
+					logger.fine("mask: "+mask);
+					
+					String comment = getOptAttribute(subnetNode, "comment");
+					
+					InetCidr cidr = new InetCidr(InetAddress.getByName(address),
+												 InetAddress.getByName(mask));
+					
+					// instantiate the Subnet object
+					subnet = new Subnet(cidr);
+					subnet.setComment(comment);
+					
+					// check for giaddrs
+					Nodes giaddrs = subnetNode.query("giaddr");
+					
+					for (int j=0; j<giaddrs.size(); j++) {
+						Element giaddr = (Element)giaddrs.get(j);
+						subnet.getGiaddrs().add(InetAddress.getByName(giaddr.getValue()));
+					}
+
+				} catch (ConfigException e) {
+					logger.log(Level.WARNING, "error reading subnet configuration", e);
+				} finally {
+					// do we do something with the subnet ?
+					if (subnet != null) {
+						topologyConfiguration.addSubnet(subnet);
+					}
+				}
 			}
 			
 			return null;
