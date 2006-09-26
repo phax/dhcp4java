@@ -115,7 +115,7 @@ public final class GlobalConfigReader {
 	
     public static void main(String[] args) throws IOException {
     	LogManager.getLogManager().readConfiguration(ClassLoader.getSystemResourceAsStream("logging.properties"));
-    	InputStream xml = ClassLoader.getSystemResourceAsStream("org/dhcp4java/server/config/configtest.xml");
+    	InputStream xml = ClassLoader.getSystemResourceAsStream("org/dhcp4java/server/config/xml/configtest.xml");
     	try {
     		XmlConfigReader(xml);
     	} catch (ConfigException e) {
