@@ -25,7 +25,7 @@ import java.net.UnknownHostException;
 /**
  *
  */
-public class Util {
+public final class Util {
 
     /**
      * Converts 32 bits int to IPv4 <tt>InetAddress</tt>.

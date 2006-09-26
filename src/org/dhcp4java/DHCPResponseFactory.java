@@ -23,7 +23,6 @@ import static org.dhcp4java.DHCPConstants.*;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.logging.Logger;
 
 /**
  * This class provides some standard factories for DHCP responses.

@@ -18,64 +18,24 @@
  */
 package org.dhcp4java.server.config.xml;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import org.dhcp4java.server.config.ConfigException;
-import org.dhcp4java.server.config.GlobalConfig;
-import org.dhcp4java.server.config.TopologyConfiguration;
-
-import nu.xom.Builder;
+import nu.xom.Attribute;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
 import nu.xom.Node;
-import nu.xom.ParsingException;
+
+import org.dhcp4java.server.config.ConfigException;
 
 /**
  * 
  * @author Stephan Hadinger
  * @version 0.60
  */
-public final class GlobalConfigReader {
-
-    private static final Logger logger = Logger.getLogger(GlobalConfigReader.class.getName().toLowerCase());
-
-	public static GlobalConfig XmlConfigReader(InputStream xml) throws ConfigException {
-		try {
-			Builder parser = new Builder();
-			Document doc = parser.build(xml);
-			
-			//GlobalConfig globalConfig = new GlobalConfig();
-			TopologyConfiguration topologyConfiguration = new TopologyConfiguration();
-			
-			Element root = doc.getRootElement();
-			getElementPath(root);
-			if (!"dhcp-server".equals(root.getLocalName())) {
-				throw new ConfigException("root node is not dhcp-server but "+root.getLocalName());
-			}
-			
-			// parse subnets
-			Elements subnets = root.getChildElements("subnet");
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("subnet: "+subnets.size()+" found");
-			}
-			
-			return null;
-		} catch (ParsingException e) {
-			logger.log(Level.FINE, "parsing exception", e);
-			throw new ConfigException("Parsing exception in XOM", e);
-		} catch (IOException e) {
-			logger.log(Level.FINE, "ioerror", e);
-			throw new ConfigException("IO exception", e);
-		}
-	}
-
+public final class Util {
+    private static final Logger logger = Logger.getLogger(Util.class.getName().toLowerCase());
+    
 	/**
 	 * Print the element's path in the document, for debugging and logging purpose
 	 * 
@@ -112,14 +72,30 @@ public final class GlobalConfigReader {
 		}
 		return path;
 	}
+
+    
+	static String get1Attribute(Element base, String attributeName) throws ConfigException {
+		if ((base == null) || (attributeName == null)) {
+			throw new NullPointerException();
+		}
+		Attribute attr = base.getAttribute(attributeName);
+		if (attr == null) {
+			logger.fine("attr:"+attributeName+" from "+getElementPath(base)+", returned null");
+			throw new ConfigException("attr: "+attributeName+" was not found");
+		}
+		return attr.getValue();
+	}
 	
-    public static void main(String[] args) throws IOException {
-    	LogManager.getLogManager().readConfiguration(ClassLoader.getSystemResourceAsStream("logging.properties"));
-    	InputStream xml = ClassLoader.getSystemResourceAsStream("org/dhcp4java/server/config/configtest.xml");
-    	try {
-    		XmlConfigReader(xml);
-    	} catch (ConfigException e) {
-    		logger.log(Level.SEVERE, "config exception", e);
-    	}
-    }
+	static String getOptAttribute(Element base, String attributeName) {
+		if ((base == null) || (attributeName == null)) {
+			throw new NullPointerException();
+		}
+		Attribute attr = base.getAttribute(attributeName);
+		if (attr == null) {
+			return null;
+		} else {
+			return attr.getValue();			
+		}
+	}
+
 }
