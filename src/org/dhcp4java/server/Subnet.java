@@ -53,8 +53,8 @@ public class Subnet implements Serializable {
     /** list of address ranges, sorted */
     private final SortedSet<AddressRange> addrRanges = new TreeSet<AddressRange>();
     
-    /** list of dhcp options */
-    private List<DHCPOption> dhcpOptions = new LinkedList<DHCPOption>();
+    /** array of dhcp options */
+    private DHCPOption[] dhcpOptions = DHCPOPTION_0;
 
     public Subnet(InetCidr cidr) {
     	if (cidr == null) {
@@ -110,5 +110,19 @@ public class Subnet implements Serializable {
 		return addrRanges;
 	}
     
-    
+    private static final DHCPOption[] DHCPOPTION_0 = new DHCPOption[0];
+
+	/**
+	 * @return Returns the dhcpOptions.
+	 */
+	public DHCPOption[] getDhcpOptions() {
+		return dhcpOptions;
+	}
+
+	/**
+	 * @param dhcpOptions The dhcpOptions to set.
+	 */
+	public void setDhcpOptions(DHCPOption[] dhcpOptions) {
+		this.dhcpOptions = dhcpOptions;
+	}
 }
