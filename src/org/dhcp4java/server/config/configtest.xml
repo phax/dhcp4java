@@ -4,7 +4,13 @@
 		<giaddr>10.11.12.13</giaddr>
 		<giaddr>10.11.13.15</giaddr>		<range start="192.168.0.15" end="192.168.0.25"></range>
 		<options>
-			<option code="15"></option>
-			<option code="time servers"></option>
+			<option code="15">
+				<value-byte>127</value-byte>
+				<value-inet>192.168.0.11</value-inet>
+			</option>
 			<option-time-servers>
-				<value-inet>192.168.0.10</value-inet>			</option-time-servers>		</options>	</subnet></dhcp-server>
+				<value-inet>192.168.0.10</value-inet>			</option-time-servers>
+			<option code="1">
+				<value-byte>256</value-byte>			</option>
+			<option-host-name>
+				<mirror></mirror>			</option-host-name>		</options>	</subnet></dhcp-server>

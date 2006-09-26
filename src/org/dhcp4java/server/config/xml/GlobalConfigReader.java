@@ -18,14 +18,18 @@
  */
 package org.dhcp4java.server.config.xml;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import org.dhcp4java.DHCPConstants;
 import org.dhcp4java.InetCidr;
 import org.dhcp4java.server.AddressRange;
 import org.dhcp4java.server.Subnet;
@@ -65,6 +69,7 @@ public final class GlobalConfigReader {
 			TopologyConfiguration topologyConfiguration = new TopologyConfiguration();
 			
 			Element root = doc.getRootElement();
+			getElementPath(root);
 			if (!"dhcp-server".equals(root.getLocalName())) {
 				throw new ConfigException("root node is not dhcp-server but "+root.getLocalName());
 			}
@@ -79,7 +84,7 @@ public final class GlobalConfigReader {
 				Subnet subnet = null;
 				try {
 					Element subnetElt = subnets.get(i);
-					//getElementPath(subnet);
+					getElementPath(subnetElt);
 					
 					String address = get1Attribute(subnetElt, "address");
 					logger.finest("address: "+address);
@@ -132,6 +137,47 @@ public final class GlobalConfigReader {
 						}
 					}
 
+					// look for options
+					Elements optionss = subnetElt.getChildElements("options");
+					if (optionss.size() > 1) {
+						throw new ConfigException("too many options sections: "+optionss.size());
+					}
+					if (optionss.size() == 1) {
+						Elements options = optionss.get(0).getChildElements();
+						for (int j=0; j<options.size(); j++) {
+							try {
+								Element option = options.get(j);
+								String optionName = option.getLocalName();
+								byte code = DHCPConstants.DHO_PAD;
+								if (optionName.equals("option")) {
+									// get "code" attribute
+									String codeAttr = option.getAttributeValue("code");
+									if (codeAttr == null) {
+										throw new ConfigException("no code attrtibute for "+getElementPath(option));
+									}
+									code = Byte.parseByte(codeAttr);
+								} else if (optionName.startsWith("option-")) {		// option prefixed with "option"
+									String dhcpOptionName = "DHO_"+optionName.substring("option-".length()).toUpperCase().replace('-', '_');
+									Byte codeByte = DHCPConstants.getDhoNamesReverse(dhcpOptionName);
+									if (codeByte != null) {
+										code = codeByte;
+									} else {
+										throw new ConfigException("unknow dhcp option: "+optionName);
+									}
+								} else {			// ignoring anything else
+									logger.warning("ignoring non-option: "+getElementPath(option));
+								}
+								logger.finest("option: code="+code);
+								
+								byte[] buf = readOptionValue(option);
+								// we now create the option
+							} catch (NumberFormatException e) {
+								logger.log(Level.WARNING, "bad code attribute format", e);
+							} catch (ConfigException e) {
+								logger.log(Level.WARNING, "error parsing option", e);
+							}
+						}
+					}
 				} catch (ConfigException e) {
 					logger.log(Level.WARNING, "error reading subnet configuration", e);
 				} finally {
@@ -152,36 +198,64 @@ public final class GlobalConfigReader {
 		}
 	}
 	
-	public static String getElementPath(Node element) {
-		String path = "/";
-		Node child = element;
+	public static byte[] readOptionValue(Element option) throws ConfigException, IOException {
+		if (option == null) {
+			throw new NullPointerException("option is null");
+		}
+		Elements optionValueElts = option.getChildElements();
+		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+		DataOutputStream outputStream = new DataOutputStream(byteOutput);
+		int mirrorDetected = 0;
+		
+		for (int i=0; i<optionValueElts.size(); i++) {
+			Element valueElt = optionValueElts.get(i);
+			String valueName = valueElt.getLocalName();
+			if (valueName.equals("value-byte")) {
+				outputStream.writeByte(Byte.parseByte(valueElt.getValue()));
+			} else if (valueName.equals("mirror")) {
+				mirrorDetected++;
+			}
+		}
+
+		if (mirrorDetected > 1) {
+			throw new ConfigException("too many mirror elements ("+mirrorDetected+") at "+getElementPath(option));
+		}
+		if (mirrorDetected == 1) {
+			if (byteOutput.size() > 1) {
+				throw new ConfigException("when 'mirror' is present, there must not be any other content at "+getElementPath(option));
+			}
+			return null;
+		}
+		return byteOutput.toByteArray();
+	}
+	
+	public static String getElementPath(Element element) {
+		String path = "";
+		Element child = element;
 		Node parent = element.getParent();
 		while (parent != null) {
-			if (child instanceof Element) {
-				Element childElement = (Element)child;
-				if (parent.getChildCount() == 0) {
-					return "[ERROR]";
-				}
+			if (parent instanceof Element) {
+				Elements children = ((Element)parent).getChildElements();
 				int i;
-				int count = -1;
-				for (i=0; i<parent.getChildCount(); i++) {
-					Node iterChild = parent.getChild(i);
-					if (iterChild instanceof Element) {
+				int count = 0;
+				for (i=0; i<children.size(); i++) {
+					if (children.get(i) == child) {
+						path = "/"+child.getLocalName()+"["+count+"]"+path;
+						break;
+					}
+					if (child.getLocalName().equals(children.get(i).getLocalName())) {
 						count++;
-						if (parent.getChild(i) == child) {
-							path = "/"+childElement.getLocalName()+"["+count+"]"+path;	// TODO
-							break;
-						}	
 					}
 				}
-				if (i >= parent.getChildCount()) {
+				if (i >= children.size()) {
 					path = "/[ERROR]"+path;
 				}
-			} else {
-				path = "/{"+parent.getClass().getCanonicalName()+"}"+path;
+				child = (Element)parent;
+				parent = child.getParent();
+			} else if (parent instanceof Document) {
+				path = "/"+child.getLocalName()+path;
+				break;		// we stop here !
 			}
-			child = parent;
-			parent = child.getParent();
 		}
 		return path;
 	}

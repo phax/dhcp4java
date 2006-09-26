@@ -178,6 +178,19 @@ public final class DHCPConstants {
     	}
     }
     
+    // TODO unit test  & doc
+    public static Byte getDhoNamesReverse(String name) {
+    	if (name == null) {
+    		throw new NullPointerException();
+    	}
+    	return _DHO_NAMES_REV.get(name);
+    }
+    
+    // TODO unit test & doc
+    public static String getDhoName(byte code) {
+    	return _DHO_NAMES.get(code);
+    }
+    
     // sanity check values
     static final int _DHCP_MIN_LEN           = 548;
     static final int _DHCP_DEFAULT_MAX_LEN   = 576;	// max default size for client
@@ -197,6 +210,7 @@ public final class DHCPConstants {
     static Map<Byte, String> _HTYPE_NAMES = new LinkedHashMap<Byte, String>();
     static Map<Byte, String> _DHCP_CODES  = new LinkedHashMap<Byte, String>();
     static Map<Byte, String> _DHO_NAMES   = new LinkedHashMap<Byte, String>();
+    static Map<String, Byte> _DHO_NAMES_REV = new LinkedHashMap<String, Byte>();
 
     /*
      * preload at startup Maps with constants
@@ -225,6 +239,7 @@ public final class DHCPConstants {
                         _DHCP_CODES.put(code, name);
                     } else if (name.startsWith("DHO_")) {
                         _DHO_NAMES.put(code, name);
+                        _DHO_NAMES_REV.put(name, code);
                     }
                 }
             }
