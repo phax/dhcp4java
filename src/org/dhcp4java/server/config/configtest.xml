@@ -8,6 +8,9 @@
 				<value-byte>127</value-byte>
 				<value-inet>192.168.0.11</value-inet>
 			</option>
+			<option code="16">
+				<value-short>1500</value-short>
+			</option>
 			<option-time-servers>
 				<value-inet>192.168.0.10</value-inet>			</option-time-servers>
 			<option code="1">
