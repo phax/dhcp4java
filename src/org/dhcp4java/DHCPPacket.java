@@ -2231,7 +2231,14 @@ public class DHCPPacket implements Cloneable, Serializable {
         appendHex(sbuf, (byte) ((i & 0x000000ff)       ));
     }
 
-    static byte[] stringToBytes(String str) {
+    /**
+     * Transform a <tt>String</tt> to a <tt>byte[]</tt> sequence, using transparent
+     * encoding.
+     * 
+     * @param str the string to convert
+     * @return the byte[] sequence
+     */
+    public static byte[] stringToBytes(String str) {
         if (str == null) { return null; }
 
         char[] chars = str.toCharArray();
