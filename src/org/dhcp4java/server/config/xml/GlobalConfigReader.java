@@ -24,17 +24,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPConstants;
 import org.dhcp4java.DHCPOption;
-import org.dhcp4java.DHCPPacket;
 import org.dhcp4java.InetCidr;
 import org.dhcp4java.server.AddressRange;
 import org.dhcp4java.server.Subnet;
@@ -48,7 +45,6 @@ import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
 import nu.xom.Node;
-import nu.xom.Nodes;
 import nu.xom.ParsingException;
 
 /**
@@ -60,11 +56,6 @@ public final class GlobalConfigReader {
 
     private static final Logger logger = Logger.getLogger(GlobalConfigReader.class.getName().toLowerCase());
 
-	
-	public GlobalConfigReader() {
-		
-	}
-	
 	public static GlobalConfig XmlConfigReader(InputStream xml) throws ConfigException {
 		try {
 			Builder parser = new Builder();
@@ -123,9 +114,7 @@ public final class GlobalConfigReader {
 						throw new ConfigException("too many options sections: "+optionsRoot.size());
 					}
 					if (optionsRoot.size() == 1) {
-						DHCPOption[] dhcpOptions = readOptionElements(optionsRoot.get(0).getChildElements());
-						// store the DHCPOPtion liste in the subnet
-						subnet.setDhcpOptions(dhcpOptions);
+						readOptionElements(subnet, optionsRoot.get(0).getChildElements());
 					}
 				} catch (ConfigException e) {
 					logger.log(Level.WARNING, "error reading subnet configuration", e);
@@ -147,6 +136,12 @@ public final class GlobalConfigReader {
 		}
 	}
 
+	/**
+	 * Read address ranges from the XML configuration file.
+	 * 
+	 * @param subnet the <tt>Subnet</tt> object being created 
+	 * @param ranges list of "range" xml elements
+	 */
 	private static void readAddressRanges(Subnet subnet, Elements ranges) {
 		for (int j=0; j<ranges.size(); j++) {
 			AddressRange range = null;
@@ -182,11 +177,10 @@ public final class GlobalConfigReader {
 	/**
 	 * Read the "option" elements from the "options" section in the XML config file.
 	 * 
-	 * @param options list of "option" elements
-	 * @return the <tt>DHCPOption[]</tt> list
-	 * @throws IOException should not happen
+	 * @param subnet the <tt>Subnet</tt> object being created 
+	 * @param options list of "option" xml elements
 	 */
-	private static DHCPOption[] readOptionElements(Elements options) throws IOException {
+	private static void readOptionElements(Subnet subnet, Elements options) {
 		List<DHCPOption> dhcpOptions = new LinkedList<DHCPOption>();
 		optionloop: for (int j=0; j<options.size(); j++) {
 			try {
@@ -224,9 +218,11 @@ public final class GlobalConfigReader {
 				logger.log(Level.WARNING, "bad code attribute format", e);
 			} catch (ConfigException e) {
 				logger.log(Level.WARNING, "error parsing option", e);
+			} catch (IOException e) {
+				logger.log(Level.WARNING, "IO error", e);
 			}
 		}
-		return dhcpOptions.toArray(DHCPOPTION_0);
+		subnet.setDhcpOptions(dhcpOptions.toArray(DHCPOPTION_0));
 	}
 	
 	/**
@@ -323,6 +319,7 @@ public final class GlobalConfigReader {
 	 * @return the Element found
 	 * @throws ConfigException	there is not 1 and only 1 element returned by the query
 	 */
+	/*
 	private static Element expect1Node(Element base, String name) throws ConfigException {
 		Elements elts = base.getChildElements(name);
 		if (elts == null) {
@@ -336,6 +333,7 @@ public final class GlobalConfigReader {
 		}
 		return elts.get(0);
 	}
+	*/
 	
 	private static String get1Attribute(Element base, String attributeName) throws ConfigException {
 		if ((base == null) || (attributeName == null)) {
