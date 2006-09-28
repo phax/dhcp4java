@@ -26,7 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPPacket;
-import org.dhcp4java.DHCPServer;
+import org.dhcp4java.DHCPCoreServer;
 import org.dhcp4java.DHCPServlet;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -45,7 +45,7 @@ public class DHCPEndToEndTest {
     private static final int    SERVER_PORT = 6767;
     private static final int    CLIENT_PORT = 6768;
     
-    private static DHCPServer server = null;
+    private static DHCPCoreServer server = null;
     private static DatagramSocket socket = null;
     
     public static junit.framework.Test suite() {
@@ -64,10 +64,10 @@ public class DHCPEndToEndTest {
     public static void startServer() throws Exception {
         Properties localProperties = new Properties();
 
-        localProperties.put(DHCPServer.SERVER_ADDRESS, SERVER_ADDR + ':' + SERVER_PORT);
-        localProperties.put(DHCPServer.SERVER_THREADS, "1");
+        localProperties.put(DHCPCoreServer.SERVER_ADDRESS, SERVER_ADDR + ':' + SERVER_PORT);
+        localProperties.put(DHCPCoreServer.SERVER_THREADS, "1");
 
-        server = DHCPServer.initServer(new DHCPEndToEndTestServlet(), localProperties);
+        server = DHCPCoreServer.initServer(new DHCPEndToEndTestServlet(), localProperties);
 
         new Thread(server).start();
         

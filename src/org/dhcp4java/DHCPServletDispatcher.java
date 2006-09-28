@@ -28,11 +28,11 @@ import java.net.DatagramPacket;
 class DHCPServletDispatcher implements Runnable {
     private static final Logger logger = Logger.getLogger(DHCPServletDispatcher.class.getName().toLowerCase());
 
-    private final DHCPServer     server;
+    private final DHCPCoreServer     server;
     private final DHCPServlet    dispatchServlet;
     private final DatagramPacket dispatchPacket;
 
-    public DHCPServletDispatcher(DHCPServer server, DHCPServlet servlet, DatagramPacket req) {
+    public DHCPServletDispatcher(DHCPCoreServer server, DHCPServlet servlet, DatagramPacket req) {
         this.server          = server;
         this.dispatchServlet = servlet;
         this.dispatchPacket  = req;

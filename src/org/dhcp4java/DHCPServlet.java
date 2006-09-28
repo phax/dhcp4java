@@ -43,7 +43,7 @@ public class DHCPServlet {
     private static final Logger logger = Logger.getLogger(DHCPServlet.class.getName().toLowerCase());
     
     /** the server instance running this servlet */
-    protected DHCPServer server = null;
+    protected DHCPCoreServer server = null;
     
     /**
      * Initialize servlet. Override this method to implement any initialization you may need.
@@ -53,7 +53,7 @@ public class DHCPServlet {
      * 
      * <p>There is no default behaviour.
      * 
-     * @param props a Properties containing parameters, as passed to <tt>DHCPServer</tt> 
+     * @param props a Properties containing parameters, as passed to <tt>DHCPCoreServer</tt> 
      */
     public void init(Properties props) {
         // read whatever parameters you need
@@ -250,14 +250,14 @@ public class DHCPServlet {
 	/**
 	 * @return Returns the server.
 	 */
-	public DHCPServer getServer() {
+	public DHCPCoreServer getServer() {
 		return server;
 	}
 
 	/**
 	 * @param server The server to set.
 	 */
-	public void setServer(DHCPServer server) {
+	public void setServer(DHCPCoreServer server) {
 		this.server = server;
 	}
 }

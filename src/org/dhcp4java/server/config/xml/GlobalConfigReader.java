@@ -46,34 +46,50 @@ public final class GlobalConfigReader {
 
     private static final Logger logger = Logger.getLogger(GlobalConfigReader.class.getName().toLowerCase());
 
-	public static GlobalConfig XmlConfigReader(InputStream xml) throws ConfigException {
-		try {
+    public static void parseXmlFile(InputStream xml) throws ConfigException {
+    	try {
 			Builder parser = new Builder();
 			Document doc = parser.build(xml);
-			
-			//GlobalConfig globalConfig = new GlobalConfig();
-			TopologyConfiguration topologyConfiguration = new TopologyConfiguration();
-			
+
 			Element root = doc.getRootElement();
-			getElementPath(root);
 			if (!"dhcp-server".equals(root.getLocalName())) {
 				throw new ConfigException("root node is not dhcp-server but "+root.getLocalName());
 			}
 			
-			// parse subnets
-			Elements subnets = root.getChildElements("subnet");
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("subnet: "+subnets.size()+" found");
+			// parse "global" element
+			Elements globalElts = root.getChildElements("global");
+			if (globalElts.size() != 1) {
+				throw new ConfigException("1 'global' element expected, found "+globalElts.size());
 			}
+			GlobalConfig globalConfig = XmlGlobalConfigReader(globalElts.get(0));
 			
-			return null;
-		} catch (ParsingException e) {
-			logger.log(Level.FINE, "parsing exception", e);
-			throw new ConfigException("Parsing exception in XOM", e);
-		} catch (IOException e) {
-			logger.log(Level.FINE, "ioerror", e);
-			throw new ConfigException("IO exception", e);
-		}
+			// parse "subnets" element
+			Elements subnetElts = root.getChildElements("subnets");
+			if (subnetElts.size() != 1) {
+				throw new ConfigException("1 'subnets' element expected, found "+subnetElts.size());
+			}
+			TopologyConfiguration topologyConfig = TopologyConfigReader.xmlTopologyReader(subnetElts.get(0));
+    	} catch (ConfigException e) {
+    		throw e;		// re-throw
+    	} catch (Exception e) {
+    		logger.log(Level.WARNING, "global exception", e);
+    		throw new ConfigException("global exception", e);
+    	}
+    }
+    
+	public static GlobalConfig XmlGlobalConfigReader(Element globalElt) throws ConfigException {
+//		try {
+			
+			GlobalConfig globalConfig = new GlobalConfig();
+
+			return globalConfig;
+//		} catch (ParsingException e) {
+//			logger.log(Level.FINE, "parsing exception", e);
+//			throw new ConfigException("Parsing exception in XOM", e);
+//		} catch (IOException e) {
+//			logger.log(Level.FINE, "ioerror", e);
+//			throw new ConfigException("IO exception", e);
+//		}
 	}
 
 	/**
@@ -117,7 +133,7 @@ public final class GlobalConfigReader {
     	LogManager.getLogManager().readConfiguration(ClassLoader.getSystemResourceAsStream("logging.properties"));
     	InputStream xml = ClassLoader.getSystemResourceAsStream("org/dhcp4java/server/config/xml/configtest.xml");
     	try {
-    		XmlConfigReader(xml);
+    		parseXmlFile(xml);
     	} catch (ConfigException e) {
     		logger.log(Level.SEVERE, "config exception", e);
     	}

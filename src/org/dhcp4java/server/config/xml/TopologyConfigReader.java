@@ -57,22 +57,12 @@ public final class TopologyConfigReader {
 
     private static final Logger logger = Logger.getLogger(TopologyConfigReader.class.getName().toLowerCase());
 
-	public static TopologyConfigReader XmlTopologyReader(InputStream xml) throws ConfigException {
+	public static TopologyConfiguration xmlTopologyReader(Element subnetsElt) throws ConfigException {
 		try {
-			Builder parser = new Builder();
-			Document doc = parser.build(xml);
-			
-			//GlobalConfig globalConfig = new GlobalConfig();
 			TopologyConfiguration topologyConfiguration = new TopologyConfiguration();
 			
-			Element root = doc.getRootElement();
-			getElementPath(root);
-			if (!"dhcp-server".equals(root.getLocalName())) {
-				throw new ConfigException("root node is not dhcp-server but "+root.getLocalName());
-			}
-			
 			// parse subnets
-			Elements subnets = root.getChildElements("subnet");
+			Elements subnets = subnetsElt.getChildElements("subnet");
 			if (logger.isLoggable(Level.FINE)) {
 				logger.fine("subnet: "+subnets.size()+" found");
 			}
@@ -127,10 +117,7 @@ public final class TopologyConfigReader {
 				}
 			}
 			
-			return null;
-		} catch (ParsingException e) {
-			logger.log(Level.FINE, "parsing exception", e);
-			throw new ConfigException("Parsing exception in XOM", e);
+			return topologyConfiguration;
 		} catch (IOException e) {
 			logger.log(Level.FINE, "ioerror", e);
 			throw new ConfigException("IO exception", e);
@@ -243,6 +230,7 @@ public final class TopologyConfigReader {
 		DataOutputStream outputStream = new DataOutputStream(byteOutput);
 		int mirrorDetected = 0;
 		
+		// TODO change 'mirror' into an attribute and not a child element
 		for (int i=0; i<optionValueElts.size(); i++) {
 			Element valueElt = optionValueElts.get(i);
 			String valueName = valueElt.getLocalName();
@@ -301,15 +289,5 @@ public final class TopologyConfigReader {
 	*/
 	
 
-    public static void main(String[] args) throws IOException {
-    	LogManager.getLogManager().readConfiguration(ClassLoader.getSystemResourceAsStream("logging.properties"));
-    	InputStream xml = ClassLoader.getSystemResourceAsStream("org/dhcp4java/server/config/xml/configtest.xml");
-    	try {
-    		XmlTopologyReader(xml);
-    	} catch (ConfigException e) {
-    		logger.log(Level.SEVERE, "config exception", e);
-    	}
-    }
-    
     private static final DHCPOption[] DHCPOPTION_0 = new DHCPOption[0];
 }

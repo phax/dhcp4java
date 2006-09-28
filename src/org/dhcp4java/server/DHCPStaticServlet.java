@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 import org.dhcp4java.DHCPOption;
 import org.dhcp4java.DHCPPacket;
 import org.dhcp4java.DHCPResponseFactory;
-import org.dhcp4java.DHCPServer;
+import org.dhcp4java.DHCPCoreServer;
 import org.dhcp4java.DHCPServerInitException;
 import org.dhcp4java.DHCPServlet;
 
@@ -207,7 +207,7 @@ public class DHCPStaticServlet extends DHCPServlet {
 	 */
 	public static void main(String[] args) {
         try {
-            DHCPServer server = DHCPServer.initServer(new DHCPStaticServlet(), null);
+            DHCPCoreServer server = DHCPCoreServer.initServer(new DHCPStaticServlet(), null);
             logger.setLevel(Level.OFF);
             new Thread(server).start();
         } catch (DHCPServerInitException e) {

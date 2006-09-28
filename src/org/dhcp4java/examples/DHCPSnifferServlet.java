@@ -21,7 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPPacket;
-import org.dhcp4java.DHCPServer;
+import org.dhcp4java.DHCPCoreServer;
 import org.dhcp4java.DHCPServerInitException;
 import org.dhcp4java.DHCPServlet;
 
@@ -55,7 +55,7 @@ public class DHCPSnifferServlet extends DHCPServlet {
      */
     public static void main(String[] args) {
         try {
-            DHCPServer server = DHCPServer.initServer(new DHCPSnifferServlet(), null);
+            DHCPCoreServer server = DHCPCoreServer.initServer(new DHCPSnifferServlet(), null);
             new Thread(server).start();
         } catch (DHCPServerInitException e) {
             logger.log(Level.SEVERE, "Server init", e);

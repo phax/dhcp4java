@@ -56,7 +56,7 @@ import java.util.logging.Logger;
  * <pre>
  *     public static void main(String[] args) {
  *         try {
- *             DHCPServer server = DHCPServer.initServer(new DHCPStaticServlet(), null);
+ *             DHCPCoreServer server = DHCPCoreServer.initServer(new DHCPStaticServlet(), null);
  *             new Thread(server).start();
  *         } catch (DHCPServerInitException e) {
  *             // die gracefully
@@ -67,9 +67,9 @@ import java.util.logging.Logger;
  * @author Stephan Hadinger
  * @version 0.51
  */
-public class DHCPServer implements Runnable {
+public class DHCPCoreServer implements Runnable {
 
-    private static final Logger logger = Logger.getLogger(DHCPServer.class.getName().toLowerCase());
+    private static final Logger logger = Logger.getLogger(DHCPCoreServer.class.getName().toLowerCase());
     private   static final int    BOUNDED_QUEUE_SIZE = 20;
 
     /** default MTU for ethernet */
@@ -95,7 +95,7 @@ public class DHCPServer implements Runnable {
      * <p>Constructor shall not be called directly. New servers are created through
      * <tt>initServer()</tt> factory.
      */
-    private DHCPServer(DHCPServlet servlet, Properties userProps) {
+    private DHCPCoreServer(DHCPServlet servlet, Properties userProps) {
         this.servlet = servlet;
         this.userProps = userProps;
     }
@@ -109,14 +109,14 @@ public class DHCPServer implements Runnable {
      * 			must not be <tt>null</tt>.
      * @param userProps specific properties, overriding file and default properties,
      * 			may be <tt>null</tt>.
-     * @return the new <tt>DHCPServer</tt> instance (never null).
+     * @return the new <tt>DHCPCoreServer</tt> instance (never null).
      * @throws DHCPServerInitException unable to start the server.
      */
-    public static DHCPServer initServer(DHCPServlet servlet, Properties userProps) throws DHCPServerInitException {
+    public static DHCPCoreServer initServer(DHCPServlet servlet, Properties userProps) throws DHCPServerInitException {
     	if (servlet == null) {
             throw new IllegalArgumentException("servlet must not be null");
         }
-    	DHCPServer server = new DHCPServer(servlet, userProps);
+    	DHCPCoreServer server = new DHCPCoreServer(servlet, userProps);
     	server.init();
     	return server;
     }
@@ -329,7 +329,7 @@ public class DHCPServer implements Runnable {
         final String        namePrefix;
 
         ServerThreadFactory() {
-            this.namePrefix = "DHCPServer-" + poolNumber.getAndIncrement() + "-thread-";
+            this.namePrefix = "DHCPCoreServer-" + poolNumber.getAndIncrement() + "-thread-";
         }
 
         public Thread newThread(Runnable runnable) {

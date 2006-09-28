@@ -30,7 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPPacket;
-import org.dhcp4java.DHCPServer;
+import org.dhcp4java.DHCPCoreServer;
 import org.dhcp4java.DHCPServerInitException;
 import org.dhcp4java.server.DHCPStaticServlet;
 
@@ -129,9 +129,9 @@ public class DHCPStressTest {
 	 */
 	private void startServer() throws DHCPServerInitException {
 	    Properties stressProperties = new Properties();
-	    stressProperties.put(DHCPServer.SERVER_ADDRESS, SERVER_ADDR+ ':' +SERVER_PORT);
-	    stressProperties.put(DHCPServer.SERVER_THREADS, "1");
-        DHCPServer server = DHCPServer.initServer(new DHCPStaticServlet(), stressProperties);
+	    stressProperties.put(DHCPCoreServer.SERVER_ADDRESS, SERVER_ADDR+ ':' +SERVER_PORT);
+	    stressProperties.put(DHCPCoreServer.SERVER_THREADS, "1");
+        DHCPCoreServer server = DHCPCoreServer.initServer(new DHCPStaticServlet(), stressProperties);
         new Thread(server).start();
 	}
 	

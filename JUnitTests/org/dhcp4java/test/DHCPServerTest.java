@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 
 import junit.framework.JUnit4TestAdapter;
 
-import org.dhcp4java.DHCPServer;
+import org.dhcp4java.DHCPCoreServer;
 import org.dhcp4java.DHCPServlet;
 import org.dhcp4java.DHCPServerInitException;
 import org.junit.After;
@@ -40,7 +40,7 @@ public class DHCPServerTest {
     private static final String SERVER_ADDR = "127.0.0.1";
     private static final int    SERVER_PORT = 6767;
     
-    private DHCPServer server = null;
+    private DHCPCoreServer server = null;
     
     public static junit.framework.Test suite() {
         return new JUnit4TestAdapter(DHCPServerTest.class);
@@ -61,23 +61,23 @@ public class DHCPServerTest {
     
     @Test (expected=IllegalArgumentException.class)
     public void testInitServerNull() throws Exception {
-    	DHCPServer.initServer(null, null);
+    	DHCPCoreServer.initServer(null, null);
     }
     @Test (expected=DHCPServerInitException.class)
     public void testInitServerPortAlreadyInUse() throws Exception {
         Properties localProperties = new Properties();
 
-        localProperties.put(DHCPServer.SERVER_ADDRESS, SERVER_ADDR + ':' + SERVER_PORT);
-        localProperties.put(DHCPServer.SERVER_THREADS, "1");
+        localProperties.put(DHCPCoreServer.SERVER_ADDRESS, SERVER_ADDR + ':' + SERVER_PORT);
+        localProperties.put(DHCPCoreServer.SERVER_THREADS, "1");
         
-        server = DHCPServer.initServer(new DHCPServerTestServlet(), localProperties);
-        DHCPServer.initServer(new DHCPServerTestServlet(), localProperties);
+        server = DHCPCoreServer.initServer(new DHCPServerTestServlet(), localProperties);
+        DHCPCoreServer.initServer(new DHCPServerTestServlet(), localProperties);
         
     }
     
     @Test
     public void testInitServerNullProps() throws Exception {
-    	DHCPServer server = DHCPServer.initServer(new DHCPServerTestServlet(), null);
+    	DHCPCoreServer server = DHCPCoreServer.initServer(new DHCPServerTestServlet(), null);
     	assertNotNull(server);
     	server.stopServer();
     }
@@ -86,10 +86,10 @@ public class DHCPServerTest {
     public void testInitServer() throws Exception {
         Properties localProperties = new Properties();
 
-        localProperties.put(DHCPServer.SERVER_ADDRESS, SERVER_ADDR + ':' + SERVER_PORT);
-        localProperties.put(DHCPServer.SERVER_THREADS, "1");
+        localProperties.put(DHCPCoreServer.SERVER_ADDRESS, SERVER_ADDR + ':' + SERVER_PORT);
+        localProperties.put(DHCPCoreServer.SERVER_THREADS, "1");
 
-        DHCPServer server = DHCPServer.initServer(new DHCPServerTestServlet(), localProperties);
+        DHCPCoreServer server = DHCPCoreServer.initServer(new DHCPServerTestServlet(), localProperties);
         new Thread(server).start();
         synchronized (this) {
         	wait(300);
@@ -101,19 +101,19 @@ public class DHCPServerTest {
     @Test
     public void testParseSocketAddress() throws Exception {
     	assertEquals(new InetSocketAddress(InetAddress.getByName("254.10.220.0"), 67),
-    				 DHCPServer.parseSocketAddress("254.10.220.0:67"));
+    				 DHCPCoreServer.parseSocketAddress("254.10.220.0:67"));
     }
     @Test (expected=IllegalArgumentException.class)
     public void testParseSocketAddressNull() {
-    	DHCPServer.parseSocketAddress(null);
+    	DHCPCoreServer.parseSocketAddress(null);
     }
     @Test (expected=IllegalArgumentException.class)
     public void testParseSocketAddressNoSemicolon() {
-    	DHCPServer.parseSocketAddress("254.10.220.0/67");
+    	DHCPCoreServer.parseSocketAddress("254.10.220.0/67");
     }
 //    @Test (expected=IllegalArgumentException.class)
 //    public void testParseSocketAddressBadAddress() {
-//    	InetSocketAddress sockadr = DHCPServer.parseSocketAddress("rubish:67");
+//    	InetSocketAddress sockadr = DHCPCoreServer.parseSocketAddress("rubish:67");
 //    	System.out.println(sockadr);
 //    }
 
