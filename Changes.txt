@@ -1,0 +1,6 @@
+
+ *** 0.61
+
+	- DHCPServer renamed to DHCPCoreServer
+	- Added XML configuration for DHCP Server
+	
