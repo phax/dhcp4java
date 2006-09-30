@@ -18,9 +18,20 @@
  */
 package org.dhcp4java.server;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.concurrent.Executor;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import org.dhcp4java.DHCPCoreServer;
 import org.dhcp4java.DHCPServlet;
+import org.dhcp4java.server.config.ConfigException;
+import org.dhcp4java.server.config.FrontendConfig;
+import org.dhcp4java.server.config.GlobalConfig;
+import org.dhcp4java.server.config.TopologyConfig;
+import org.dhcp4java.server.config.xml.GlobalConfigReader;
 
 /**
  * 
@@ -28,7 +39,23 @@ import org.dhcp4java.DHCPServlet;
  * @version 0.60
  */
 public class DHCPFrontEnd extends DHCPServlet {
-	
 	private static final Logger logger = Logger.getLogger(DHCPFrontEnd.class.getName().toLowerCase());
-	
+
+	private FrontendConfig frontendConf;
+	private GlobalConfig globalConfig;
+	private TopologyConfig topologyConfig;
+	private DHCPCoreServer server;
+	private Thread					finalizerThread;
+	private Executor				leaseBgExecutor;
+		
+	public static void main(String[] args) throws IOException {
+    	LogManager.getLogManager().readConfiguration(ClassLoader.getSystemResourceAsStream("logging.properties"));
+    	InputStream xml = ClassLoader.getSystemResourceAsStream("org/dhcp4java/server/config/xml/configtest.xml");
+    	try {
+    		GlobalConfigReader.parseXmlFile(xml);
+    		//GlobalConfig globalConfig = GlobalConfigReader.XmlGlobalConfigReader(xml);
+    	} catch (ConfigException e) {
+    		logger.log(Level.SEVERE, "config exception", e);
+    	}
+    }
 }

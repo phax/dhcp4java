@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 
 import org.dhcp4java.server.config.ConfigException;
 import org.dhcp4java.server.config.GlobalConfig;
-import org.dhcp4java.server.config.TopologyConfiguration;
+import org.dhcp4java.server.config.TopologyConfig;
 
 import nu.xom.Builder;
 import nu.xom.Document;
@@ -61,14 +61,14 @@ public final class GlobalConfigReader {
 			if (globalElts.size() != 1) {
 				throw new ConfigException("1 'global' element expected, found "+globalElts.size());
 			}
-			GlobalConfig globalConfig = XmlGlobalConfigReader(globalElts.get(0));
+			GlobalConfig globalConfig = xmlGlobalConfigReader(globalElts.get(0));
 			
 			// parse "subnets" element
 			Elements subnetElts = root.getChildElements("subnets");
 			if (subnetElts.size() != 1) {
 				throw new ConfigException("1 'subnets' element expected, found "+subnetElts.size());
 			}
-			TopologyConfiguration topologyConfig = TopologyConfigReader.xmlTopologyReader(subnetElts.get(0));
+			TopologyConfig topologyConfig = TopologyConfigReader.xmlTopologyReader(subnetElts.get(0));
     	} catch (ConfigException e) {
     		throw e;		// re-throw
     	} catch (Exception e) {
@@ -77,7 +77,7 @@ public final class GlobalConfigReader {
     	}
     }
     
-	public static GlobalConfig XmlGlobalConfigReader(Element globalElt) throws ConfigException {
+	public static GlobalConfig xmlGlobalConfigReader(Element globalElt) throws ConfigException {
 //		try {
 			
 			GlobalConfig globalConfig = new GlobalConfig();

@@ -36,7 +36,7 @@ import org.dhcp4java.InetCidr;
 import org.dhcp4java.server.AddressRange;
 import org.dhcp4java.server.Subnet;
 import org.dhcp4java.server.config.ConfigException;
-import org.dhcp4java.server.config.TopologyConfiguration;
+import org.dhcp4java.server.config.TopologyConfig;
 
 import nu.xom.Builder;
 import nu.xom.Document;
@@ -57,9 +57,9 @@ public final class TopologyConfigReader {
 
     private static final Logger logger = Logger.getLogger(TopologyConfigReader.class.getName().toLowerCase());
 
-	public static TopologyConfiguration xmlTopologyReader(Element subnetsElt) throws ConfigException {
+	public static TopologyConfig xmlTopologyReader(Element subnetsElt) throws ConfigException {
 		try {
-			TopologyConfiguration topologyConfiguration = new TopologyConfiguration();
+			TopologyConfig topologyConfiguration = new TopologyConfig();
 			
 			// parse subnets
 			Elements subnets = subnetsElt.getChildElements("subnet");

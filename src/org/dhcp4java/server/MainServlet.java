@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPPacket;
 import org.dhcp4java.DHCPServlet;
-import org.dhcp4java.server.config.FrontendConfiguration;
+import org.dhcp4java.server.config.FrontendConfig;
 import org.dhcp4java.server.config.GlobalConfig;
 
 /**
@@ -34,10 +34,10 @@ public class MainServlet extends DHCPServlet {
 
     private static final Logger logger = Logger.getLogger(MainServlet.class.getName().toLowerCase());
 
-	private final FrontendConfiguration frontendConfiguration;
+	private final FrontendConfig frontendConfiguration;
 	private final GlobalConfig globalConfiguration;
 	
-	public MainServlet(FrontendConfiguration frontendConfiguration,
+	public MainServlet(FrontendConfig frontendConfiguration,
 						GlobalConfig globalConfiguration) {
 		super();
 		this.frontendConfiguration = frontendConfiguration;

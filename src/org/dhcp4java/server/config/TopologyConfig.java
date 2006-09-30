@@ -32,7 +32,7 @@ import org.dhcp4java.server.Subnet;
  * @author Stephan Hadinger
  * @version 0.60
  */
-public class TopologyConfiguration implements Serializable {
+public class TopologyConfig implements Serializable {
 	
     private static final long serialVersionUID = 1L;
 
@@ -54,7 +54,7 @@ public class TopologyConfiguration implements Serializable {
      * Constructor
      *
      */
-    public TopologyConfiguration() {
+    public TopologyConfig() {
     	
     }
     
