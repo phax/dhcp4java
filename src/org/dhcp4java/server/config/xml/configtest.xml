@@ -5,10 +5,8 @@
 		<threads nb="2" min="2" max="10"></threads>
 	</front-end>
 	<global>
-		<listen port="67" inet="127.0.0.1"></listen>
 		
 	</global>
-	<subnets></subnets>
 	<topology><options>
 			<option-routers>
 				<value-inet>204.254.239.1</value-inet>

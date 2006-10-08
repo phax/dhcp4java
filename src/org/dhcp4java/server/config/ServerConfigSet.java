@@ -21,7 +21,6 @@ package org.dhcp4java.server.config;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
-
 /**
  * 
  * @author Stephan Hadinger
@@ -31,20 +30,13 @@ public class ServerConfigSet implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
-	@SuppressWarnings("unused")		// TODO
-	private static final Logger logger = Logger.getLogger(FrontendConfig.class.getName().toLowerCase());
+	@SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(ServerConfigSet.class.getName().toLowerCase());
 	
 	
-	private FrontendConfig		frontendConfig = null;
-	private GlobalConfig		globalConfig = null;
-	private TopologyConfig		topologyConfig = null;
-	
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+	protected FrontendConfig	frontendConfig = null;
+	protected GlobalConfig		globalConfig = null;
+	protected TopologyConfig	topologyConfig = null;
 
-	}
 
 }

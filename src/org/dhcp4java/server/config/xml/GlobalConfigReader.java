@@ -46,36 +46,6 @@ public final class GlobalConfigReader {
 
     private static final Logger logger = Logger.getLogger(GlobalConfigReader.class.getName().toLowerCase());
 
-    public static void parseXmlFile(InputStream xml) throws ConfigException {
-    	try {
-			Builder parser = new Builder();
-			Document doc = parser.build(xml);
-
-			Element root = doc.getRootElement();
-			if (!"dhcp-server".equals(root.getLocalName())) {
-				throw new ConfigException("root node is not dhcp-server but "+root.getLocalName());
-			}
-			
-			// parse "global" element
-			Elements globalElts = root.getChildElements("global");
-			if (globalElts.size() != 1) {
-				throw new ConfigException("1 'global' element expected, found "+globalElts.size());
-			}
-			GlobalConfig globalConfig = xmlGlobalConfigReader(globalElts.get(0));
-			
-			// parse "subnets" element
-			Elements subnetElts = root.getChildElements("subnets");
-			if (subnetElts.size() != 1) {
-				throw new ConfigException("1 'subnets' element expected, found "+subnetElts.size());
-			}
-			TopologyConfig topologyConfig = TopologyConfigReader.xmlTopologyReader(subnetElts.get(0));
-    	} catch (ConfigException e) {
-    		throw e;		// re-throw
-    	} catch (Exception e) {
-    		logger.log(Level.WARNING, "global exception", e);
-    		throw new ConfigException("global exception", e);
-    	}
-    }
     
 	public static GlobalConfig xmlGlobalConfigReader(Element globalElt) throws ConfigException {
 //		try {
@@ -129,13 +99,4 @@ public final class GlobalConfigReader {
 		return path;
 	}
 	
-    public static void main(String[] args) throws IOException {
-    	LogManager.getLogManager().readConfiguration(ClassLoader.getSystemResourceAsStream("logging.properties"));
-    	InputStream xml = ClassLoader.getSystemResourceAsStream("org/dhcp4java/server/config/xml/configtest.xml");
-    	try {
-    		parseXmlFile(xml);
-    	} catch (ConfigException e) {
-    		logger.log(Level.SEVERE, "config exception", e);
-    	}
-    }
 }

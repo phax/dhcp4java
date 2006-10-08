@@ -16,36 +16,27 @@
  *	License along with this library; if not, write to the Free Software
  *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.dhcp4java.server;
+package org.dhcp4java.server.config.xml;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.concurrent.Executor;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import org.dhcp4java.DHCPCoreServer;
-import org.dhcp4java.DHCPServlet;
+import nu.xom.Element;
+
 import org.dhcp4java.server.config.ConfigException;
 import org.dhcp4java.server.config.FrontendConfig;
-import org.dhcp4java.server.config.GlobalConfig;
-import org.dhcp4java.server.config.TopologyConfig;
-import org.dhcp4java.server.config.xml.GlobalConfigReader;
 
 /**
  * 
  * @author Stephan Hadinger
  * @version 0.60
  */
-public class DHCPFrontEnd extends DHCPServlet {
-	private static final Logger logger = Logger.getLogger(DHCPFrontEnd.class.getName().toLowerCase());
+public class FrontEndConfigReader {
+	
+	private static final Logger logger = Logger.getLogger(FrontEndConfigReader.class.getName().toLowerCase());
+	
+	public static FrontendConfig xmlFrontEndConfigReader(Element frontendElt) throws ConfigException {
+		FrontendConfig frontEndConfig = new FrontendConfig();
+		return frontEndConfig;
+	}
 
-	private FrontendConfig frontendConf;
-	private GlobalConfig globalConfig;
-	private TopologyConfig topologyConfig;
-	private DHCPCoreServer server;
-	private Thread					finalizerThread;
-	private Executor				leaseBgExecutor;
-		
 }
