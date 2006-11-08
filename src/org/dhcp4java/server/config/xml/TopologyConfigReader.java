@@ -161,7 +161,13 @@ public final class TopologyConfigReader {
 
 	}
 	
-	private static void readStaticAddresses(Subnet subnet, Elements statics) {
+	/**
+	 * Reads the <tt>static</tt> element and adds it to the <tt>Subnet</tt>.
+	 * 
+	 * @param subnet
+	 * @param statics
+	 */
+	private static void readStaticAddresses(Subnet subnet, Elements statics) throws ConfigException {
 		for (int i=0; i<statics.size(); i++) {
 			byte[] macAddr = null;
 			InetAddress ipAddr = null;
@@ -176,18 +182,46 @@ public final class TopologyConfigReader {
 				if (addressAttr == null) {
 					throw new ConfigException("static @ethernet missing in "+getElementPath(staticElt));
 				}
-				macAddr = new byte[6];
-				// TODO parsing of mac address
+				macAddr = parseHardwareAddress(ethernetAttr);
 			} catch (ConfigException e) {
 				logger.log(Level.WARNING, "static is invalid", e);
 			} catch (UnknownHostException e) {
 				logger.log(Level.WARNING, "error parsing address", e);
+			} catch (Exception e) {
+				logger.log(Level.WARNING, "general exception", e);
 			} finally {
 				if ((macAddr != null) && (ipAddr != null)) {
-					subnet.getStaticAddresses().put(macAddr, ipAddr);
+					subnet.addStaticAddress(macAddr, ipAddr);
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Parse the MAC address in hex format, split by ':'.
+	 * 
+	 * <p>E.g. <tt>0:c0:c3:49:2b:57</tt>.
+	 * @param macStr
+	 * @return
+	 * @throws ConfigException
+	 */
+	private static final byte[] parseHardwareAddress(String macStr) throws ConfigException {
+		if (macStr == null) {
+			throw new NullPointerException("macStr is null");
+		}
+		String[] macAdrItems = macStr.split(":");
+		if (macAdrItems.length != 6) {
+			throw new ConfigException("macStr["+macStr+"] has not 6 items");
+		}
+		byte[] macBytes = new byte[6];
+		for (int i=0; i<6; i++) {
+			int val = Integer.parseInt(macAdrItems[i], 16);
+			if ((val < -128) || (val > 255)) {
+				throw new ConfigException("Value is out of range:"+macAdrItems[i]);
+			}
+			macBytes[i] = (byte) val;
+		}
+		return macBytes;
 	}
 	
 	/**

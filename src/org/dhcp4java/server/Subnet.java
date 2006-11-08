@@ -19,6 +19,7 @@
 package org.dhcp4java.server;
 
 import java.io.Serializable;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,6 +31,8 @@ import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPOption;
 import org.dhcp4java.InetCidr;
+import org.dhcp4java.server.config.ConfigException;
+import org.dhcp4java.server.config.xml.Util;
 /**
  * 
  * @author Stephan Hadinger
@@ -54,7 +57,8 @@ public class Subnet implements Serializable {
     private final SortedSet<AddressRange> addrRanges = new TreeSet<AddressRange>();
 
     /** list of static addresses already assigned */
-    private final Map<byte[], InetAddress> staticAddresses = new HashMap<byte[], InetAddress>();
+    private final Map<byte[], InetAddress> staticAddressesByMac = new HashMap<byte[], InetAddress>();
+    private final Map<InetAddress, byte[]> staticAddressesByIp = new HashMap<InetAddress, byte[]>();
     
     /** array of dhcp options */
     private DHCPOption[] dhcpOptions = DHCPOPTION_0;
@@ -129,10 +133,25 @@ public class Subnet implements Serializable {
 		this.dhcpOptions = dhcpOptions;
 	}
 
-	/**
-	 * @return Returns the staticAddresses.
-	 */
-	public Map<byte[], InetAddress> getStaticAddresses() {
-		return staticAddresses;
+	public void addStaticAddress(byte[] hardwareAddr, InetAddress ipAddr) throws ConfigException {
+		if (hardwareAddr == null) {
+			throw new NullPointerException("hardwareAddr is null");
+		}
+		if (ipAddr == null) {
+			throw new NullPointerException("ipAddr is null");
+		}
+		if (!(ipAddr instanceof Inet4Address)) {
+			throw new IllegalArgumentException("ipAddr is not IPv4 address");
+		}
+		
+		// check if address is already assigned
+		if (staticAddressesByIp.containsKey(ipAddr)) {
+			throw new ConfigException("static ip ["+ipAddr.getHostAddress()+"] is already used");
+		}
+		
+		// check if mac address is already assigned
+		if (staticAddressesByMac.containsKey(hardwareAddr)) {
+			logger.warning("Hardware address ["+Util.hardWareAddressToString(hardwareAddr)+"]already has an IP address statically assigned");
+		}
 	}
 }
