@@ -18,24 +18,15 @@
  */
 package org.dhcp4java.server.config.xml;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.dhcp4java.server.config.ConfigException;
 import org.dhcp4java.server.config.GlobalConfig;
-import org.dhcp4java.server.config.TopologyConfig;
 
-import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
 import nu.xom.Node;
-import nu.xom.ParsingException;
 
 /**
  * 
@@ -44,7 +35,8 @@ import nu.xom.ParsingException;
  */
 public final class GlobalConfigReader {
 
-    private static final Logger logger = Logger.getLogger(GlobalConfigReader.class.getName().toLowerCase());
+    @SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(GlobalConfigReader.class.getName().toLowerCase());
 
     
 	public static GlobalConfig xmlGlobalConfigReader(Element globalElt) throws ConfigException {

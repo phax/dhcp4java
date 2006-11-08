@@ -21,13 +21,11 @@ package org.dhcp4java.server.config.xml;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPConstants;
@@ -38,11 +36,8 @@ import org.dhcp4java.server.Subnet;
 import org.dhcp4java.server.config.ConfigException;
 import org.dhcp4java.server.config.TopologyConfig;
 
-import nu.xom.Builder;
-import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
-import nu.xom.ParsingException;
 
 import static org.dhcp4java.server.config.xml.Util.getElementPath;
 import static org.dhcp4java.server.config.xml.Util.get1Attribute;
@@ -98,6 +93,10 @@ public final class TopologyConfigReader {
 					// look for ranges
 					Elements ranges = subnetElt.getChildElements("range");
 					readAddressRanges(subnet, ranges);
+					
+					// look for static ip addresses
+					Elements statics= subnetElt.getChildElements("static");
+					readStaticAddresses(subnet, statics);
 
 					// look for options
 					Elements optionsRoot = subnetElt.getChildElements("options");
@@ -150,7 +149,7 @@ public final class TopologyConfigReader {
 				range = new AddressRange(InetAddress.getByName(rangeStart),
 										 InetAddress.getByName(rangeEnd));
 			} catch (ConfigException e) {
-				logger.log(Level.WARNING, "address range is invalide", e);
+				logger.log(Level.WARNING, "address range is invalid", e);
 			} catch (UnknownHostException e) {
 				logger.log(Level.WARNING, "error parsing address", e);
 			} finally {
@@ -160,6 +159,35 @@ public final class TopologyConfigReader {
 			}
 		}
 
+	}
+	
+	private static void readStaticAddresses(Subnet subnet, Elements statics) {
+		for (int i=0; i<statics.size(); i++) {
+			byte[] macAddr = null;
+			InetAddress ipAddr = null;
+			try {
+				Element staticElt = statics.get(i);
+				String addressAttr = staticElt.getAttributeValue("address");
+				String ethernetAttr = staticElt.getAttributeValue("ethernet");
+				if (addressAttr == null) {
+					throw new ConfigException("static @address missing in "+getElementPath(staticElt));
+				}
+				ipAddr = InetAddress.getByName(addressAttr);
+				if (addressAttr == null) {
+					throw new ConfigException("static @ethernet missing in "+getElementPath(staticElt));
+				}
+				macAddr = new byte[6];
+				// TODO parsing of mac address
+			} catch (ConfigException e) {
+				logger.log(Level.WARNING, "static is invalid", e);
+			} catch (UnknownHostException e) {
+				logger.log(Level.WARNING, "error parsing address", e);
+			} finally {
+				if ((macAddr != null) && (ipAddr != null)) {
+					subnet.getStaticAddresses().put(macAddr, ipAddr);
+				}
+			}
+		}
 	}
 	
 	/**

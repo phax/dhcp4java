@@ -29,7 +29,8 @@
 			<option-host-name>
 				<mirror></mirror>			</option-host-name><!--TODO add BOOTP parameters--><!--TODO add lease and max-lease-->
 			<lease defalut="86400" max="86400"></lease>
-		</options><!--TODO add static addresses--><!--TODO add allow/deny policies-->
+		</options>
+		<static address="192.168.0.3" ethernet="0:c0:c3:49:2b:57"></static><!--TODO add static addresses--><!--TODO add allow/deny policies-->
 </subnet></topology>
 
 </dhcp-server>

@@ -40,13 +40,13 @@ import org.dhcp4java.server.config.TopologyConfig;
  * @author Stephan Hadinger
  * @version 0.60
  */
-public class ServerConfigSetReader extends ServerConfigSet {
+public class ServerConfigSetReader {
 
     private static final long serialVersionUID = 1L;
     
 	private static final Logger logger = Logger.getLogger(ServerConfigSetReader.class.getName().toLowerCase());
 	
-	public void parseXmlFile(InputStream xml) throws ConfigException {
+	public ServerConfigSet parseXmlFile(InputStream xml) throws ConfigException {
     	try {
 			Builder parser = new Builder();
 			Document doc = parser.build(xml);
@@ -61,7 +61,7 @@ public class ServerConfigSetReader extends ServerConfigSet {
 			if (frontendElts.size() != 1) {
 				throw new ConfigException("1 'front-end' element expected, found "+frontendElts.size());
 			}
-			frontendConfig = FrontEndConfigReader.xmlFrontEndConfigReader(frontendElts.get(0));
+			FrontendConfig frontendConfig = FrontEndConfigReader.xmlFrontEndConfigReader(frontendElts.get(0));
 			//FrontendConfig frontendConfig = FrontendConfigReader...
 			
 			// parse "global" element
@@ -69,14 +69,21 @@ public class ServerConfigSetReader extends ServerConfigSet {
 			if (globalElts.size() != 1) {
 				throw new ConfigException("1 'global' element expected, found "+globalElts.size());
 			}
-			globalConfig = GlobalConfigReader.xmlGlobalConfigReader(globalElts.get(0));
+			GlobalConfig globalConfig = GlobalConfigReader.xmlGlobalConfigReader(globalElts.get(0));
 			
-			// parse "subnets" element
-			Elements subnetElts = root.getChildElements("topology");
-			if (subnetElts.size() != 1) {
-				throw new ConfigException("1 'subnets' element expected, found "+subnetElts.size());
+			// parse "topology" element
+			Elements topologyElts = root.getChildElements("topology");
+			if (topologyElts.size() != 1) {
+				throw new ConfigException("1 'subnets' element expected, found "+topologyElts.size());
 			}
-			topologyConfig = TopologyConfigReader.xmlTopologyReader(subnetElts.get(0));
+			TopologyConfig topologyConfig = TopologyConfigReader.xmlTopologyReader(topologyElts.get(0));
+			
+			ServerConfigSet configSet = new ServerConfigSet();
+			configSet.setFrontendConfig(frontendConfig);
+			configSet.setGlobalConfig(globalConfig);
+			configSet.setTopologyConfig(topologyConfig);
+			
+			return configSet;
     	} catch (ConfigException e) {
     		throw e;		// re-throw
     	} catch (Exception e) {
