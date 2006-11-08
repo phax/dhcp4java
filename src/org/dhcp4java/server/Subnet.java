@@ -21,15 +21,15 @@ package org.dhcp4java.server;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPOption;
 import org.dhcp4java.InetCidr;
-import org.dhcp4java.server.config.GlobalConfig;
 /**
  * 
  * @author Stephan Hadinger
@@ -52,6 +52,9 @@ public class Subnet implements Serializable {
     
     /** list of address ranges, sorted */
     private final SortedSet<AddressRange> addrRanges = new TreeSet<AddressRange>();
+
+    /** list of static addresses already assigned */
+    private final Map<byte[], InetAddress> staticAddresses = new HashMap<byte[], InetAddress>();
     
     /** array of dhcp options */
     private DHCPOption[] dhcpOptions = DHCPOPTION_0;
@@ -124,5 +127,12 @@ public class Subnet implements Serializable {
 	 */
 	public void setDhcpOptions(DHCPOption[] dhcpOptions) {
 		this.dhcpOptions = dhcpOptions;
+	}
+
+	/**
+	 * @return Returns the staticAddresses.
+	 */
+	public Map<byte[], InetAddress> getStaticAddresses() {
+		return staticAddresses;
 	}
 }

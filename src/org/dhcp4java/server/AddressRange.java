@@ -41,7 +41,8 @@ public final class AddressRange implements Serializable, Comparable {
 	 */
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = Logger.getLogger(AddressRange.class.getName().toLowerCase());
+    @SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(AddressRange.class.getName().toLowerCase());
     
     private final int rangeStart;
     private final int rangeEnd;

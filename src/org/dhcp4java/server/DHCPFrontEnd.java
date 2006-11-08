@@ -18,20 +18,14 @@
  */
 package org.dhcp4java.server;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.concurrent.Executor;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPCoreServer;
 import org.dhcp4java.DHCPServlet;
-import org.dhcp4java.server.config.ConfigException;
 import org.dhcp4java.server.config.FrontendConfig;
 import org.dhcp4java.server.config.GlobalConfig;
 import org.dhcp4java.server.config.TopologyConfig;
-import org.dhcp4java.server.config.xml.GlobalConfigReader;
 
 /**
  * 
