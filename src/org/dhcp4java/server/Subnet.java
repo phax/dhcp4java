@@ -30,6 +30,7 @@ import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPOption;
+import org.dhcp4java.HardwareAddress;
 import org.dhcp4java.InetCidr;
 import org.dhcp4java.server.config.ConfigException;
 import org.dhcp4java.server.config.xml.Util;
@@ -57,8 +58,8 @@ public class Subnet implements Serializable {
     private final SortedSet<AddressRange> addrRanges = new TreeSet<AddressRange>();
 
     /** list of static addresses already assigned */
-    private final Map<byte[], InetAddress> staticAddressesByMac = new HashMap<byte[], InetAddress>();
-    private final Map<InetAddress, byte[]> staticAddressesByIp = new HashMap<InetAddress, byte[]>();
+    private final Map<HardwareAddress, InetAddress> staticAddressesByMac = new HashMap<HardwareAddress, InetAddress>();
+    private final Map<InetAddress, HardwareAddress> staticAddressesByIp = new HashMap<InetAddress, HardwareAddress>();
     
     /** array of dhcp options */
     private DHCPOption[] dhcpOptions = DHCPOPTION_0;
@@ -133,8 +134,8 @@ public class Subnet implements Serializable {
 		this.dhcpOptions = dhcpOptions;
 	}
 
-	public void addStaticAddress(byte[] hardwareAddr, InetAddress ipAddr) throws ConfigException {
-		if (hardwareAddr == null) {
+	public void addStaticAddress(HardwareAddress macAddr, InetAddress ipAddr) throws ConfigException {
+		if (macAddr == null) {
 			throw new NullPointerException("hardwareAddr is null");
 		}
 		if (ipAddr == null) {
@@ -150,8 +151,8 @@ public class Subnet implements Serializable {
 		}
 		
 		// check if mac address is already assigned
-		if (staticAddressesByMac.containsKey(hardwareAddr)) {
-			logger.warning("Hardware address ["+Util.hardWareAddressToString(hardwareAddr)+"]already has an IP address statically assigned");
+		if (staticAddressesByMac.containsKey(macAddr)) {
+			logger.warning("Hardware address ["+macAddr+"]already has an IP address statically assigned");
 		}
 	}
 }

@@ -98,24 +98,4 @@ public final class Util {
 		}
 	}
 
-	/**
-	 * Prints a Hardware Address in pretty format.
-	 * 
-	 * @param macAddr
-	 * @return
-	 */
-	public static final String hardWareAddressToString(byte[] macAddr) {
-		if (macAddr == null) {
-			throw new NullPointerException("macAddr is null");
-		}
-		StringBuffer sb = new StringBuffer(17);
-		for (int i=0; i<macAddr.length; i++) {
-            sb.append(Character.forDigit((macAddr[i]) & 0xf, 16))
-              .append(Character.forDigit( macAddr[i]  & 0xf, 16));
-            if (i<macAddr.length-1) {
-            	sb.append(":");
-            }
-		}
-		return sb.toString();
-	}
 }

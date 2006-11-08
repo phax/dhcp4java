@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPConstants;
 import org.dhcp4java.DHCPOption;
+import org.dhcp4java.HardwareAddress;
 import org.dhcp4java.InetCidr;
 import org.dhcp4java.server.AddressRange;
 import org.dhcp4java.server.Subnet;
@@ -169,7 +170,7 @@ public final class TopologyConfigReader {
 	 */
 	private static void readStaticAddresses(Subnet subnet, Elements statics) throws ConfigException {
 		for (int i=0; i<statics.size(); i++) {
-			byte[] macAddr = null;
+			HardwareAddress macAddr = null;
 			InetAddress ipAddr = null;
 			try {
 				Element staticElt = statics.get(i);
@@ -182,7 +183,7 @@ public final class TopologyConfigReader {
 				if (addressAttr == null) {
 					throw new ConfigException("static @ethernet missing in "+getElementPath(staticElt));
 				}
-				macAddr = parseHardwareAddress(ethernetAttr);
+				macAddr = HardwareAddress.getHardwareAddressByString(ethernetAttr);
 			} catch (ConfigException e) {
 				logger.log(Level.WARNING, "static is invalid", e);
 			} catch (UnknownHostException e) {
@@ -197,32 +198,6 @@ public final class TopologyConfigReader {
 		}
 	}
 	
-	/**
-	 * Parse the MAC address in hex format, split by ':'.
-	 * 
-	 * <p>E.g. <tt>0:c0:c3:49:2b:57</tt>.
-	 * @param macStr
-	 * @return
-	 * @throws ConfigException
-	 */
-	private static final byte[] parseHardwareAddress(String macStr) throws ConfigException {
-		if (macStr == null) {
-			throw new NullPointerException("macStr is null");
-		}
-		String[] macAdrItems = macStr.split(":");
-		if (macAdrItems.length != 6) {
-			throw new ConfigException("macStr["+macStr+"] has not 6 items");
-		}
-		byte[] macBytes = new byte[6];
-		for (int i=0; i<6; i++) {
-			int val = Integer.parseInt(macAdrItems[i], 16);
-			if ((val < -128) || (val > 255)) {
-				throw new ConfigException("Value is out of range:"+macAdrItems[i]);
-			}
-			macBytes[i] = (byte) val;
-		}
-		return macBytes;
-	}
 	
 	/**
 	 * Read the "option" elements from the "options" section in the XML config file.
