@@ -18,17 +18,9 @@
  */
 package org.dhcp4java;
 
-import static org.dhcp4java.server.config.xml.Util.getElementPath;
-
 import java.io.Serializable;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.logging.Level;
+import java.util.Arrays;
 
-import nu.xom.Element;
-import nu.xom.Elements;
-
-import org.dhcp4java.server.Subnet;
 import org.dhcp4java.server.config.ConfigException;
 
 /**
@@ -40,7 +32,10 @@ import org.dhcp4java.server.config.ConfigException;
 public class HardwareAddress implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	private final byte   hardwareType;
 	private final byte[] hardwareAddress;
+	
+	private static final byte HTYPE_ETHER = 1;	// default type
 	
 	/*
 	 * Invariants:
@@ -48,7 +43,17 @@ public class HardwareAddress implements Serializable {
 	 */
 	
 	public HardwareAddress(byte[] macAddr) {
+		this.hardwareType = HTYPE_ETHER;
 		this.hardwareAddress = macAddr;
+	}
+
+	public HardwareAddress(byte hType, byte[] macAddr) {
+		this.hardwareType = hType;
+		this.hardwareAddress = macAddr;
+	}
+	
+	public byte getHardwareType() {
+		return hardwareType;
 	}
 	
 	/**
@@ -59,12 +64,29 @@ public class HardwareAddress implements Serializable {
 		return hardwareAddress.clone();
 	}
 
+    public int hashCode() {
+    	return this.hardwareType ^ Arrays.hashCode(hardwareAddress);
+    }
+
+    public boolean equals(Object obj) {
+        if ((obj == null) || (!(obj instanceof HardwareAddress))) {
+            return false;
+        }
+        HardwareAddress hwAddr = (HardwareAddress) obj;
+
+        return ((this.hardwareType == hwAddr.hardwareType) &&
+                 (Arrays.equals(this.hardwareAddress, hwAddr.hardwareAddress)));
+    }
 	/**
 	 * Prints the hardware address in hex format, split by ":".
 	 */
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer(17);
+		StringBuffer sb = new StringBuffer(28);
+		if (hardwareType != HTYPE_ETHER) {
+			// append hType only if it is not standard ethernet
+			sb.append(this.hardwareType).append("/");
+		}
 		for (int i=0; i<hardwareAddress.length; i++) {
             sb.append(Character.forDigit((hardwareAddress[i]) & 0xf, 16))
               .append(Character.forDigit( hardwareAddress[i]  & 0xf, 16));
@@ -110,7 +132,7 @@ public class HardwareAddress implements Serializable {
 	 * @return
 	 * @throws ConfigException
 	 */
-	private static final byte[] parseHardwareAddress(String macStr) throws ConfigException {
+	public static final byte[] parseHardwareAddress(String macStr) throws ConfigException {
 		if (macStr == null) {
 			throw new NullPointerException("macStr is null");
 		}
