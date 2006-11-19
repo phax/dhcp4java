@@ -194,7 +194,6 @@ public final class DHCPConstants {
     // sanity check values
     static final int _DHCP_MIN_LEN           = 548;
     static final int _DHCP_DEFAULT_MAX_LEN   = 576;	// max default size for client
-    static final int _BOOTP_MIN_LEN          = 300;
     static final int _BOOTP_ABSOLUTE_MIN_LEN = 236;
     static final int _DHCP_MAX_MTU           = 1500;
     static final int _DHCP_UDP_OVERHEAD      = 14 + 20 + 8;

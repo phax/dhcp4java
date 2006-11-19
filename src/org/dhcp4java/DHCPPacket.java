@@ -552,11 +552,6 @@ public class DHCPPacket implements Cloneable, Serializable {
             throw new DHCPBadPacketException("DHCP Packet too small (" + length +
                     ") absolute minimum is " + _BOOTP_ABSOLUTE_MIN_LEN);
         }
-        // minimum size for a BOOTP packet (could be a warning?)
-        if (length < _BOOTP_MIN_LEN) {
-            throw new DHCPBadPacketException("DHCP Packet too small (" + length +
-                    ") minimum is " + _BOOTP_MIN_LEN);
-        }
         // maximum size for a valid DHCP packet
         if (length > _DHCP_MAX_MTU) {
             throw new DHCPBadPacketException("DHCP Packet too big (" + length +
@@ -647,7 +642,7 @@ public class DHCPPacket implements Cloneable, Serializable {
      * @throws DHCPBadPacketException the datagram would be malformed (too small, too big...)
      */
     public byte[] serialize() {
-    	return serialize(_BOOTP_MIN_LEN, _DHCP_DEFAULT_MAX_LEN);
+    	return serialize(_BOOTP_ABSOLUTE_MIN_LEN, _DHCP_DEFAULT_MAX_LEN);
     }
 
     /**
