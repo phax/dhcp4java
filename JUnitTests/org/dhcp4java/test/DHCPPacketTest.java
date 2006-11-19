@@ -177,7 +177,7 @@ public class DHCPPacketTest {
     }
     @Test (expected=DHCPBadPacketException.class)
     public void testMarshallLentghPacketTooSmall() {
-    	DHCPPacket.getPacket(new byte[299], 0, 299, true);
+    	DHCPPacket.getPacket(new byte[235], 0, 235, true);
     }
     @Test (expected=DHCPBadPacketException.class)
     public void testMarshallLentghPacketTooBig() {
@@ -189,7 +189,7 @@ public class DHCPPacketTest {
     	byte[] buf;
     	DHCPPacket pac = new DHCPPacket();
     	buf = pac.serialize();
-    	assertEquals(300, buf.length);
+    	assertEquals(241, buf.length);
     	
     	pac.setOptionRaw(DHO_HOST_NAME, new byte[255]);
     	buf = pac.serialize();
@@ -657,8 +657,6 @@ public class DHCPPacketTest {
         "0000";
     private static final String EMPTY_BOOTP =
     	"0201060000000000000000000000000000000000000000000000000000000000" +
-    	"0000000000000000000000000000000000000000000000000000000000000000" +
-    	"0000000000000000000000000000000000000000000000000000000000000000" +
     	"0000000000000000000000000000000000000000000000000000000000000000" +
     	"0000000000000000000000000000000000000000000000000000000000000000" +
     	"0000000000000000000000000000000000000000000000000000000000000000" +
