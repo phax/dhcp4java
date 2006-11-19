@@ -14,6 +14,11 @@
     <path id="base.classpath">
         <pathelement location="${classes.dir}" />
     </path>
+	
+	<path id="xom-libs">
+		<pathelement location="lib/xom-1.1.jar"/>
+		<pathelement location="lib/xercesImpl.jar"/>
+	</path>
 
     <!-- Delete the generated directories -->
     <target name="clean"
@@ -46,6 +51,7 @@
             <include name="org/**"/>
             <classpath>
                 <path refid="base.classpath" />
+            	<path refid="xom-libs" />
             </classpath>
         </javac>
     </target>
