@@ -1,6 +1,9 @@
 
- *** 0.61
+ *** 0.70   Nov 19 2006
 
 	- DHCPServer renamed to DHCPCoreServer
 	- Added XML configuration for DHCP Server
+	- Minimum Packet size changed from 300 to 236
+	
+	
 	
