@@ -30,7 +30,7 @@ import org.dhcp4java.server.Subnet;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.60
+ * @version 0.70
  */
 public class TopologyConfig implements Serializable {
 	

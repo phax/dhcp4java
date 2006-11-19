@@ -47,7 +47,7 @@ import static org.dhcp4java.server.config.xml.Util.getOptAttribute;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.60
+ * @version 0.70
  */
 public final class TopologyConfigReader {
 

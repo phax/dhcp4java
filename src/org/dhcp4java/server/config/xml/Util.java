@@ -31,7 +31,7 @@ import org.dhcp4java.server.config.ConfigException;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.60
+ * @version 0.70
  */
 public final class Util {
     private static final Logger logger = Logger.getLogger(Util.class.getName().toLowerCase());

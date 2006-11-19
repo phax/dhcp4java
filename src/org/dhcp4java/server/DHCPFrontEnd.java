@@ -30,7 +30,7 @@ import org.dhcp4java.server.config.TopologyConfig;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.60
+ * @version 0.70
  */
 public class DHCPFrontEnd extends DHCPServlet {
 	private static final Logger logger = Logger.getLogger(DHCPFrontEnd.class.getName().toLowerCase());

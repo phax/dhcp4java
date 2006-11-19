@@ -38,7 +38,7 @@ import org.dhcp4java.server.config.TopologyConfig;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.60
+ * @version 0.70
  */
 public class ServerConfigSetReader {
 

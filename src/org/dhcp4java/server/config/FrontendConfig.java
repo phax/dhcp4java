@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.60
+ * @version 0.70
  */
 public class FrontendConfig implements Serializable {
 
