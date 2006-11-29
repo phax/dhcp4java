@@ -139,7 +139,9 @@ public class DHCPServlet {
     protected DHCPPacket service(DHCPPacket request) {
         Byte dhcpMessageType;
 
-        if (request == null) { return null; }
+        if (request == null) {
+        	return null;
+        }
 
         if (!request.isDhcp()) {
             logger.info("BOOTP packet rejected");
