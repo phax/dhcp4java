@@ -33,7 +33,6 @@ import org.dhcp4java.DHCPOption;
 import org.dhcp4java.HardwareAddress;
 import org.dhcp4java.InetCidr;
 import org.dhcp4java.server.config.ConfigException;
-import org.dhcp4java.server.config.xml.Util;
 /**
  * 
  * @author Stephan Hadinger
