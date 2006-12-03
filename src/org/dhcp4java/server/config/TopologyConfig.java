@@ -19,11 +19,14 @@
 package org.dhcp4java.server.config;
 
 import java.io.Serializable;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.dhcp4java.DHCPConstants;
+import org.dhcp4java.DHCPPacket;
 import org.dhcp4java.InetCidr;
 import org.dhcp4java.server.struct.Subnet;
 
@@ -87,6 +90,36 @@ public class TopologyConfig implements Serializable {
     		}
     		subnetsByGiaddr.put(giaddr, subnet);
     	}
+    }
+    
+    public Subnet findSubnetFromRequestGiaddr(InetAddress giaddr) {
+    	Subnet foundSubnet = null;
+    	
+    	if (giaddr == null) {
+    		return null;
+    	}
+    	if (!(giaddr instanceof Inet4Address)) {
+    		throw new IllegalArgumentException("giaddr must be IPv4");
+    	}
+
+		if (DHCPConstants.INADDR_ANY.equals(giaddr)) {
+			// no giaddr, this is a direct mapping to the network interface
+			// TODO
+		} else {
+			// there is a non-null giaddr
+			foundSubnet = findSubnetByGiaddr(giaddr);
+			if (foundSubnet == null) {
+				// we try to fing the network by giaddr
+				for (int mask = getHighestMask(); mask >= getLowestMask(); mask--) {
+					InetCidr iterCidr = new InetCidr(giaddr, mask);
+					foundSubnet = findSubnetByCidr(iterCidr);
+					if (foundSubnet != null) {
+						break;
+					}
+				}
+			}
+		}
+		return foundSubnet;
     }
 
 	/**

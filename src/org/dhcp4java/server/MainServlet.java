@@ -70,29 +70,8 @@ public class MainServlet extends DHCPServlet {
 		// TODO
 		
 		/* 2. find out which subnet the client belongs */
-		Subnet subnet = null;
-		
-		TopologyConfig topology = clusterNode.getTopologyConfig();
-		InetAddress giaddr = request.getGiaddr();
-		
-		if (DHCPConstants.INADDR_ANY.equals(giaddr)) {
-			// no giaddr, this is a direct mapping to the network interface
-			// TODO
-		} else {
-			// there is a non-null giaddr
-			subnet = topology.findSubnetByGiaddr(giaddr);
-			if (subnet == null) {
-				// we try to fing the network by giaddr
-				for (int mask = topology.getHighestMask(); mask >= topology.getLowestMask(); mask--) {
-					InetCidr iterCidr = new InetCidr(giaddr, mask);
-					subnet = topology.findSubnetByCidr(iterCidr);
-					if (subnet != null) {
-						break;
-					}
-				}
-			}
-		}
-		
+		Subnet subnet = clusterNode.getTopologyConfig().findSubnetFromRequestGiaddr(request.getGiaddr());
+				
 		// what have we got for a subnet ?
 		if (subnet == null) {
 			logger.warning("Packet is not in any subnet: "+request);
