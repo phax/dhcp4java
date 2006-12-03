@@ -29,10 +29,10 @@ import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
 
+import org.dhcp4java.server.DHCPClusterMain;
 import org.dhcp4java.server.config.ConfigException;
 import org.dhcp4java.server.config.FrontendConfig;
 import org.dhcp4java.server.config.GlobalConfig;
-import org.dhcp4java.server.config.ServerConfigSet;
 import org.dhcp4java.server.config.TopologyConfig;
 
 /**
@@ -46,7 +46,7 @@ public class ServerConfigSetReader {
     
 	private static final Logger logger = Logger.getLogger(ServerConfigSetReader.class.getName().toLowerCase());
 	
-	public ServerConfigSet parseXmlFile(InputStream xml) throws ConfigException {
+	public static void parseXmlFile(InputStream xml, DHCPClusterMain cluster) throws ConfigException {
     	try {
 			Builder parser = new Builder();
 			Document doc = parser.build(xml);
@@ -78,31 +78,14 @@ public class ServerConfigSetReader {
 			}
 			TopologyConfig topologyConfig = TopologyConfigReader.xmlTopologyReader(topologyElts.get(0));
 			
-			ServerConfigSet configSet = new ServerConfigSet();
-			configSet.setFrontendConfig(frontendConfig);
-			configSet.setGlobalConfig(globalConfig);
-			configSet.setTopologyConfig(topologyConfig);
-			
-			return configSet;
+			cluster.setFrontendConfig(frontendConfig);
+			cluster.setGlobalConfig(globalConfig);
+			cluster.setTopologyConfig(topologyConfig);
     	} catch (ConfigException e) {
     		throw e;		// re-throw
     	} catch (Exception e) {
     		logger.log(Level.WARNING, "global exception", e);
     		throw new ConfigException("global exception", e);
-    	}
-    }
-	
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) throws IOException {
-    	LogManager.getLogManager().readConfiguration(ClassLoader.getSystemResourceAsStream("logging.properties"));
-    	InputStream xml = ClassLoader.getSystemResourceAsStream("org/dhcp4java/server/config/xml/configtest.xml");
-    	ServerConfigSetReader config = new ServerConfigSetReader();
-    	try {
-    		config.parseXmlFile(xml);
-    	} catch (ConfigException e) {
-    		logger.log(Level.SEVERE, "config exception", e);
     	}
     }
 

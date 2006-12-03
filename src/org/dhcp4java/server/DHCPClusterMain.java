@@ -20,11 +20,16 @@ package org.dhcp4java.server;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.dhcp4java.server.config.ConfigException;
+import org.dhcp4java.server.config.FrontendConfig;
+import org.dhcp4java.server.config.GlobalConfig;
+import org.dhcp4java.server.config.TopologyConfig;
 import org.dhcp4java.server.config.xml.ServerConfigSetReader;
 
 /**
@@ -38,9 +43,51 @@ import org.dhcp4java.server.config.xml.ServerConfigSetReader;
  * @author Stephan Hadinger
  * @version 0.70
  */
-public class DHCPClusterMain {
-	
+public class DHCPClusterMain implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(DHCPClusterMain.class.getName().toLowerCase());
+
+	private AtomicReference<FrontendConfig>	frontendConfig = new AtomicReference<FrontendConfig>();
+	private AtomicReference<GlobalConfig>		globalConfig = new AtomicReference<GlobalConfig>();
+	private AtomicReference<TopologyConfig>	topologyConfig = new AtomicReference<TopologyConfig>();
+	/**
+	 * @return Returns the frontendConfig.
+	 */
+	public FrontendConfig getFrontendConfig() {
+		return frontendConfig.get();
+	}
+	/**
+	 * @param frontendConfig The frontendConfig to set.
+	 */
+	public void setFrontendConfig(FrontendConfig frontendConfig) {
+		this.frontendConfig.set(frontendConfig);
+	}
+	/**
+	 * @return Returns the globalConfig.
+	 */
+	public GlobalConfig getGlobalConfig() {
+		return globalConfig.get();
+	}
+	/**
+	 * @param globalConfig The globalConfig to set.
+	 */
+	public void setGlobalConfig(GlobalConfig globalConfig) {
+		this.globalConfig.set(globalConfig);
+	}
+	/**
+	 * @return Returns the topologyConfig.
+	 */
+	public TopologyConfig getTopologyConfig() {
+		return topologyConfig.get();
+	}
+	/**
+	 * @param topologyConfig The topologyConfig to set.
+	 */
+	public void setTopologyConfig(TopologyConfig topologyConfig) {
+		this.topologyConfig.set(topologyConfig);
+	}
+
 
 	/**
 	 * @param args
@@ -48,9 +95,9 @@ public class DHCPClusterMain {
 	public static void main(String[] args) throws IOException {
     	LogManager.getLogManager().readConfiguration(ClassLoader.getSystemResourceAsStream("logging.properties"));
     	InputStream xml = ClassLoader.getSystemResourceAsStream("org/dhcp4java/server/config/xml/configtest.xml");
-    	ServerConfigSetReader config = new ServerConfigSetReader();
+    	DHCPClusterMain cluster = new DHCPClusterMain();
     	try {
-    		config.parseXmlFile(xml);
+    		ServerConfigSetReader.parseXmlFile(xml, cluster);
     	} catch (ConfigException e) {
     		logger.log(Level.SEVERE, "config exception", e);
     	}
