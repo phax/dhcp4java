@@ -32,6 +32,7 @@ import org.dhcp4java.server.config.FrontendConfig;
  */
 public class FrontEndConfigReader {
 	
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(FrontEndConfigReader.class.getName().toLowerCase());
 	
 	public static FrontendConfig xmlFrontEndConfigReader(Element frontendElt) throws ConfigException {

@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPConstants;
-import org.dhcp4java.DHCPPacket;
 import org.dhcp4java.InetCidr;
 import org.dhcp4java.server.struct.Subnet;
 
@@ -39,7 +38,8 @@ public class TopologyConfig implements Serializable {
 	
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = Logger.getLogger(GlobalConfig.class.getName().toLowerCase());
+    @SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(GlobalConfig.class.getName().toLowerCase());
 
     /** list of subnets hashed by their cidr */
     private final Map<InetCidr, Subnet> subnetsByCidr = new HashMap<InetCidr, Subnet>();

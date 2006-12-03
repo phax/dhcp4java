@@ -31,7 +31,8 @@ public class GlobalConfig implements Serializable {
 	
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = Logger.getLogger(GlobalConfig.class.getName().toLowerCase());
+    @SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(GlobalConfig.class.getName().toLowerCase());
 
     /*
      * Private data
