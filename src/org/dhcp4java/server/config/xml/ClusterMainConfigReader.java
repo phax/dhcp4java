@@ -18,10 +18,8 @@
  */
 package org.dhcp4java.server.config.xml;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import nu.xom.Builder;
