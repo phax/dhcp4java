@@ -21,11 +21,13 @@ package org.dhcp4java.server;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import org.dhcp4java.DHCPCoreServer;
 import org.dhcp4java.server.config.ConfigException;
 import org.dhcp4java.server.config.FrontendConfig;
 import org.dhcp4java.server.config.GlobalConfig;
@@ -48,9 +50,24 @@ public class DHCPClusterMain implements Serializable {
     private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(DHCPClusterMain.class.getName().toLowerCase());
 
+	/* 3 Levels of configuration */
 	private AtomicReference<FrontendConfig>	frontendConfig = new AtomicReference<FrontendConfig>();
 	private AtomicReference<GlobalConfig>		globalConfig = new AtomicReference<GlobalConfig>();
 	private AtomicReference<TopologyConfig>	topologyConfig = new AtomicReference<TopologyConfig>();
+	
+	/* The DHCP Server Core used */
+	private DHCPCoreServer internalServer;
+	
+	/* Thread called when Finalizing */
+	private Thread					finalizerThread;
+	
+	/* Batch update of leases */
+	private Executor				leaseBgExecutor;
+	
+	/* Back-End */
+	// TODO
+	
+	
 	/**
 	 * @return Returns the frontendConfig.
 	 */
