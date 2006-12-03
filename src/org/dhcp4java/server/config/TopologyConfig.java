@@ -88,4 +88,19 @@ public class TopologyConfig implements Serializable {
     		subnetsByGiaddr.put(giaddr, subnet);
     	}
     }
+
+	/**
+	 * @return Returns the highestMask.
+	 */
+	public int getHighestMask() {
+		return highestMask;
+	}
+
+	/**
+	 * @return Returns the lowestMask.
+	 */
+	public int getLowestMask() {
+		return lowestMask;
+	}
+    
 }

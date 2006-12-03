@@ -18,12 +18,19 @@
  */
 package org.dhcp4java.server;
 
+import java.net.InetAddress;
 import java.util.logging.Logger;
 
+import org.dhcp4java.DHCPConstants;
+import org.dhcp4java.DHCPOption;
 import org.dhcp4java.DHCPPacket;
+import org.dhcp4java.DHCPResponseFactory;
 import org.dhcp4java.DHCPServlet;
-import org.dhcp4java.server.config.FrontendConfig;
-import org.dhcp4java.server.config.GlobalConfig;
+import org.dhcp4java.InetCidr;
+import org.dhcp4java.server.config.TopologyConfig;
+import org.dhcp4java.server.struct.Subnet;
+
+import static org.dhcp4java.DHCPConstants.DHO_DHCP_AGENT_OPTIONS;
 
 /**
  * 
@@ -34,14 +41,12 @@ public class MainServlet extends DHCPServlet {
 
     private static final Logger logger = Logger.getLogger(MainServlet.class.getName().toLowerCase());
 
-	private final FrontendConfig frontendConfiguration;
-	private final GlobalConfig globalConfiguration;
+    /* link to the cluster node object */
+    private final DHCPClusterNode clusterNode;
 	
-	public MainServlet(FrontendConfig frontendConfiguration,
-						GlobalConfig globalConfiguration) {
+	public MainServlet(DHCPClusterNode clusterNode) {
 		super();
-		this.frontendConfiguration = frontendConfiguration;
-		this.globalConfiguration = globalConfiguration;
+		this.clusterNode = clusterNode;
 	}
 	
 	/**
@@ -53,14 +58,68 @@ public class MainServlet extends DHCPServlet {
 	 * 3. for each eligible subnet, filter request based on subnet refquirements<br>
 	 * 4. calculate the client IP address and lease time,
 	 * 		reserve the address for a limited duration
-	 * 5. generate the DHCPOFFER response, and send it back<br>
+	 * 5. calculate client options
+	 * 6. generate the DHCPOFFER response, and send it back<br>
+	 * 7. replicate option 82
 	 * 
 	 * @see org.dhcp4java.DHCPServlet#doDiscover(org.dhcp4java.DHCPPacket)
 	 */
 	@Override
 	protected DHCPPacket doDiscover(DHCPPacket request) {
-		// TODO Auto-generated method stub
-		return super.doDiscover(request);
+		/* 1. Filter client from global parameters */
+		// TODO
+		
+		/* 2. find out which subnet the client belongs */
+		Subnet subnet = null;
+		
+		TopologyConfig topology = clusterNode.getTopologyConfig();
+		InetAddress giaddr = request.getGiaddr();
+		
+		if (DHCPConstants.INADDR_ANY.equals(giaddr)) {
+			// no giaddr, this is a direct mapping to the network interface
+			// TODO
+		} else {
+			// there is a non-null giaddr
+			subnet = topology.findSubnetByGiaddr(giaddr);
+			if (subnet == null) {
+				// we try to fing the network by giaddr
+				for (int mask = topology.getHighestMask(); mask >= topology.getLowestMask(); mask--) {
+					InetCidr iterCidr = new InetCidr(giaddr, mask);
+					subnet = topology.findSubnetByCidr(iterCidr);
+					if (subnet != null) {
+						break;
+					}
+				}
+			}
+		}
+		
+		// what have we got for a subnet ?
+		if (subnet == null) {
+			logger.warning("Packet is not in any subnet: "+request);
+			return null;		// ignore request
+		}
+		
+		/* 3. filter by specific subnet parameters */
+		// TODO
+		
+		/* 4. calculate the client lease (ip+duration) */
+		// TODO
+		InetAddress clientAddr = null;
+		int clientLease = 0;
+		
+		/* 5. calculate client options */
+		InetAddress serverId = clusterNode.getGlobalConfig().getServerIdentifier();
+		String message = null;
+		DHCPOption[] options = null;
+		
+		/* 6. generate DHCPOFFER */
+		DHCPPacket response;
+		response = DHCPResponseFactory.makeDHCPOffer(request, clientAddr, clientLease, serverId, message, options);
+		
+		/* 7. replicate option 82 */
+		response.setOption(request.getOption(DHO_DHCP_AGENT_OPTIONS));
+
+		return null;
 	}
 
 }
