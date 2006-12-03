@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.dhcp4java.InetCidr;
-import org.dhcp4java.server.Subnet;
+import org.dhcp4java.server.struct.Subnet;
 
 /**
  * 
