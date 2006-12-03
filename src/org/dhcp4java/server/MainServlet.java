@@ -21,13 +21,10 @@ package org.dhcp4java.server;
 import java.net.InetAddress;
 import java.util.logging.Logger;
 
-import org.dhcp4java.DHCPConstants;
 import org.dhcp4java.DHCPOption;
 import org.dhcp4java.DHCPPacket;
 import org.dhcp4java.DHCPResponseFactory;
 import org.dhcp4java.DHCPServlet;
-import org.dhcp4java.InetCidr;
-import org.dhcp4java.server.config.TopologyConfig;
 import org.dhcp4java.server.struct.Subnet;
 
 import static org.dhcp4java.DHCPConstants.DHO_DHCP_AGENT_OPTIONS;
@@ -148,6 +145,7 @@ public class MainServlet extends DHCPServlet {
 		if (!confirmRequest) {
 			// send a NAK
 			DHCPPacket response = DHCPResponseFactory.makeDHCPNak(request, serverId, message);
+			return response;
 		}
 		
 		/* 6. generate DHCPOFFER */
