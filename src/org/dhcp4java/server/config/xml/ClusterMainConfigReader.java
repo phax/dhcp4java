@@ -27,7 +27,7 @@ import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
 
-import org.dhcp4java.server.DHCPClusterMain;
+import org.dhcp4java.server.DHCPClusterNode;
 import org.dhcp4java.server.config.ConfigException;
 import org.dhcp4java.server.config.FrontendConfig;
 import org.dhcp4java.server.config.GlobalConfig;
@@ -44,7 +44,7 @@ public class ClusterMainConfigReader {
     
 	private static final Logger logger = Logger.getLogger(ClusterMainConfigReader.class.getName().toLowerCase());
 	
-	public static void parseXmlFile(InputStream xml, DHCPClusterMain cluster) throws ConfigException {
+	public static void parseXmlFile(InputStream xml, DHCPClusterNode cluster) throws ConfigException {
     	try {
 			Builder parser = new Builder();
 			Document doc = parser.build(xml);
