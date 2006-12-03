@@ -57,10 +57,10 @@ public class MainServlet extends DHCPServlet {
 	 * 2. find out which Subnet(s) the client belongs<br>
 	 * 3. for each eligible subnet, filter request based on subnet refquirements<br>
 	 * 4. calculate the client IP address and lease time,
-	 * 		reserve the address for a limited duration
-	 * 5. calculate client options
+	 * 		reserve the address for a limited duration<br>
+	 * 5. calculate client options<br>
 	 * 6. generate the DHCPOFFER response, and send it back<br>
-	 * 7. replicate option 82
+	 * 7. replicate option 82<br>
 	 * 
 	 * @see org.dhcp4java.DHCPServlet#doDiscover(org.dhcp4java.DHCPPacket)
 	 */
@@ -98,7 +98,65 @@ public class MainServlet extends DHCPServlet {
 		/* 7. replicate option 82 */
 		response.setOption(request.getOption(DHO_DHCP_AGENT_OPTIONS));
 
-		return null;
+		return response;
 	}
 
+
+	/**
+	 * Handles DHCPREQUEST from a client.
+	 * 
+	 * <p>Normal order is:<br>
+	 * 1. filter client request from global parameters<br>
+	 * 2. find out which Subnet(s) the client belongs<br>
+	 * 3. for each eligible subnet, filter request based on subnet refquirements<br>
+	 * 4. verify the client IP address and lease time,
+	 * 		update the reserved lease<br>
+	 * 5. calculate client options<br>
+	 * 6. generate the DHCPOFFER response, and send it back<br>
+	 * 7. replicate option 82<br>
+	 * 
+	 * @see org.dhcp4java.DHCPServlet#doDiscover(org.dhcp4java.DHCPPacket)
+	 */
+	@Override
+	protected DHCPPacket doRequest(DHCPPacket request) {
+		/* 1. Filter client from global parameters */
+		// TODO
+		
+		/* 2. find out which subnet the client belongs */
+		Subnet subnet = clusterNode.getTopologyConfig().findSubnetFromRequestGiaddr(request.getGiaddr());
+				
+		// what have we got for a subnet ?
+		if (subnet == null) {
+			logger.warning("Packet is not in any subnet: "+request);
+			return null;		// ignore request
+		}
+		
+		/* 3. filter by specific subnet parameters */
+		// TODO
+		
+		/* 4. calculate the client lease (ip+duration) */
+		// TODO
+		InetAddress clientAddr = null;
+		int clientLease = 0;
+		boolean confirmRequest = true;
+		
+		/* 5. calculate client options */
+		InetAddress serverId = clusterNode.getGlobalConfig().getServerIdentifier();
+		String message = null;
+		DHCPOption[] options = null;
+
+		if (!confirmRequest) {
+			// send a NAK
+			DHCPPacket response = DHCPResponseFactory.makeDHCPNak(request, serverId, message);
+		}
+		
+		/* 6. generate DHCPOFFER */
+		DHCPPacket response;
+		response = DHCPResponseFactory.makeDHCPAck(request, clientAddr, clientLease, serverId, message, options);
+		
+		/* 7. replicate option 82 */
+		response.setOption(request.getOption(DHO_DHCP_AGENT_OPTIONS));
+
+		return response;
+	}
 }
