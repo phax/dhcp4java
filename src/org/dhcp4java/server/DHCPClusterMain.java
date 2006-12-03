@@ -30,7 +30,7 @@ import org.dhcp4java.server.config.ConfigException;
 import org.dhcp4java.server.config.FrontendConfig;
 import org.dhcp4java.server.config.GlobalConfig;
 import org.dhcp4java.server.config.TopologyConfig;
-import org.dhcp4java.server.config.xml.ServerConfigSetReader;
+import org.dhcp4java.server.config.xml.ClusterMainConfigReader;
 
 /**
  * This is the main class for DHCP Cluster Server (FrontEnd).
@@ -97,7 +97,7 @@ public class DHCPClusterMain implements Serializable {
     	InputStream xml = ClassLoader.getSystemResourceAsStream("org/dhcp4java/server/config/xml/configtest.xml");
     	DHCPClusterMain cluster = new DHCPClusterMain();
     	try {
-    		ServerConfigSetReader.parseXmlFile(xml, cluster);
+    		ClusterMainConfigReader.parseXmlFile(xml, cluster);
     	} catch (ConfigException e) {
     		logger.log(Level.SEVERE, "config exception", e);
     	}
