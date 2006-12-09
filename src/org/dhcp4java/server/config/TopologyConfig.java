@@ -22,11 +22,15 @@ import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPConstants;
 import org.dhcp4java.InetCidr;
+import org.dhcp4java.server.filter.AndFilter;
+import org.dhcp4java.server.filter.RequestFilter;
 import org.dhcp4java.server.struct.Subnet;
 
 /**
@@ -52,6 +56,8 @@ public class TopologyConfig implements Serializable {
     
     /** provide a fast search for subnets via an associated giaddr */
     private final Map<InetAddress, Subnet> subnetsByGiaddr = new HashMap<InetAddress, Subnet>();
+    
+    private final AndFilter		globalFilter = new AndFilter();
     
     /**
      * Constructor
@@ -134,6 +140,10 @@ public class TopologyConfig implements Serializable {
 	 */
 	public int getLowestMask() {
 		return lowestMask;
+	}
+	
+	public RequestFilter getGlobalFilter() {
+		return globalFilter;
 	}
     
 }

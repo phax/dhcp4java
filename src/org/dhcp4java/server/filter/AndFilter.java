@@ -18,17 +18,27 @@
  */
 package org.dhcp4java.server.filter;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.dhcp4java.DHCPPacket;
 
 public final class AndFilter implements RequestFilter {
 	
-	private final RequestFilter[] filters;
+	private final LinkedList<RequestFilter> filters;
+	
+	public AndFilter() {
+		this.filters = new LinkedList<RequestFilter>();
+	}
 	
 	public AndFilter(RequestFilter[] filters) {
+		this();
 		if (filters == null) {
-			throw new NullPointerException("filters is null");
+			throw new NullPointerException("filters must not be null");
 		}
-		this.filters = filters;
+		for (RequestFilter element : filters) {
+			this.filters.add(element);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -41,6 +51,13 @@ public final class AndFilter implements RequestFilter {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * @return Returns the filters.
+	 */
+	public List<RequestFilter> getFilters() {
+		return filters;
 	}
 
 }

@@ -19,12 +19,14 @@
 package org.dhcp4java.server;
 
 import java.net.InetAddress;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPOption;
 import org.dhcp4java.DHCPPacket;
 import org.dhcp4java.DHCPResponseFactory;
 import org.dhcp4java.DHCPServlet;
+import org.dhcp4java.server.filter.RequestFilter;
 import org.dhcp4java.server.struct.Subnet;
 
 import static org.dhcp4java.DHCPConstants.DHO_DHCP_AGENT_OPTIONS;
@@ -64,7 +66,13 @@ public class MainServlet extends DHCPServlet {
 	@Override
 	protected DHCPPacket doDiscover(DHCPPacket request) {
 		/* 1. Filter client from global parameters */
-		// TODO
+		RequestFilter globalFilter = clusterNode.getTopologyConfig().getGlobalFilter();
+		if (!globalFilter.isRequestAccepted(request)) {
+			if (logger.isLoggable(Level.FINE)) {
+				logger.fine("Request rejected on global filter "+request);
+			}
+			return null;		// escape
+		}
 		
 		/* 2. find out which subnet the client belongs */
 		Subnet subnet = clusterNode.getTopologyConfig().findSubnetFromRequestGiaddr(request.getGiaddr());
@@ -117,7 +125,13 @@ public class MainServlet extends DHCPServlet {
 	@Override
 	protected DHCPPacket doRequest(DHCPPacket request) {
 		/* 1. Filter client from global parameters */
-		// TODO
+		RequestFilter globalFilter = clusterNode.getTopologyConfig().getGlobalFilter();
+		if (!globalFilter.isRequestAccepted(request)) {
+			if (logger.isLoggable(Level.FINE)) {
+				logger.fine("Request rejected on global filter "+request);
+			}
+			return null;		// escape
+		}
 		
 		/* 2. find out which subnet the client belongs */
 		Subnet subnet = clusterNode.getTopologyConfig().findSubnetFromRequestGiaddr(request.getGiaddr());
