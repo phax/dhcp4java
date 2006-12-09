@@ -58,6 +58,7 @@ public class TopologyConfig implements Serializable {
     /** provide a fast search for subnets via an associated giaddr */
     private final Map<InetAddress, Subnet> subnetsByGiaddr = new HashMap<InetAddress, Subnet>();
     
+    /** Filter chain applied to every request, tells whether to process the request or not */
     private final RequestFilter		globalFilter = new AlwaysTrueFilter();
     
     /**
