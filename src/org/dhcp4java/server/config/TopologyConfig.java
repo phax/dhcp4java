@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPConstants;
 import org.dhcp4java.InetCidr;
+import org.dhcp4java.server.filter.AlwaysTrueFilter;
 import org.dhcp4java.server.filter.AndFilter;
 import org.dhcp4java.server.filter.RequestFilter;
 import org.dhcp4java.server.struct.Subnet;
@@ -57,7 +58,7 @@ public class TopologyConfig implements Serializable {
     /** provide a fast search for subnets via an associated giaddr */
     private final Map<InetAddress, Subnet> subnetsByGiaddr = new HashMap<InetAddress, Subnet>();
     
-    private final AndFilter		globalFilter = new AndFilter();
+    private final RequestFilter		globalFilter = new AlwaysTrueFilter();
     
     /**
      * Constructor

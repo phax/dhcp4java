@@ -33,6 +33,8 @@ import org.dhcp4java.DHCPOption;
 import org.dhcp4java.HardwareAddress;
 import org.dhcp4java.InetCidr;
 import org.dhcp4java.server.config.ConfigException;
+import org.dhcp4java.server.filter.AlwaysTrueFilter;
+import org.dhcp4java.server.filter.RequestFilter;
 /**
  * 
  * @author Stephan Hadinger
@@ -59,6 +61,9 @@ public class Subnet implements Serializable {
     /** list of static addresses already assigned */
     private final Map<HardwareAddress, InetAddress> staticAddressesByMac = new HashMap<HardwareAddress, InetAddress>();
     private final Map<InetAddress, HardwareAddress> staticAddressesByIp = new HashMap<InetAddress, HardwareAddress>();
+    
+    /** filter applicable to Subnet */
+    private RequestFilter				requestFilter = new AlwaysTrueFilter();
     
     /** array of dhcp options */
     private DHCPOption[] dhcpOptions = DHCPOPTION_0;
@@ -154,4 +159,20 @@ public class Subnet implements Serializable {
 			logger.warning("Hardware address ["+macAddr+"]already has an IP address statically assigned");
 		}
 	}
+
+	/**
+	 * @return Returns the requestFilter.
+	 */
+	public RequestFilter getRequestFilter() {
+		return requestFilter;
+	}
+
+	/**
+	 * @param requestFilter The requestFilter to set.
+	 */
+	public void setRequestFilter(RequestFilter requestFilter) {
+		this.requestFilter = requestFilter;
+	}
+	
+	
 }
