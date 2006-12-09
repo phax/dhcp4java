@@ -19,20 +19,19 @@
 package org.dhcp4java.server;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPCoreServer;
-import org.dhcp4java.server.config.ConfigException;
+import org.dhcp4java.server.config.GenericConfigReader;
 import org.dhcp4java.server.config.FrontendConfig;
 import org.dhcp4java.server.config.GlobalConfig;
 import org.dhcp4java.server.config.TopologyConfig;
-import org.dhcp4java.server.config.xml.ClusterMainConfigReader;
+import org.dhcp4java.server.config.xml.XmlConfigReader;
 
 /**
  * This is the main class for DHCP Cluster Server (FrontEnd).
@@ -45,11 +44,16 @@ import org.dhcp4java.server.config.xml.ClusterMainConfigReader;
  * @author Stephan Hadinger
  * @version 0.70
  */
-public class DHCPClusterNode implements Serializable {
+public class DHCPClusterNode implements Serializable, Runnable {
 
     private static final long serialVersionUID = 1L;
+    
 	private static final Logger logger = Logger.getLogger(DHCPClusterNode.class.getName().toLowerCase());
 
+	private final Properties					bootstrapProps;
+	
+	private GenericConfigReader				configReader = null;
+	
 	/* 3 Levels of configuration */
 	private AtomicReference<FrontendConfig>	frontendConfig = new AtomicReference<FrontendConfig>();
 	private AtomicReference<GlobalConfig>		globalConfig = new AtomicReference<GlobalConfig>();
@@ -67,6 +71,42 @@ public class DHCPClusterNode implements Serializable {
 	/* Back-End */
 	// TODO
 	
+	public DHCPClusterNode(Properties bootstrapProps) {
+		this.bootstrapProps = bootstrapProps;
+		
+		// TODO specialization
+		configReader = new XmlConfigReader();
+		configReader.init(this, bootstrapProps);
+		frontendConfig.set(configReader.getFrontEndConfig());
+		globalConfig.set(configReader.getGlobalConfig());
+		topologyConfig.set(configReader.getTopologyConfig());
+		// ready to run
+	}
+	
+
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Runnable#run()
+	 */
+	public void run() {
+		// TODO ready to run
+	}
+
+
+
+	/**
+	 * Causes a topology reload.
+	 * 
+	 * <p>This method enforces no reentratn reloads
+	 */
+	public void triggerReloadTopologyConfig() {
+		// TODO
+		TopologyConfig newTopologyConfig = configReader.reloadTopologyConfig();
+		if (newTopologyConfig != null) {
+			topologyConfig.set(newTopologyConfig);
+		}
+	}
+	
 	
 	/**
 	 * @return Returns the frontendConfig.
@@ -77,7 +117,7 @@ public class DHCPClusterNode implements Serializable {
 	/**
 	 * @param frontendConfig The frontendConfig to set.
 	 */
-	public void setFrontendConfig(FrontendConfig frontendConfig) {
+	protected void setFrontendConfig(FrontendConfig frontendConfig) {
 		this.frontendConfig.set(frontendConfig);
 	}
 	/**
@@ -89,7 +129,7 @@ public class DHCPClusterNode implements Serializable {
 	/**
 	 * @param globalConfig The globalConfig to set.
 	 */
-	public void setGlobalConfig(GlobalConfig globalConfig) {
+	protected void setGlobalConfig(GlobalConfig globalConfig) {
 		this.globalConfig.set(globalConfig);
 	}
 	/**
@@ -101,7 +141,7 @@ public class DHCPClusterNode implements Serializable {
 	/**
 	 * @param topologyConfig The topologyConfig to set.
 	 */
-	public void setTopologyConfig(TopologyConfig topologyConfig) {
+	protected void setTopologyConfig(TopologyConfig topologyConfig) {
 		this.topologyConfig.set(topologyConfig);
 	}
 
@@ -111,13 +151,16 @@ public class DHCPClusterNode implements Serializable {
 	 */
 	public static void main(String[] args) throws IOException {
     	LogManager.getLogManager().readConfiguration(ClassLoader.getSystemResourceAsStream("logging.properties"));
-    	InputStream xml = ClassLoader.getSystemResourceAsStream("org/dhcp4java/server/config/xml/configtest.xml");
-    	DHCPClusterNode cluster = new DHCPClusterNode();
-    	try {
-    		ClusterMainConfigReader.parseXmlFile(xml, cluster);
-    	} catch (ConfigException e) {
-    		logger.log(Level.SEVERE, "config exception", e);
-    	}
+    	Properties props = new Properties();
+    	props.put("config.xml.resourcepath", "org/dhcp4java/server/config/xml/configtest.xml");
+
+    	DHCPClusterNode cluster = new DHCPClusterNode(props);
+    	cluster.run();
+//    	try {
+//    		//ClusterMainConfigReader.parseXmlFile(xml, cluster);
+//    	} catch (ConfigException e) {
+//    		logger.log(Level.SEVERE, "config exception", e);
+//    	}
     }
 
 }

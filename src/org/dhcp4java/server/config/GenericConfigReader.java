@@ -19,33 +19,24 @@
 package org.dhcp4java.server.config;
 
 import java.util.Properties;
-import java.util.logging.Logger;
 
-import org.dhcp4java.DHCPCoreServer;
-import org.dhcp4java.server.config.xml.ClusterMainConfigReader;
+import org.dhcp4java.server.DHCPClusterNode;
 
 /**
  * 
  * @author Stephan Hadinger
  * @version 0.70
  */
-public abstract class GenericConfigReader {
-	
-	private static final Logger logger = Logger.getLogger(GenericConfigReader.class.getName().toLowerCase());
-
-	
-	public GenericConfigReader(DHCPCoreServer server, Properties props) {
+public interface GenericConfigReader {
 		
-	}
+	public void init(DHCPClusterNode dhcpCoreServer, Properties configProperties);
 	
-	public abstract GlobalConfig loadGlobalConfig();
+	public GlobalConfig getGlobalConfig();
 	
-	public abstract FrontendConfig loadFrontEndConfig();
+	public FrontendConfig getFrontEndConfig();
 	
-	public abstract TopologyConfig loadTopologyConfig();
+	public TopologyConfig getTopologyConfig();
 	
-	public TopologyConfig reloadTopologyConfig() {
-		return loadTopologyConfig();
-	}
+	public TopologyConfig reloadTopologyConfig();
 
 }

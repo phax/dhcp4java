@@ -19,6 +19,7 @@
 package org.dhcp4java.server.config.xml;
 
 import java.io.InputStream;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,6 +31,7 @@ import nu.xom.Elements;
 import org.dhcp4java.server.DHCPClusterNode;
 import org.dhcp4java.server.config.ConfigException;
 import org.dhcp4java.server.config.FrontendConfig;
+import org.dhcp4java.server.config.GenericConfigReader;
 import org.dhcp4java.server.config.GlobalConfig;
 import org.dhcp4java.server.config.TopologyConfig;
 
@@ -38,13 +40,83 @@ import org.dhcp4java.server.config.TopologyConfig;
  * @author Stephan Hadinger
  * @version 0.70
  */
-public class ClusterMainConfigReader {
-
-    private static final long serialVersionUID = 1L;
-    
-	private static final Logger logger = Logger.getLogger(ClusterMainConfigReader.class.getName().toLowerCase());
+public class XmlConfigReader implements GenericConfigReader {
 	
-	public static void parseXmlFile(InputStream xml, DHCPClusterNode cluster) throws ConfigException {
+	private static final Logger logger = Logger.getLogger(XmlConfigReader.class.getName().toLowerCase());
+
+	private boolean inited = false;
+	
+	private FrontendConfig frontendConfig = null;
+	
+	private GlobalConfig globalConfig = null;
+	
+	private TopologyConfig topologyConfig = null; 
+	
+
+	public void init(DHCPClusterNode dhcpClusterNode, Properties configProperties) {
+		if (dhcpClusterNode == null) {
+			throw new NullPointerException("dhcpClusterNode must not be null");
+		}
+		if (configProperties == null) {
+			throw new NullPointerException("configProperties must not be null");
+		}
+		String xmlResourcePath = configProperties.getProperty("config.xml.resourcepath");
+		logger.config("xmlResourcePath ="+xmlResourcePath);
+    	InputStream xml = ClassLoader.getSystemResourceAsStream("org/dhcp4java/server/config/xml/configtest.xml");
+
+    	try {
+    		parseXmlFile(xml);
+    		inited = true;
+    	} catch (ConfigException e) {
+    		logger.log(Level.SEVERE, "config exception", e);
+    	}
+		// TODO
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.dhcp4java.server.config.GenericConfigReader#getFrontEndConfig()
+	 */
+	public FrontendConfig getFrontEndConfig() {
+		if (!inited) {
+			throw new IllegalStateException("Config not inited");
+		}
+		return frontendConfig;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.dhcp4java.server.config.GenericConfigReader#getGlobalConfig()
+	 */
+	public GlobalConfig getGlobalConfig() {
+		if (!inited) {
+			throw new IllegalStateException("Config not inited");
+		}
+		return globalConfig;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.dhcp4java.server.config.GenericConfigReader#getTopologyConfig()
+	 */
+	public TopologyConfig getTopologyConfig() {
+		if (!inited) {
+			throw new IllegalStateException("Config not inited");
+		}
+		return topologyConfig;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.dhcp4java.server.config.GenericConfigReader#reloadTopologyConfig()
+	 */
+	public TopologyConfig reloadTopologyConfig() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	public void parseXmlFile(InputStream xml) throws ConfigException {
     	try {
 			Builder parser = new Builder();
 			Document doc = parser.build(xml);
@@ -59,7 +131,7 @@ public class ClusterMainConfigReader {
 			if (frontendElts.size() != 1) {
 				throw new ConfigException("1 'front-end' element expected, found "+frontendElts.size());
 			}
-			FrontendConfig frontendConfig = FrontEndConfigReader.xmlFrontEndConfigReader(frontendElts.get(0));
+			this.frontendConfig = FrontEndConfigReader.xmlFrontEndConfigReader(frontendElts.get(0));
 			//FrontendConfig frontendConfig = FrontendConfigReader...
 			
 			// parse "global" element
@@ -67,18 +139,14 @@ public class ClusterMainConfigReader {
 			if (globalElts.size() != 1) {
 				throw new ConfigException("1 'global' element expected, found "+globalElts.size());
 			}
-			GlobalConfig globalConfig = GlobalConfigReader.xmlGlobalConfigReader(globalElts.get(0));
+			this.globalConfig = GlobalConfigReader.xmlGlobalConfigReader(globalElts.get(0));
 			
 			// parse "topology" element
 			Elements topologyElts = root.getChildElements("topology");
 			if (topologyElts.size() != 1) {
 				throw new ConfigException("1 'subnets' element expected, found "+topologyElts.size());
 			}
-			TopologyConfig topologyConfig = TopologyConfigReader.xmlTopologyReader(topologyElts.get(0));
-			
-			cluster.setFrontendConfig(frontendConfig);
-			cluster.setGlobalConfig(globalConfig);
-			cluster.setTopologyConfig(topologyConfig);
+			this.topologyConfig = TopologyConfigReader.xmlTopologyReader(topologyElts.get(0));
     	} catch (ConfigException e) {
     		throw e;		// re-throw
     	} catch (Exception e) {
