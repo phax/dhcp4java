@@ -18,6 +18,9 @@
  */
 package org.dhcp4java.server.filter;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.dhcp4java.DHCPPacket;
 
 /**
@@ -29,16 +32,22 @@ import org.dhcp4java.DHCPPacket;
  *
  */
 public final class OrFilter implements RequestFilter {
+
+	private final LinkedList<RequestFilter> filters;
 	
-	private final RequestFilter[] filters;
+	public OrFilter() {
+		this.filters = new LinkedList<RequestFilter>();
+	}
 	
 	public OrFilter(RequestFilter[] filters) {
+		this();
 		if (filters == null) {
-			throw new NullPointerException("filters is null");
+			throw new NullPointerException("filters must not be null");
 		}
-		this.filters = filters;
+		for (RequestFilter element : filters) {
+			this.filters.add(element);
+		}
 	}
-
 	/* (non-Javadoc)
 	 * @see org.dhcp4java.server.filter.RequestFilter#filter(org.dhcp4java.DHCPPacket)
 	 */
@@ -51,5 +60,11 @@ public final class OrFilter implements RequestFilter {
 		return false;
 	}
 
+	/**
+	 * @return Returns the filters.
+	 */
+	public List<RequestFilter> getFilters() {
+		return filters;
+	}
 	
 }
