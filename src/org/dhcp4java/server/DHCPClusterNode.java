@@ -18,8 +18,12 @@
  */
 package org.dhcp4java.server;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReference;
@@ -149,10 +153,15 @@ public class DHCPClusterNode implements Serializable, Runnable {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, URISyntaxException {
+		// set all logging levels
     	LogManager.getLogManager().readConfiguration(ClassLoader.getSystemResourceAsStream("logging.properties"));
+    	// read bootstrap properties
+    	FileInputStream bootstrapFile = new FileInputStream("./config/DHCPd.properties");
+    	
     	Properties props = new Properties();
-    	props.put("config.xml.resourcepath", "org/dhcp4java/server/config/xml/configtest.xml");
+    	props.load(bootstrapFile);
+    	//props.put("config.xml.resourcepath", "org/dhcp4java/server/config/xml/configtest.xml");
 
     	DHCPClusterNode cluster = new DHCPClusterNode(props);
     	cluster.run();
