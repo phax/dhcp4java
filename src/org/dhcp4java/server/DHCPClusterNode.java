@@ -27,10 +27,12 @@ import java.net.URISyntaxException;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPCoreServer;
+import org.dhcp4java.server.config.ConfigException;
 import org.dhcp4java.server.config.GenericConfigReader;
 import org.dhcp4java.server.config.FrontendConfig;
 import org.dhcp4java.server.config.GlobalConfig;
@@ -75,11 +77,29 @@ public class DHCPClusterNode implements Serializable, Runnable {
 	/* Back-End */
 	// TODO
 	
-	public DHCPClusterNode(Properties bootstrapProps) {
+	public DHCPClusterNode(Properties bootstrapProps) throws ConfigException {
 		this.bootstrapProps = bootstrapProps;
 		
+		try {
+			// instanciate config reader object
+			String configReaderClassName = this.bootstrapProps.getProperty(CONFIG_READER);
+			if (configReaderClassName == null) {
+				throw new ConfigException("no '"+CONFIG_READER+"' parameter in "+DHCPD_PROPERTIES);
+			}
+			Class configReaderClassname = Class.forName(configReaderClassName);
+//			if (!(configReaderClassname. instanceof GenericConfigReader)) {
+//				throw new ConfigException("class is not of type GenericConfigReader: "+configReader.getClass().getName());
+//			}
+			Class[] constrSignature = { };
+			Object[] constrParams = { };
+			configReader = (GenericConfigReader) configReaderClassname.getConstructor(constrSignature).newInstance(constrParams);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Unable to load configuration", e);
+			throw new ConfigException("Unable to load configuration", e);
+		}
+		
 		// TODO specialization
-		configReader = new XmlConfigReader();
+		//configReader = new XmlConfigReader();
 		configReader.init(this, bootstrapProps);
 		frontendConfig.set(configReader.getFrontEndConfig());
 		globalConfig.set(configReader.getGlobalConfig());
@@ -87,6 +107,9 @@ public class DHCPClusterNode implements Serializable, Runnable {
 		// ready to run
 	}
 	
+	public void init() {
+		
+	}
 
 	
 	/* (non-Javadoc)
@@ -153,11 +176,11 @@ public class DHCPClusterNode implements Serializable, Runnable {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) throws IOException, URISyntaxException {
+	public static void main(String[] args) throws IOException, URISyntaxException, ConfigException {
 		// set all logging levels
     	LogManager.getLogManager().readConfiguration(ClassLoader.getSystemResourceAsStream("logging.properties"));
     	// read bootstrap properties
-    	FileInputStream bootstrapFile = new FileInputStream("./config/DHCPd.properties");
+    	FileInputStream bootstrapFile = new FileInputStream("./"+CONFIG_DIR+"/"+DHCPD_PROPERTIES);
     	
     	Properties props = new Properties();
     	props.load(bootstrapFile);
@@ -172,4 +195,7 @@ public class DHCPClusterNode implements Serializable, Runnable {
 //    	}
     }
 
+	private static final String CONFIG_DIR = "config";
+	private static final String DHCPD_PROPERTIES = "DHCPd.properties";
+	private static final String CONFIG_READER = "config.reader";
 }
