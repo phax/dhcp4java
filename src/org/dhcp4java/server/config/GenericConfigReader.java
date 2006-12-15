@@ -29,7 +29,7 @@ import org.dhcp4java.server.DHCPClusterNode;
  */
 public interface GenericConfigReader {
 		
-	public void init(DHCPClusterNode dhcpCoreServer, Properties configProperties);
+	public void init(DHCPClusterNode dhcpCoreServer, Properties configProperties) throws ConfigException;
 	
 	public GlobalConfig getGlobalConfig();
 	

@@ -18,6 +18,8 @@
  */
 package org.dhcp4java.server.config.xml;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -51,18 +53,25 @@ public class XmlConfigReader implements GenericConfigReader {
 	private GlobalConfig globalConfig = null;
 	
 	private TopologyConfig topologyConfig = null; 
-	
 
-	public void init(DHCPClusterNode dhcpClusterNode, Properties configProperties) {
-		if (dhcpClusterNode == null) {
-			throw new NullPointerException("dhcpClusterNode must not be null");
+	public void init(DHCPClusterNode dhcpClusterNode, Properties configProperties) throws ConfigException {
+		InputStream xml;
+		
+		if (inited) {
+			throw new IllegalStateException("XmlConfigReader already inited");
 		}
-		if (configProperties == null) {
-			throw new NullPointerException("configProperties must not be null");
+		if ((dhcpClusterNode == null) || (configProperties == null)) {
+			throw new NullPointerException();
 		}
-		String xmlResourcePath = configProperties.getProperty("config.xml.resourcepath");
-		logger.config("xmlResourcePath ="+xmlResourcePath);
-    	InputStream xml = ClassLoader.getSystemResourceAsStream("org/dhcp4java/server/config/xml/configtest.xml");
+		String xmlFilename = configProperties.getProperty(CONFIG_XML_FILE);
+		logger.config("xmlResourcePath ="+xmlFilename);
+		try {
+			xml = new FileInputStream(xmlFilename);
+		} catch (FileNotFoundException e) {
+			logger.log(Level.SEVERE, "File not found!"+xmlFilename, e);
+    		throw new ConfigException("File not found!"+xmlFilename, e);
+		}
+    	//InputStream xml = ClassLoader.getSystemResourceAsStream("org/dhcp4java/server/config/xml/configtest.xml");
 
     	try {
     		parseXmlFile(xml);
@@ -154,5 +163,7 @@ public class XmlConfigReader implements GenericConfigReader {
     		throw new ConfigException("global exception", e);
     	}
     }
+	
+	private static final String CONFIG_XML_FILE = "config.xml.file";
 
 }
