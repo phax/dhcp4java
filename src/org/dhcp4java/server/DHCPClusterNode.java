@@ -38,6 +38,9 @@ import org.dhcp4java.server.config.FrontendConfig;
 import org.dhcp4java.server.config.GlobalConfig;
 import org.dhcp4java.server.config.TopologyConfig;
 import org.dhcp4java.server.config.xml.XmlConfigReader;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
 
 /**
  * This is the main class for DHCP Cluster Server (FrontEnd).
@@ -179,23 +182,41 @@ public class DHCPClusterNode implements Serializable, Runnable {
 	public static void main(String[] args) throws IOException, URISyntaxException, ConfigException {
 		// set all logging levels
     	LogManager.getLogManager().readConfiguration(ClassLoader.getSystemResourceAsStream("logging.properties"));
+    	
+    	// parse command-line options
+    	ClusterOptions bean = new ClusterOptions();
+    	CmdLineParser parser = new CmdLineParser(bean);
+    	try {
+    		parser.parseArgument(args);
+    	} catch (CmdLineException e) {
+    		System.err.println(e.getMessage());
+    		System.err.println("java -jar dhcpcluster.jar [options...] arguments...");
+    		parser.printUsage(System.err);
+    		return;
+    	}
+    	
     	// read bootstrap properties
-    	FileInputStream bootstrapFile = new FileInputStream("./"+CONFIG_DIR+"/"+DHCPD_PROPERTIES);
+    	FileInputStream bootstrapFile = null;
+    	if (bean.bootstrapConfigFile != null) {
+    		bootstrapFile = new FileInputStream(bean.bootstrapConfigFile);
+    	} else {
+    		bootstrapFile = new FileInputStream("./"+CONFIG_DIR+"/"+DHCPD_PROPERTIES);
+    	}
     	
     	Properties props = new Properties();
     	props.load(bootstrapFile);
-    	//props.put("config.xml.resourcepath", "org/dhcp4java/server/config/xml/configtest.xml");
 
     	DHCPClusterNode cluster = new DHCPClusterNode(props);
     	cluster.run();
-//    	try {
-//    		//ClusterMainConfigReader.parseXmlFile(xml, cluster);
-//    	} catch (ConfigException e) {
-//    		logger.log(Level.SEVERE, "config exception", e);
-//    	}
     }
 
 	private static final String CONFIG_DIR = "config";
 	private static final String DHCPD_PROPERTIES = "DHCPd.properties";
 	private static final String CONFIG_READER = "config.reader";
+}
+
+class ClusterOptions {
+	
+	@Option(name="-c", usage="Bootstrap config filename")
+	public File bootstrapConfigFile;
 }
