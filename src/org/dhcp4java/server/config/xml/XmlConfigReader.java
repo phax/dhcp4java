@@ -120,8 +120,8 @@ public class XmlConfigReader implements GenericConfigReader {
 	 * @see org.dhcp4java.server.config.GenericConfigReader#reloadTopologyConfig()
 	 */
 	public TopologyConfig reloadTopologyConfig() {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO reload the file
+		return null;		// null means we don't change anything
 	}
 
 
@@ -138,7 +138,7 @@ public class XmlConfigReader implements GenericConfigReader {
 			// parse "front-end" element
 			Elements frontendElts = root.getChildElements("front-end");
 			if (frontendElts.size() != 1) {
-				throw new ConfigException("1 'front-end' element expected, found "+frontendElts.size());
+				throw new ConfigException("One 'front-end' element expected, found "+frontendElts.size());
 			}
 			this.frontendConfig = FrontEndConfigReader.xmlFrontEndConfigReader(frontendElts.get(0));
 			//FrontendConfig frontendConfig = FrontendConfigReader...
@@ -146,14 +146,14 @@ public class XmlConfigReader implements GenericConfigReader {
 			// parse "global" element
 			Elements globalElts = root.getChildElements("global");
 			if (globalElts.size() != 1) {
-				throw new ConfigException("1 'global' element expected, found "+globalElts.size());
+				throw new ConfigException("One 'global' element expected, found "+globalElts.size());
 			}
 			this.globalConfig = GlobalConfigReader.xmlGlobalConfigReader(globalElts.get(0));
 			
 			// parse "topology" element
 			Elements topologyElts = root.getChildElements("topology");
 			if (topologyElts.size() != 1) {
-				throw new ConfigException("1 'subnets' element expected, found "+topologyElts.size());
+				throw new ConfigException("One 'subnets' element expected, found "+topologyElts.size());
 			}
 			this.topologyConfig = TopologyConfigReader.xmlTopologyReader(topologyElts.get(0));
     	} catch (ConfigException e) {
