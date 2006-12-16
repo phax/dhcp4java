@@ -19,6 +19,7 @@
 package org.dhcp4java.server.config;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.logging.Logger;
 
 /**
@@ -32,5 +33,33 @@ public class FrontendConfig implements Serializable {
 
     @SuppressWarnings("unused")	// TODO
 	private static final Logger logger = Logger.getLogger(FrontendConfig.class.getName().toLowerCase());
+    
+    private InetAddress	listenIp = null;
+    private int			listenPort = 67;
+    
+	/**
+	 * @return Returns the listenIp.
+	 */
+	public InetAddress getListenIp() {
+		return listenIp;
+	}
+	/**
+	 * @param listenIp The listenIp to set.
+	 */
+	public void setListenIp(InetAddress listenIp) {
+		this.listenIp = listenIp;
+	}
+	/**
+	 * @return Returns the listenPort.
+	 */
+	public int getListenPort() {
+		return listenPort;
+	}
+	/**
+	 * @param listenPort The listenPort to set.
+	 */
+	public void setListenPort(int listenPort) {
+		this.listenPort = listenPort;
+	}
 
 }

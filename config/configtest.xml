@@ -5,7 +5,8 @@
 		<threads nb="2" min="2" max="10"></threads>
 	</front-end>
 	<global>
-		
+
+	<server identifier="192.168.1.1"></server>
 	</global>
 	<topology><options>
 			<option-routers>

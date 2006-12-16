@@ -18,6 +18,9 @@
  */
 package org.dhcp4java.server.config.xml;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nu.xom.Attribute;
@@ -95,6 +98,42 @@ public final class Util {
 			return null;
 		} else {
 			return attr.getValue();			
+		}
+	}
+	
+	static Integer getOptAttributeInteger(Element base, String attributeName) {
+		String value = getOptAttribute(base, attributeName);
+		int res;
+		
+		if (value == null) {
+			return null;
+		}
+		try {
+			res = Integer.parseInt(value);
+			return res;
+		} catch (Exception e) {
+			logger.log(Level.WARNING, "Error parsing "+attributeName+" as int", e);
+			return null;
+		}
+	}
+	
+	static InetAddress getOptAttributeInetAddress(Element base, String attributeName) {
+		String value = getOptAttribute(base, attributeName);
+		InetAddress adr;
+		
+		if (value == null) {
+			return null;
+		}
+		try {
+			adr = InetAddress.getByName(value);
+			if (!(adr instanceof Inet4Address)) {
+				logger.log(Level.WARNING, "Only IPv4 addresses allowed "+attributeName);
+				return null;
+			}
+			return adr;
+		} catch (Exception e) {
+			logger.log(Level.WARNING, "Error parsing "+attributeName+" as InetAddress", e);
+			return null;
 		}
 	}
 
