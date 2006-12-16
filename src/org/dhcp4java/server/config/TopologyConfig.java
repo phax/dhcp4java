@@ -22,15 +22,12 @@ import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPConstants;
 import org.dhcp4java.InetCidr;
 import org.dhcp4java.server.filter.AlwaysTrueFilter;
-import org.dhcp4java.server.filter.AndFilter;
 import org.dhcp4java.server.filter.RequestFilter;
 import org.dhcp4java.server.struct.Subnet;
 

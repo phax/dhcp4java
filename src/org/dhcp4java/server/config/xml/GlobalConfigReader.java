@@ -18,6 +18,9 @@
  */
 package org.dhcp4java.server.config.xml;
 
+import static org.dhcp4java.server.config.xml.Util.getOptAttributeInetAddress;
+
+import java.net.InetAddress;
 import java.util.logging.Logger;
 
 import org.dhcp4java.server.config.ConfigException;
@@ -35,23 +38,26 @@ import nu.xom.Node;
  */
 public final class GlobalConfigReader {
 
-    @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(GlobalConfigReader.class.getName().toLowerCase());
-
     
 	public static GlobalConfig xmlGlobalConfigReader(Element globalElt) throws ConfigException {
-//		try {
-			
-			GlobalConfig globalConfig = new GlobalConfig();
+		GlobalConfig globalConfig = new GlobalConfig();
 
-			return globalConfig;
-//		} catch (ParsingException e) {
-//			logger.log(Level.FINE, "parsing exception", e);
-//			throw new ConfigException("Parsing exception in XOM", e);
-//		} catch (IOException e) {
-//			logger.log(Level.FINE, "ioerror", e);
-//			throw new ConfigException("IO exception", e);
-//		}
+		// parse "server"
+		Elements serverElts = globalElt.getChildElements("server");
+		if (serverElts.size() > 1) {
+			logger.warning("more than one 'server' element");
+		}
+		if (serverElts.size() > 0) {
+			Element serverElt = serverElts.get(0);
+			
+			InetAddress identifier = getOptAttributeInetAddress(serverElt, "isentifier");
+			if (identifier != null) {
+				globalConfig.setServerIdentifier(identifier);
+			}
+
+		}
+		return globalConfig;
 	}
 
 	/**
