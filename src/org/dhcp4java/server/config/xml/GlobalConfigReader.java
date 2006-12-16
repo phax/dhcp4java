@@ -59,42 +59,5 @@ public final class GlobalConfigReader {
 		}
 		return globalConfig;
 	}
-
-	/**
-	 * Print the element's path in the document, for debugging and logging purpose
-	 * 
-	 * @param element base element
-	 * @return the pseudo xpath of the element
-	 */
-	public static String getElementPath(Element element) {
-		String path = "";
-		Element child = element;
-		Node parent = element.getParent();
-		while (parent != null) {
-			if (parent instanceof Element) {
-				Elements children = ((Element)parent).getChildElements();
-				int i;
-				int count = 0;
-				for (i=0; i<children.size(); i++) {
-					if (children.get(i) == child) {
-						path = "/"+child.getLocalName()+"["+count+"]"+path;
-						break;
-					}
-					if (child.getLocalName().equals(children.get(i).getLocalName())) {
-						count++;
-					}
-				}
-				if (i >= children.size()) {
-					path = "/[ERROR]"+path;
-				}
-				child = (Element)parent;
-				parent = child.getParent();
-			} else if (parent instanceof Document) {
-				path = "/"+child.getLocalName()+path;
-				break;		// we stop here !
-			}
-		}
-		return path;
-	}
 	
 }
