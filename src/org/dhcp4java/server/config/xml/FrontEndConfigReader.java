@@ -52,7 +52,7 @@ public class FrontEndConfigReader {
 			// parse "listen"
 			Elements listenElts = frontendElt.getChildElements("listen");
 			if (listenElts.size() > 1) {
-				logger.log(Level.WARNING, "more than one 'listen' element");
+				logger.warning("more than one 'listen' element");
 			}
 			if (listenElts.size() > 0) {
 				Element listenElt = listenElts.get(0);
@@ -67,6 +67,30 @@ public class FrontEndConfigReader {
 					frontEndConfig.setListenPort(port);
 				}
 
+			}
+			
+			// parse "threads"
+			Elements threadsElts = frontendElt.getChildElements("threads");
+			if (threadsElts.size() > 1) {
+				logger.warning("more than one 'threads' element");
+			}
+			if (threadsElts.size() > 0) {
+				Element threadsElt = threadsElts.get(0);
+				
+				Integer nb = getOptAttributeInteger(threadsElt, "nb");
+				if (nb != null) {
+					frontEndConfig.setThreadsNb(nb);
+				}
+				
+				Integer min = getOptAttributeInteger(threadsElt, "min");
+				if (min != null) {
+					frontEndConfig.setThreadsMin(min);
+				}
+				
+				Integer max = getOptAttributeInteger(threadsElt, "max");
+				if (max != null) {
+					frontEndConfig.setThreadsMax(max);
+				}
 			}
 			return frontEndConfig;
 			

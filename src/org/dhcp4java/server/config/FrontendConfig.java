@@ -37,6 +37,10 @@ public class FrontendConfig implements Serializable {
     private InetAddress	listenIp = null;
     private int			listenPort = 67;
     
+    private int			threadsNb = 2;
+    private int			threadsMin = 1;
+    private int			threadsMax = 4;
+    
 	/**
 	 * @return Returns the listenIp.
 	 */
@@ -60,6 +64,42 @@ public class FrontendConfig implements Serializable {
 	 */
 	public void setListenPort(int listenPort) {
 		this.listenPort = listenPort;
+	}
+	/**
+	 * @return Returns the threadsMax.
+	 */
+	public int getThreadsMax() {
+		return threadsMax;
+	}
+	/**
+	 * @param threadsMax The threadsMax to set.
+	 */
+	public void setThreadsMax(int threadsMax) {
+		this.threadsMax = threadsMax;
+	}
+	/**
+	 * @return Returns the threadsMin.
+	 */
+	public int getThreadsMin() {
+		return threadsMin;
+	}
+	/**
+	 * @param threadsMin The threadsMin to set.
+	 */
+	public void setThreadsMin(int threadsMin) {
+		this.threadsMin = threadsMin;
+	}
+	/**
+	 * @return Returns the threadsNb.
+	 */
+	public int getThreadsNb() {
+		return threadsNb;
+	}
+	/**
+	 * @param threadsNb The threadsNb to set.
+	 */
+	public void setThreadsNb(int threadsNb) {
+		this.threadsNb = threadsNb;
 	}
 
 }
