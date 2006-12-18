@@ -31,6 +31,8 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPCoreServer;
+import org.dhcp4java.DHCPServerInitException;
+import org.dhcp4java.DHCPServlet;
 import org.dhcp4java.server.config.ConfigException;
 import org.dhcp4java.server.config.GenericConfigReader;
 import org.dhcp4java.server.config.FrontendConfig;
@@ -66,8 +68,11 @@ public class DHCPClusterNode implements Serializable, Runnable {
 	private AtomicReference<GlobalConfig>		globalConfig = new AtomicReference<GlobalConfig>();
 	private AtomicReference<TopologyConfig>	topologyConfig = new AtomicReference<TopologyConfig>();
 	
+	/* The DHCP Servlet used */
+	private DHCPServlet						internalServlet;
+	
 	/* The DHCP Server Core used */
-	private DHCPCoreServer internalServer;
+	private DHCPCoreServer						internalServer;
 	
 	/* Thread called when Finalizing */
 	private Thread					finalizerThread;
@@ -78,7 +83,18 @@ public class DHCPClusterNode implements Serializable, Runnable {
 	/* Back-End */
 	// TODO
 	
-	public DHCPClusterNode(Properties bootstrapProps) throws ConfigException {
+	/**
+	 * Constructor for the <tt>DHCPClusterNode</tt>.
+	 * 
+	 * <p>This is the main object running the server. It is responsible for loading the configuration,
+	 * initializing the server and running it. It should support dynamic reload of topology configuration
+	 * without a full server restart.
+	 * 
+	 * <p>If you are connected to a database, it must be running.
+	 * 
+	 * <p>Application launch is done through a command-line wrapper.
+	 */
+	public DHCPClusterNode(Properties bootstrapProps) throws ConfigException, DHCPServerInitException {
 		this.bootstrapProps = bootstrapProps;
 		
 		try {
@@ -88,9 +104,7 @@ public class DHCPClusterNode implements Serializable, Runnable {
 				throw new ConfigException("no '"+CONFIG_READER+"' parameter in "+DHCPD_PROPERTIES);
 			}
 			Class configReaderClassname = Class.forName(configReaderClassName);
-//			if (!(configReaderClassname. instanceof GenericConfigReader)) {
-//				throw new ConfigException("class is not of type GenericConfigReader: "+configReader.getClass().getName());
-//			}
+
 			Class[] constrSignature = { };
 			Object[] constrParams = { };
 			configReader = (GenericConfigReader) configReaderClassname.getConstructor(constrSignature).newInstance(constrParams);
@@ -99,13 +113,33 @@ public class DHCPClusterNode implements Serializable, Runnable {
 			throw new ConfigException("Unable to load configuration", e);
 		}
 		
-		// TODO specialization
-		//configReader = new XmlConfigReader();
 		configReader.init(this, bootstrapProps);
 		frontendConfig.set(configReader.getFrontEndConfig());
 		globalConfig.set(configReader.getGlobalConfig());
 		topologyConfig.set(configReader.getTopologyConfig());
-		// ready to run
+		// check configuration
+		if (frontendConfig.get() == null) {
+			throw new NullPointerException("frontendConfig is null");
+		}
+		if (globalConfig.get() == null) {
+			throw new NullPointerException("globalConfig is null");
+		}
+		if (topologyConfig.get() == null) {
+			throw new NullPointerException("topologyConfig is null");
+		}
+		
+		// instanciate DHCP Servlet
+		internalServlet = new MainServlet(this);
+		
+		// prepare parameters for server
+		Properties serverProps = new Properties();
+		FrontendConfig frontConf = frontendConfig.get();
+		serverProps.setProperty(DHCPCoreServer.SERVER_ADDRESS, frontConf.getListenIp().getHostAddress()+":"+frontConf.getListenPort());
+		serverProps.setProperty(DHCPCoreServer.SERVER_THREADS, Integer.toString(frontConf.getThreadsNb()));
+		
+		// now initializing the server
+		internalServer = DHCPCoreServer.initServer(internalServlet, serverProps);
+		// intitalization complete
 	}
 	
 	public void init() {
@@ -177,7 +211,7 @@ public class DHCPClusterNode implements Serializable, Runnable {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) throws IOException, URISyntaxException, ConfigException {
+	public static void main(String[] args) throws IOException, URISyntaxException, ConfigException, DHCPServerInitException {
 		// set all logging levels
     	LogManager.getLogManager().readConfiguration(ClassLoader.getSystemResourceAsStream("logging.properties"));
     	

@@ -22,6 +22,9 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.logging.Logger;
 /**
+ * This class represent a DHCP Lease given to a client.
+ * 
+ * <p>This class is basically a databean and has very little business logic.
  * 
  * @author Stephan Hadinger
  * @version 0.70
@@ -61,21 +64,21 @@ public class DHCPLease implements Serializable {
 	}
 
 	/**
-	 * @return Returns the concentratorId.
+	 * @return Returns the concentratorId.		// TODO what is a concentratorId ?
 	 */
 	public long getConcentratorId() {
 		return concentratorId;
 	}
 
 	/**
-	 * @param concentratorId The concentratorId to set.
+	 * @param concentratorId The concentratorId to set.		// TODO what is a concentratorId ?
 	 */
 	public void setConcentratorId(long concentratorId) {
 		this.concentratorId = concentratorId;
 	}
 
 	/**
-	 * @return Returns the gatewayIp.
+	 * @return Returns the gatewayIp.			// gateway (giaddr) associated to the Lease
 	 */
 	public InetAddress getGatewayIp() {
 		return gatewayIp;
