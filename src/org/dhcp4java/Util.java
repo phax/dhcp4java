@@ -45,6 +45,18 @@ public final class Util {
         }
     }
     /**
+     * Converts 32 bits int packaged into a 64bits long to IPv4 <tt>InetAddress</tt>.
+     * 
+     * @param val int representation of IPv4 address
+     * @return the address object
+     */
+    public static final InetAddress long2InetAddress(long val) {
+    	if ((val < 0) || (val > 0xFFFFFFFFL)) {
+    		// exception ???
+    	}
+    	return int2InetAddress((int) val);
+    }
+    /**
      * Converts IPv4 <tt>InetAddress</tt> to 32 bits int.
      * 
      * @param addr IPv4 address object
@@ -72,14 +84,6 @@ public final class Util {
      * @throws IllegalArgumentException the address is not IPv4 (Inet4Address).
      */
     public static final long inetAddress2Long(InetAddress addr) {
-        if (!(addr instanceof Inet4Address)) {
-            throw new IllegalArgumentException("Only IPv4 supported");
-        }
-
-        byte[] addrBytes = addr.getAddress();
-        return  (((addrBytes[0] & 0xFF) << 24) |
-        		((addrBytes[1] & 0xFF) << 16) |
-        		((addrBytes[2] & 0xFF) <<  8) |
-        		((addrBytes[3] & 0xFF)) & 0xFFFFFFFFL);
+    	return (inetAddress2Int(addr) & 0xFFFFFFFFL);
     }
 }
