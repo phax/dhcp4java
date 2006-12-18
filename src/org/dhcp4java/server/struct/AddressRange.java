@@ -27,7 +27,13 @@ import org.dhcp4java.InetCidr;
 import org.dhcp4java.Util;
 
 /**
+ * This class represents a linear IPv4 address range.
  * 
+ * <p>Invariants:
+ * <ul>
+ * 	<li>only IPv4 addresses are supported
+ * 	<li>lower address <= higher address
+ * </ul>
  * 
  * <p>This class is immutable.
  * 
@@ -44,22 +50,42 @@ public final class AddressRange implements Serializable, Comparable {
     @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(AddressRange.class.getName().toLowerCase());
     
-    private final int rangeStart;
-    private final int rangeEnd;
+    /** first ip address in the range (inclusive) */
+    private final long rangeStart;
+    /** last ip address in the range (inclusive) */
+    private final long rangeEnd;
     
+    /**
+     * Constructor for AddressRange. This class is immutable.
+     * 
+     * @param rangeStart first ip address in range, inclusive.
+     * @param rangeEnd last ip address in range, inclusive.
+     * @throws NullPointerException <tt>rangeStart</tt> or <tt>rangeEnd</tt> is <tt>null</tt>.
+     * @throws IllegalArgumentException address is not IPv4
+     */
     public AddressRange(InetAddress rangeStart, InetAddress rangeEnd) {
     	if ((rangeStart == null) || (rangeEnd == null)) {
     		throw new NullPointerException("rangeStart ou rangeEnd are null");
     	}
+    	if ((!(rangeStart instanceof Inet4Address)) || (!(rangeEnd instanceof Inet4Address))) {
+    		throw new IllegalArgumentException("address is not IPv4");
+    	}
     	
-    	// TODO check parameters
-    	this.rangeStart = Util.inetAddress2Int(rangeStart);
-    	this.rangeEnd = Util.inetAddress2Int(rangeEnd);
-    	if ((this.rangeStart & 0xFFFFFFFFL) > (this.rangeEnd & 0xFFFFFFFFL)) {
+    	this.rangeStart = Util.inetAddress2Long(rangeStart);
+    	this.rangeEnd = Util.inetAddress2Long(rangeEnd);
+    	if (this.rangeStart > this.rangeEnd) {
     		throw new IllegalArgumentException("rangeStart is greater than rangeEnd");
     	}
     }
     
+    /**
+     * Checks whether the specified address is contained in the range
+     * 
+     * @param adr address to check against the range
+     * @return true if the address is contained in the range.
+     * @throws NullPointerException <tt>adr</tt> is <tt>null</t>
+     * @throws IllegalArgumentException <tt>adr</tt> is not IPv4.
+     */
     public boolean isInRange(InetAddress adr) {
     	if (adr == null) {
     		throw new NullPointerException("adr is null");
@@ -68,29 +94,28 @@ public final class AddressRange implements Serializable, Comparable {
     		throw new IllegalArgumentException("adr is not IPv4 address");
     	}
     	// convert to long to do some unsigned int comparisons
-    	long startL = rangeStart & 0xFFFFFFFFL;
-    	long endL = rangeEnd & 0xFFFFFFFFL;
-    	long adrL = Util.inetAddress2Int(adr) & 0xFFFFFFFFL;
+    	long adrL = Util.inetAddress2Long(adr);
     	
-    	return (adrL >= startL) && (adrL <= endL);
+    	return (adrL >= rangeStart) && (adrL <= rangeEnd);
     }
 
 	/**
 	 * @return Returns the rangeEnd.
 	 */
 	public InetAddress getRangeEnd() {
-		return Util.int2InetAddress(rangeEnd);
+		return Util.long2InetAddress(rangeEnd);
 	}
 
 	/**
 	 * @return Returns the rangeStart.
 	 */
 	public InetAddress getRangeStart() {
-		return Util.int2InetAddress(rangeStart);
+		return Util.long2InetAddress(rangeStart);
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
+	/**
+     * returns true if two <tt>DHCPOption</tt> objects are equal, i.e. have same <tt>code</tt>
+     * and same <tt>value</tt>. 
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -102,44 +127,50 @@ public final class AddressRange implements Serializable, Comparable {
         		(this.rangeEnd == range.rangeEnd);
 	}
 
-	/* (non-Javadoc)
+
+	/**
+     * Returns hashcode.
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
 	public int hashCode() {
-		return rangeStart ^ (rangeEnd >> 2);
+		return (int) (rangeStart ^ (rangeEnd >> 2));
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+
+    /**
+     * Returns a detailed string representation of the DHCP datagram.
+     * 
+     * @return a string representation of the object.
+     */
 	@Override
 	public String toString() {
-		return Util.int2InetAddress(rangeStart).getHostAddress() + "-" + Util.int2InetAddress(rangeEnd).getHostAddress();
+		return Util.long2InetAddress(rangeStart).getHostAddress() + "-" + Util.long2InetAddress(rangeEnd).getHostAddress();
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(T)
+	/**
+	 * Compares this object with the specified object for order.
+	 * 
+	 * @param o the Object to be compared.
+	 * @return a negative integer, zero, or a positive integer as this object is less than, equal to, 
+	 * 			or greater than the specified object.
 	 */
 	public int compareTo(Object o) {
 		if (o == null) {
 			throw new NullPointerException();
 		}
 		AddressRange range = (AddressRange) o;
-		if (unsignedInt(range.rangeStart) < unsignedInt(this.rangeStart)) {
+		if (range.rangeStart < this.rangeStart) {
 			return -1;
-		} else if (unsignedInt(range.rangeStart) > unsignedInt(this.rangeStart)) {
+		} else if (range.rangeStart > this.rangeStart) {
 			return 1;
-		} else if (unsignedInt(range.rangeEnd) < unsignedInt(this.rangeEnd)) {
+		} else if (range.rangeEnd < this.rangeEnd) {
 			return -1;
-		} else if (unsignedInt(range.rangeEnd) > unsignedInt(this.rangeEnd)) {
+		} else if (range.rangeEnd > this.rangeEnd) {
 			return 1;
 		} else {
 			return 0;
 		}
 	}
 
-	private static final long unsignedInt(int i) {
-		return i & 0xFFFFFFFFL;
-	}
 }
