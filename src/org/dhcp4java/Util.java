@@ -63,4 +63,23 @@ public final class Util {
         		((addrBytes[2] & 0xFF) <<  8) |
         		((addrBytes[3] & 0xFF));
     }
+    /**
+     * Converts IPv4 <tt>InetAddress</tt> to 32 bits int, packages into a 64 bits <tt>long</tt>.
+     * 
+     * @param addr IPv4 address object
+     * @return 32 bits int
+     * @throws NullPointerException <tt>addr</tt> is <tt>null</tt>.
+     * @throws IllegalArgumentException the address is not IPv4 (Inet4Address).
+     */
+    public static final long inetAddress2Long(InetAddress addr) {
+        if (!(addr instanceof Inet4Address)) {
+            throw new IllegalArgumentException("Only IPv4 supported");
+        }
+
+        byte[] addrBytes = addr.getAddress();
+        return  (((addrBytes[0] & 0xFF) << 24) |
+        		((addrBytes[1] & 0xFF) << 16) |
+        		((addrBytes[2] & 0xFF) <<  8) |
+        		((addrBytes[3] & 0xFF)) & 0xFFFFFFFFL);
+    }
 }
