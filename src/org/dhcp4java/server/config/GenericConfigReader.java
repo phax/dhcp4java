@@ -25,7 +25,7 @@ import org.dhcp4java.server.DHCPClusterNode;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.70
+ * @version 0.71
  */
 public interface GenericConfigReader {
 		

@@ -34,10 +34,15 @@ import org.dhcp4java.server.config.ConfigException;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.70
+ * @version 0.71
  */
 public final class Util {
+	
     private static final Logger logger = Logger.getLogger(Util.class.getName().toLowerCase());
+    
+    // Suppresses default constructor, ensuring non-instantiability.
+    private Util() {
+    }
     
 	/**
 	 * Print the element's path in the document, for debugging and logging purpose

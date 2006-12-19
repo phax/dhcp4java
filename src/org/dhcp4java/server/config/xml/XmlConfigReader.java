@@ -40,7 +40,7 @@ import org.dhcp4java.server.config.TopologyConfig;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.70
+ * @version 0.71
  */
 public class XmlConfigReader implements GenericConfigReader {
 	

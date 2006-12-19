@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jardesc>
-<jar path="E:/workspace/dhcp4java-0.70.jar"/>
+<jar path="E:/workspace/dhcp4java-0.71.jar"/>
 <options buildIfNeeded="true" compress="true" descriptionLocation="/dhcp4java/jar.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="true" saveDescription="true" useSourceFolders="false"/>
 <manifest generateManifest="true" mainClassHandleIdentifier="=dhcp4java/src&lt;org.dhcp4java.examples{DHCPSnifferServlet.java[DHCPSnifferServlet" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
 <sealing sealJar="true">

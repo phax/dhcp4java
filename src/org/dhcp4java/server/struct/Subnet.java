@@ -38,7 +38,7 @@ import org.dhcp4java.server.filter.RequestFilter;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.70
+ * @version 0.71
  */
 public class Subnet implements Serializable {
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project default="javadoc">
-    <target name="javadoc">
-        <javadoc destdir="web/javadoc" access="protected" source="1.5" use="true" notree="false" nonavbar="false" noindex="false" splitindex="true" author="true" version="true" nodeprecatedlist="false" nodeprecated="false" packagenames="org.dhcp4java,org.dhcp4java.examples" sourcepath="src" classpath="C:\appFT\eclipse\plugins\org.junit_3.8.1\junit.jar"/>
-    </target>
+<target name="javadoc">
+<javadoc access="protected" author="true" classpath="C:\appFT\junit4.1\junit-4.1.jar;lib/args4j-2.0.7.jar;lib/xom-1.1.jar;lib/xercesImpl.jar" destdir="web/javadoc" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="org.dhcp4java.examples,org.dhcp4java.server.config,org.dhcp4java.server.filter,org.dhcp4java.server.struct,org.dhcp4java.server.config.xml" source="1.5" sourcefiles="src/org/dhcp4java/Util.java,src/org/dhcp4java/DHCPResponseFactory.java,src/org/dhcp4java/DHCPServlet.java,src/org/dhcp4java/HardwareAddress.java,src/org/dhcp4java/DHCPConstants.java,src/org/dhcp4java/server/DHCPClusterNode.java,src/org/dhcp4java/server/MainServlet.java,src/org/dhcp4java/DHCPBadPacketException.java,src/org/dhcp4java/DHCPPacket.java,src/org/dhcp4java/server/DHCPStaticServlet.java,src/org/dhcp4java/DHCPServerInitException.java,src/org/dhcp4java/DHCPOption.java,src/org/dhcp4java/InetCidr.java,src/org/dhcp4java/DHCPCoreServer.java" sourcepath="JUnitTests;src" splitindex="true" use="true" version="true"/>
+</target>
 </project>

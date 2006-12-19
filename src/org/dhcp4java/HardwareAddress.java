@@ -27,7 +27,7 @@ import org.dhcp4java.server.config.ConfigException;
  * Class is immutable.
  * 
  * @author Stephan Hadinger
- * @version 0.70
+ * @version 0.71
  */
 public class HardwareAddress implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -102,8 +102,8 @@ public class HardwareAddress implements Serializable {
 	 * 
 	 * <p>E.g. <tt>0:c0:c3:49:2b:57</tt>.
 	 * 
-	 * @param macAddr
-	 * @return
+	 * @param macStr
+	 * @return the newly created HardwareAddress object
 	 */
 	public static HardwareAddress getHardwareAddressByString(String macStr) {
 		if (macStr == null) {
@@ -129,7 +129,7 @@ public class HardwareAddress implements Serializable {
 	 * 
 	 * <p>E.g. <tt>0:c0:c3:49:2b:57</tt>.
 	 * @param macStr
-	 * @return
+	 * @return bytes representation of the HardwareAddress
 	 * @throws ConfigException
 	 */
 	public static final byte[] parseHardwareAddress(String macStr) throws ConfigException {

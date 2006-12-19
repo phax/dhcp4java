@@ -51,7 +51,7 @@ import org.kohsuke.args4j.Option;
  * <p>Bootstrap is done through a properties file.
  * 
  * @author Stephan Hadinger
- * @version 0.70
+ * @version 0.71
  */
 public class DHCPClusterNode implements Serializable, Runnable {
 
@@ -75,10 +75,10 @@ public class DHCPClusterNode implements Serializable, Runnable {
 	private DHCPCoreServer						internalServer;
 	
 	/* Thread called when Finalizing */
-	private Thread					finalizerThread;
+	private Thread								finalizerThread;
 	
 	/* Batch update of leases */
-	private Executor				leaseBgExecutor;
+	private Executor							leaseBgExecutor;
 	
 	/* Back-End */
 	// TODO
@@ -136,6 +136,8 @@ public class DHCPClusterNode implements Serializable, Runnable {
 		FrontendConfig frontConf = frontendConfig.get();
 		serverProps.setProperty(DHCPCoreServer.SERVER_ADDRESS, frontConf.getListenIp().getHostAddress()+":"+frontConf.getListenPort());
 		serverProps.setProperty(DHCPCoreServer.SERVER_THREADS, Integer.toString(frontConf.getThreadsNb()));
+		serverProps.setProperty(DHCPCoreServer.SERVER_THREADS_MAX, Integer.toString(frontConf.getThreadsMax()));
+		serverProps.setProperty(DHCPCoreServer.SERVER_THREADS_KEEPALIVE, Integer.toString(frontConf.getThreadsKeepalive()));
 		
 		// now initializing the server
 		internalServer = DHCPCoreServer.initServer(internalServlet, serverProps);

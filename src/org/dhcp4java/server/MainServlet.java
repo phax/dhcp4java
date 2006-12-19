@@ -34,7 +34,7 @@ import static org.dhcp4java.DHCPConstants.DHO_DHCP_AGENT_OPTIONS;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.70
+ * @version 0.71
  */
 public class MainServlet extends DHCPServlet {
 

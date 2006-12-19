@@ -131,24 +131,19 @@ public class DHCPCoreServer implements Runnable {
 
         try {
             // default built-in minimal properties
-            Properties defProps = new Properties(DEF_PROPS);
+            this.properties = new Properties(DEF_PROPS);
 
             // try to load default configuration file
-            InputStream propFileStream = this.getClass().getResourceAsStream(
-                    "/DHCPd.properties");
+            InputStream propFileStream = this.getClass().getResourceAsStream("/DHCPd.properties");
             if (propFileStream != null) {
-                defProps.load(propFileStream);
+            	this.properties.load(propFileStream);
             } else {
                 logger.severe("Could not load /DHCPd.properties");
             }
 
             // now integrate provided properties
             if (this.userProps != null) {
-                this.properties = new Properties();
-                this.properties.putAll(defProps);
                 this.properties.putAll(this.userProps);
-            } else {
-                this.properties = defProps;
             }
 
             // load socket address, this method may be overriden
@@ -164,8 +159,10 @@ public class DHCPCoreServer implements Runnable {
 
             // initialize Thread Pool
             int numThreads = Integer.valueOf(this.properties.getProperty(SERVER_THREADS));
-            this.threadPool = new ThreadPoolExecutor(numThreads, numThreads,
-                                                     Long.MAX_VALUE, TimeUnit.MILLISECONDS,
+            int maxThreads = Integer.valueOf(this.properties.getProperty(SERVER_THREADS_MAX));
+            int keepaliveThreads = Integer.valueOf(this.properties.getProperty(SERVER_THREADS_KEEPALIVE));
+            this.threadPool = new ThreadPoolExecutor(numThreads, maxThreads,
+                                                     keepaliveThreads, TimeUnit.MILLISECONDS,
                                                      new ArrayBlockingQueue<Runnable>(BOUNDED_QUEUE_SIZE),
                                                      new ServerThreadFactory());
             this.threadPool.prestartAllCoreThreads();
@@ -309,17 +306,20 @@ public class DHCPCoreServer implements Runnable {
     private static final Properties DEF_PROPS = new Properties();
 
     public static final String SERVER_ADDRESS = "serverAddress";
-
     private static final String SERVER_ADDRESS_DEFAULT = "127.0.0.1:67";
-
     public static final String SERVER_THREADS = "serverThreads";
-
     private static final String SERVER_THREADS_DEFAULT = "2";
+    public static final String SERVER_THREADS_MAX = "serverThreadsMax";
+    private static final String SERVER_THREADS_MAX_DEFAULT = "4";
+    public static final String SERVER_THREADS_KEEPALIVE = "serverThreadsKeepalive";
+    private static final String SERVER_THREADS_KEEPALIVE_DEFAULT = "10000";
 
     static {
         // initialize defProps
         DEF_PROPS.put(SERVER_ADDRESS, SERVER_ADDRESS_DEFAULT);
         DEF_PROPS.put(SERVER_THREADS, SERVER_THREADS_DEFAULT);
+        DEF_PROPS.put(SERVER_THREADS_MAX, SERVER_THREADS_MAX_DEFAULT);
+        DEF_PROPS.put(SERVER_THREADS_KEEPALIVE, SERVER_THREADS_KEEPALIVE_DEFAULT);
     }
 
     private static class ServerThreadFactory implements ThreadFactory {

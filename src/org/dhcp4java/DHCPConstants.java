@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -29,10 +30,14 @@ import java.util.Map;
  * Class holding all DHCP constants.
  * 
  * @author Stephan Hadinger
- * @version 0.70
+ * @version 0.71
  */
 public final class DHCPConstants {
 
+    // Suppresses default constructor, ensuring non-instantiability.
+	private DHCPConstants() {
+	}
+	
     // ========================================================================
     // DHCP Constants
 
@@ -178,8 +183,28 @@ public final class DHCPConstants {
     	}
     }
     
+    public static final Map<Byte, String> getBootNamesMap() {
+    	return _BOOT_NAMES;
+    }
+    
+    public static final Map<Byte, String> getHtypesMap() {
+    	return _HTYPE_NAMES;
+    }
+    
+    public static final Map<Byte, String> getDhcpCodesMap() {
+    	return _DHCP_CODES;
+    }
+    
+    public static final Map<Byte, String> getDhoNamesMap() {
+    	return _DHO_NAMES;
+    }
+    
+    public static final Map<String, Byte> getDhoNamesReverseMap() {
+    	return _DHO_NAMES_REV;
+    }
+    
     // TODO unit test  & doc
-    public static Byte getDhoNamesReverse(String name) {
+    public static final Byte getDhoNamesReverse(String name) {
     	if (name == null) {
     		throw new NullPointerException();
     	}
@@ -187,7 +212,7 @@ public final class DHCPConstants {
     }
     
     // TODO unit test & doc
-    public static String getDhoName(byte code) {
+    public static final String getDhoName(byte code) {
     	return _DHO_NAMES.get(code);
     }
     
@@ -205,17 +230,23 @@ public final class DHCPConstants {
     public static final int BOOTP_REPLY_PORT   = 68;
 
     // Maps for "code" to "string" conversion
-    static Map<Byte, String> _BOOT_NAMES  = new LinkedHashMap<Byte, String>();
-    static Map<Byte, String> _HTYPE_NAMES = new LinkedHashMap<Byte, String>();
-    static Map<Byte, String> _DHCP_CODES  = new LinkedHashMap<Byte, String>();
-    static Map<Byte, String> _DHO_NAMES   = new LinkedHashMap<Byte, String>();
-    static Map<String, Byte> _DHO_NAMES_REV = new LinkedHashMap<String, Byte>();
+    static final Map<Byte, String> _BOOT_NAMES;
+    static final Map<Byte, String> _HTYPE_NAMES;
+    static final Map<Byte, String> _DHCP_CODES;
+    static final Map<Byte, String> _DHO_NAMES;
+    static final Map<String, Byte> _DHO_NAMES_REV;
 
     /*
      * preload at startup Maps with constants
      * allowing reverse lookup
      */
     static {
+    	Map<Byte, String> bootNames  = new LinkedHashMap<Byte, String>();
+    	Map<Byte, String> htypeNames = new LinkedHashMap<Byte, String>();
+        Map<Byte, String> dhcpCodes  = new LinkedHashMap<Byte, String>();
+        Map<Byte, String> dhoNames   = new LinkedHashMap<Byte, String>();
+        Map<String, Byte> dhoNamesRev = new LinkedHashMap<String, Byte>();
+        
         // do some introspection to list constants
         Field[] fields = DHCPConstants.class.getDeclaredFields();
 
@@ -231,14 +262,14 @@ public final class DHCPConstants {
                     byte code = field.getByte(null);
 
                     if (name.startsWith("BOOT")) {
-                        _BOOT_NAMES.put(code, name);
+                        bootNames.put(code, name);
                     } else if (name.startsWith("HTYPE_")) {
-                        _HTYPE_NAMES.put(code, name);
+                        htypeNames.put(code, name);
                     } else if (name.startsWith("DHCP")) {
-                        _DHCP_CODES.put(code, name);
+                        dhcpCodes.put(code, name);
                     } else if (name.startsWith("DHO_")) {
-                        _DHO_NAMES.put(code, name);
-                        _DHO_NAMES_REV.put(name, code);
+                        dhoNames.put(code, name);
+                        dhoNamesRev.put(name, code);
                     }
                 }
             }
@@ -246,5 +277,10 @@ public final class DHCPConstants {
             // we have a problem
             throw new IllegalStateException("Fatal error while parsing internal fields");
         }
+        _BOOT_NAMES = Collections.unmodifiableMap(bootNames);
+        _HTYPE_NAMES = Collections.unmodifiableMap(htypeNames);
+        _DHCP_CODES = Collections.unmodifiableMap(dhcpCodes);
+        _DHO_NAMES = Collections.unmodifiableMap(dhoNames);
+        _DHO_NAMES_REV = Collections.unmodifiableMap(dhoNamesRev);
     }
 }

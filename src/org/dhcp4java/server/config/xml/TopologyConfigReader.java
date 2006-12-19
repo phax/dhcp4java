@@ -47,7 +47,7 @@ import static org.dhcp4java.server.config.xml.Util.getOptAttribute;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.70
+ * @version 0.71
  */
 public final class TopologyConfigReader {
 
@@ -213,14 +213,15 @@ public final class TopologyConfigReader {
 				String optionName = option.getLocalName();
 				byte code;
 				DHCPOption dhcpOption;
-				
+
+				// ===== <option>
 				if (optionName.equals("option")) {
 					// get "code" attribute
 					String codeAttr = option.getAttributeValue("code");
 					if (codeAttr == null) {
 						throw new ConfigException("no code attrtibute for "+getElementPath(option));
 					}
-					code = Byte.parseByte(codeAttr);
+					code = (byte) Integer.parseInt(codeAttr);
 				} else if (optionName.startsWith("option-")) {		// option prefixed with "option"
 					String dhcpOptionName = "DHO_"+optionName.substring("option-".length()).toUpperCase().replace('-', '_');
 					Byte codeByte = DHCPConstants.getDhoNamesReverse(dhcpOptionName);
@@ -272,9 +273,9 @@ public final class TopologyConfigReader {
 			Element valueElt = optionValueElts.get(i);
 			String valueName = valueElt.getLocalName();
 			if (valueName.equals("value-byte")) {
-				outputStream.writeByte(Byte.parseByte(valueElt.getValue()));
+				outputStream.writeByte((byte)Integer.parseInt(valueElt.getValue()));
 			} else if (valueName.equals("value-short")) {
-				outputStream.writeShort(Short.parseShort(valueElt.getValue()));
+				outputStream.writeShort((short)Integer.parseInt(valueElt.getValue()));
 			} else if (valueName.equals("value-int")) {
 				outputStream.writeInt(Integer.parseInt(valueElt.getValue()));
 			} else if (valueName.equals("value-inet")) {

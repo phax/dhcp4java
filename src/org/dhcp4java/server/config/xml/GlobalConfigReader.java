@@ -32,7 +32,7 @@ import nu.xom.Elements;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.70
+ * @version 0.71
  */
 public final class GlobalConfigReader {
 

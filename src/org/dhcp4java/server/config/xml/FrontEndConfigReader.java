@@ -33,7 +33,7 @@ import static org.dhcp4java.server.config.xml.Util.getOptAttributeInetAddress;;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.70
+ * @version 0.71
  */
 public class FrontEndConfigReader {
 	
@@ -76,14 +76,19 @@ public class FrontEndConfigReader {
 				frontEndConfig.setThreadsNb(nb);
 			}
 			
-			Integer min = getOptAttributeInteger(threadsElt, "min");
-			if (min != null) {
-				frontEndConfig.setThreadsMin(min);
+			Integer core = getOptAttributeInteger(threadsElt, "core");
+			if (core != null) {
+				frontEndConfig.setThreadsCore(core);
 			}
 			
 			Integer max = getOptAttributeInteger(threadsElt, "max");
 			if (max != null) {
 				frontEndConfig.setThreadsMax(max);
+			}
+			
+			Integer keepalive = getOptAttributeInteger(threadsElt, "keepalive");
+			if (keepalive != null) {
+				frontEndConfig.setThreadsKeepalive(keepalive);
 			}
 		}
 		return frontEndConfig;

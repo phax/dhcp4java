@@ -27,6 +27,10 @@ import java.net.UnknownHostException;
  */
 public final class Util {
 
+    // Suppresses default constructor, ensuring non-instantiability.
+	private Util() {
+	}
+
     /**
      * Converts 32 bits int to IPv4 <tt>InetAddress</tt>.
      * 

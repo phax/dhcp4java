@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.70
+ * @version 0.71
  */
 public class FrontendConfig implements Serializable {
 
@@ -38,8 +38,9 @@ public class FrontendConfig implements Serializable {
     private int			listenPort = 67;
     
     private int			threadsNb = 2;
-    private int			threadsMin = 1;
+    private int			threadsCore = 1;
     private int			threadsMax = 4;
+    private int			threadsKeepalive = 10000;	// 10s default
     
 	/**
 	 * @return Returns the listenIp.
@@ -78,16 +79,28 @@ public class FrontendConfig implements Serializable {
 		this.threadsMax = threadsMax;
 	}
 	/**
-	 * @return Returns the threadsMin.
+	 * @return Returns the threadsCore.
 	 */
-	public int getThreadsMin() {
-		return threadsMin;
+	public int getThreadsCore() {
+		return threadsCore;
 	}
 	/**
-	 * @param threadsMin The threadsMin to set.
+	 * @param threadsCore The threadsCore to set.
 	 */
-	public void setThreadsMin(int threadsMin) {
-		this.threadsMin = threadsMin;
+	public void setThreadsCore(int threadsCore) {
+		this.threadsCore = threadsCore;
+	}
+	/**
+	 * @return Returns the threadsKeepalive.
+	 */
+	public int getThreadsKeepalive() {
+		return threadsKeepalive;
+	}
+	/**
+	 * @param threadsKeepalive The threadsKeepalive to set.
+	 */
+	public void setThreadsKeepalive(int threadsKeepalive) {
+		this.threadsKeepalive = threadsKeepalive;
 	}
 	/**
 	 * @return Returns the threadsNb.

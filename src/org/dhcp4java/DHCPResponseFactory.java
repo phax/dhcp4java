@@ -23,6 +23,7 @@ import static org.dhcp4java.DHCPConstants.*;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.logging.Logger;
 
 /**
  * This class provides some standard factories for DHCP responses.
@@ -34,8 +35,13 @@ import java.net.InetSocketAddress;
  *
  */
 public final class DHCPResponseFactory {
+
+    // Suppresses default constructor, ensuring non-instantiability.
+	private DHCPResponseFactory() {
+	}
     
-//	private static final Logger logger = Logger.getLogger(DHCPResponseFactory.class.getName().toLowerCase());
+	@SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(DHCPResponseFactory.class.getName().toLowerCase());
 
 	/**
 	 * Create a populated DHCPOFFER response.
@@ -49,7 +55,7 @@ public final class DHCPResponseFactory {
 	 * @param request
 	 * @param offeredAddress
 	 * @param options
-	 * @return
+	 * @return the newly created OFFER Packet
 	 */
 	public static final DHCPPacket makeDHCPOffer(
 			DHCPPacket request,
@@ -134,7 +140,7 @@ public final class DHCPResponseFactory {
 	 * @param request
 	 * @param offeredAddress
 	 * @param options
-	 * @return
+	 * @return the newly created ACK Packet
 	 */
 	public static final DHCPPacket makeDHCPAck(
 			DHCPPacket request,
@@ -221,9 +227,9 @@ public final class DHCPResponseFactory {
 	 * address and port number to which response should be sent.
 	 * 
 	 * @param request
-	 * @param offeredAddress
-	 * @param options
-	 * @return
+	 * @param serverIdentifier
+	 * @param message
+	 * @return the newly created NAK Packet
 	 */
 	public static final DHCPPacket makeDHCPNak(
 			DHCPPacket request,

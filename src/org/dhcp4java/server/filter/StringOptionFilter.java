@@ -27,7 +27,7 @@ import org.dhcp4java.DHCPPacket;
  * Class is immutable.
  * 
  * @author Stephan Hadinger
- * @version 0.70
+ * @version 0.71
  *
  */
 public final class StringOptionFilter implements RequestFilter {
@@ -41,7 +41,7 @@ public final class StringOptionFilter implements RequestFilter {
 	
 	public StringOptionFilter(byte code, String compareString, CompareMode compareMode) {
 		if (compareString == null) {
-			throw new NullPointerException("compareString is null");
+			throw new NullPointerException();
 		}
 		this.code = code;
 		this.compareString = compareString;
@@ -67,7 +67,7 @@ public final class StringOptionFilter implements RequestFilter {
 		case CASE_INSENSITIVE:
 			return compareString.equalsIgnoreCase(value);
 		case REGEX:
-			return comparePattern.matcher(value).matches();
+			return comparePattern.matcher(value).find();
 		default:
 			return false;
 		}
