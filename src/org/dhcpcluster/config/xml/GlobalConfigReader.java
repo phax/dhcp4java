@@ -23,8 +23,8 @@ import static org.dhcpcluster.config.xml.Util.getOptAttributeInetAddress;
 import java.net.InetAddress;
 import java.util.logging.Logger;
 
-import org.dhcp4java.server.config.ConfigException;
-import org.dhcp4java.server.config.GlobalConfig;
+import org.dhcpcluster.config.ConfigException;
+import org.dhcpcluster.config.GlobalConfig;
 
 import nu.xom.Element;
 import nu.xom.Elements;

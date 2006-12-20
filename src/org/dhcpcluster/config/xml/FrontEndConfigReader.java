@@ -24,8 +24,8 @@ import java.util.logging.Logger;
 import nu.xom.Element;
 import nu.xom.Elements;
 
-import org.dhcp4java.server.config.ConfigException;
-import org.dhcp4java.server.config.FrontendConfig;
+import org.dhcpcluster.config.ConfigException;
+import org.dhcpcluster.config.FrontendConfig;
 
 import static org.dhcpcluster.config.xml.Util.getOptAttributeInetAddress;
 import static org.dhcpcluster.config.xml.Util.getOptAttributeInteger;

@@ -29,7 +29,7 @@ import nu.xom.Element;
 import nu.xom.Elements;
 import nu.xom.Node;
 
-import org.dhcp4java.server.config.ConfigException;
+import org.dhcpcluster.config.ConfigException;
 
 /**
  * 

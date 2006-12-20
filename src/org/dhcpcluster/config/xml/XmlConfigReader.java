@@ -31,11 +31,11 @@ import nu.xom.Element;
 import nu.xom.Elements;
 
 import org.dhcp4java.server.DHCPClusterNode;
-import org.dhcp4java.server.config.ConfigException;
-import org.dhcp4java.server.config.FrontendConfig;
-import org.dhcp4java.server.config.GenericConfigReader;
-import org.dhcp4java.server.config.GlobalConfig;
-import org.dhcp4java.server.config.TopologyConfig;
+import org.dhcpcluster.config.ConfigException;
+import org.dhcpcluster.config.FrontendConfig;
+import org.dhcpcluster.config.GenericConfigReader;
+import org.dhcpcluster.config.GlobalConfig;
+import org.dhcpcluster.config.TopologyConfig;
 
 /**
  * 
@@ -84,7 +84,7 @@ public class XmlConfigReader implements GenericConfigReader {
 
 
 	/* (non-Javadoc)
-	 * @see org.dhcp4java.server.config.GenericConfigReader#getFrontEndConfig()
+	 * @see org.dhcpcluster.config.GenericConfigReader#getFrontEndConfig()
 	 */
 	public FrontendConfig getFrontEndConfig() {
 		if (!inited) {
@@ -95,7 +95,7 @@ public class XmlConfigReader implements GenericConfigReader {
 
 
 	/* (non-Javadoc)
-	 * @see org.dhcp4java.server.config.GenericConfigReader#getGlobalConfig()
+	 * @see org.dhcpcluster.config.GenericConfigReader#getGlobalConfig()
 	 */
 	public GlobalConfig getGlobalConfig() {
 		if (!inited) {
@@ -106,7 +106,7 @@ public class XmlConfigReader implements GenericConfigReader {
 
 
 	/* (non-Javadoc)
-	 * @see org.dhcp4java.server.config.GenericConfigReader#getTopologyConfig()
+	 * @see org.dhcpcluster.config.GenericConfigReader#getTopologyConfig()
 	 */
 	public TopologyConfig getTopologyConfig() {
 		if (!inited) {
@@ -117,7 +117,7 @@ public class XmlConfigReader implements GenericConfigReader {
 
 
 	/* (non-Javadoc)
-	 * @see org.dhcp4java.server.config.GenericConfigReader#reloadTopologyConfig()
+	 * @see org.dhcpcluster.config.GenericConfigReader#reloadTopologyConfig()
 	 */
 	public TopologyConfig reloadTopologyConfig() {
 		// TODO reload the file

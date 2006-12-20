@@ -21,7 +21,7 @@ package org.dhcp4java;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import org.dhcp4java.server.config.ConfigException;
+import org.dhcpcluster.config.ConfigException;
 
 /**
  * Class is immutable.
