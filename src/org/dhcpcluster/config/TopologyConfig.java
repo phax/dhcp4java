@@ -27,9 +27,9 @@ import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPConstants;
 import org.dhcp4java.InetCidr;
-import org.dhcp4java.server.filter.AlwaysTrueFilter;
-import org.dhcp4java.server.filter.RequestFilter;
 import org.dhcp4java.server.struct.Subnet;
+import org.dhcpcluster.filter.AlwaysTrueFilter;
+import org.dhcpcluster.filter.RequestFilter;
 
 /**
  * 

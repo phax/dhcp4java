@@ -32,9 +32,9 @@ import java.util.logging.Logger;
 import org.dhcp4java.DHCPOption;
 import org.dhcp4java.HardwareAddress;
 import org.dhcp4java.InetCidr;
-import org.dhcp4java.server.filter.AlwaysTrueFilter;
-import org.dhcp4java.server.filter.RequestFilter;
 import org.dhcpcluster.config.ConfigException;
+import org.dhcpcluster.filter.AlwaysTrueFilter;
+import org.dhcpcluster.filter.RequestFilter;
 /**
  * 
  * @author Stephan Hadinger

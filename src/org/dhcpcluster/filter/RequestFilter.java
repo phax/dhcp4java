@@ -16,27 +16,15 @@
  *	License along with this library; if not, write to the Free Software
  *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.dhcp4java.server.filter;
+package org.dhcpcluster.filter;
 
 import org.dhcp4java.DHCPPacket;
 
-public final class NotFilter implements RequestFilter {
-
-	private final RequestFilter filter;
-	
-	public NotFilter(RequestFilter filter) {
-		if (filter == null) {
-			throw new NullPointerException("filter is null");
-		}
-		this.filter = filter;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dhcp4java.server.filter.RequestFilter#isRequestAccepted(org.dhcp4java.DHCPPacket)
-	 */
-	public boolean isRequestAccepted(DHCPPacket request) {
-		return !(filter.isRequestAccepted(request));
-	}
-	
-	
+/**
+ * 
+ * @author Stephan Hadinger
+ * @version 0.71
+ */
+public interface RequestFilter {
+	public boolean isRequestAccepted(DHCPPacket request);
 }

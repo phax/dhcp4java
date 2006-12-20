@@ -16,9 +16,7 @@
  *	License along with this library; if not, write to the Free Software
  *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.dhcp4java.server.filter;
-
-import java.util.regex.Pattern;
+package org.dhcpcluster.filter;
 
 import org.dhcp4java.DHCPPacket;
 
@@ -30,49 +28,48 @@ import org.dhcp4java.DHCPPacket;
  * @version 0.71
  *
  */
-public final class StringOptionFilter implements RequestFilter {
-	
-	public enum CompareMode { EXACT, CASE_INSENSITIVE, REGEX };
+public final class NumOptionFilter implements RequestFilter {
+
+	public enum CompareOp { EQ, NE, GT, LT, GE, LE };
 	
 	private final byte code;
-	private final String compareString;
-	private final CompareMode compareMode;
-	private final Pattern comparePattern;
+	private final CompareOp compareOp;
+	private final int compareValue;
 	
-	public StringOptionFilter(byte code, String compareString, CompareMode compareMode) {
-		if (compareString == null) {
-			throw new NullPointerException();
-		}
+	public NumOptionFilter(byte code, int compareValue, CompareOp compareOp) {
 		this.code = code;
-		this.compareString = compareString;
-		this.compareMode = compareMode;
-		if (compareMode == CompareMode.REGEX) {		// create the regex comparator
-			comparePattern = Pattern.compile(compareString);
-		} else {
-			comparePattern = null;
-		}
+		this.compareValue = compareValue;
+		this.compareOp = compareOp;
 	}
-
+	
 	/* (non-Javadoc)
-	 * @see org.dhcp4java.server.filter.RequestFilter#isRequestAccepted(org.dhcp4java.DHCPPacket)
+	 * @see org.dhcpcluster.filter.RequestFilter#isRequestAccepted(org.dhcp4java.DHCPPacket)
 	 */
 	public boolean isRequestAccepted(DHCPPacket request) {
 		if (request == null) {
 			throw new NullPointerException("request is null");
 		}
-		String value = request.getOptionAsString(code);
-		switch (compareMode) {
-		case EXACT:
-			return compareString.equals(value);
-		case CASE_INSENSITIVE:
-			return compareString.equalsIgnoreCase(value);
-		case REGEX:
-			return comparePattern.matcher(value).find();
+		Integer value = request.getOptionAsNum(code);
+		if (value == null) {
+			return false;
+		}
+		switch (compareOp) {
+		case EQ:
+			return value == compareValue;
+		case NE:
+			return value != compareValue;
+		case GT:
+			return value >  compareValue;
+		case LT:
+			return value <  compareValue;
+		case GE:
+			return value >= compareValue;
+		case LE:
+			return value <= compareValue;
 		default:
 			return false;
 		}
 	}
-	
-	
 
+	
 }

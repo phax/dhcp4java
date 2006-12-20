@@ -16,18 +16,48 @@
  *	License along with this library; if not, write to the Free Software
  *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.dhcp4java.server.filter;
+package org.dhcpcluster.filter;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import org.dhcp4java.DHCPPacket;
 
-public final class AlwaysTrueFilter implements RequestFilter {
+public final class AndFilter implements RequestFilter {
+	
+	private final LinkedList<RequestFilter> filters;
+	
+	public AndFilter() {
+		this.filters = new LinkedList<RequestFilter>();
+	}
+	
+	public AndFilter(RequestFilter[] filters) {
+		this();
+		if (filters == null) {
+			throw new NullPointerException("filters must not be null");
+		}
+		for (RequestFilter element : filters) {
+			this.filters.add(element);
+		}
+	}
 
 	/* (non-Javadoc)
-	 * @see org.dhcp4java.server.filter.RequestFilter#isRequestAccepted(org.dhcp4java.DHCPPacket)
+	 * @see org.dhcpcluster.filter.RequestFilter#filter(org.dhcp4java.DHCPPacket)
 	 */
 	public boolean isRequestAccepted(DHCPPacket request) {
+		for (RequestFilter filter : this.filters) {
+			if ((filter != null) && (!filter.isRequestAccepted(request))) {
+				return false;
+			}
+		}
 		return true;
 	}
 
-	
+	/**
+	 * @return Returns the filters.
+	 */
+	public List<RequestFilter> getFilters() {
+		return filters;
+	}
+
 }
