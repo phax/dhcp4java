@@ -26,8 +26,8 @@ import org.dhcp4java.DHCPOption;
 import org.dhcp4java.DHCPPacket;
 import org.dhcp4java.DHCPResponseFactory;
 import org.dhcp4java.DHCPServlet;
-import org.dhcp4java.server.struct.Subnet;
 import org.dhcpcluster.filter.RequestFilter;
+import org.dhcpcluster.struct.Subnet;
 
 import static org.dhcp4java.DHCPConstants.DHO_DHCP_AGENT_OPTIONS;
 

@@ -32,10 +32,10 @@ import org.dhcp4java.DHCPConstants;
 import org.dhcp4java.DHCPOption;
 import org.dhcp4java.HardwareAddress;
 import org.dhcp4java.InetCidr;
-import org.dhcp4java.server.struct.AddressRange;
-import org.dhcp4java.server.struct.Subnet;
 import org.dhcpcluster.config.ConfigException;
 import org.dhcpcluster.config.TopologyConfig;
+import org.dhcpcluster.struct.AddressRange;
+import org.dhcpcluster.struct.Subnet;
 
 import nu.xom.Element;
 import nu.xom.Elements;
