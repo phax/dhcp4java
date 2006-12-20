@@ -2,7 +2,7 @@ package org.dhcp4java.server.test;
 
 import junit.framework.JUnit4TestAdapter;
 
-import org.dhcp4java.server.struct.AddressRange;
+import org.dhcpcluster.struct.AddressRange;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
