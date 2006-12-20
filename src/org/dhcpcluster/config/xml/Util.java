@@ -16,7 +16,7 @@
  *	License along with this library; if not, write to the Free Software
  *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.dhcp4java.server.config.xml;
+package org.dhcpcluster.config.xml;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;

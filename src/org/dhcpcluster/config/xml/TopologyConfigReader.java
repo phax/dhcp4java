@@ -16,7 +16,7 @@
  *	License along with this library; if not, write to the Free Software
  *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.dhcp4java.server.config.xml;
+package org.dhcpcluster.config.xml;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -40,9 +40,9 @@ import org.dhcp4java.server.struct.Subnet;
 import nu.xom.Element;
 import nu.xom.Elements;
 
-import static org.dhcp4java.server.config.xml.Util.getElementPath;
-import static org.dhcp4java.server.config.xml.Util.get1Attribute;
-import static org.dhcp4java.server.config.xml.Util.getOptAttribute;
+import static org.dhcpcluster.config.xml.Util.get1Attribute;
+import static org.dhcpcluster.config.xml.Util.getElementPath;
+import static org.dhcpcluster.config.xml.Util.getOptAttribute;
 
 /**
  * 
