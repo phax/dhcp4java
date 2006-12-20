@@ -30,7 +30,7 @@ import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
 
-import org.dhcp4java.server.DHCPClusterNode;
+import org.dhcpcluster.DHCPClusterNode;
 import org.dhcpcluster.config.ConfigException;
 import org.dhcpcluster.config.FrontendConfig;
 import org.dhcpcluster.config.GenericConfigReader;

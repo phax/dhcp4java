@@ -20,7 +20,7 @@ package org.dhcpcluster.config;
 
 import java.util.Properties;
 
-import org.dhcp4java.server.DHCPClusterNode;
+import org.dhcpcluster.DHCPClusterNode;
 
 /**
  * 

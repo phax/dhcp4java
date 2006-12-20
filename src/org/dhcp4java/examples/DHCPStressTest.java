@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 import org.dhcp4java.DHCPPacket;
 import org.dhcp4java.DHCPCoreServer;
 import org.dhcp4java.DHCPServerInitException;
-import org.dhcp4java.server.DHCPStaticServlet;
+import org.dhcpcluster.DHCPStaticServlet;
 
 
 
