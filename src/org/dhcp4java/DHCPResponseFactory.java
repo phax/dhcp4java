@@ -113,12 +113,7 @@ public final class DHCPResponseFactory {
 		
 		if (options != null) {
 			for (DHCPOption opt : options) {
-				if (opt.isMirror()) {
-					// we mirror the value of the request
-					resp.setOption(opt.getMirrorValue(request));
-				} else {
-					resp.setOption(opt);
-				}
+				resp.setOption(opt.applyOption(request));
 			}
 		}
 		
@@ -202,12 +197,7 @@ public final class DHCPResponseFactory {
 		
 		if (options != null) {
 			for (DHCPOption opt : options) {
-				if (opt.isMirror()) {
-					// we mirror the value of the request
-					resp.setOption(opt.getMirrorValue(request));
-				} else {
-					resp.setOption(opt);
-				}
+				resp.setOption(opt.applyOption(request));
 			}
 		}
 		

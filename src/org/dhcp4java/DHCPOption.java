@@ -768,7 +768,7 @@ public class DHCPOption implements Serializable {
 	 * @return the value of the specific option in the client request
 	 * @throws NullPointerException if <tt>request</tt> is <tt>null</tt>.
 	 */
-	public DHCPOption getMirrorValue(DHCPPacket request) {
+	public DHCPOption applyOption(DHCPPacket request) {
 		if (request == null) {
 			throw new NullPointerException("request is null");
 		}
