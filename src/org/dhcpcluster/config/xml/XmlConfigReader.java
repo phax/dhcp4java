@@ -25,10 +25,9 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import nu.xom.Builder;
-import nu.xom.Document;
-import nu.xom.Element;
-import nu.xom.Elements;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 import org.dhcpcluster.DHCPClusterNode;
 import org.dhcpcluster.config.ConfigException;
@@ -36,6 +35,7 @@ import org.dhcpcluster.config.FrontendConfig;
 import org.dhcpcluster.config.GenericConfigReader;
 import org.dhcpcluster.config.GlobalConfig;
 import org.dhcpcluster.config.TopologyConfig;
+import org.dhcpcluster.config.xml.data.DhcpServer;
 
 /**
  * 
@@ -126,43 +126,91 @@ public class XmlConfigReader implements GenericConfigReader {
 
 
 	public void parseXmlFile(InputStream xml) throws ConfigException {
-    	try {
-			Builder parser = new Builder();
-			Document doc = parser.build(xml);
-
-			Element root = doc.getRootElement();
-			if (!"dhcp-server".equals(root.getLocalName())) {
-				throw new ConfigException("root node is not dhcp-server but "+root.getLocalName());
-			}
-			
-			// parse "front-end" element
-			Elements frontendElts = root.getChildElements("front-end");
-			if (frontendElts.size() != 1) {
-				throw new ConfigException("One 'front-end' element expected, found "+frontendElts.size());
-			}
-			this.frontendConfig = FrontEndConfigReader.xmlFrontEndConfigReader(frontendElts.get(0));
-			//FrontendConfig frontendConfig = FrontendConfigReader...
-			
-			// parse "global" element
-			Elements globalElts = root.getChildElements("global");
-			if (globalElts.size() != 1) {
-				throw new ConfigException("One 'global' element expected, found "+globalElts.size());
-			}
-			this.globalConfig = GlobalConfigReader.xmlGlobalConfigReader(globalElts.get(0));
-			
-			// parse "topology" element
-			Elements topologyElts = root.getChildElements("topology");
-			if (topologyElts.size() != 1) {
-				throw new ConfigException("One 'subnets' element expected, found "+topologyElts.size());
-			}
-			this.topologyConfig = TopologyConfigReader.xmlTopologyReader(topologyElts.get(0));
-    	} catch (ConfigException e) {
-    		throw e;		// re-throw
-    	} catch (Exception e) {
-    		logger.log(Level.WARNING, "global exception", e);
-    		throw new ConfigException("global exception", e);
-    	}
+		DhcpServer dhcpServerData = null;
+		
+		try {
+			JAXBContext jc = JAXBContext.newInstance("org.dhcpcluster.config.xml.data");
+			Unmarshaller u = jc.createUnmarshaller();
+			dhcpServerData = (DhcpServer)u.unmarshal(xml);
+		} catch (JAXBException e) {
+			logger.log(Level.SEVERE, "XML Parsing error", e);
+			throw new ConfigException("XML Parsing error", e);
+		}
+		// ready to read data in memory
+		
+		// front-end data
+		this.frontendConfig = xmlFrontEndConfigReader(dhcpServerData.getFrontEnd());
+		this.globalConfig = xmlGlobalConfigReader(dhcpServerData.getGlobal());
+		this.topologyConfig = TopologyConfigReader.xmlTopologyReader(dhcpServerData.getTopology());
+		
+		return;
+//    	try {
+//			Builder parser = new Builder();
+//			Document doc = parser.build(xml);
+//
+//			Element root = doc.getRootElement();
+//			if (!"dhcp-server".equals(root.getLocalName())) {
+//				throw new ConfigException("root node is not dhcp-server but "+root.getLocalName());
+//			}
+//			
+//			// parse "front-end" element
+//			Elements frontendElts = root.getChildElements("front-end");
+//			if (frontendElts.size() != 1) {
+//				throw new ConfigException("One 'front-end' element expected, found "+frontendElts.size());
+//			}
+//			this.frontendConfig = FrontEndConfigReader.xmlFrontEndConfigReader(frontendElts.get(0));
+//			//FrontendConfig frontendConfig = FrontendConfigReader...
+//			
+//			// parse "global" element
+//			Elements globalElts = root.getChildElements("global");
+//			if (globalElts.size() != 1) {
+//				throw new ConfigException("One 'global' element expected, found "+globalElts.size());
+//			}
+//			this.globalConfig = GlobalConfigReader.xmlGlobalConfigReader(globalElts.get(0));
+//			
+//			// parse "topology" element
+//			Elements topologyElts = root.getChildElements("topology");
+//			if (topologyElts.size() != 1) {
+//				throw new ConfigException("One 'subnets' element expected, found "+topologyElts.size());
+//			}
+//			this.topologyConfig = TopologyConfigReader.xmlTopologyReader(topologyElts.get(0));
+//    	} catch (ConfigException e) {
+//    		throw e;		// re-throw
+//    	} catch (Exception e) {
+//    		logger.log(Level.WARNING, "global exception", e);
+//    		throw new ConfigException("global exception", e);
+//    	}
     }
+
+	public static FrontendConfig xmlFrontEndConfigReader(DhcpServer.FrontEnd frontEndData) {
+		FrontendConfig frontEndConfig = new FrontendConfig();
+		
+		if (frontEndData.getThreads() != null) {
+			DhcpServer.FrontEnd.Threads threads = frontEndData.getThreads();
+			frontEndConfig.setThreadsNb(threads.getNb());
+			frontEndConfig.setThreadsMax(threads.getMax());
+			frontEndConfig.setThreadsNb(threads.getNb());
+			frontEndConfig.setThreadsKeepalive(threads.getKeepalive());
+		}
+		if (frontEndData.getListen() != null) {
+			DhcpServer.FrontEnd.Listen listen = frontEndData.getListen();
+			frontEndConfig.setListenIp(listen.getInet());
+			frontEndConfig.setListenPort(listen.getPort());
+		}
+		
+		return frontEndConfig;
+	}
+	
+	public static GlobalConfig xmlGlobalConfigReader(DhcpServer.Global globalData) {
+		GlobalConfig globalConfig = new GlobalConfig();
+		
+		if (globalData.getServer() != null) {
+			DhcpServer.Global.Server server = globalData.getServer();
+			globalConfig.setServerIdentifier(server.getIdentifier());
+		}
+		
+		return globalConfig;
+	}
 	
 	private static final String CONFIG_XML_FILE = "config.xml.file";
 

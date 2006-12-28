@@ -16,39 +16,32 @@
  *	License along with this library; if not, write to the Free Software
  *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.dhcpcluster.config.xml;
+package org.dhcpcluster.struct;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.dhcpcluster.config.ConfigException;
+import org.dhcp4java.DHCPOption;
 
 /**
+ * Class for manipulating DHCP options (used internally).
  * 
  * @author Stephan Hadinger
  * @version 0.71
+ * 
+ * Immutable object.
  */
-public final class Util {
-	
-    private static final Logger logger = Logger.getLogger(Util.class.getName().toLowerCase());
-    
-    // Suppresses default constructor, ensuring non-instantiability.
-    private Util() {
-    }	
-	
-	public static final InetAddress parseInetAddress(String lexicalIentAddress) {
-		try {
-			return InetAddress.getByName(lexicalIentAddress);
-		} catch (UnknownHostException e) {
-			throw new IllegalArgumentException("UnknownHostException raised: "+lexicalIentAddress, e);
-		}
-	}
-	
-	public static final String printInetAddress(InetAddress address) {
-		return address.getHostAddress();
-	}
+public class DHCPRichOption extends DHCPOption {
+	private static final long   serialVersionUID = 3L;
+    private static final Logger logger = Logger.getLogger(DHCPRichOption.class.getName().toLowerCase());
 
+    public enum Mode { REPLACE, CONCAT, REGEX };
+
+    private Mode mode = Mode.REPLACE;
+    
+    public DHCPRichOption(byte code, byte[] value, boolean mirror) {
+    	super(code, value, mirror);
+    }
+    public DHCPRichOption(byte code, byte[] value) {
+    	super(code, value);
+    }
 }
