@@ -21,6 +21,7 @@ package org.dhcpcluster.struct;
 import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPOption;
+import org.dhcp4java.DHCPPacket;
 
 /**
  * Class for manipulating DHCP options (used internally).
@@ -32,16 +33,40 @@ import org.dhcp4java.DHCPOption;
  */
 public class DHCPRichOption extends DHCPOption {
 	private static final long   serialVersionUID = 3L;
-    private static final Logger logger = Logger.getLogger(DHCPRichOption.class.getName().toLowerCase());
+    @SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(DHCPRichOption.class.getName().toLowerCase());
 
     public enum Mode { REPLACE, CONCAT, REGEX };
 
     private Mode mode = Mode.REPLACE;
     
+    public DHCPRichOption(byte code, byte[] value, boolean mirror, Mode mode) {
+    	super(code, value, mirror);
+    	this.mode = mode;
+    }
     public DHCPRichOption(byte code, byte[] value, boolean mirror) {
     	super(code, value, mirror);
     }
     public DHCPRichOption(byte code, byte[] value) {
     	super(code, value);
     }
+	/* (non-Javadoc)
+	 * @see org.dhcp4java.DHCPOption#applyOption(org.dhcp4java.DHCPPacket)
+	 */
+	@Override
+	public DHCPOption applyOption(DHCPPacket request) {
+		switch (mode) {
+			case REPLACE:
+				return super.applyOption(request);
+			case CONCAT:
+				// TODO
+			case REGEX:
+				// TODO
+			default:
+				return null;
+		
+		}
+	}
+    
+    
 }
