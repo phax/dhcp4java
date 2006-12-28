@@ -1,38 +1,51 @@
 <!--This is a test configuration, used by unit tests-->
-<dhcp-server>
+<dhcp-server xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="E:\workspace\dhcp4java\xml\config.xsd">
 	<front-end>
-		<listen port="6767" inet="127.0.0.1"></listen>
-		<threads nb="2" max="10" core="2" keepalive="10000"></threads>
+		<listen port="6767" inet="127.0.0.1"/>
+		<threads nb="2" max="10" core="2" keepalive="10000"/>
 	</front-end>
 	<global>
-
-	<server identifier="192.168.1.1"></server>
+		<server identifier="192.168.1.1"/>
 	</global>
-	<topology><options>
+	<topology>
+		<options>
 			<option-routers>
 				<value-inet>204.254.239.1</value-inet>
 			</option-routers>
-		</options><subnet address="192.168.0.0" mask="255.255.252.0" comment="Free comment!">
-		<giaddr>10.11.12.13</giaddr>
-		<giaddr>10.11.13.15</giaddr>		<range start="192.168.0.15" end="192.168.0.25"></range>
-		<options>
-			<option code="15">
-				<value-byte>127</value-byte>
-				<value-inet>192.168.0.11</value-inet>
+			<option code="129">
+				<value-byte>255</value-byte>
+				<value-rawhex>0022FF</value-rawhex>
 			</option>
-			<option code="160">
-				<value-short>1500</value-short>
-			</option>
-			<option-time-servers>
-				<value-inet>192.168.0.10</value-inet>			</option-time-servers>
-			<option code="1">
-				<value-byte>256</value-byte>			</option>
-			<option-host-name>
-				<mirror></mirror>			</option-host-name><!--TODO add BOOTP parameters--><!--TODO add lease and max-lease-->
-			<lease defalut="86400" max="86400"></lease>
 		</options>
-		<static address="192.168.0.3" ethernet="0:c0:c3:49:2b:57"></static>
-		<static address="192.168.0.4" ethernet="0:1c0:c3:49:2b:57"></static><!--TODO add static addresses--><!--TODO add allow/deny policies-->
-</subnet></topology>
-
+		<subnet address="192.168.0.0" mask="255.255.252.0" comment="Free comment!">
+			<giaddr>10.11.12.13</giaddr>
+			<giaddr>10.11.13.15</giaddr>
+			<range start="192.168.0.15" end="192.168.0.25"/>
+			<options>
+				<option code="15">
+					<value-byte>127</value-byte>
+					<value-inet>192.168.0.11</value-inet>
+				</option>
+				<option code="160">
+					<value-short>1500</value-short>
+				</option>
+				<option-time-servers>
+					<value-inet>192.168.0.10</value-inet>
+				</option-time-servers>
+				<option code="1">
+					<value-byte>255</value-byte>
+				</option>
+				<option-host-name>
+					<mirror/>
+				</option-host-name>
+				<!--TODO add BOOTP parameters-->
+				<!--TODO add lease and max-lease-->
+<!--				<lease defalut="86400" max="86400"/>-->
+			</options>
+			<static address="192.168.0.3" ethernet="0:c0:c3:49:2b:57"/>
+			<static address="192.168.0.4" ethernet="0:1c0:c3:49:2b:57"/>
+			<!--TODO add static addresses-->
+			<!--TODO add allow/deny policies-->
+		</subnet>
+	</topology>
 </dhcp-server>
