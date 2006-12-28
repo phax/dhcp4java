@@ -63,22 +63,22 @@ public class DHCPOptionMirrorTest {
     public void testGetMirrorValue() {
     	DHCPOption mirrorOpt;
     	DHCPPacket pac = new DHCPPacket();
-    	assertEquals(opt, opt.getMirrorValue(pac));
+    	assertEquals(opt, opt.applyOption(pac));
     	
     	pac.setOptionAsInt(DHO_DHCP_LEASE_TIME, 86400);
     	
-    	mirrorOpt = opt.getMirrorValue(pac);
+    	mirrorOpt = opt.applyOption(pac);
     	assertEquals(DHO_DHCP_LEASE_TIME, mirrorOpt.getCode());
     	assertTrue(Arrays.equals(DHCPOption.int2Bytes(86400), mirrorOpt.getValue()));
     	
     	pac.setOptionRaw(DHO_DHCP_LEASE_TIME, new byte[0]);
-    	mirrorOpt = opt.getMirrorValue(pac);
+    	mirrorOpt = opt.applyOption(pac);
     	assertEquals(DHO_DHCP_LEASE_TIME, mirrorOpt.getCode());
     	assertTrue(Arrays.equals(new byte[0], mirrorOpt.getValue()));
     }
     @Test (expected=NullPointerException.class)
     public void testGetMirrorValueNull() {
-    	opt.getMirrorValue(null);
+    	opt.applyOption(null);
     }
     
     @Test
@@ -86,10 +86,10 @@ public class DHCPOptionMirrorTest {
     	DHCPOption opt2 = new DHCPOption(DHO_DHCP_LEASE_TIME, null, false);
     	DHCPOption mirrorOpt;
     	DHCPPacket pac = new DHCPPacket();
-    	assertEquals(opt2, opt2.getMirrorValue(pac));
+    	assertEquals(opt2, opt2.applyOption(pac));
     	pac.setOptionAsInt(DHO_DHCP_LEASE_TIME, 86400);
     	
-    	mirrorOpt = opt2.getMirrorValue(pac);
+    	mirrorOpt = opt2.applyOption(pac);
     	assertEquals(DHO_DHCP_LEASE_TIME, mirrorOpt.getCode());
     	assertEquals(opt2, mirrorOpt);	// not mirrored here since isMirror is false
     }
