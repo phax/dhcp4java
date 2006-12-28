@@ -33,41 +33,31 @@ import org.dhcp4java.DHCPOption;
 import org.dhcp4java.HardwareAddress;
 import org.dhcp4java.InetCidr;
 import org.dhcpcluster.config.ConfigException;
-import org.dhcpcluster.filter.AlwaysTrueFilter;
 import org.dhcpcluster.filter.RequestFilter;
 /**
  * 
  * @author Stephan Hadinger
  * @version 0.71
  */
-public class Subnet implements Serializable {
+public class Subnet extends NodeAbstract implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private static final Logger logger = Logger.getLogger(Subnet.class.getName().toLowerCase());
-
-    /** freely usable comment */
-    private String comment = null;
     
     /** network range of the subnet = CIDR */
-    private final InetCidr cidr;
+    protected final InetCidr cidr;
     
     /** giaddr pointing to this Subnet */
-    private final Collection<InetAddress> giaddrs = new LinkedList<InetAddress>();
+    protected final Collection<InetAddress> giaddrs = new LinkedList<InetAddress>();
     
     /** list of address ranges, sorted */
-    private final SortedSet<AddressRange> addrRanges = new TreeSet<AddressRange>();
+    protected final SortedSet<AddressRange> addrRanges = new TreeSet<AddressRange>();
 
     /** list of static addresses already assigned */
-    private final Map<HardwareAddress, InetAddress> staticAddressesByMac = new HashMap<HardwareAddress, InetAddress>();
-    private final Map<InetAddress, HardwareAddress> staticAddressesByIp = new HashMap<InetAddress, HardwareAddress>();
+    protected final Map<HardwareAddress, InetAddress> staticAddressesByMac = new HashMap<HardwareAddress, InetAddress>();
+    protected final Map<InetAddress, HardwareAddress> staticAddressesByIp = new HashMap<InetAddress, HardwareAddress>();
     
-    /** filter applicable to Subnet */
-    private RequestFilter				requestFilter = new AlwaysTrueFilter();
-    
-    /** array of dhcp options */
-    private DHCPOption[] dhcpOptions = DHCPOPTION_0;
-
     public Subnet(InetCidr cidr) {
     	if (cidr == null) {
     		throw new NullPointerException();
@@ -121,8 +111,6 @@ public class Subnet implements Serializable {
 	public SortedSet<AddressRange> getAddrRanges() {
 		return addrRanges;
 	}
-    
-    private static final DHCPOption[] DHCPOPTION_0 = new DHCPOption[0];
 
 	/**
 	 * @return Returns the dhcpOptions.
@@ -173,6 +161,5 @@ public class Subnet implements Serializable {
 	public void setRequestFilter(RequestFilter requestFilter) {
 		this.requestFilter = requestFilter;
 	}
-	
 	
 }
