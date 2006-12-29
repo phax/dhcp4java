@@ -259,19 +259,17 @@
 	</xs:element>
 	<!--=== option container ===-->
 	<xs:complexType name="option-generic">
-		<xs:choice>
-			<xs:element ref="mirror"/>
-			<xs:choice minOccurs="0" maxOccurs="unbounded">
-				<xs:element ref="value-byte"/>
-				<xs:element ref="value-short"/>
-				<xs:element ref="value-int"/>
-				<xs:element ref="value-inet"/>
-				<xs:element ref="value-rawhex"/>
-				<xs:element ref="value-raw64"/>
-				<xs:element ref="value-string"/>
-				<xs:element ref="value-string-element"/>
-			</xs:choice>
+		<xs:choice maxOccurs="unbounded">
+			<xs:element ref="value-byte"/>
+			<xs:element ref="value-short"/>
+			<xs:element ref="value-int"/>
+			<xs:element ref="value-inet"/>
+			<xs:element ref="value-rawhex"/>
+			<xs:element ref="value-raw64"/>
+			<xs:element ref="value-string"/>
+			<xs:element ref="value-string-element"/>
 		</xs:choice>
+		<xs:attribute name="mirror" type="xs:boolean" use="optional" default="false"/>
 	</xs:complexType>
 	<xs:group name="group-option-inets">
 		<xs:choice>
@@ -320,11 +318,8 @@
 	<xs:complexType name="type-option-inets">
 		<xs:complexContent>
 			<xs:restriction base="option-generic">
-				<xs:choice>
-					<xs:element ref="mirror"/>
-					<xs:choice minOccurs="0" maxOccurs="unbounded">
-						<xs:element ref="value-inet"/>
-					</xs:choice>
+				<xs:choice minOccurs="1" maxOccurs="unbounded">
+					<xs:element ref="value-inet"/>
 				</xs:choice>
 			</xs:restriction>
 		</xs:complexContent>
@@ -333,10 +328,7 @@
 		<xs:complexContent>
 			<xs:restriction base="option-generic">
 				<xs:choice>
-					<xs:element ref="mirror"/>
-					<xs:choice>
-						<xs:element ref="value-inet"/>
-					</xs:choice>
+					<xs:element ref="value-inet"/>
 				</xs:choice>
 			</xs:restriction>
 		</xs:complexContent>
@@ -344,13 +336,11 @@
 	<xs:complexType name="type-option-bytes">
 		<xs:complexContent>
 			<xs:restriction base="option-generic">
-				<xs:choice>
-					<xs:element ref="mirror"/>
-					<xs:choice minOccurs="0" maxOccurs="unbounded">
-						<xs:element ref="value-byte"/>
-						<xs:element ref="value-rawhex"/>
-						<xs:element ref="value-raw64"/>
-					</xs:choice>
+				<xs:choice minOccurs="1" maxOccurs="unbounded">
+					<xs:element ref="value-byte"/>
+					<xs:element ref="value-rawhex"/>
+					<xs:element ref="value-raw64"/>
+					<xs:element ref="value-string"/>
 				</xs:choice>
 			</xs:restriction>
 		</xs:complexContent>
@@ -359,10 +349,7 @@
 		<xs:complexContent>
 			<xs:restriction base="option-generic">
 				<xs:choice>
-					<xs:element ref="mirror"/>
-					<xs:choice>
-						<xs:element ref="value-byte"/>
-					</xs:choice>
+					<xs:element ref="value-byte"/>
 				</xs:choice>
 			</xs:restriction>
 		</xs:complexContent>
@@ -371,10 +358,7 @@
 		<xs:complexContent>
 			<xs:restriction base="option-generic">
 				<xs:choice>
-					<xs:element ref="mirror"/>
-					<xs:choice>
-						<xs:element ref="value-int"/>
-					</xs:choice>
+					<xs:element ref="value-int"/>
 				</xs:choice>
 			</xs:restriction>
 		</xs:complexContent>
@@ -383,10 +367,7 @@
 		<xs:complexContent>
 			<xs:restriction base="option-generic">
 				<xs:choice>
-					<xs:element ref="mirror"/>
-					<xs:choice>
-						<xs:element ref="value-short"/>
-					</xs:choice>
+					<xs:element ref="value-short"/>
 				</xs:choice>
 			</xs:restriction>
 		</xs:complexContent>
@@ -394,11 +375,8 @@
 	<xs:complexType name="type-option-shorts">
 		<xs:complexContent>
 			<xs:restriction base="option-generic">
-				<xs:choice>
-					<xs:element ref="mirror"/>
-					<xs:choice minOccurs="0" maxOccurs="unbounded">
-						<xs:element ref="value-short"/>
-					</xs:choice>
+				<xs:choice minOccurs="1" maxOccurs="unbounded">
+					<xs:element ref="value-short"/>
 				</xs:choice>
 			</xs:restriction>
 		</xs:complexContent>
@@ -407,10 +385,7 @@
 		<xs:complexContent>
 			<xs:restriction base="option-generic">
 				<xs:choice>
-					<xs:element ref="mirror"/>
-					<xs:choice>
-						<xs:element ref="value-string"/>
-					</xs:choice>
+					<xs:element ref="value-string"/>
 				</xs:choice>
 			</xs:restriction>
 		</xs:complexContent>

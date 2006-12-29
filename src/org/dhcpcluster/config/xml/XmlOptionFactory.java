@@ -73,7 +73,7 @@ public class XmlOptionFactory {
 		}
 		// TODO mirror ? 
 		if (obj instanceof OptionGeneric) {
-			makeOptionValue(code, ((OptionGeneric)obj).getValueByteOrValueShortOrValueInt());
+			makeOptionValue(code, (OptionGeneric)obj);
 		} else {
 			logger.warning("Unknown option object: "+obj);
 		}
@@ -93,7 +93,7 @@ public class XmlOptionFactory {
 		}
 		Object o = obj.getValue();
 		if (o instanceof OptionGeneric) {
-			return makeOptionValue(codeByte, ((OptionGeneric)o).getValueByteOrValueShortOrValueInt());
+			return makeOptionValue(codeByte, (OptionGeneric)o);
 		} else {
 			throw new IllegalStateException("Unexpected type here:"+o);
 		}
@@ -104,11 +104,12 @@ public class XmlOptionFactory {
 		throw new UnsupportedOperationException();
 	}
 
-	private static DHCPOption makeOptionValue(byte code, List<JAXBElement<?>> optList) {
+	private static DHCPOption makeOptionValue(byte code, OptionGeneric og) {
+		List<JAXBElement<?>> optList = og.getValueByteOrValueShortOrValueInt();
 		DHCPOption resOption = null;
 		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
 		DataOutputStream outputStream = new DataOutputStream(byteOutput);
-		int mirrorDetected = 0;
+		boolean mirror = og.isMirror();
 		try {
 			for (JAXBElement<?> optElement : optList) {
 				// switch according to base type
@@ -129,7 +130,7 @@ public class XmlOptionFactory {
 					logger.warning("Unsupported value type: "+obj.toString());
 				}
 			}
-			resOption = new DHCPRichOption(code, byteOutput.toByteArray(), false);
+			resOption = new DHCPRichOption(code, byteOutput.toByteArray(), mirror);
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, "Unexpected IOException", e);
 			return null;
