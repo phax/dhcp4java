@@ -117,43 +117,6 @@ public final class TopologyConfigReader {
     	return topologyConfig;
     }
     
-    public static DHCPOption[] parseOptions(Options options) {
-    	if (options == null) {
-    		return DHCPOPTION_0;
-    	}
-		LinkedList<DHCPOption> optList = new LinkedList<DHCPOption>();
-		byte code;
-		
-		for (Object optObj : options.getOptionOrOptionTimeServersOrOptionRouters()) {
-			code = 0;
-			// first check for code
-			if (optObj instanceof JAXBElement<?>) {
-				// parse name for code resolution
-				String optName = ((JAXBElement)optObj).getName().getLocalPart();
-				String optName2 = "DHO_" + optName.substring(OPTION_PREFIX.length());
-				optName2 = optName2.replace("-", "_").toUpperCase();
-				Byte codeByte = DHCPConstants.getDhoNamesReverse(optName2);
-				if (codeByte == null) {
-					logger.warning("Unrecognized option name: "+optName);
-					continue;
-				}
-				code = codeByte;
-				
-				// now force value parsing
-				optObj = ((JAXBElement)optObj).getValue();
-			} else if (optObj instanceof Option) {
-				code = ((Option)optObj).getCode();
-			}
-			// TODO mirror ? 
-			if (optObj instanceof OptionGeneric) {
-				makeOptionValue(code, ((OptionGeneric)optObj).getValueByteOrValueShortOrValueInt());
-			} else {
-				logger.warning("Unknown option object: "+optObj);
-			}
-		}
-		return optList.toArray(DHCPOPTION_0);
-    }
-    
     
 //    public static List<Object> decapsulateJaxbList(List<JAXBElement<?>> list) {
 //    	LinkedList<Object> res = new LinkedList<Object>();
@@ -361,39 +324,6 @@ public final class TopologyConfigReader {
 //		subnet.setDhcpOptions(dhcpOptions.toArray(DHCPOPTION_0));
 //	}
 	
-	private static DHCPOption makeOptionValue(byte code, List<JAXBElement<?>> optList) {
-		DHCPOption resOption = null;
-		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-		DataOutputStream outputStream = new DataOutputStream(byteOutput);
-		int mirrorDetected = 0;
-		try {
-			for (JAXBElement<?> optElement : optList) {
-				// switch according to base type
-				Object obj = optElement.getValue();
-				if (obj instanceof InetAddress) {
-					outputStream.write(((InetAddress)obj).getAddress());
-				} else if (obj instanceof Byte) {
-					outputStream.writeByte(((Byte)obj).intValue());
-				} else if (obj instanceof Short) {
-					outputStream.writeShort(((Short)obj).intValue());
-				} else if (obj instanceof Integer) {
-					outputStream.writeInt((Integer)obj);
-				} else if (obj instanceof String) {
-					outputStream.writeBytes((String)obj);
-				} else if (obj instanceof byte[]) {
-					outputStream.write((byte[])obj);
-				} else {
-					logger.warning("Unsupported value type: "+obj.toString());
-				}
-			}
-			resOption = new DHCPRichOption(code, byteOutput.toByteArray(), false);
-		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Unexpected IOException", e);
-			return null;
-		}
-		
-		return resOption;
-	}
 	
 	/**
 	 * Read the value sub-portion of an option element
@@ -444,8 +374,6 @@ public final class TopologyConfigReader {
 //		return new DHCPOption(code, byteOutput.toByteArray(), mirrorDetected > 0);
 //	}
 	
-	private static final String OPTION_PREFIX = "option-";
-    private static final DHCPOption[] DHCPOPTION_0 = new DHCPOption[0];
     private static final RequestFilter ALWAYS_TRUE_FILTER = new AlwaysTrueFilter();
     private static final RequestFilter ALWAYS_FALSE_FILTER = new AlwaysFalseFilter();
 }

@@ -48,7 +48,7 @@ public final class XmlGlobalConfigReader {
 		
 		// <options>
 		if (globalData.getOptions() != null) {
-			globalConfig.getRootNode().setDhcpOptions(TopologyConfigReader.parseOptions(globalData.getOptions()));
+			globalConfig.getRootNode().setDhcpOptions(XmlOptionFactory.parseOptions(globalData.getOptions()));
 		}
 		
 		// <classes>

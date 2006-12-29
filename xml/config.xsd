@@ -208,6 +208,12 @@
 				<xs:element ref="option"/>
 				<xs:group ref="group-option-inets"/>
 				<xs:group ref="group-option-inet"/>
+				<xs:group ref="group-option-bytes"/>
+				<xs:group ref="group-option-byte"/>
+				<xs:group ref="group-option-int"/>
+				<xs:group ref="group-option-short"/>
+				<xs:group ref="group-option-shorts"/>
+				<xs:group ref="group-option-string"/>
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
@@ -243,6 +249,14 @@
 	<xs:element name="value-inet" type="inet-address"/>
 	<xs:element name="value-rawhex" type="xs:hexBinary"/>
 	<xs:element name="value-raw64" type="xs:base64Binary"/>
+	<xs:element name="value-string" type="xs:string"/>
+	<xs:element name="value-string-element">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="255"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
 	<!--=== option container ===-->
 	<xs:complexType name="option-generic">
 		<xs:choice>
@@ -254,9 +268,10 @@
 				<xs:element ref="value-inet"/>
 				<xs:element ref="value-rawhex"/>
 				<xs:element ref="value-raw64"/>
+				<xs:element ref="value-string"/>
+				<xs:element ref="value-string-element"/>
 			</xs:choice>
 		</xs:choice>
-		<xs:attribute name="mode" type="stype-option-mode" default="replace"/>
 	</xs:complexType>
 	<xs:group name="group-option-inets">
 		<xs:choice>
@@ -266,7 +281,39 @@
 	</xs:group>
 	<xs:group name="group-option-inet">
 		<xs:choice>
-			<xs:element name="option-host-name" type="type-option-inet" minOccurs="0"/>
+			<xs:element name="option-subnet-mask" type="type-option-inet" minOccurs="0"/>
+		</xs:choice>
+	</xs:group>
+	<xs:group name="group-option-bytes">
+		<xs:choice>
+			<xs:element name="option-dhcp-parameter-request-list" type="type-option-bytes" minOccurs="0"/>
+		</xs:choice>
+	</xs:group>
+	<xs:group name="group-option-byte">
+		<xs:choice>
+			<xs:element name="option-ip-forwarding" type="type-option-byte" minOccurs="0"/>
+		</xs:choice>
+	</xs:group>
+	<xs:group name="group-option-int">
+		<xs:choice>
+			<xs:element name="option-time-offset" type="type-option-int" minOccurs="0"/>
+		</xs:choice>
+	</xs:group>
+	<xs:group name="group-option-short">
+		<xs:choice>
+			<xs:element name="option-boot-size" type="type-option-short" minOccurs="0"/>
+		</xs:choice>
+	</xs:group>
+	<xs:group name="group-option-shorts">
+		<xs:choice>
+			<xs:element name="option-path-mtu-plateau-table" type="type-option-shorts" minOccurs="0"/>
+		</xs:choice>
+	</xs:group>
+	<xs:group name="group-option-string">
+		<xs:choice>
+			<xs:element name="option-host-name" type="type-option-string" minOccurs="0"/>
+			<xs:element name="option-domain-name" type="type-option-string" minOccurs="0"/>
+			<xs:element name="option-dhcp-message" type="type-option-string" minOccurs="0"/>
 		</xs:choice>
 	</xs:group>
 	<!--=== option containers by allowed types ===-->
@@ -289,6 +336,80 @@
 					<xs:element ref="mirror"/>
 					<xs:choice>
 						<xs:element ref="value-inet"/>
+					</xs:choice>
+				</xs:choice>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="type-option-bytes">
+		<xs:complexContent>
+			<xs:restriction base="option-generic">
+				<xs:choice>
+					<xs:element ref="mirror"/>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element ref="value-byte"/>
+						<xs:element ref="value-rawhex"/>
+						<xs:element ref="value-raw64"/>
+					</xs:choice>
+				</xs:choice>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="type-option-byte">
+		<xs:complexContent>
+			<xs:restriction base="option-generic">
+				<xs:choice>
+					<xs:element ref="mirror"/>
+					<xs:choice>
+						<xs:element ref="value-byte"/>
+					</xs:choice>
+				</xs:choice>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="type-option-int">
+		<xs:complexContent>
+			<xs:restriction base="option-generic">
+				<xs:choice>
+					<xs:element ref="mirror"/>
+					<xs:choice>
+						<xs:element ref="value-int"/>
+					</xs:choice>
+				</xs:choice>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="type-option-short">
+		<xs:complexContent>
+			<xs:restriction base="option-generic">
+				<xs:choice>
+					<xs:element ref="mirror"/>
+					<xs:choice>
+						<xs:element ref="value-short"/>
+					</xs:choice>
+				</xs:choice>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="type-option-shorts">
+		<xs:complexContent>
+			<xs:restriction base="option-generic">
+				<xs:choice>
+					<xs:element ref="mirror"/>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element ref="value-short"/>
+					</xs:choice>
+				</xs:choice>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="type-option-string">
+		<xs:complexContent>
+			<xs:restriction base="option-generic">
+				<xs:choice>
+					<xs:element ref="mirror"/>
+					<xs:choice>
+						<xs:element ref="value-string"/>
 					</xs:choice>
 				</xs:choice>
 			</xs:restriction>

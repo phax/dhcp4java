@@ -14,18 +14,20 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for type-option-inet complex type.
+ * <p>Java class for type-option-bytes complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="type-option-inet">
+ * &lt;complexType name="type-option-bytes">
  *   &lt;complexContent>
  *     &lt;restriction base="{}option-generic">
  *       &lt;choice>
  *         &lt;element ref="{}mirror"/>
- *         &lt;choice>
- *           &lt;element ref="{}value-inet"/>
+ *         &lt;choice maxOccurs="unbounded" minOccurs="0">
+ *           &lt;element ref="{}value-byte"/>
+ *           &lt;element ref="{}value-rawhex"/>
+ *           &lt;element ref="{}value-raw64"/>
  *         &lt;/choice>
  *       &lt;/choice>
  *     &lt;/restriction>
@@ -36,8 +38,8 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "type-option-inet")
-public class TypeOptionInet
+@XmlType(name = "type-option-bytes")
+public class TypeOptionBytes
     extends OptionGeneric
 {
 

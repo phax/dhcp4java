@@ -23,6 +23,29 @@
 			</filter-and>
 		</filter>
 		<options>
+			<option-dhcp-message><value-string>foobar</value-string>
+			</option-dhcp-message>
+			<option-subnet-mask><value-inet>255.255.252.0</value-inet>
+			</option-subnet-mask>
+			<option-path-mtu-plateau-table>
+				<value-short>1</value-short>
+				<value-short>2</value-short>
+			</option-path-mtu-plateau-table><option-boot-size>
+				<value-short>33000</value-short>
+			</option-boot-size>
+			<option-time-offset>
+				<value-int>1234</value-int>
+			</option-time-offset>
+			<option-ip-forwarding>
+				<value-byte>1</value-byte>
+			</option-ip-forwarding>
+			<option-dhcp-parameter-request-list>
+				<mirror></mirror>
+			</option-dhcp-parameter-request-list>
+			<option-dhcp-parameter-request-list>
+				<value-byte>128</value-byte>
+				<value-rawhex>001122</value-rawhex>
+			</option-dhcp-parameter-request-list>
 			<option-routers>
 				<value-inet>204.254.239.1</value-inet>
 			</option-routers>
@@ -30,6 +53,7 @@
 				<value-byte>255</value-byte>
 				<value-rawhex>0022FF</value-rawhex>
 			</option>
+			
 		</options>
 	</global>
 	<topology>
