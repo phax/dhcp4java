@@ -18,8 +18,6 @@
  */
 package org.dhcpcluster.filter;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.dhcp4java.DHCPPacket;
@@ -32,32 +30,18 @@ import org.dhcp4java.DHCPPacket;
  * @author Stephan Hadinger
  *
  */
-public final class OrFilter implements RequestFilter {
+public final class OrFilter extends ListFilter implements RequestFilter {
 
-	private final List<RequestFilter> filters;
-	
 	public OrFilter() {
-		this.filters = new ArrayList<RequestFilter>();
+		super();
 	}
 	
 	public OrFilter(RequestFilter[] filters) {
-		if (filters == null) {
-			throw new NullPointerException("filters must not be null");
-		}
-		this.filters = new ArrayList<RequestFilter>(filters.length);
-		for (RequestFilter element : filters) {
-			this.filters.add(element);
-		}
+		super(filters);
 	}
 
 	public OrFilter(List<RequestFilter> filters) {
-		if (filters == null) {
-			throw new NullPointerException("filters must not be null");
-		}
-		this.filters = new ArrayList<RequestFilter>(filters.size());
-		for (RequestFilter element : filters) {
-			this.filters.add(element);
-		}
+		super(filters);
 	}
 	
 	/* (non-Javadoc)
@@ -71,12 +55,4 @@ public final class OrFilter implements RequestFilter {
 		}
 		return false;
 	}
-
-	/**
-	 * @return Returns the filters.
-	 */
-	public List<RequestFilter> getFilters() {
-		return filters;
-	}
-	
 }

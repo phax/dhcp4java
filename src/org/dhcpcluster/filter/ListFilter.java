@@ -18,33 +18,41 @@
  */
 package org.dhcpcluster.filter;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.dhcp4java.DHCPPacket;
+public abstract class ListFilter implements RequestFilter {
 
-public final class AndFilter extends ListFilter implements RequestFilter {
+	protected final List<RequestFilter> filters;
 	
-	public AndFilter() {
-		super();
+	public ListFilter() {
+		this.filters = new ArrayList<RequestFilter>();
 	}
 	
-	public AndFilter(RequestFilter[] filters) {
-		super(filters);
-	}
-	
-	public AndFilter(List<RequestFilter> filters) {
-		super(filters);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dhcpcluster.filter.RequestFilter#filter(org.dhcp4java.DHCPPacket)
-	 */
-	public boolean isRequestAccepted(DHCPPacket request) {
-		for (RequestFilter filter : this.filters) {
-			if ((filter != null) && (!filter.isRequestAccepted(request))) {
-				return false;
-			}
+	public ListFilter(RequestFilter[] filters) {
+		if (filters == null) {
+			throw new NullPointerException("filters must not be null");
 		}
-		return true;
+		this.filters = new ArrayList<RequestFilter>(filters.length);
+		for (RequestFilter element : filters) {
+			this.filters.add(element);
+		}
+	}
+	
+	public ListFilter(List<RequestFilter> filters) {
+		if (filters == null) {
+			throw new NullPointerException("filters must not be null");
+		}
+		this.filters = new ArrayList<RequestFilter>(filters.size());
+		for (RequestFilter element : filters) {
+			this.filters.add(element);
+		}
+	}
+
+	/**
+	 * @return Returns the filters.
+	 */
+	public List<RequestFilter> getFilters() {
+		return filters;
 	}
 }
