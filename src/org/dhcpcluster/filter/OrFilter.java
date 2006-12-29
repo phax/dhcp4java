@@ -18,6 +18,7 @@
  */
 package org.dhcpcluster.filter;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,21 +34,32 @@ import org.dhcp4java.DHCPPacket;
  */
 public final class OrFilter implements RequestFilter {
 
-	private final LinkedList<RequestFilter> filters;
+	private final List<RequestFilter> filters;
 	
 	public OrFilter() {
-		this.filters = new LinkedList<RequestFilter>();
+		this.filters = new ArrayList<RequestFilter>();
 	}
 	
 	public OrFilter(RequestFilter[] filters) {
-		this();
 		if (filters == null) {
 			throw new NullPointerException("filters must not be null");
 		}
+		this.filters = new ArrayList<RequestFilter>(filters.length);
 		for (RequestFilter element : filters) {
 			this.filters.add(element);
 		}
 	}
+
+	public OrFilter(List<RequestFilter> filters) {
+		if (filters == null) {
+			throw new NullPointerException("filters must not be null");
+		}
+		this.filters = new ArrayList<RequestFilter>(filters.size());
+		for (RequestFilter element : filters) {
+			this.filters.add(element);
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.dhcpcluster.filter.RequestFilter#filter(org.dhcp4java.DHCPPacket)
 	 */

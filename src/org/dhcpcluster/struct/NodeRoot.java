@@ -29,7 +29,7 @@ import org.dhcpcluster.filter.RequestFilter;
  * @author Stephan Hadinger
  * @version 0.71
  */
-public abstract class NodeAbstract implements Serializable {
+public class NodeRoot implements Serializable {
 
     private static final long serialVersionUID = 2L;
     /** freely usable comment */
@@ -41,12 +41,59 @@ public abstract class NodeAbstract implements Serializable {
     /** array of dhcp options */
     protected DHCPOption[]					dhcpOptions = DHCPOPTION_0;
 
+    public NodeRoot() {
+    }
+    
     public void applyOptions(DHCPPacket request, DHCPPacket response) {
     	for (DHCPOption opt : dhcpOptions) {
     		response.setOption(opt.applyOption(request));
     	}
     }
     
+    
+    
     protected static final DHCPOption[] DHCPOPTION_0 = new DHCPOption[0];
-    protected static final RequestFilter ALWAYS_TRUE_FILTER = new AlwaysTrueFilter();    
+    protected static final RequestFilter ALWAYS_TRUE_FILTER = new AlwaysTrueFilter();
+
+	/**
+	 * @return Returns the comment.
+	 */
+	public String getComment() {
+		return comment;
+	}
+
+	/**
+	 * @param comment The comment to set.
+	 */
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
+	/**
+	 * @return Returns the dhcpOptions.
+	 */
+	public DHCPOption[] getDhcpOptions() {
+		return dhcpOptions;
+	}
+
+	/**
+	 * @param dhcpOptions The dhcpOptions to set.
+	 */
+	public void setDhcpOptions(DHCPOption[] dhcpOptions) {
+		this.dhcpOptions = dhcpOptions;
+	}
+
+	/**
+	 * @return Returns the requestFilter.
+	 */
+	public RequestFilter getRequestFilter() {
+		return requestFilter;
+	}
+
+	/**
+	 * @param requestFilter The requestFilter to set.
+	 */
+	public void setRequestFilter(RequestFilter requestFilter) {
+		this.requestFilter = requestFilter;
+	}    
 }

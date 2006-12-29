@@ -39,7 +39,7 @@ import org.dhcpcluster.filter.RequestFilter;
  * @author Stephan Hadinger
  * @version 0.71
  */
-public class Subnet extends NodeAbstract implements Serializable {
+public class Subnet extends NodeRoot implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

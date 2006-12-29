@@ -37,11 +37,17 @@ import org.dhcp4java.InetCidr;
 import org.dhcpcluster.config.ConfigException;
 import org.dhcpcluster.config.TopologyConfig;
 import org.dhcpcluster.config.xml.data.DhcpServer;
+import org.dhcpcluster.config.xml.data.Filter;
 import org.dhcpcluster.config.xml.data.Option;
 import org.dhcpcluster.config.xml.data.OptionGeneric;
 import org.dhcpcluster.config.xml.data.Options;
+import org.dhcpcluster.filter.AlwaysFalseFilter;
+import org.dhcpcluster.filter.AlwaysTrueFilter;
+import org.dhcpcluster.filter.NumOptionFilter;
+import org.dhcpcluster.filter.RequestFilter;
 import org.dhcpcluster.struct.AddressRange;
 import org.dhcpcluster.struct.DHCPRichOption;
+import org.dhcpcluster.struct.NodeRoot;
 import org.dhcpcluster.struct.Subnet;
 
 /**
@@ -57,39 +63,39 @@ public final class TopologyConfigReader {
     	TopologyConfig topologyConfig = new TopologyConfig();
     	
     	// parsing global "options"
-    	if (topologyData.getOptions() != null) {
-    		Options options = topologyData.getOptions();
-    		LinkedList<DHCPOption> optList = new LinkedList<DHCPOption>();
-    		byte code;
-    		
-    		for (Object optObj : options.getOptionOrOptionTimeServersOrOptionRouters()) {
-    			code = 0;
-    			// first check for code
-    			if (optObj instanceof JAXBElement<?>) {
-    				// parse name for code resolution
-    				String optName = ((JAXBElement)optObj).getName().getLocalPart();
-    				String optName2 = "DHO_" + optName.substring(OPTION_PREFIX.length());
-    				optName2 = optName2.replace("-", "_").toUpperCase();
-    				Byte codeByte = DHCPConstants.getDhoNamesReverse(optName2);
-    				if (codeByte == null) {
-    					logger.warning("Unrecognized option name: "+optName);
-    					continue;
-    				}
-    				code = codeByte;
-    				
-    				// now force value parsing
-    				optObj = ((JAXBElement)optObj).getValue();
-    			} else if (optObj instanceof Option) {
-    				code = ((Option)optObj).getCode();
-    			}
-    			// TODO mirror ? 
-    			if (optObj instanceof OptionGeneric) {
-    				OptionGeneric opt = (OptionGeneric)optObj;
-    				makeOptionValue(code, ((OptionGeneric)optObj).getValueByteOrValueShortOrValueInt());
-    			} else {
-    				logger.warning("Unknown option object: "+optObj);
-    			}
-    		}
+//    	if (topologyData.getOptions() != null) {
+//    		Options options = topologyData.getOptions();
+//    		LinkedList<DHCPOption> optList = new LinkedList<DHCPOption>();
+//    		byte code;
+//    		
+//    		for (Object optObj : options.getOptionOrOptionTimeServersOrOptionRouters()) {
+//    			code = 0;
+//    			// first check for code
+//    			if (optObj instanceof JAXBElement<?>) {
+//    				// parse name for code resolution
+//    				String optName = ((JAXBElement)optObj).getName().getLocalPart();
+//    				String optName2 = "DHO_" + optName.substring(OPTION_PREFIX.length());
+//    				optName2 = optName2.replace("-", "_").toUpperCase();
+//    				Byte codeByte = DHCPConstants.getDhoNamesReverse(optName2);
+//    				if (codeByte == null) {
+//    					logger.warning("Unrecognized option name: "+optName);
+//    					continue;
+//    				}
+//    				code = codeByte;
+//    				
+//    				// now force value parsing
+//    				optObj = ((JAXBElement)optObj).getValue();
+//    			} else if (optObj instanceof Option) {
+//    				code = ((Option)optObj).getCode();
+//    			}
+//    			// TODO mirror ? 
+//    			if (optObj instanceof OptionGeneric) {
+//    				OptionGeneric opt = (OptionGeneric)optObj;
+//    				makeOptionValue(code, ((OptionGeneric)optObj).getValueByteOrValueShortOrValueInt());
+//    			} else {
+//    				logger.warning("Unknown option object: "+optObj);
+//    			}
+//    		}
     		
     		
 //    		for (Object optObj : options.getOptionRoutersOrOptionOrOptionTimeServers()) {
@@ -106,10 +112,48 @@ public final class TopologyConfigReader {
 //    				//DHCPOption resOption = makeOptionValue(opt.getValueInet());
 //    			}
 //    		}
-    	}
+//    	}
     	
     	return topologyConfig;
     }
+    
+    public static DHCPOption[] parseOptions(Options options) {
+    	if (options == null) {
+    		return DHCPOPTION_0;
+    	}
+		LinkedList<DHCPOption> optList = new LinkedList<DHCPOption>();
+		byte code;
+		
+		for (Object optObj : options.getOptionOrOptionTimeServersOrOptionRouters()) {
+			code = 0;
+			// first check for code
+			if (optObj instanceof JAXBElement<?>) {
+				// parse name for code resolution
+				String optName = ((JAXBElement)optObj).getName().getLocalPart();
+				String optName2 = "DHO_" + optName.substring(OPTION_PREFIX.length());
+				optName2 = optName2.replace("-", "_").toUpperCase();
+				Byte codeByte = DHCPConstants.getDhoNamesReverse(optName2);
+				if (codeByte == null) {
+					logger.warning("Unrecognized option name: "+optName);
+					continue;
+				}
+				code = codeByte;
+				
+				// now force value parsing
+				optObj = ((JAXBElement)optObj).getValue();
+			} else if (optObj instanceof Option) {
+				code = ((Option)optObj).getCode();
+			}
+			// TODO mirror ? 
+			if (optObj instanceof OptionGeneric) {
+				makeOptionValue(code, ((OptionGeneric)optObj).getValueByteOrValueShortOrValueInt());
+			} else {
+				logger.warning("Unknown option object: "+optObj);
+			}
+		}
+		return optList.toArray(DHCPOPTION_0);
+    }
+    
     
 //    public static List<Object> decapsulateJaxbList(List<JAXBElement<?>> list) {
 //    	LinkedList<Object> res = new LinkedList<Object>();
@@ -402,4 +446,6 @@ public final class TopologyConfigReader {
 	
 	private static final String OPTION_PREFIX = "option-";
     private static final DHCPOption[] DHCPOPTION_0 = new DHCPOption[0];
+    private static final RequestFilter ALWAYS_TRUE_FILTER = new AlwaysTrueFilter();
+    private static final RequestFilter ALWAYS_FALSE_FILTER = new AlwaysFalseFilter();
 }

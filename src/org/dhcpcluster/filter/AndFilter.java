@@ -18,6 +18,7 @@
  */
 package org.dhcpcluster.filter;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,17 +26,27 @@ import org.dhcp4java.DHCPPacket;
 
 public final class AndFilter implements RequestFilter {
 	
-	private final LinkedList<RequestFilter> filters;
+	private final List<RequestFilter> filters;
 	
 	public AndFilter() {
-		this.filters = new LinkedList<RequestFilter>();
+		this.filters = new ArrayList<RequestFilter>();
 	}
 	
 	public AndFilter(RequestFilter[] filters) {
-		this();
 		if (filters == null) {
 			throw new NullPointerException("filters must not be null");
 		}
+		this.filters = new ArrayList<RequestFilter>(filters.length);
+		for (RequestFilter element : filters) {
+			this.filters.add(element);
+		}
+	}
+	
+	public AndFilter(List<RequestFilter> filters) {
+		if (filters == null) {
+			throw new NullPointerException("filters must not be null");
+		}
+		this.filters = new ArrayList<RequestFilter>(filters.size());
 		for (RequestFilter element : filters) {
 			this.filters.add(element);
 		}

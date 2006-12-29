@@ -139,8 +139,8 @@ public class XmlConfigReader implements GenericConfigReader {
 		// ready to read data in memory
 		
 		// front-end data
-		this.frontendConfig = xmlFrontEndConfigReader(dhcpServerData.getFrontEnd());
-		this.globalConfig = xmlGlobalConfigReader(dhcpServerData.getGlobal());
+		this.frontendConfig = XmlFrontEndConfigReader.parseFrontEnd(dhcpServerData.getFrontEnd());
+		this.globalConfig = XmlGlobalConfigReader.xmlGlobalConfigReader(dhcpServerData.getGlobal());
 		this.topologyConfig = TopologyConfigReader.xmlTopologyReader(dhcpServerData.getTopology());
 		
 		return;
@@ -158,7 +158,7 @@ public class XmlConfigReader implements GenericConfigReader {
 //			if (frontendElts.size() != 1) {
 //				throw new ConfigException("One 'front-end' element expected, found "+frontendElts.size());
 //			}
-//			this.frontendConfig = FrontEndConfigReader.xmlFrontEndConfigReader(frontendElts.get(0));
+//			this.frontendConfig = XmlFrontEndConfigReader.xmlFrontEndConfigReader(frontendElts.get(0));
 //			//FrontendConfig frontendConfig = FrontendConfigReader...
 //			
 //			// parse "global" element
@@ -166,7 +166,7 @@ public class XmlConfigReader implements GenericConfigReader {
 //			if (globalElts.size() != 1) {
 //				throw new ConfigException("One 'global' element expected, found "+globalElts.size());
 //			}
-//			this.globalConfig = GlobalConfigReader.xmlGlobalConfigReader(globalElts.get(0));
+//			this.globalConfig = XmlGlobalConfigReader.xmlGlobalConfigReader(globalElts.get(0));
 //			
 //			// parse "topology" element
 //			Elements topologyElts = root.getChildElements("topology");
@@ -182,35 +182,6 @@ public class XmlConfigReader implements GenericConfigReader {
 //    	}
     }
 
-	public static FrontendConfig xmlFrontEndConfigReader(DhcpServer.FrontEnd frontEndData) {
-		FrontendConfig frontEndConfig = new FrontendConfig();
-		
-		if (frontEndData.getThreads() != null) {
-			DhcpServer.FrontEnd.Threads threads = frontEndData.getThreads();
-			frontEndConfig.setThreadsNb(threads.getNb());
-			frontEndConfig.setThreadsMax(threads.getMax());
-			frontEndConfig.setThreadsNb(threads.getNb());
-			frontEndConfig.setThreadsKeepalive(threads.getKeepalive());
-		}
-		if (frontEndData.getListen() != null) {
-			DhcpServer.FrontEnd.Listen listen = frontEndData.getListen();
-			frontEndConfig.setListenIp(listen.getInet());
-			frontEndConfig.setListenPort(listen.getPort());
-		}
-		
-		return frontEndConfig;
-	}
-	
-	public static GlobalConfig xmlGlobalConfigReader(DhcpServer.Global globalData) {
-		GlobalConfig globalConfig = new GlobalConfig();
-		
-		if (globalData.getServer() != null) {
-			DhcpServer.Global.Server server = globalData.getServer();
-			globalConfig.setServerIdentifier(server.getIdentifier());
-		}
-		
-		return globalConfig;
-	}
 	
 	private static final String CONFIG_XML_FILE = "config.xml.file";
 

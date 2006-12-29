@@ -16,42 +16,42 @@
  *	License along with this library; if not, write to the Free Software
  *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.dhcpcluster.struct;
+package org.dhcpcluster.config.xml;
 
-import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.logging.Logger;
+
+import org.dhcpcluster.config.GlobalConfig;
+import org.dhcpcluster.config.xml.data.DhcpServer;
 
 /**
  * 
  * @author Stephan Hadinger
  * @version 0.71
  */
-public class Node extends NodeRoot implements Serializable {
-    private static final long serialVersionUID = 2L;
+public final class XmlGlobalConfigReader {
 
-    @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(Node.class.getName().toLowerCase());
-
-    
-    protected  List<Node>					nodeList = new LinkedList<Node>();
-
-    public Node() {
-    }
-    
-    
-	/**
-	 * @return Returns the nodeList.
-	 */
-	public List<Node> getNodeList() {
-		return nodeList;
-	}
-	/**
-	 * @param nodeList The nodeList to set.
-	 */
-	public void setNodeList(List<Node> nodeList) {
-		this.nodeList = nodeList;
+	@SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(XmlGlobalConfigReader.class.getName().toLowerCase());
+	
+	public static GlobalConfig xmlGlobalConfigReader(DhcpServer.Global globalData) {
+		GlobalConfig globalConfig = new GlobalConfig();
+		
+		// <server>
+		if (globalData.getServer() != null) {
+			globalConfig.setServerIdentifier(globalData.getServer().getIdentifier());
+		}
+		
+		// <filter>
+		
+		
+		// <options>
+		if (globalData.getOptions() != null) {
+			globalConfig.getRootNode().setDhcpOptions(TopologyConfigReader.parseOptions(globalData.getOptions()));
+		}
+		
+		// <classes>
+		
+		return globalConfig;
 	}
 
 }

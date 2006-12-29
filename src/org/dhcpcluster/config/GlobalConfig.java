@@ -22,6 +22,9 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.logging.Logger;
 
+import org.dhcpcluster.struct.Node;
+import org.dhcpcluster.struct.NodeRoot;
+
 /**
  * 
  * @author Stephan Hadinger
@@ -51,6 +54,8 @@ public class GlobalConfig implements Serializable {
      *  This id can be overriden by the front-end identifier.
      *  */
     private InetAddress serverIdentifier = null;
+    
+    private final NodeRoot rootNode = new NodeRoot();
     
     /**
      * Constructor of server's global configuration object.
@@ -130,5 +135,13 @@ public class GlobalConfig implements Serializable {
 	public void setServerIdentifier(InetAddress serverIdentifier) {
 		this.serverIdentifier = serverIdentifier;
 	}
+
+	/**
+	 * @return Returns the rootNode.
+	 */
+	public NodeRoot getRootNode() {
+		return rootNode;
+	}
+
     
 }
