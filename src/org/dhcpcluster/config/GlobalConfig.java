@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.logging.Logger;
 
-import org.dhcpcluster.struct.Node;
 import org.dhcpcluster.struct.NodeRoot;
 
 /**

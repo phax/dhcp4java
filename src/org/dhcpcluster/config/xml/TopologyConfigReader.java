@@ -18,37 +18,10 @@
  */
 package org.dhcpcluster.config.xml;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.bind.JAXBElement;
-
-import org.dhcp4java.DHCPConstants;
-import org.dhcp4java.DHCPOption;
-import org.dhcp4java.HardwareAddress;
-import org.dhcp4java.InetCidr;
-import org.dhcpcluster.config.ConfigException;
 import org.dhcpcluster.config.TopologyConfig;
 import org.dhcpcluster.config.xml.data.DhcpServer;
-import org.dhcpcluster.config.xml.data.Filter;
-import org.dhcpcluster.config.xml.data.Option;
-import org.dhcpcluster.config.xml.data.OptionGeneric;
-import org.dhcpcluster.config.xml.data.Options;
-import org.dhcpcluster.filter.AlwaysFalseFilter;
-import org.dhcpcluster.filter.AlwaysTrueFilter;
-import org.dhcpcluster.filter.NumOptionFilter;
-import org.dhcpcluster.filter.RequestFilter;
-import org.dhcpcluster.struct.AddressRange;
-import org.dhcpcluster.struct.DHCPRichOption;
-import org.dhcpcluster.struct.NodeRoot;
-import org.dhcpcluster.struct.Subnet;
 
 /**
  * 
@@ -57,7 +30,8 @@ import org.dhcpcluster.struct.Subnet;
  */
 public final class TopologyConfigReader {
 
-    private static final Logger logger = Logger.getLogger(TopologyConfigReader.class.getName().toLowerCase());
+    @SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(TopologyConfigReader.class.getName().toLowerCase());
 
     public static TopologyConfig xmlTopologyReader(DhcpServer.Topology topologyData) {
     	TopologyConfig topologyConfig = new TopologyConfig();
@@ -374,6 +348,4 @@ public final class TopologyConfigReader {
 //		return new DHCPOption(code, byteOutput.toByteArray(), mirrorDetected > 0);
 //	}
 	
-    private static final RequestFilter ALWAYS_TRUE_FILTER = new AlwaysTrueFilter();
-    private static final RequestFilter ALWAYS_FALSE_FILTER = new AlwaysFalseFilter();
 }

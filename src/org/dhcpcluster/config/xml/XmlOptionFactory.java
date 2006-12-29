@@ -64,19 +64,16 @@ public class XmlOptionFactory {
     }
     
     private static DHCPOption parseOptionObject(Object obj) {
-		byte code = 0;
 		// first check for code
 		if (obj instanceof JAXBElement<?>) {
 			return parseNamedOption((JAXBElement<?>)obj);
 		} else if (obj instanceof Option) {
 			Option opt = (Option)obj;
-			code = opt.getCode();
 			return makeOptionValue(opt.getCode(), opt.isMirror(), opt.getValueByteOrValueShortOrValueInt());
 		} else {
 			logger.severe("Unknown option object: "+obj);
+			return null;
 		}
-		return null;	// TODO
-    	
     }
     
     private static DHCPOption parseNamedOption(JAXBElement<?> obj) {

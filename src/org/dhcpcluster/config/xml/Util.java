@@ -18,13 +18,9 @@
  */
 package org.dhcpcluster.config.xml;
 
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.dhcpcluster.config.ConfigException;
 
 /**
  * 
@@ -33,7 +29,8 @@ import org.dhcpcluster.config.ConfigException;
  */
 public final class Util {
 	
-    private static final Logger logger = Logger.getLogger(Util.class.getName().toLowerCase());
+    @SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(Util.class.getName().toLowerCase());
     
     // Suppresses default constructor, ensuring non-instantiability.
     private Util() {
