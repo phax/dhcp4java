@@ -23,7 +23,10 @@
 			</filter-and>
 		</filter>
 		<options>
-			<option-host-name mirror="true">
+			<option code="129">
+				<value-byte>255</value-byte>
+				<value-rawhex>0022FF</value-rawhex>
+			</option><option-host-name mirror="true">
 			<value-string>foo</value-string>
 			</option-host-name>
 			<option-dhcp-message><value-string>foobar</value-string>
@@ -52,10 +55,7 @@
 			<option-routers>
 				<value-inet>204.254.239.1</value-inet>
 			</option-routers>
-			<option code="129">
-				<value-byte>255</value-byte>
-				<value-rawhex>0022FF</value-rawhex>
-			</option>
+			
 			
 		</options>
 	</global>

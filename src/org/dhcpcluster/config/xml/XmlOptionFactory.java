@@ -69,13 +69,11 @@ public class XmlOptionFactory {
 		if (obj instanceof JAXBElement<?>) {
 			return parseNamedOption((JAXBElement<?>)obj);
 		} else if (obj instanceof Option) {
-			code = ((Option)obj).getCode();
-		}
-		// TODO mirror ? 
-		if (obj instanceof OptionGeneric) {
-			makeOptionValue(code, (OptionGeneric)obj);
+			Option opt = (Option)obj;
+			code = opt.getCode();
+			return makeOptionValue(opt.getCode(), opt.isMirror(), opt.getValueByteOrValueShortOrValueInt());
 		} else {
-			logger.warning("Unknown option object: "+obj);
+			logger.severe("Unknown option object: "+obj);
 		}
 		return null;	// TODO
     	
@@ -93,7 +91,8 @@ public class XmlOptionFactory {
 		}
 		Object o = obj.getValue();
 		if (o instanceof OptionGeneric) {
-			return makeOptionValue(codeByte, (OptionGeneric)o);
+			OptionGeneric og = (OptionGeneric)o;
+			return makeOptionValue(codeByte, og.isMirror(), og.getValueByteOrValueShortOrValueInt());
 		} else {
 			throw new IllegalStateException("Unexpected type here:"+o);
 		}
@@ -104,12 +103,10 @@ public class XmlOptionFactory {
 		throw new UnsupportedOperationException();
 	}
 
-	private static DHCPOption makeOptionValue(byte code, OptionGeneric og) {
-		List<JAXBElement<?>> optList = og.getValueByteOrValueShortOrValueInt();
+	private static DHCPOption makeOptionValue(byte code, boolean mirror, List<JAXBElement<?>> optList) {
 		DHCPOption resOption = null;
 		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
 		DataOutputStream outputStream = new DataOutputStream(byteOutput);
-		boolean mirror = og.isMirror();
 		try {
 			for (JAXBElement<?> optElement : optList) {
 				// switch according to base type
