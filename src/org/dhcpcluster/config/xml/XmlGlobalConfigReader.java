@@ -42,7 +42,9 @@ public final class XmlGlobalConfigReader {
 		}
 		
 		// <filter>
-		
+		if (globalData.getFilter() != null) {
+			globalConfig.getRootNode().setRequestFilter(XmlFilterFactory.makeFilterRoot(globalData.getFilter()));
+		}
 		
 		// <options>
 		if (globalData.getOptions() != null) {

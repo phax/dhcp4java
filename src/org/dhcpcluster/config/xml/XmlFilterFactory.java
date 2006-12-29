@@ -66,7 +66,7 @@ public class XmlFilterFactory {
     		List<TypeFilterRoot> list = ((Filter.FilterAnd)filter).getFilterGroup();
     		return new AndFilter(makeFilterList(list));
     	} else if (filter instanceof Filter.FilterOr) {
-    		List<TypeFilterRoot> list = ((Filter.FilterAnd)filter).getFilterGroup();
+    		List<TypeFilterRoot> list = ((Filter.FilterOr)filter).getFilterGroup();
     		return new OrFilter(makeFilterList(list));
     	} else if (filter instanceof Filter.FilterNot) {
     		return new NotFilter(makeFilter(((Filter.FilterNot)filter).getFilterGroup()));
