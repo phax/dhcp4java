@@ -61,7 +61,7 @@
 			<xs:all>
 				<xs:element name="front-end">
 					<xs:complexType>
-						<xs:all>
+						<xs:sequence>
 							<xs:element name="listen" minOccurs="0">
 								<xs:complexType>
 									<xs:attribute name="port" type="xs:unsignedShort" use="optional" default="67"/>
@@ -100,25 +100,37 @@
 									</xs:attribute>
 								</xs:complexType>
 							</xs:element>
-						</xs:all>
+						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="global">
 					<xs:complexType>
-						<xs:all>
-							<xs:element name="server" minOccurs="0">
+						<xs:sequence>
+							<xs:element name="server">
 								<xs:complexType>
 									<xs:attribute name="identifier" type="inet-address" use="required"/>
 								</xs:complexType>
 							</xs:element>
-						</xs:all>
+							<xs:element ref="filter" minOccurs="0"/>
+							<xs:element ref="options" minOccurs="0"/>
+							<xs:element name="classes" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence minOccurs="0" maxOccurs="unbounded">
+										<xs:element name="class">
+											<xs:complexType>
+												<xs:group ref="filter-group"/>
+												<xs:attribute name="classid" type="xs:string" use="required"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="topology">
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element ref="options"/>
-							<xs:element ref="filter"/>
 							<xs:element name="subnet">
 								<xs:complexType>
 									<xs:sequence>
@@ -293,8 +305,20 @@
 			<xs:enumeration value="ge"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="stype-filter-string">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="exact"/>
+			<xs:enumeration value="case-insensitive"/>
+			<xs:enumeration value="regex"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:complexType name="type-filter-root"/>
 	<xs:group name="filter-group">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property collectionType="java.util.ArrayList"/>
+			</xs:appinfo>
+		</xs:annotation>
 		<xs:choice>
 			<xs:element name="filter-and">
 				<xs:complexType>
@@ -323,13 +347,44 @@
 					</xs:complexContent>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="filter-always-true" type="type-filter-root"/>
-			<xs:element name="filter-always-false" type="type-filter-root"/>
+			<xs:element name="filter-always-true">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="type-filter-root">
+							<xs:attribute name="value" type="xs:boolean" use="prohibited" fixed="true"/>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="filter-always-false">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="type-filter-root">
+							<xs:attribute name="value" type="xs:boolean" use="prohibited" fixed="false"/>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="filter-num-option">
 				<xs:complexType>
-					<xs:attribute name="op" type="stype-filter-num" use="required"/>
-					<xs:attribute name="code" type="wByte" use="required"/>
-					<xs:attribute name="value-int" type="xs:int" use="required"/>
+					<xs:complexContent>
+						<xs:extension base="type-filter-root">
+							<xs:attribute name="op" type="stype-filter-num" use="required"/>
+							<xs:attribute name="code" type="wByte" use="required"/>
+							<xs:attribute name="value-int" type="xs:int" use="required"/>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="filter-string-option">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="type-filter-root">
+							<xs:attribute name="mode" type="stype-filter-string" use="optional" default="exact"/>
+							<xs:attribute name="code" type="wByte" use="required"/>
+							<xs:attribute name="value-string" type="xs:string" use="required"/>
+						</xs:extension>
+					</xs:complexContent>
 				</xs:complexType>
 			</xs:element>
 		</xs:choice>
@@ -337,6 +392,41 @@
 	<xs:element name="filter">
 		<xs:complexType>
 			<xs:group ref="filter-group"/>
+		</xs:complexType>
+	</xs:element>
+	<!--=== node and subnets ===-->
+	<xs:complexType name="type-node-subnet">
+		<xs:sequence>
+			<xs:element ref="filter" minOccurs="0"/>
+			<xs:element name="lease" minOccurs="0"/>
+			<xs:element ref="options" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="node">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="type-node-subnet">
+					<xs:sequence>
+						<xs:element ref="node" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="subnet" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="subnet">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="type-node-subnet">
+					<xs:sequence>
+						<xs:element name="giaddr" type="inet-address" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element name="range" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+					<xs:attribute name="address" type="inet-address" use="required"/>
+					<xs:attribute name="mask" type="inet-address" use="required"/>
+					<xs:attribute name="comment" type="xs:string" use="optional"/>
+				</xs:extension>
+			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>
