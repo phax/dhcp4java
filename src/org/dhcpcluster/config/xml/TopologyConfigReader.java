@@ -18,10 +18,16 @@
  */
 package org.dhcpcluster.config.xml;
 
+import java.util.List;
 import java.util.logging.Logger;
 
+import org.dhcp4java.InetCidr;
 import org.dhcpcluster.config.TopologyConfig;
 import org.dhcpcluster.config.xml.data.DhcpServer;
+import org.dhcpcluster.config.xml.data.TypeNodeSubnet;
+import org.dhcpcluster.struct.Node;
+import org.dhcpcluster.struct.NodeRoot;
+import org.dhcpcluster.struct.Subnet;
 
 /**
  * 
@@ -35,6 +41,16 @@ public final class TopologyConfigReader {
 
     public static TopologyConfig xmlTopologyReader(DhcpServer.Topology topologyData) {
     	TopologyConfig topologyConfig = new TopologyConfig();
+    	
+    	// <node> or <subnet>
+    	Node rootNode = new Node();
+    	for (TypeNodeSubnet subNode : topologyData.getNodeOrSubnet()) {
+    		NodeRoot node = parseSubNode(subNode);
+    		if (node != null) {
+    			rootNode.getNodeList().add(node);
+    		}
+    	}
+    	topologyConfig.setRootNode(rootNode);
     	
     	// parsing global "options"
 //    	if (topologyData.getOptions() != null) {
@@ -89,6 +105,28 @@ public final class TopologyConfigReader {
 //    	}
     	
     	return topologyConfig;
+    }
+    
+    public static NodeRoot parseSubNode(TypeNodeSubnet subNode) {
+    	if (subNode instanceof org.dhcpcluster.config.xml.data.Node) {
+    		return parseNode((org.dhcpcluster.config.xml.data.Node)subNode);
+    	} else if (subNode instanceof org.dhcpcluster.config.xml.data.Subnet) {
+    		return parseSubnet((org.dhcpcluster.config.xml.data.Subnet)subNode);
+    	} else {
+    		throw new IllegalStateException("Unexpected subNode type: "+subNode);
+    	}
+    }
+    
+    public static Node parseNode(org.dhcpcluster.config.xml.data.Node xNode) {
+    	Node node = new Node();
+    	
+    	return node;
+    }
+    
+    public static Subnet parseSubnet(org.dhcpcluster.config.xml.data.Subnet xSubnet) {
+		Subnet subnet = new Subnet(new InetCidr(xSubnet.getAddress(), xSubnet.getMask()));
+		subnet.setComment(xSubnet.getComment());
+		return subnet;
     }
     
     

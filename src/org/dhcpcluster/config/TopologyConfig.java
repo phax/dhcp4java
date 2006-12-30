@@ -29,6 +29,7 @@ import org.dhcp4java.DHCPConstants;
 import org.dhcp4java.InetCidr;
 import org.dhcpcluster.filter.AlwaysTrueFilter;
 import org.dhcpcluster.filter.RequestFilter;
+import org.dhcpcluster.struct.Node;
 import org.dhcpcluster.struct.Subnet;
 
 /**
@@ -51,6 +52,8 @@ public class TopologyConfig implements Serializable {
     
     /** highest mask value in all subnets declared */
     private int highestMask = -1;
+    
+    private Node rootNode = new Node();
     
     /** provide a fast search for subnets via an associated giaddr */
     private final Map<InetAddress, Subnet> subnetsByGiaddr = new HashMap<InetAddress, Subnet>();
@@ -143,6 +146,20 @@ public class TopologyConfig implements Serializable {
 	
 	public RequestFilter getGlobalFilter() {
 		return globalFilter;
+	}
+
+	/**
+	 * @return Returns the rootNode.
+	 */
+	public Node getRootNode() {
+		return rootNode;
+	}
+
+	/**
+	 * @param rootNode The rootNode to set.
+	 */
+	public void setRootNode(Node rootNode) {
+		this.rootNode = rootNode;
 	}
     
 }

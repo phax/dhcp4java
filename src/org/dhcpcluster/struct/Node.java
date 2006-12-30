@@ -35,7 +35,7 @@ public class Node extends NodeRoot implements Serializable {
 	private static final Logger logger = Logger.getLogger(Node.class.getName().toLowerCase());
 
     
-    protected  List<Node>					nodeList = new LinkedList<Node>();
+    protected  List<NodeRoot>					nodeList = new LinkedList<NodeRoot>();
 
     public Node() {
     }
@@ -44,13 +44,13 @@ public class Node extends NodeRoot implements Serializable {
 	/**
 	 * @return Returns the nodeList.
 	 */
-	public List<Node> getNodeList() {
+	public List<NodeRoot> getNodeList() {
 		return nodeList;
 	}
 	/**
 	 * @param nodeList The nodeList to set.
 	 */
-	public void setNodeList(List<Node> nodeList) {
+	public void setNodeList(List<NodeRoot> nodeList) {
 		this.nodeList = nodeList;
 	}
 

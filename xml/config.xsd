@@ -11,7 +11,7 @@
 	<xs:simpleType name="wByte">
 		<xs:annotation>
 			<xs:appinfo>
-				<jxb:javaType name="byte" parseMethod="javax.xml.bind.DatatypeConverter.parseByte" printMethod="javax.xml.bind.DatatypeConverter.printByte"/>
+				<jxb:javaType name="byte"/>
 			</xs:appinfo>
 			<xs:documentation>wide Byte: unsigned and signed allowed</xs:documentation>
 		</xs:annotation>
@@ -425,31 +425,22 @@
 		</xs:complexType>
 	</xs:element>
 	<!--=== node and subnets ===-->
-	<xs:complexType name="type-node-subnet">
-		<xs:all>
-			<xs:element ref="filter" minOccurs="0"/>
-			<xs:element name="lease" minOccurs="0"/>
-			<xs:element ref="options" minOccurs="0"/>
-			<xs:element ref="sub-nodes" minOccurs="0"/>
-			<xs:element ref="giaddrs" minOccurs="0"/>
-			<xs:element ref="pools" minOccurs="0"/>
-		</xs:all>
-	</xs:complexType>
+	<xs:complexType name="type-node-subnet"/>
 	<xs:complexType name="type-node">
 		<xs:complexContent>
-			<xs:restriction base="type-node-subnet">
+			<xs:extension base="type-node-subnet">
 				<xs:all>
 					<xs:element ref="filter" minOccurs="0"/>
 					<xs:element name="lease" minOccurs="0"/>
 					<xs:element ref="options" minOccurs="0"/>
 					<xs:element ref="sub-nodes" minOccurs="0"/>
 				</xs:all>
-			</xs:restriction>
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="type-subnet">
 		<xs:complexContent>
-			<xs:restriction base="type-node-subnet">
+			<xs:extension base="type-node-subnet">
 				<xs:all>
 					<xs:element ref="filter" minOccurs="0"/>
 					<xs:element name="lease" minOccurs="0"/>
@@ -457,7 +448,7 @@
 					<xs:element ref="giaddrs" minOccurs="0"/>
 					<xs:element ref="pools" minOccurs="0"/>
 				</xs:all>
-			</xs:restriction>
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="node">
