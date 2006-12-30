@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 
 import org.dhcpcluster.config.GlobalConfig;
 import org.dhcpcluster.config.xml.data.DhcpServer;
+import org.dhcpcluster.config.xml.data.Lease;
 
 /**
  * 
@@ -52,6 +53,14 @@ public final class XmlGlobalConfigReader {
 		}
 		
 		// <classes>
+		// TODO
+		
+		// <lease>
+    	Lease leaseTime = globalData.getLease();
+    	if (leaseTime != null) {
+    		globalConfig.getRootNode().setDefaultLease(leaseTime.getDefault());
+    		globalConfig.getRootNode().setMaxLease(leaseTime.getMax());
+    	}
 		
 		return globalConfig;
 	}

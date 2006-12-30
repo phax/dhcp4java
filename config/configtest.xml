@@ -90,6 +90,7 @@
 			</options>
 			<!--TODO add static addresses-->
 			<!--TODO add allow/deny policies-->
+			<lease></lease>
 		</subnet>
 	</topology>
 </dhcp-server>

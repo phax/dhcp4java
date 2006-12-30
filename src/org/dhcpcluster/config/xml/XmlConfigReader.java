@@ -141,47 +141,8 @@ public class XmlConfigReader implements GenericConfigReader {
 		// front-end data
 		this.frontendConfig = XmlFrontEndConfigReader.parseFrontEnd(dhcpServerData.getFrontEnd());
 		this.globalConfig = XmlGlobalConfigReader.xmlGlobalConfigReader(dhcpServerData.getGlobal());
-		this.topologyConfig = TopologyConfigReader.xmlTopologyReader(dhcpServerData.getTopology());
-		
-		return;
-//    	try {
-//			Builder parser = new Builder();
-//			Document doc = parser.build(xml);
-//
-//			Element root = doc.getRootElement();
-//			if (!"dhcp-server".equals(root.getLocalName())) {
-//				throw new ConfigException("root node is not dhcp-server but "+root.getLocalName());
-//			}
-//			
-//			// parse "front-end" element
-//			Elements frontendElts = root.getChildElements("front-end");
-//			if (frontendElts.size() != 1) {
-//				throw new ConfigException("One 'front-end' element expected, found "+frontendElts.size());
-//			}
-//			this.frontendConfig = XmlFrontEndConfigReader.xmlFrontEndConfigReader(frontendElts.get(0));
-//			//FrontendConfig frontendConfig = FrontendConfigReader...
-//			
-//			// parse "global" element
-//			Elements globalElts = root.getChildElements("global");
-//			if (globalElts.size() != 1) {
-//				throw new ConfigException("One 'global' element expected, found "+globalElts.size());
-//			}
-//			this.globalConfig = XmlGlobalConfigReader.xmlGlobalConfigReader(globalElts.get(0));
-//			
-//			// parse "topology" element
-//			Elements topologyElts = root.getChildElements("topology");
-//			if (topologyElts.size() != 1) {
-//				throw new ConfigException("One 'subnets' element expected, found "+topologyElts.size());
-//			}
-//			this.topologyConfig = TopologyConfigReader.xmlTopologyReader(topologyElts.get(0));
-//    	} catch (ConfigException e) {
-//    		throw e;		// re-throw
-//    	} catch (Exception e) {
-//    		logger.log(Level.WARNING, "global exception", e);
-//    		throw new ConfigException("global exception", e);
-//    	}
+		this.topologyConfig = XmlTopologyConfigReader.xmlTopologyReader(dhcpServerData.getTopology());
     }
-
 	
 	private static final String CONFIG_XML_FILE = "config.xml.file";
 

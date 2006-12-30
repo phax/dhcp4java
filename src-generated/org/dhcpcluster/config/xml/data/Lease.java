@@ -8,13 +8,11 @@
 
 package org.dhcpcluster.config.xml.data;
 
-import java.net.InetAddress;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -25,9 +23,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
- *     &lt;extension base="{}type-subnet">
- *       &lt;attribute name="address" use="required" type="{}inet-address" />
- *       &lt;attribute name="mask" use="required" type="{}inet-address" />
+ *     &lt;extension base="{}empty-type">
+ *       &lt;attribute name="default" type="{http://www.w3.org/2001/XMLSchema}int" default="86400" />
+ *       &lt;attribute name="max" type="{http://www.w3.org/2001/XMLSchema}int" default="86400" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -37,64 +35,70 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "subnet")
-public class Subnet
-    extends TypeSubnet
+@XmlRootElement(name = "lease")
+public class Lease
+    extends EmptyType
 {
 
-    @XmlAttribute(required = true)
-    @XmlJavaTypeAdapter(Adapter3 .class)
-    protected InetAddress address;
-    @XmlAttribute(required = true)
-    @XmlJavaTypeAdapter(Adapter3 .class)
-    protected InetAddress mask;
+    @XmlAttribute(name = "default")
+    protected Integer _default;
+    @XmlAttribute
+    protected Integer max;
 
     /**
-     * Gets the value of the address property.
+     * Gets the value of the default property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link Integer }
      *     
      */
-    public InetAddress getAddress() {
-        return address;
+    public int getDefault() {
+        if (_default == null) {
+            return  86400;
+        } else {
+            return _default;
+        }
     }
 
     /**
-     * Sets the value of the address property.
+     * Sets the value of the default property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link Integer }
      *     
      */
-    public void setAddress(InetAddress value) {
-        this.address = value;
+    public void setDefault(Integer value) {
+        this._default = value;
     }
 
     /**
-     * Gets the value of the mask property.
+     * Gets the value of the max property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link Integer }
      *     
      */
-    public InetAddress getMask() {
-        return mask;
+    public int getMax() {
+        if (max == null) {
+            return  86400;
+        } else {
+            return max;
+        }
     }
 
     /**
-     * Sets the value of the mask property.
+     * Sets the value of the max property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link Integer }
      *     
      */
-    public void setMask(InetAddress value) {
-        this.mask = value;
+    public void setMax(Integer value) {
+        this.max = value;
     }
 
 }

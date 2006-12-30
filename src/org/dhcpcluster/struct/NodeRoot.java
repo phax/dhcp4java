@@ -40,6 +40,9 @@ public class NodeRoot implements Serializable {
     
     /** array of dhcp options */
     protected DHCPOption[]					dhcpOptions = DHCPOPTION_0;
+    
+    private int							defaultLease = 86400;
+    private int							maxLease = 86400;
 
     public NodeRoot() {
     }
@@ -95,5 +98,34 @@ public class NodeRoot implements Serializable {
 	 */
 	public void setRequestFilter(RequestFilter requestFilter) {
 		this.requestFilter = requestFilter;
-	}    
+	}
+
+	/**
+	 * @return Returns the defaultLease.
+	 */
+	public int getDefaultLease() {
+		return defaultLease;
+	}
+
+	/**
+	 * @param defaultLease The defaultLease to set.
+	 */
+	public void setDefaultLease(int defaultLease) {
+		this.defaultLease = defaultLease;
+	}
+
+	/**
+	 * @return Returns the maxLease.
+	 */
+	public int getMaxLease() {
+		return maxLease;
+	}
+
+	/**
+	 * @param maxLease The maxLease to set.
+	 */
+	public void setMaxLease(int maxLease) {
+		this.maxLease = maxLease;
+	}
+	
 }

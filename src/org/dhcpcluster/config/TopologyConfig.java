@@ -77,7 +77,7 @@ public class TopologyConfig implements Serializable {
     	return subnetsByGiaddr.get(giaddr);
     }
     
-    public void addSubnet(Subnet subnet) throws ConfigException {
+    public void registerSubnet(Subnet subnet) throws ConfigException {
     	if (subnet == null) {
     		throw new NullPointerException("subnet is null");
     	}

@@ -125,6 +125,7 @@
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
+							<xs:element ref="lease" minOccurs="0"/>
 						</xs:all>
 					</xs:complexType>
 				</xs:element>
@@ -425,13 +426,15 @@
 		</xs:complexType>
 	</xs:element>
 	<!--=== node and subnets ===-->
-	<xs:complexType name="type-node-subnet"/>
+	<xs:complexType name="type-node-subnet">
+		<xs:attribute name="comment" type="xs:string" use="optional"/>
+	</xs:complexType>
 	<xs:complexType name="type-node">
 		<xs:complexContent>
 			<xs:extension base="type-node-subnet">
 				<xs:all>
 					<xs:element ref="filter" minOccurs="0"/>
-					<xs:element name="lease" minOccurs="0"/>
+					<xs:element ref="lease" minOccurs="0"/>
 					<xs:element ref="options" minOccurs="0"/>
 					<xs:element ref="sub-nodes" minOccurs="0"/>
 				</xs:all>
@@ -443,7 +446,7 @@
 			<xs:extension base="type-node-subnet">
 				<xs:all>
 					<xs:element ref="filter" minOccurs="0"/>
-					<xs:element name="lease" minOccurs="0"/>
+					<xs:element ref="lease" minOccurs="0"/>
 					<xs:element ref="options" minOccurs="0"/>
 					<xs:element ref="giaddrs" minOccurs="0"/>
 					<xs:element ref="pools" minOccurs="0"/>
@@ -464,7 +467,6 @@
 				<xs:extension base="type-subnet">
 					<xs:attribute name="address" type="inet-address" use="required"/>
 					<xs:attribute name="mask" type="inet-address" use="required"/>
-					<xs:attribute name="comment" type="xs:string" use="optional"/>
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
@@ -508,6 +510,16 @@
 				<xs:element ref="node"/>
 				<xs:element ref="subnet"/>
 			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="lease">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="empty-type">
+					<xs:attribute name="default" type="xs:int" use="optional" default="86400"/>
+					<xs:attribute name="max" type="xs:int" use="optional" default="86400"/>
+				</xs:extension>
+			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

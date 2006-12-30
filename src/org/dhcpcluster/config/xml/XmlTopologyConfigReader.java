@@ -18,12 +18,13 @@
  */
 package org.dhcpcluster.config.xml;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import org.dhcp4java.InetCidr;
+import org.dhcpcluster.config.ConfigException;
 import org.dhcpcluster.config.TopologyConfig;
 import org.dhcpcluster.config.xml.data.DhcpServer;
+import org.dhcpcluster.config.xml.data.Lease;
 import org.dhcpcluster.config.xml.data.TypeNodeSubnet;
 import org.dhcpcluster.struct.Node;
 import org.dhcpcluster.struct.NodeRoot;
@@ -34,12 +35,12 @@ import org.dhcpcluster.struct.Subnet;
  * @author Stephan Hadinger
  * @version 0.71
  */
-public final class TopologyConfigReader {
+public final class XmlTopologyConfigReader {
 
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(TopologyConfigReader.class.getName().toLowerCase());
+	private static final Logger logger = Logger.getLogger(XmlTopologyConfigReader.class.getName().toLowerCase());
 
-    public static TopologyConfig xmlTopologyReader(DhcpServer.Topology topologyData) {
+    public static TopologyConfig xmlTopologyReader(DhcpServer.Topology topologyData) throws ConfigException {
     	TopologyConfig topologyConfig = new TopologyConfig();
     	
     	// <node> or <subnet>
@@ -52,59 +53,22 @@ public final class TopologyConfigReader {
     	}
     	topologyConfig.setRootNode(rootNode);
     	
-    	// parsing global "options"
-//    	if (topologyData.getOptions() != null) {
-//    		Options options = topologyData.getOptions();
-//    		LinkedList<DHCPOption> optList = new LinkedList<DHCPOption>();
-//    		byte code;
-//    		
-//    		for (Object optObj : options.getOptionOrOptionTimeServersOrOptionRouters()) {
-//    			code = 0;
-//    			// first check for code
-//    			if (optObj instanceof JAXBElement<?>) {
-//    				// parse name for code resolution
-//    				String optName = ((JAXBElement)optObj).getName().getLocalPart();
-//    				String optName2 = "DHO_" + optName.substring(OPTION_PREFIX.length());
-//    				optName2 = optName2.replace("-", "_").toUpperCase();
-//    				Byte codeByte = DHCPConstants.getDhoNamesReverse(optName2);
-//    				if (codeByte == null) {
-//    					logger.warning("Unrecognized option name: "+optName);
-//    					continue;
-//    				}
-//    				code = codeByte;
-//    				
-//    				// now force value parsing
-//    				optObj = ((JAXBElement)optObj).getValue();
-//    			} else if (optObj instanceof Option) {
-//    				code = ((Option)optObj).getCode();
-//    			}
-//    			// TODO mirror ? 
-//    			if (optObj instanceof OptionGeneric) {
-//    				OptionGeneric opt = (OptionGeneric)optObj;
-//    				makeOptionValue(code, ((OptionGeneric)optObj).getValueByteOrValueShortOrValueInt());
-//    			} else {
-//    				logger.warning("Unknown option object: "+optObj);
-//    			}
-//    		}
+    	// register all subnets
+    	registerNode(topologyConfig, rootNode);
     		
-    		
-//    		for (Object optObj : options.getOptionRoutersOrOptionOrOptionTimeServers()) {
-//    			if (optObj instanceof Option) {
-//    				Option opt = (Option)optObj;
-//    				makeOptionValue(opt.getValueByteOrValueInetOrValueShort());
-//    				for (JAXBElement valueElt : opt.getValueByteOrValueInetOrValueShort()) {
-//    					System.out.println(valueElt);
-//    				}
-////    				DHCPOption resOption = makeOptionValue(opt.getValueByteOrValueInetOrValueShort());
-//    				optList.add(new DHCPOption((byte)opt.getCode(), new byte[0]));
-//    			} else if (optObj instanceof Options.OptionRouters) {
-//    				Options.OptionRouters opt = (Options.OptionRouters)optObj;
-//    				//DHCPOption resOption = makeOptionValue(opt.getValueInet());
-//    			}
-//    		}
-//    	}
-    	
     	return topologyConfig;
+    }
+    
+    private static void registerNode(TopologyConfig topologyConfig, NodeRoot node) throws ConfigException {
+    	if (node instanceof Node) {
+    		for (NodeRoot subnode : ((Node)node).getNodeList()) {
+    			registerNode(topologyConfig, subnode);
+    		}
+    	} else if (node instanceof Subnet) {
+    		topologyConfig.registerSubnet((Subnet)node);
+    	} else {
+    		throw new IllegalStateException("Unexpected NodeRoot type: "+node);
+    	}
     }
     
     public static NodeRoot parseSubNode(TypeNodeSubnet subNode) {
@@ -119,13 +83,33 @@ public final class TopologyConfigReader {
     
     public static Node parseNode(org.dhcpcluster.config.xml.data.Node xNode) {
     	Node node = new Node();
-    	
+    	node.setComment(xNode.getComment());
+    	node.setRequestFilter(XmlFilterFactory.makeFilterRoot(xNode.getFilter()));
+    	node.setDhcpOptions(XmlOptionFactory.parseOptions(xNode.getOptions()));
+    	Lease leaseTime = xNode.getLease();
+    	if (leaseTime != null) {
+    		node.setDefaultLease(leaseTime.getDefault());
+    		node.setMaxLease(leaseTime.getMax());
+    	}
+    	if (xNode.getSubNodes() != null) {
+        	for (TypeNodeSubnet xSubnode : xNode.getSubNodes().getNodeOrSubnet()) {
+        		node.getNodeList().add(parseSubNode(xSubnode));
+        	}
+    	}
+
     	return node;
     }
     
     public static Subnet parseSubnet(org.dhcpcluster.config.xml.data.Subnet xSubnet) {
 		Subnet subnet = new Subnet(new InetCidr(xSubnet.getAddress(), xSubnet.getMask()));
 		subnet.setComment(xSubnet.getComment());
+		subnet.setRequestFilter(XmlFilterFactory.makeFilterRoot(xSubnet.getFilter()));
+		subnet.setDhcpOptions(XmlOptionFactory.parseOptions(xSubnet.getOptions()));
+    	Lease leaseTime = xSubnet.getLease();
+    	if (leaseTime != null) {
+    		subnet.setDefaultLease(leaseTime.getDefault());
+    		subnet.setMaxLease(leaseTime.getMax());
+    	}
 		return subnet;
     }
     
@@ -345,29 +329,6 @@ public final class TopologyConfigReader {
 	 * @throws ConfigException
 	 * @throws IOException
 	 */
-//	private static DHCPOption readOptionValue(byte code, Element option) throws ConfigException, IOException {
-//		if (option == null) {
-//			throw new NullPointerException("option is null");
-//		}
-//		Elements optionValueElts = option.getChildElements();
-//		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-//		DataOutputStream outputStream = new DataOutputStream(byteOutput);
-//		int mirrorDetected = 0;
-//		
-//		// TODO change 'mirror' into an attribute and not a child element
-//		for (int i=0; i<optionValueElts.size(); i++) {
-//			Element valueElt = optionValueElts.get(i);
-//			String valueName = valueElt.getLocalName();
-//			if (valueName.equals("value-byte")) {
-//				outputStream.writeByte((byte)Integer.parseInt(valueElt.getValue()));
-//			} else if (valueName.equals("value-short")) {
-//				outputStream.writeShort((short)Integer.parseInt(valueElt.getValue()));
-//			} else if (valueName.equals("value-int")) {
-//				outputStream.writeInt(Integer.parseInt(valueElt.getValue()));
-//			} else if (valueName.equals("value-inet")) {
-//				outputStream.write(InetAddress.getByName(valueElt.getValue()).getAddress());
-//			} else if (valueName.equals("value-string")) {
-//				outputStream.writeBytes(valueElt.getValue());
 //			} else if (valueName.equals("value-string-item")) {
 //				String stringItem = valueElt.getValue();
 //				if (stringItem.length() > 255) {
@@ -375,15 +336,5 @@ public final class TopologyConfigReader {
 //				}
 //				outputStream.writeByte(stringItem.length());
 //				outputStream.writeBytes(stringItem);
-//			} else if (valueName.equals("mirror")) {
-//				mirrorDetected++;
-//			}
-//		}
-//
-//		if (mirrorDetected > 1) {
-//			throw new ConfigException("too many mirror elements ("+mirrorDetected+") at "+getElementPath(option));
-//		}
-//		return new DHCPOption(code, byteOutput.toByteArray(), mirrorDetected > 0);
-//	}
 	
 }
