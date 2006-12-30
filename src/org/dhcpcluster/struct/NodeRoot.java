@@ -35,6 +35,9 @@ public class NodeRoot implements Serializable {
     /** freely usable comment */
     protected String comment = null;
     
+    protected String nodeType = null;
+    protected String nodeId = null;
+    
     /** filter applicable to Subnet */
     protected RequestFilter				requestFilter = ALWAYS_TRUE_FILTER;
     
@@ -127,5 +130,34 @@ public class NodeRoot implements Serializable {
 	public void setMaxLease(int maxLease) {
 		this.maxLease = maxLease;
 	}
+
+	/**
+	 * @return Returns the nodeId.
+	 */
+	public String getNodeId() {
+		return nodeId;
+	}
+
+	/**
+	 * @param nodeId The nodeId to set.
+	 */
+	public void setNodeId(String nodeId) {
+		this.nodeId = nodeId;
+	}
+
+	/**
+	 * @return Returns the nodeType.
+	 */
+	public String getNodeType() {
+		return nodeType;
+	}
+
+	/**
+	 * @param nodeType The nodeType to set.
+	 */
+	public void setNodeType(String nodeType) {
+		this.nodeType = nodeType;
+	}
+	
 	
 }

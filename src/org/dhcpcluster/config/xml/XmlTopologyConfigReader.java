@@ -94,6 +94,8 @@ public final class XmlTopologyConfigReader {
     public static final Node parseNode(org.dhcpcluster.config.xml.data.Node xNode) {
     	Node node = new Node();
     	node.setComment(xNode.getComment());
+    	node.setNodeType(xNode.getNodeType());
+    	node.setNodeId(xNode.getNodeId());
     	node.setRequestFilter(XmlFilterFactory.makeFilterRoot(xNode.getFilter()));
     	node.setDhcpOptions(XmlOptionFactory.parseOptions(xNode.getOptions()));
     	Lease leaseTime = xNode.getLease();
@@ -113,6 +115,8 @@ public final class XmlTopologyConfigReader {
     public static final Subnet parseSubnet(org.dhcpcluster.config.xml.data.Subnet xSubnet) {
 		Subnet subnet = new Subnet(new InetCidr(xSubnet.getAddress(), xSubnet.getMask()));
 		subnet.setComment(xSubnet.getComment());
+		subnet.setNodeType(xSubnet.getNodeType());
+		subnet.setNodeId(xSubnet.getNodeId());
 		subnet.setRequestFilter(XmlFilterFactory.makeFilterRoot(xSubnet.getFilter()));
 		subnet.setDhcpOptions(XmlOptionFactory.parseOptions(xSubnet.getOptions()));
     	Lease leaseTime = xSubnet.getLease();

@@ -429,6 +429,8 @@
 	<!--=== node and subnets ===-->
 	<xs:complexType name="type-node-subnet">
 		<xs:attribute name="comment" type="xs:string" use="optional"/>
+		<xs:attribute name="node-type" type="xs:string" use="optional"/>
+		<xs:attribute name="node-id" type="xs:string" use="optional"/>
 	</xs:complexType>
 	<xs:complexType name="type-node">
 		<xs:complexContent>
