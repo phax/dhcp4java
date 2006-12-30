@@ -41,6 +41,7 @@
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:minLength value="1"/>
+			<xs:pattern value="((\d)|(\d\d)|([01]\d\d)|(2[0-4]\d)|(25[0-5]))\.((\d)|(\d\d)|([01]\d\d)|(2[0-4]\d)|(25[0-5]))\.((\d)|(\d\d)|([01]\d\d)|(2[0-4]\d)|(25[0-5]))\.((\d)|(\d\d)|([01]\d\d)|(2[0-4]\d)|(25[0-5]))"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="stype-option-mode">
