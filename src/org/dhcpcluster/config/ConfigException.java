@@ -24,7 +24,7 @@ package org.dhcpcluster.config;
  * @author Stephan Hadinger
  * @version 0.71
  */
-public class ConfigException extends Exception {
+public class ConfigException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 	
 	/**

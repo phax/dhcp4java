@@ -20,12 +20,15 @@ package org.dhcpcluster.config.xml;
 
 import java.util.logging.Logger;
 
+import org.dhcp4java.HardwareAddress;
 import org.dhcp4java.InetCidr;
 import org.dhcpcluster.config.ConfigException;
 import org.dhcpcluster.config.TopologyConfig;
 import org.dhcpcluster.config.xml.data.DhcpServer;
 import org.dhcpcluster.config.xml.data.Lease;
+import org.dhcpcluster.config.xml.data.Pools;
 import org.dhcpcluster.config.xml.data.TypeNodeSubnet;
+import org.dhcpcluster.struct.AddressRange;
 import org.dhcpcluster.struct.Node;
 import org.dhcpcluster.struct.NodeRoot;
 import org.dhcpcluster.struct.Subnet;
@@ -39,6 +42,13 @@ public final class XmlTopologyConfigReader {
 
     @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(XmlTopologyConfigReader.class.getName().toLowerCase());
+    
+    /**
+     * Class is not instantiable.
+     */
+    private XmlTopologyConfigReader() {
+    	throw new UnsupportedOperationException();
+    }
 
     public static TopologyConfig xmlTopologyReader(DhcpServer.Topology topologyData) throws ConfigException {
     	TopologyConfig topologyConfig = new TopologyConfig();
@@ -59,7 +69,7 @@ public final class XmlTopologyConfigReader {
     	return topologyConfig;
     }
     
-    private static void registerNode(TopologyConfig topologyConfig, NodeRoot node) throws ConfigException {
+    private static final void registerNode(TopologyConfig topologyConfig, NodeRoot node) throws ConfigException {
     	if (node instanceof Node) {
     		for (NodeRoot subnode : ((Node)node).getNodeList()) {
     			registerNode(topologyConfig, subnode);
@@ -71,7 +81,7 @@ public final class XmlTopologyConfigReader {
     	}
     }
     
-    public static NodeRoot parseSubNode(TypeNodeSubnet subNode) {
+    public static final NodeRoot parseSubNode(TypeNodeSubnet subNode) {
     	if (subNode instanceof org.dhcpcluster.config.xml.data.Node) {
     		return parseNode((org.dhcpcluster.config.xml.data.Node)subNode);
     	} else if (subNode instanceof org.dhcpcluster.config.xml.data.Subnet) {
@@ -81,7 +91,7 @@ public final class XmlTopologyConfigReader {
     	}
     }
     
-    public static Node parseNode(org.dhcpcluster.config.xml.data.Node xNode) {
+    public static final Node parseNode(org.dhcpcluster.config.xml.data.Node xNode) {
     	Node node = new Node();
     	node.setComment(xNode.getComment());
     	node.setRequestFilter(XmlFilterFactory.makeFilterRoot(xNode.getFilter()));
@@ -100,7 +110,7 @@ public final class XmlTopologyConfigReader {
     	return node;
     }
     
-    public static Subnet parseSubnet(org.dhcpcluster.config.xml.data.Subnet xSubnet) {
+    public static final Subnet parseSubnet(org.dhcpcluster.config.xml.data.Subnet xSubnet) {
 		Subnet subnet = new Subnet(new InetCidr(xSubnet.getAddress(), xSubnet.getMask()));
 		subnet.setComment(xSubnet.getComment());
 		subnet.setRequestFilter(XmlFilterFactory.makeFilterRoot(xSubnet.getFilter()));
@@ -110,9 +120,30 @@ public final class XmlTopologyConfigReader {
     		subnet.setDefaultLease(leaseTime.getDefault());
     		subnet.setMaxLease(leaseTime.getMax());
     	}
+    	// now parsing <ranges> and <static>
+    	if (xSubnet.getPools() != null) {
+    		for (Object o : xSubnet.getPools().getRangeOrStatic()) {
+    			if (o instanceof Pools.Range) {
+    				addRange(subnet, (Pools.Range)o);
+    			} else if (o instanceof Pools.Static) {
+    				addStatic(subnet, (Pools.Static)o);
+    			} else {
+    				throw new IllegalStateException("Unexpected Pools.* object: "+o);
+    			}
+    		}
+    	}
 		return subnet;
     }
     
+    public static final void addRange(Subnet subnet, Pools.Range xRange) {
+    	AddressRange range = new AddressRange(xRange.getStart(), xRange.getEnd());
+    	subnet.addAddrRange(range);
+    }
+    
+    public static final void addStatic(Subnet subnet, Pools.Static xStatic) {
+    	HardwareAddress mac = HardwareAddress.getHardwareAddressByString(xStatic.getEthernet());
+    	subnet.addStaticAddress(mac, xStatic.getAddress());
+    }
     
 //    public static List<Object> decapsulateJaxbList(List<JAXBElement<?>> list) {
 //    	LinkedList<Object> res = new LinkedList<Object>();

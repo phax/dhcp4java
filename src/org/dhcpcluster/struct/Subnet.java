@@ -105,6 +105,9 @@ public class Subnet extends NodeRoot implements Serializable {
 		return cidr;
 	}
 
+	public void addAddrRange(AddressRange range) {
+		addrRanges.add(range);
+	}
 	/**
 	 * @return Returns the addrRanges.
 	 */
