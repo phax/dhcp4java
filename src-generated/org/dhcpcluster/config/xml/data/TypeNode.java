@@ -10,20 +10,26 @@ package org.dhcpcluster.config.xml.data;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>Java class for type-node complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType>
+ * &lt;complexType name="type-node">
  *   &lt;complexContent>
- *     &lt;extension base="{}type-node">
- *     &lt;/extension>
+ *     &lt;restriction base="{}type-node-subnet">
+ *       &lt;all>
+ *         &lt;element ref="{}filter" minOccurs="0"/>
+ *         &lt;element name="lease" type="{http://www.w3.org/2001/XMLSchema}anyType" minOccurs="0"/>
+ *         &lt;element ref="{}options" minOccurs="0"/>
+ *         &lt;element ref="{}sub-nodes" minOccurs="0"/>
+ *       &lt;/all>
+ *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
@@ -31,10 +37,12 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
-@XmlRootElement(name = "node")
-public class Node
-    extends TypeNode
+@XmlType(name = "type-node")
+@XmlSeeAlso({
+    Node.class
+})
+public class TypeNode
+    extends TypeNodeSubnet
 {
 
 

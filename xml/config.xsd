@@ -61,7 +61,7 @@
 			<xs:all>
 				<xs:element name="front-end">
 					<xs:complexType>
-						<xs:sequence>
+						<xs:all>
 							<xs:element name="listen" minOccurs="0">
 								<xs:complexType>
 									<xs:attribute name="port" type="xs:unsignedShort" use="optional" default="67"/>
@@ -100,12 +100,12 @@
 									</xs:attribute>
 								</xs:complexType>
 							</xs:element>
-						</xs:sequence>
+						</xs:all>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="global">
 					<xs:complexType>
-						<xs:sequence>
+						<xs:all>
 							<xs:element name="server">
 								<xs:complexType>
 									<xs:attribute name="identifier" type="inet-address" use="required"/>
@@ -125,61 +125,15 @@
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
-						</xs:sequence>
+						</xs:all>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="topology">
 					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="subnet">
-								<xs:complexType>
-									<xs:sequence>
-										<xs:element ref="giaddr" maxOccurs="unbounded"/>
-										<xs:element name="range">
-											<xs:complexType>
-												<xs:attribute name="start" use="required">
-													<xs:simpleType>
-														<xs:restriction base="xs:string">
-															<xs:enumeration value="192.168.0.15"/>
-														</xs:restriction>
-													</xs:simpleType>
-												</xs:attribute>
-												<xs:attribute name="end" use="required">
-													<xs:simpleType>
-														<xs:restriction base="xs:string">
-															<xs:enumeration value="192.168.0.25"/>
-														</xs:restriction>
-													</xs:simpleType>
-												</xs:attribute>
-											</xs:complexType>
-										</xs:element>
-										<xs:element ref="options"/>
-										<xs:element ref="static" maxOccurs="unbounded"/>
-									</xs:sequence>
-									<xs:attribute name="address" use="required">
-										<xs:simpleType>
-											<xs:restriction base="xs:string">
-												<xs:enumeration value="192.168.0.0"/>
-											</xs:restriction>
-										</xs:simpleType>
-									</xs:attribute>
-									<xs:attribute name="mask" use="required">
-										<xs:simpleType>
-											<xs:restriction base="xs:string">
-												<xs:enumeration value="255.255.252.0"/>
-											</xs:restriction>
-										</xs:simpleType>
-									</xs:attribute>
-									<xs:attribute name="comment" use="required">
-										<xs:simpleType>
-											<xs:restriction base="xs:string">
-												<xs:enumeration value="Free comment!"/>
-											</xs:restriction>
-										</xs:simpleType>
-									</xs:attribute>
-								</xs:complexType>
-							</xs:element>
-						</xs:sequence>
+						<xs:choice minOccurs="0" maxOccurs="unbounded">
+							<xs:element ref="node"/>
+							<xs:element ref="subnet"/>
+						</xs:choice>
 					</xs:complexType>
 				</xs:element>
 			</xs:all>
@@ -215,26 +169,6 @@
 				<xs:group ref="group-option-shorts"/>
 				<xs:group ref="group-option-string"/>
 			</xs:choice>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="static">
-		<xs:complexType>
-			<xs:attribute name="address" use="required">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="192.168.0.3"/>
-						<xs:enumeration value="192.168.0.4"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name="ethernet" use="required">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="0:1c0:c3:49:2b:57"/>
-						<xs:enumeration value="0:c0:c3:49:2b:57"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
 	<!--=== option value elements ===-->
@@ -318,7 +252,7 @@
 	<xs:complexType name="type-option-inets">
 		<xs:complexContent>
 			<xs:restriction base="option-generic">
-				<xs:choice minOccurs="1" maxOccurs="unbounded">
+				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="value-inet"/>
 				</xs:choice>
 			</xs:restriction>
@@ -336,7 +270,7 @@
 	<xs:complexType name="type-option-bytes">
 		<xs:complexContent>
 			<xs:restriction base="option-generic">
-				<xs:choice minOccurs="1" maxOccurs="unbounded">
+				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="value-byte"/>
 					<xs:element ref="value-rawhex"/>
 					<xs:element ref="value-raw64"/>
@@ -375,7 +309,7 @@
 	<xs:complexType name="type-option-shorts">
 		<xs:complexContent>
 			<xs:restriction base="option-generic">
-				<xs:choice minOccurs="1" maxOccurs="unbounded">
+				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="value-short"/>
 				</xs:choice>
 			</xs:restriction>
@@ -492,37 +426,97 @@
 	</xs:element>
 	<!--=== node and subnets ===-->
 	<xs:complexType name="type-node-subnet">
-		<xs:sequence>
+		<xs:all>
 			<xs:element ref="filter" minOccurs="0"/>
 			<xs:element name="lease" minOccurs="0"/>
 			<xs:element ref="options" minOccurs="0"/>
-		</xs:sequence>
+			<xs:element ref="sub-nodes" minOccurs="0"/>
+			<xs:element ref="giaddrs" minOccurs="0"/>
+			<xs:element ref="pools" minOccurs="0"/>
+		</xs:all>
+	</xs:complexType>
+	<xs:complexType name="type-node">
+		<xs:complexContent>
+			<xs:restriction base="type-node-subnet">
+				<xs:all>
+					<xs:element ref="filter" minOccurs="0"/>
+					<xs:element name="lease" minOccurs="0"/>
+					<xs:element ref="options" minOccurs="0"/>
+					<xs:element ref="sub-nodes" minOccurs="0"/>
+				</xs:all>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="type-subnet">
+		<xs:complexContent>
+			<xs:restriction base="type-node-subnet">
+				<xs:all>
+					<xs:element ref="filter" minOccurs="0"/>
+					<xs:element name="lease" minOccurs="0"/>
+					<xs:element ref="options" minOccurs="0"/>
+					<xs:element ref="giaddrs" minOccurs="0"/>
+					<xs:element ref="pools" minOccurs="0"/>
+				</xs:all>
+			</xs:restriction>
+		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="node">
 		<xs:complexType>
 			<xs:complexContent>
-				<xs:extension base="type-node-subnet">
-					<xs:sequence>
-						<xs:element ref="node" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element ref="subnet" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
-				</xs:extension>
+				<xs:extension base="type-node"/>
 			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="subnet">
 		<xs:complexType>
 			<xs:complexContent>
-				<xs:extension base="type-node-subnet">
-					<xs:sequence>
-						<xs:element name="giaddr" type="inet-address" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element name="range" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
+				<xs:extension base="type-subnet">
 					<xs:attribute name="address" type="inet-address" use="required"/>
 					<xs:attribute name="mask" type="inet-address" use="required"/>
 					<xs:attribute name="comment" type="xs:string" use="optional"/>
 				</xs:extension>
 			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="giaddrs">
+		<xs:complexType>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="giaddr" type="inet-address"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="pools">
+		<xs:complexType>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="range">
+					<xs:complexType>
+						<xs:complexContent>
+							<xs:extension base="empty-type">
+								<xs:attribute name="start" type="inet-address" use="required"/>
+								<xs:attribute name="end" type="inet-address" use="required"/>
+							</xs:extension>
+						</xs:complexContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="static">
+					<xs:complexType>
+						<xs:complexContent>
+							<xs:extension base="empty-type">
+								<xs:attribute name="address" type="inet-address" use="required"/>
+								<xs:attribute name="ethernet" type="xs:string" use="optional"/>
+							</xs:extension>
+						</xs:complexContent>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="sub-nodes">
+		<xs:complexType>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element ref="node"/>
+				<xs:element ref="subnet"/>
+			</xs:choice>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>
