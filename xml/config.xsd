@@ -339,7 +339,7 @@
 	</xs:complexType>
 	<!--=== filters ===-->
 	<xs:simpleType name="stype-filter-num">
-		<xs:restriction base="xs:string">
+		<xs:restriction base="xs:NCName">
 			<xs:enumeration value="eq"/>
 			<xs:enumeration value="ne"/>
 			<xs:enumeration value="lt"/>
@@ -349,7 +349,7 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="stype-filter-string">
-		<xs:restriction base="xs:string">
+		<xs:restriction base="xs:NCName">
 			<xs:enumeration value="exact"/>
 			<xs:enumeration value="case-insensitive"/>
 			<xs:enumeration value="regex"/>
