@@ -23,7 +23,7 @@
 	<xs:simpleType name="wShort">
 		<xs:annotation>
 			<xs:appinfo>
-				<jxb:javaType name="short" parseMethod="javax.xml.bind.DatatypeConverter.parseShort" printMethod="javax.xml.bind.DatatypeConverter.printShort"/>
+				<jxb:javaType name="short"/>
 			</xs:appinfo>
 			<xs:documentation>wide Short:  unsigned and signed allowed</xs:documentation>
 		</xs:annotation>
@@ -54,6 +54,16 @@
 			<xs:enumeration value="replace"/>
 			<xs:enumeration value="concat"/>
 			<xs:enumeration value="regex"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="string-item">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:javaType name="String" parseMethod="org.dhcpcluster.config.xml.Util.parseStringItem" printMethod="org.dhcpcluster.config.xml.Util.printStringItem"/>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="255"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<!--=== Root element ===-->
@@ -104,6 +114,7 @@
 						</xs:all>
 					</xs:complexType>
 				</xs:element>
+				<xs:element name="back-end"/>
 				<xs:element name="global">
 					<xs:complexType>
 						<xs:all>

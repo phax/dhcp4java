@@ -22,6 +22,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.logging.Logger;
 
+import org.dhcp4java.DHCPPacket;
+
 /**
  * 
  * @author Stephan Hadinger
@@ -34,6 +36,7 @@ public final class Util {
     
     // Suppresses default constructor, ensuring non-instantiability.
     private Util() {
+    	throw new UnsupportedOperationException();
     }	
 	
 	public static final InetAddress parseInetAddress(String lexicalIentAddress) {
@@ -46,6 +49,17 @@ public final class Util {
 	
 	public static final String printInetAddress(InetAddress address) {
 		return address.getHostAddress();
+	}
+	
+	public static final String parseStringItem(String lexicalStringItem) {
+		if (DHCPPacket.stringToBytes(lexicalStringItem).length > 255) {
+			throw new IllegalArgumentException("String length > 255, max is 255 for String item.");
+		}
+		return lexicalStringItem;
+	}
+	
+	public static final String printStringItem(String str) {
+		return str;
 	}
 
 }

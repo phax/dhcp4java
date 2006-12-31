@@ -8,20 +8,19 @@
 
 package org.dhcpcluster.config.xml.data;
 
-import java.net.InetAddress;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-public class Adapter3
-    extends XmlAdapter<String, InetAddress>
+public class Adapter4
+    extends XmlAdapter<java.lang.String, String>
 {
 
 
-    public InetAddress unmarshal(String value) {
-        return (org.dhcpcluster.config.xml.Util.parseInetAddress(value));
+    public String unmarshal(java.lang.String value) {
+        return (org.dhcpcluster.config.xml.Util.parseStringItem(value));
     }
 
-    public String marshal(InetAddress value) {
-        return (org.dhcpcluster.config.xml.Util.printInetAddress(value));
+    public java.lang.String marshal(String value) {
+        return (org.dhcpcluster.config.xml.Util.printStringItem(value));
     }
 
 }

@@ -2226,7 +2226,7 @@ public class DHCPPacket implements Cloneable, Serializable {
         appendHex(sbuf, (byte) ((i & 0x000000ff)       ));
     }
 
-    static byte[] stringToBytes(String str) {
+    public static byte[] stringToBytes(String str) {
         if (str == null) { return null; }
 
         char[] chars = str.toCharArray();
