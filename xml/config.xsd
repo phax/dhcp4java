@@ -164,6 +164,16 @@
 		<xs:complexType>
 			<xs:complexContent>
 				<xs:extension base="option-generic">
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element ref="value-byte"/>
+						<xs:element ref="value-short"/>
+						<xs:element ref="value-int"/>
+						<xs:element ref="value-inet"/>
+						<xs:element ref="value-rawhex"/>
+						<xs:element ref="value-raw64"/>
+						<xs:element ref="value-string"/>
+						<xs:element ref="value-string-element"/>
+					</xs:choice>
 					<xs:attribute name="code" type="wByte" use="required"/>
 				</xs:extension>
 			</xs:complexContent>
@@ -172,6 +182,11 @@
 	<xs:element name="options">
 		<xs:complexType>
 			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property name="options"/>
+					</xs:appinfo>
+				</xs:annotation>
 				<xs:element ref="option"/>
 				<xs:group ref="group-option-inets"/>
 				<xs:group ref="group-option-inet"/>
@@ -206,16 +221,6 @@
 	</xs:element>
 	<!--=== option container ===-->
 	<xs:complexType name="option-generic">
-		<xs:choice maxOccurs="unbounded">
-			<xs:element ref="value-byte"/>
-			<xs:element ref="value-short"/>
-			<xs:element ref="value-int"/>
-			<xs:element ref="value-inet"/>
-			<xs:element ref="value-rawhex"/>
-			<xs:element ref="value-raw64"/>
-			<xs:element ref="value-string"/>
-			<xs:element ref="value-string-element"/>
-		</xs:choice>
 		<xs:attribute name="mirror" type="xs:boolean" use="optional" default="false"/>
 	</xs:complexType>
 	<xs:group name="group-option-inets">
@@ -264,77 +269,77 @@
 	<!--=== option containers by allowed types ===-->
 	<xs:complexType name="type-option-inets">
 		<xs:complexContent>
-			<xs:restriction base="option-generic">
-				<xs:choice maxOccurs="unbounded">
+			<xs:extension base="option-generic">
+				<xs:sequence maxOccurs="unbounded">
 					<xs:element ref="value-inet"/>
-				</xs:choice>
-			</xs:restriction>
+				</xs:sequence>
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="type-option-inet">
 		<xs:complexContent>
-			<xs:restriction base="option-generic">
-				<xs:choice>
+			<xs:extension base="option-generic">
+				<xs:sequence>
 					<xs:element ref="value-inet"/>
-				</xs:choice>
-			</xs:restriction>
+				</xs:sequence>
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="type-option-bytes">
 		<xs:complexContent>
-			<xs:restriction base="option-generic">
+			<xs:extension base="option-generic">
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="value-byte"/>
 					<xs:element ref="value-rawhex"/>
 					<xs:element ref="value-raw64"/>
 					<xs:element ref="value-string"/>
 				</xs:choice>
-			</xs:restriction>
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="type-option-byte">
 		<xs:complexContent>
-			<xs:restriction base="option-generic">
-				<xs:choice>
+			<xs:extension base="option-generic">
+				<xs:sequence>
 					<xs:element ref="value-byte"/>
-				</xs:choice>
-			</xs:restriction>
+				</xs:sequence>
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="type-option-int">
 		<xs:complexContent>
-			<xs:restriction base="option-generic">
-				<xs:choice>
+			<xs:extension base="option-generic">
+				<xs:sequence>
 					<xs:element ref="value-int"/>
-				</xs:choice>
-			</xs:restriction>
+				</xs:sequence>
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="type-option-short">
 		<xs:complexContent>
-			<xs:restriction base="option-generic">
-				<xs:choice>
+			<xs:extension base="option-generic">
+				<xs:sequence>
 					<xs:element ref="value-short"/>
-				</xs:choice>
-			</xs:restriction>
+				</xs:sequence>
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="type-option-shorts">
 		<xs:complexContent>
-			<xs:restriction base="option-generic">
+			<xs:extension base="option-generic">
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="value-short"/>
 				</xs:choice>
-			</xs:restriction>
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="type-option-string">
 		<xs:complexContent>
-			<xs:restriction base="option-generic">
+			<xs:extension base="option-generic">
 				<xs:choice>
 					<xs:element ref="value-string"/>
 				</xs:choice>
-			</xs:restriction>
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<!--=== filters ===-->

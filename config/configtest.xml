@@ -68,7 +68,7 @@
 			<pools>
 				<range start="192.168.0.15" end="192.168.0.25"/>
 				<static address="192.168.0.3" ethernet="0:c0:c3:49:2b:57"/>
-				<static address="192.168.0.4" ethernet="0:1c0:c3:49:2b:57"/>
+				<static address="192.168.0.4" ethernet="01:c0:c3:49:2b:57"/>
 			</pools>
 			<options>
 				<option code="15">
