@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBElement;
@@ -221,6 +220,6 @@ final class DHCPOptionBuilder {
 	}
 			
 	public DHCPOption getResultDHCPOption() {
-		return new DHCPOption(code, byteOutput.toByteArray(), mirror);
+		return new DHCPRichOption(code, byteOutput.toByteArray(), mirror);
 	}
 }
