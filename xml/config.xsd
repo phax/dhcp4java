@@ -114,7 +114,22 @@
 						</xs:all>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="back-end"/>
+				<xs:element name="back-end">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="jdbc" minOccurs="0">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="empty-type">
+											<xs:attribute name="connection-url" type="xs:string"/>
+											<xs:attribute name="connection-user"/>
+										</xs:extension>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 				<xs:element name="global">
 					<xs:complexType>
 						<xs:all>

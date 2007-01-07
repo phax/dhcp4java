@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URISyntaxException;
+import java.sql.SQLException;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReference;
@@ -33,6 +34,7 @@ import java.util.logging.Logger;
 import org.dhcp4java.DHCPCoreServer;
 import org.dhcp4java.DHCPServerInitException;
 import org.dhcp4java.DHCPServlet;
+import org.dhcpcluster.backend.hsql.HsqlBackendServer;
 import org.dhcpcluster.config.ConfigException;
 import org.dhcpcluster.config.FrontendConfig;
 import org.dhcpcluster.config.GenericConfigReader;
@@ -239,10 +241,22 @@ public class DHCPClusterNode implements Serializable, Runnable {
     	
     	Properties props = new Properties();
     	props.load(bootstrapFile);
-
+    	
+    	startBackend();
+    	
     	DHCPClusterNode cluster = new DHCPClusterNode(props);
     	cluster.run();
     }
+	
+	private static void startBackend() {
+		try {
+			HsqlBackendServer db = new HsqlBackendServer();
+			db.startServer();
+		} catch (SQLException e) {
+			logger.log(Level.SEVERE, "Cannot connect to DB", e);
+			throw new RuntimeException(e);
+		}
+	}
 
 	private static final String CONFIG_DIR = "config";
 	private static final String DHCPD_PROPERTIES = "DHCPd.properties";
