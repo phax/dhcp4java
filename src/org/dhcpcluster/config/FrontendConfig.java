@@ -31,7 +31,7 @@ public class FrontendConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @SuppressWarnings("unused")	// TODO
+    @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(FrontendConfig.class.getName().toLowerCase());
     
     private InetAddress	listenIp = null;
@@ -41,6 +41,9 @@ public class FrontendConfig implements Serializable {
     private int			threadsCore = 1;
     private int			threadsMax = 4;
     private int			threadsKeepalive = 10000;	// 10s default
+    
+    public FrontendConfig() {
+    }
     
 	/**
 	 * @return Returns the listenIp.

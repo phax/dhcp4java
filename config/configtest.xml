@@ -5,7 +5,9 @@
 		<listen port="6767" inet="127.0.0.1"/>
 		<threads nb="2" max="10" core="2" keepalive="10000"/>
 	</front-end>
-	<back-end></back-end>
+	<back-end>
+		<jdbc user="sa" url="jdbc:hsqldb:hsql://localhost/dhcpcluster" password=""/>
+	</back-end>
 	<global>
 		<server identifier="192.168.1.1"/>
 		<filter>
@@ -27,17 +29,21 @@
 			<option code="129">
 				<value-byte>255</value-byte>
 				<value-rawhex>0022FF</value-rawhex>
-			</option><option-host-name mirror="true">
-			<value-string>foo</value-string>
+			</option>
+			<option-host-name mirror="true">
+				<value-string>foo</value-string>
 			</option-host-name>
-			<option-dhcp-message><value-string>foobar</value-string>
+			<option-dhcp-message>
+				<value-string>foobar</value-string>
 			</option-dhcp-message>
-			<option-subnet-mask><value-inet>255.255.252.0</value-inet>
+			<option-subnet-mask>
+				<value-inet>255.255.252.0</value-inet>
 			</option-subnet-mask>
 			<option-path-mtu-plateau-table>
 				<value-short>1</value-short>
 				<value-short>2</value-short>
-			</option-path-mtu-plateau-table><option-boot-size>
+			</option-path-mtu-plateau-table>
+			<option-boot-size>
 				<value-short>33000</value-short>
 			</option-boot-size>
 			<option-time-offset>
@@ -56,11 +62,9 @@
 			<option-routers>
 				<value-inet>204.254.239.1</value-inet>
 			</option-routers>
-			
-			
 		</pre-options>
 		<post-options>
-			<option code="82" mirror="true"></option>
+			<option code="82" mirror="true"/>
 		</post-options>
 	</global>
 	<topology>
@@ -94,7 +98,7 @@
 			</options>
 			<!--TODO add static addresses-->
 			<!--TODO add allow/deny policies-->
-			<lease></lease>
+			<lease/>
 		</subnet>
 	</topology>
 </dhcp-server>

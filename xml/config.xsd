@@ -121,8 +121,9 @@
 								<xs:complexType>
 									<xs:complexContent>
 										<xs:extension base="empty-type">
-											<xs:attribute name="connection-url" type="xs:string"/>
-											<xs:attribute name="connection-user"/>
+											<xs:attribute name="url" type="xs:string" use="required"/>
+											<xs:attribute name="user" type="xs:string" use="required"/>
+											<xs:attribute name="password" type="xs:string" use="required"/>
 										</xs:extension>
 									</xs:complexContent>
 								</xs:complexType>
