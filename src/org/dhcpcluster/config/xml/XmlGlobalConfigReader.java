@@ -61,11 +61,13 @@ public final class XmlGlobalConfigReader {
 		// TODO
 		
 		// <lease>
-    	Lease leaseTime = globalData.getPolicy().getLease();
-    	if (leaseTime != null) {
-    		globalConfig.getRootNode().setDefaultLease(leaseTime.getDefault());
-    		globalConfig.getRootNode().setMaxLease(leaseTime.getMax());
-    	}
+		if (globalData.getPolicy() != null) {
+	    	Lease leaseTime = globalData.getPolicy().getLease();
+	    	if (leaseTime != null) {
+	    		globalConfig.getRootNode().setDefaultLease(leaseTime.getDefault());
+	    		globalConfig.getRootNode().setMaxLease(leaseTime.getMax());
+	    	}
+		}
 		
 		return globalConfig;
 	}

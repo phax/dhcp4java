@@ -26,10 +26,10 @@ import org.dhcp4java.DHCPOption;
 import org.dhcp4java.DHCPPacket;
 import org.dhcp4java.DHCPResponseFactory;
 import org.dhcp4java.DHCPServlet;
+import org.dhcpcluster.config.GlobalConfig;
+import org.dhcpcluster.config.TopologyConfig;
 import org.dhcpcluster.filter.RequestFilter;
 import org.dhcpcluster.struct.Subnet;
-
-import static org.dhcp4java.DHCPConstants.DHO_DHCP_AGENT_OPTIONS;
 
 /**
  * 
@@ -57,16 +57,21 @@ public class MainServlet extends DHCPServlet {
 	 * 3. for each eligible subnet, filter request based on subnet refquirements<br>
 	 * 4. calculate the client IP address and lease time,
 	 * 		reserve the address for a limited duration<br>
-	 * 5. calculate client options<br>
-	 * 6. generate the DHCPOFFER response, and send it back<br>
-	 * 7. replicate option 82<br>
+	 * 5. generate standard response
+	 * 6. calculate client options<br>
+	 * 6a. global pre-options<br>
+	 * 6b. recursive options from nodes top-down<br>
+	 * 6c. global post-options (e.g. option 82 needs to be last one)<br>
 	 * 
 	 * @see org.dhcp4java.DHCPServlet#doDiscover(org.dhcp4java.DHCPPacket)
 	 */
 	@Override
 	protected DHCPPacket doDiscover(DHCPPacket request) {
+		TopologyConfig topologyConfig = clusterNode.getTopologyConfig();
+		GlobalConfig globalConfig = clusterNode.getGlobalConfig();
+		
 		/* 1. Filter client from global parameters */
-		RequestFilter globalFilter = clusterNode.getTopologyConfig().getGlobalFilter();
+		RequestFilter globalFilter = topologyConfig.getGlobalFilter();
 		if (!globalFilter.isRequestAccepted(request)) {
 			if (logger.isLoggable(Level.FINE)) {
 				logger.fine("Request rejected on global filter "+request);
@@ -75,7 +80,7 @@ public class MainServlet extends DHCPServlet {
 		}
 		
 		/* 2. find out which subnet the client belongs */
-		Subnet subnet = clusterNode.getTopologyConfig().findSubnetFromRequestGiaddr(request.getGiaddr());
+		Subnet subnet = topologyConfig.findSubnetFromRequestGiaddr(request.getGiaddr());
 				
 		// what have we got for a subnet ?
 		if (subnet == null) {
@@ -97,18 +102,23 @@ public class MainServlet extends DHCPServlet {
 		// TODO
 		InetAddress clientAddr = null;
 		int clientLease = 0;
-		
-		/* 5. calculate client options */
-		InetAddress serverId = clusterNode.getGlobalConfig().getServerIdentifier();
+
+		/* 5. generate DHCPOFFER */
+		InetAddress serverId = globalConfig.getServerIdentifier();
 		String message = null;
 		DHCPOption[] options = null;
-		
-		/* 6. generate DHCPOFFER */
 		DHCPPacket response;
 		response = DHCPResponseFactory.makeDHCPOffer(request, clientAddr, clientLease, serverId, message, options);
+				
+		/* 6. calculate client options */
+		/* 6a. global pre-options */
+		globalConfig.getRootNode().applyOptions(request, response);
 		
-		/* 7. replicate option 82 */
-		response.setOption(request.getOption(DHO_DHCP_AGENT_OPTIONS));
+		/* 6b. recursive options from nodes top-down */
+		subnet.applyOptions(request, response);
+		
+		/* 6c. global post-options (e.g. option 82 needs to be last one) */
+		globalConfig.getPostNode().applyOptions(request, response);
 
 		return response;
 	}
@@ -123,16 +133,21 @@ public class MainServlet extends DHCPServlet {
 	 * 3. for each eligible subnet, filter request based on subnet refquirements<br>
 	 * 4. verify the client IP address and lease time,
 	 * 		update the reserved lease<br>
-	 * 5. calculate client options<br>
-	 * 6. generate the DHCPOFFER response, and send it back<br>
-	 * 7. replicate option 82<br>
+	 * 5. generate standard response
+	 * 6. calculate client options<br>
+	 * 6a. global pre-options<br>
+	 * 6b. recursive options from nodes top-down<br>
+	 * 6c. global post-options (e.g. option 82 needs to be last one)<br>
 	 * 
 	 * @see org.dhcp4java.DHCPServlet#doDiscover(org.dhcp4java.DHCPPacket)
 	 */
 	@Override
 	protected DHCPPacket doRequest(DHCPPacket request) {
+		TopologyConfig topologyConfig = clusterNode.getTopologyConfig();
+		GlobalConfig globalConfig = clusterNode.getGlobalConfig();
+		
 		/* 1. Filter client from global parameters */
-		RequestFilter globalFilter = clusterNode.getTopologyConfig().getGlobalFilter();
+		RequestFilter globalFilter = topologyConfig.getGlobalFilter();
 		if (!globalFilter.isRequestAccepted(request)) {
 			if (logger.isLoggable(Level.FINE)) {
 				logger.fine("Request rejected on global filter "+request);
@@ -141,7 +156,7 @@ public class MainServlet extends DHCPServlet {
 		}
 		
 		/* 2. find out which subnet the client belongs */
-		Subnet subnet = clusterNode.getTopologyConfig().findSubnetFromRequestGiaddr(request.getGiaddr());
+		Subnet subnet = topologyConfig.findSubnetFromRequestGiaddr(request.getGiaddr());
 				
 		// what have we got for a subnet ?
 		if (subnet == null) {
@@ -158,24 +173,28 @@ public class MainServlet extends DHCPServlet {
 		int clientLease = 0;
 		boolean confirmRequest = true;
 		
-		/* 5. calculate client options */
-		InetAddress serverId = clusterNode.getGlobalConfig().getServerIdentifier();
+		/* 5. generate DHCPACK/NAK */
+		InetAddress serverId = globalConfig.getServerIdentifier();
 		String message = null;
 		DHCPOption[] options = null;
-
 		if (!confirmRequest) {
 			// send a NAK
 			DHCPPacket response = DHCPResponseFactory.makeDHCPNak(request, serverId, message);
 			return response;
 		}
-		
-		/* 6. generate DHCPOFFER */
 		DHCPPacket response;
 		response = DHCPResponseFactory.makeDHCPAck(request, clientAddr, clientLease, serverId, message, options);
-		
-		/* 7. replicate option 82 */
-		response.setOption(request.getOption(DHO_DHCP_AGENT_OPTIONS));
 
+		/* 6. calculate client options */
+		/* 6a. global pre-options */
+		globalConfig.getRootNode().applyOptions(request, response);
+		
+		/* 6b. recursive options from nodes top-down */
+		subnet.applyOptions(request, response);
+		
+		/* 6c. global post-options (e.g. option 82 needs to be last one) */
+		globalConfig.getPostNode().applyOptions(request, response);
+		
 		return response;
 	}
 }

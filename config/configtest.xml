@@ -5,6 +5,7 @@
 		<listen port="6767" inet="127.0.0.1"/>
 		<threads nb="2" max="10" core="2" keepalive="10000"/>
 	</front-end>
+	<back-end></back-end>
 	<global>
 		<server identifier="192.168.1.1"/>
 		<filter>
@@ -22,7 +23,7 @@
 				</filter-not>
 			</filter-and>
 		</filter>
-		<options>
+		<pre-options>
 			<option code="129">
 				<value-byte>255</value-byte>
 				<value-rawhex>0022FF</value-rawhex>
@@ -57,7 +58,10 @@
 			</option-routers>
 			
 			
-		</options>
+		</pre-options>
+		<post-options>
+			<option code="82" mirror="true"></option>
+		</post-options>
 	</global>
 	<topology>
 		<subnet address="192.168.0.0" mask="255.255.252.0" comment="Free comment!">
