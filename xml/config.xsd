@@ -139,7 +139,8 @@
 								</xs:complexType>
 							</xs:element>
 							<xs:element ref="filter" minOccurs="0"/>
-							<xs:element ref="options" minOccurs="0"/>
+							<xs:element name="pre-options" type="optionsType" minOccurs="0"/>
+							<xs:element name="post-options" type="optionsType" minOccurs="0"/>
 							<xs:element name="classes" minOccurs="0">
 								<xs:complexType>
 									<xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -152,7 +153,13 @@
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
-							<xs:element ref="lease" minOccurs="0"/>
+							<xs:element name="policy" minOccurs="0">
+								<xs:complexType>
+									<xs:all>
+										<xs:element ref="lease" minOccurs="0"/>
+									</xs:all>
+								</xs:complexType>
+							</xs:element>
 						</xs:all>
 					</xs:complexType>
 				</xs:element>
@@ -194,26 +201,7 @@
 			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="options">
-		<xs:complexType>
-			<xs:choice minOccurs="0" maxOccurs="unbounded">
-				<xs:annotation>
-					<xs:appinfo>
-						<jxb:property name="options"/>
-					</xs:appinfo>
-				</xs:annotation>
-				<xs:element ref="option"/>
-				<xs:group ref="group-option-inets"/>
-				<xs:group ref="group-option-inet"/>
-				<xs:group ref="group-option-bytes"/>
-				<xs:group ref="group-option-byte"/>
-				<xs:group ref="group-option-int"/>
-				<xs:group ref="group-option-short"/>
-				<xs:group ref="group-option-shorts"/>
-				<xs:group ref="group-option-string"/>
-			</xs:choice>
-		</xs:complexType>
-	</xs:element>
+	<xs:element name="options" type="optionsType"/>
 	<!--=== option value elements ===-->
 	<xs:element name="mirror" type="empty-type">
 		<xs:annotation>
@@ -556,4 +544,22 @@
 			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>
+	<xs:complexType name="optionsType">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:annotation>
+				<xs:appinfo>
+					<jxb:property name="options"/>
+				</xs:appinfo>
+			</xs:annotation>
+			<xs:element ref="option"/>
+			<xs:group ref="group-option-inets"/>
+			<xs:group ref="group-option-inet"/>
+			<xs:group ref="group-option-bytes"/>
+			<xs:group ref="group-option-byte"/>
+			<xs:group ref="group-option-int"/>
+			<xs:group ref="group-option-short"/>
+			<xs:group ref="group-option-shorts"/>
+			<xs:group ref="group-option-string"/>
+		</xs:choice>
+	</xs:complexType>
 </xs:schema>

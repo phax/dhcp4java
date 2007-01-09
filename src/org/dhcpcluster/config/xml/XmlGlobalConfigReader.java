@@ -47,16 +47,21 @@ public final class XmlGlobalConfigReader {
 			globalConfig.getRootNode().setRequestFilter(XmlFilterFactory.makeFilterRoot(globalData.getFilter()));
 		}
 		
-		// <options>
-		if (globalData.getOptions() != null) {
-			globalConfig.getRootNode().setDhcpOptions(XmlOptionFactory.parseOptions(globalData.getOptions()));
+		// <pre-options>
+		if (globalData.getPreOptions() != null) {
+			globalConfig.getRootNode().setDhcpOptions(XmlOptionFactory.parseOptions(globalData.getPreOptions()));
+		}
+		
+		// <post-options>
+		if (globalData.getPostOptions() != null) {
+			globalConfig.getPostNode().setDhcpOptions(XmlOptionFactory.parseOptions(globalData.getPostOptions()));
 		}
 		
 		// <classes>
 		// TODO
 		
 		// <lease>
-    	Lease leaseTime = globalData.getLease();
+    	Lease leaseTime = globalData.getPolicy().getLease();
     	if (leaseTime != null) {
     		globalConfig.getRootNode().setDefaultLease(leaseTime.getDefault());
     		globalConfig.getRootNode().setMaxLease(leaseTime.getMax());

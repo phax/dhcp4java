@@ -84,7 +84,14 @@ public class MainServlet extends DHCPServlet {
 		}
 		
 		/* 3. filter by specific subnet parameters */
-		// TODO
+		if (!subnet.isRequestAccepted(request)) {
+			if (!globalFilter.isRequestAccepted(request)) {
+				if (logger.isLoggable(Level.FINE)) {
+					logger.fine("Request rejected on node filter "+request);
+				}
+				return null;		// escape
+			}
+		}
 		
 		/* 4. calculate the client lease (ip+duration) */
 		// TODO

@@ -56,6 +56,9 @@ public class GlobalConfig implements Serializable {
     
     private final NodeRoot rootNode = new NodeRoot();
     
+    /** handles options to apply post subnet */
+    private final NodeRoot postNode = new NodeRoot();
+    
     /**
      * Constructor of server's global configuration object.
      * 
@@ -140,6 +143,13 @@ public class GlobalConfig implements Serializable {
 	 */
 	public NodeRoot getRootNode() {
 		return rootNode;
+	}
+
+	/**
+	 * @return Returns the postNode.
+	 */
+	public NodeRoot getPostNode() {
+		return postNode;
 	}
 
     

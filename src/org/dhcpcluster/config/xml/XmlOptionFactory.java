@@ -32,7 +32,7 @@ import org.dhcp4java.DHCPConstants;
 import org.dhcp4java.DHCPOption;
 import org.dhcpcluster.config.xml.data.Option;
 import org.dhcpcluster.config.xml.data.OptionGeneric;
-import org.dhcpcluster.config.xml.data.Options;
+import org.dhcpcluster.config.xml.data.OptionsType;
 import org.dhcpcluster.config.xml.data.TypeOptionByte;
 import org.dhcpcluster.config.xml.data.TypeOptionBytes;
 import org.dhcpcluster.config.xml.data.TypeOptionInet;
@@ -62,7 +62,7 @@ public class XmlOptionFactory {
 		throw new UnsupportedOperationException();
 	}
 	
-    public static DHCPOption[] parseOptions(Options options) {
+    public static DHCPOption[] parseOptions(OptionsType options) {
     	// if no tag, we put an empty array
     	if (options == null) {
     		return DHCPOPTION_0;

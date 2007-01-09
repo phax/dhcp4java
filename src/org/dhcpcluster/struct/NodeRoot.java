@@ -44,18 +44,46 @@ public class NodeRoot implements Serializable {
     /** array of dhcp options */
     protected DHCPOption[]					dhcpOptions = DHCPOPTION_0;
     
+    /** parent node in node tree */
+    protected NodeRoot						parentNode = null;
+    
     private int							defaultLease = 86400;
     private int							maxLease = 86400;
 
     public NodeRoot() {
     }
     
+    /**
+     * Applying DHCP options recursively from top node down to subnet leaves.
+     * 
+     * @param request DHCP request received from client
+     * @param response DHCP response being built to send back to client
+     */
     public void applyOptions(DHCPPacket request, DHCPPacket response) {
+    	if (parentNode != null) {
+    		parentNode.applyOptions(request, response);
+    	}
     	for (DHCPOption opt : dhcpOptions) {
     		response.setOption(opt.applyOption(request));
     	}
     }
     
+    /**
+     * Recursive check of requestFilter at each node level.
+     * 
+     * <P>Check is done top-down, i.e. root node first, then down to subnet leaves.
+     * 
+     * @param request DHCP request received from client
+     * @return is the request to be handleds
+     */
+    public boolean isRequestAccepted(DHCPPacket request) {
+    	if (parentNode != null) {
+    		if (!parentNode.isRequestAccepted(request)) {
+    			return false;
+    		}
+    	}
+    	return requestFilter.isRequestAccepted(request);
+    }
     
     
     protected static final DHCPOption[] DHCPOPTION_0 = new DHCPOption[0];
@@ -157,6 +185,20 @@ public class NodeRoot implements Serializable {
 	 */
 	public void setNodeType(String nodeType) {
 		this.nodeType = nodeType;
+	}
+
+	/**
+	 * @return Returns the parentNode.
+	 */
+	public NodeRoot getParentNode() {
+		return parentNode;
+	}
+
+	/**
+	 * @param parentNode The parentNode to set.
+	 */
+	public void setParentNode(NodeRoot parentNode) {
+		this.parentNode = parentNode;
 	}
 	
 	
