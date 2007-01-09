@@ -36,7 +36,7 @@ public class ClusterLogFormatter extends Formatter {
     
     private SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
     
-    private static final String DATE_FORMAT = "[dd/MM/yyyy:HH:mm:ss]";
+    private static final String DATE_FORMAT = "[yyyy/MM/dd:HH:mm:ss]";
 	// Line separator string. This is the value of the line.separator
 	// property at the moment that the SimpleFormatter was created.
 	private String lineSeparator = System.getProperty("line.separator");
