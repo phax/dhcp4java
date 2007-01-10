@@ -868,6 +868,21 @@ public class DHCPPacket implements Cloneable, Serializable {
         appendHex(buffer, this.chaddr, 0, this.hlen & 0xFF);
         return buffer;
     }
+    
+    /**
+     * Return the hardware address (@MAC) as an <tt>HardwareAddress</tt> object.
+     * 
+     * @return the <tt>HardwareAddress</tt> object
+     */
+    public HardwareAddress getHardwareAddress() {
+    	int len = this.hlen & 0xff;
+    	if (len > 16) {
+    		len = 16;
+    	}
+    	byte[] buf = new byte[len];
+    	System.arraycopy(this.chaddr, 0, buf, 0, len);
+    	return new HardwareAddress(this.htype, buf);
+    }
 
     /**
      * Returns the chaddr field (Client hardware address - typically MAC address) as 

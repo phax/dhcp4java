@@ -149,6 +149,14 @@ public class Subnet extends NodeRoot implements Serializable {
 		if (staticAddressesByMac.containsKey(macAddr)) {
 			logger.warning("Hardware address ["+macAddr+"]already has an IP address statically assigned");
 		}
+		
+		// assign address
+		staticAddressesByIp.put(ipAddr, macAddr);
+		staticAddressesByMac.put(macAddr, ipAddr);
+	}
+	
+	public InetAddress getStaticAddress(HardwareAddress mac) {
+		return staticAddressesByMac.get(mac);
 	}
 
 	/**
@@ -163,6 +171,16 @@ public class Subnet extends NodeRoot implements Serializable {
 	 */
 	public void setRequestFilter(RequestFilter requestFilter) {
 		this.requestFilter = requestFilter;
+	}
+	
+	public void addGiaddr(InetAddress giaddr) {
+		if (giaddr == null) {
+			throw new NullPointerException();
+		}
+		if (!(giaddr instanceof Inet4Address)) {
+			throw new IllegalArgumentException("Only IPv4 address allowed");
+		}
+		this.giaddrs.add(giaddr);
 	}
 	
 }

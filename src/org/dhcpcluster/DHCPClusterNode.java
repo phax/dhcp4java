@@ -155,6 +155,7 @@ public class DHCPClusterNode implements Serializable, Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
+		internalServer.run();
 		// TODO ready to run
 	}
 

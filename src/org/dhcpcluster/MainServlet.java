@@ -26,6 +26,7 @@ import org.dhcp4java.DHCPOption;
 import org.dhcp4java.DHCPPacket;
 import org.dhcp4java.DHCPResponseFactory;
 import org.dhcp4java.DHCPServlet;
+import org.dhcp4java.HardwareAddress;
 import org.dhcpcluster.config.GlobalConfig;
 import org.dhcpcluster.config.TopologyConfig;
 import org.dhcpcluster.filter.RequestFilter;
@@ -99,8 +100,14 @@ public class MainServlet extends DHCPServlet {
 		}
 		
 		/* 4. calculate the client lease (ip+duration) */
-		// TODO
-		InetAddress clientAddr = null;
+		// first check if there is a static address
+		HardwareAddress mac = request.getHardwareAddress();
+		InetAddress clientAddr = subnet.getStaticAddress(mac);
+		if (clientAddr == null) {
+			// now check if we can affect a dynamic address
+			// TODO
+		}
+		
 		int clientLease = 0;
 
 		/* 5. generate DHCPOFFER */
@@ -197,4 +204,5 @@ public class MainServlet extends DHCPServlet {
 		
 		return response;
 	}
+	
 }

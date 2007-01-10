@@ -18,6 +18,7 @@
  */
 package org.dhcpcluster.config.xml;
 
+import java.net.InetAddress;
 import java.util.logging.Logger;
 
 import org.dhcp4java.HardwareAddress;
@@ -134,6 +135,12 @@ public final class XmlTopologyConfigReader {
     			} else {
     				throw new IllegalStateException("Unexpected Pools.* object: "+o);
     			}
+    		}
+    	}
+    	// now parsing <giaddr>
+    	if (xSubnet.getGiaddrs() != null) {
+    		for (InetAddress giaddr : xSubnet.getGiaddrs().getGiaddr()) {
+    			subnet.addGiaddr(giaddr);
     		}
     	}
 		return subnet;
