@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<project name="DHCPd-J"
+<project name="dhcp4java"
          default="make"
          basedir=".">
-    <property name="root.dir"         value="." />
-    <property name="src.dir"          value="${root.dir}/src" />
-    <property name="classes.dir"      value="${root.dir}/classes" />
-    <property name="javadoc.dir"      value="${root.dir}/doc" />
-    <property name="lib.dir"          value="${root.dir}/../" />
-    <property name="verbose"          value="false"/>
-    <property name="JAR.filename"     value="dhcp4java" />
+    <property name="root.dir"			value="." />
+    <property name="src.dir"			value="${root.dir}/src" />
+    <property name="classes.dir"		value="${root.dir}/bin" />
+    <property name="javadoc.dir"		value="${root.dir}/javadoc" />
+    <property name="lib.dir"			value="${root.dir}/lib/" />
+    <property name="verbose"			value="false"/>
+    <property name="JAR.filename"		value="dhcp4java" />
+	<property name="version"			value="0.71"/>
 
     <!-- The classpath to be used to compile the project -->
     <path id="base.classpath">
         <pathelement location="${classes.dir}" />
     </path>
 	
-	<path id="xom-libs">
-		<pathelement location="lib/xom-1.1.jar"/>
-		<pathelement location="lib/xercesImpl.jar"/>
+	<path id="libs">
+		<pathelement location="lib/args4j-2.0.7.jar"/>
+		<pathelement location="lib/junit-4.1.jar"/>
+		<pathelement location="lib/jaxb-api.jar"/>
+		<pathelement location="lib/jaxb-impl.jar"/>
+		<pathelement location="lib/jaxb-impl.jar"/>
 	</path>
 
     <!-- Delete the generated directories -->
