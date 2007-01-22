@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import org.dhcp4java.DHCPBadPacketException;
+import org.dhcp4java.DHCPConstants;
 import org.dhcp4java.DHCPOption;
 import org.junit.Test;
 
@@ -659,5 +660,38 @@ public class DHCPOptionTest {
 		assertEquals("DHO_DHCP_AGENT_OPTIONS(82)={1}\"foo\",{2}\"barbaz\",{255}\"\"", buf.toString());
 
 
+	}
+	
+	@Test
+	public void testGetOptionFormat() {
+		assertEquals(InetAddress.class, DHCPOption.getOptionFormat(DHCPConstants.DHO_SUBNET_MASK));
+		assertEquals(InetAddress[].class, DHCPOption.getOptionFormat(DHCPConstants.DHO_ROUTERS));
+		assertEquals(int.class, DHCPOption.getOptionFormat(DHCPConstants.DHO_TIME_OFFSET));
+		assertEquals(short.class, DHCPOption.getOptionFormat(DHCPConstants.DHO_BOOT_SIZE));
+		assertEquals(short[].class, DHCPOption.getOptionFormat(DHCPConstants.DHO_PATH_MTU_PLATEAU_TABLE));
+		assertEquals(byte.class, DHCPOption.getOptionFormat(DHCPConstants.DHO_IP_FORWARDING));
+		assertEquals(byte[].class, DHCPOption.getOptionFormat(DHCPConstants.DHO_DHCP_PARAMETER_REQUEST_LIST));
+		assertEquals(String.class, DHCPOption.getOptionFormat(DHCPConstants.DHO_DOMAIN_NAME));
+		assertNull(DHCPOption.getOptionFormat((byte)0));
+	}
+	
+	@Test
+	public void testString2Class() {
+		assertEquals(InetAddress.class, DHCPOption.string2Class("InetAddress"));
+		assertEquals(InetAddress.class, DHCPOption.string2Class("inet"));
+		assertEquals(InetAddress[].class, DHCPOption.string2Class("InetAddress[]"));
+		assertEquals(InetAddress[].class, DHCPOption.string2Class("inets"));
+		assertEquals(int.class, DHCPOption.string2Class("int"));
+		assertEquals(short.class, DHCPOption.string2Class("short"));
+		assertEquals(short[].class, DHCPOption.string2Class("short[]"));
+		assertEquals(short[].class, DHCPOption.string2Class("shorts"));
+		assertEquals(byte.class, DHCPOption.string2Class("byte"));
+		assertEquals(byte[].class, DHCPOption.string2Class("byte[]"));
+		assertEquals(byte[].class, DHCPOption.string2Class("bytes"));
+		assertEquals(String.class, DHCPOption.string2Class("String"));
+		assertEquals(String.class, DHCPOption.string2Class("string"));
+		assertNull(DHCPOption.string2Class("foobar"));
+		assertNull(DHCPOption.string2Class(""));
+		assertNull(DHCPOption.string2Class(null));
 	}
 }

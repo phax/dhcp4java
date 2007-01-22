@@ -29,6 +29,7 @@ public final class Util {
 
     // Suppresses default constructor, ensuring non-instantiability.
 	private Util() {
+		throw new UnsupportedOperationException();
 	}
 
     /**
@@ -56,7 +57,7 @@ public final class Util {
      */
     public static final InetAddress long2InetAddress(long val) {
     	if ((val < 0) || (val > 0xFFFFFFFFL)) {
-    		// exception ???
+    		// TODO exception ???
     	}
     	return int2InetAddress((int) val);
     }

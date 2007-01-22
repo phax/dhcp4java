@@ -1131,7 +1131,7 @@ public class DHCPOption implements Serializable {
      * @param code the DHCP option code
      * @return the Class object representing accepted types
      */
-    public Class getOptionFormat(byte code) {
+    public static Class getOptionFormat(byte code) {
     	OptionFormat format = _DHO_FORMATS.get(code);
     	if (format == null) {
     		return null;

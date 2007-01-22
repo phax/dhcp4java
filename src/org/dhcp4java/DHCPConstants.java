@@ -36,6 +36,7 @@ public final class DHCPConstants {
 
     // Suppresses default constructor, ensuring non-instantiability.
 	private DHCPConstants() {
+		throw new UnsupportedOperationException();
 	}
 	
     // ========================================================================
@@ -183,35 +184,76 @@ public final class DHCPConstants {
     	}
     }
     
+    /**
+     * Returns a map associating a BootCode and the user-readable name.
+     * 
+     * <P>Currently:<br>
+     * 	1=BOOTREQUEST<br>
+     * 	2=BOOTREPLY
+     * @return the map
+     */
     public static final Map<Byte, String> getBootNamesMap() {
     	return _BOOT_NAMES;
     }
     
+    /**
+     * Returns a map associating a HType and the user-readable name.
+     * 
+     * <p>Ex: 1=HTYPE_ETHER
+     * @return the map
+     */
     public static final Map<Byte, String> getHtypesMap() {
     	return _HTYPE_NAMES;
     }
-    
+
+    /**
+     * Returns a map associating a DHCP code and the user-readable name.
+     * 
+     * <p>ex: 1=DHCPDISCOVER
+     * @return the map
+     */
     public static final Map<Byte, String> getDhcpCodesMap() {
     	return _DHCP_CODES;
     }
-    
+
+    /**
+     * Returns a map associating a DHCP option code and the user-readable name.
+     * 
+     * <p>ex: 1=DHO_SUBNET_MASK, 51=DHO_DHCP_LEASE_TIME, 
+     * @return the map
+     */
     public static final Map<Byte, String> getDhoNamesMap() {
     	return _DHO_NAMES;
     }
-    
+
+    /**
+     * Returns a map associating a user-readable DHCP option name and the option code.
+     * 
+     * <p>ex: "DHO_SUBNET_MASK"=1, "DHO_DHCP_LEASE_TIME"=51 
+     * @return the map
+     */
     public static final Map<String, Byte> getDhoNamesReverseMap() {
     	return _DHO_NAMES_REV;
     }
-    
-    // TODO unit test  & doc
+
+    /**
+     * Converts a DHCP option name into the option code.
+     * @param name user-readable option name
+     * @return the option code
+     * @throws NullPointerException name is <tt>null</t>.
+     */
     public static final Byte getDhoNamesReverse(String name) {
     	if (name == null) {
     		throw new NullPointerException();
     	}
     	return _DHO_NAMES_REV.get(name);
     }
-    
-    // TODO unit test & doc
+
+    /**
+     * Converts a DHCP code into a user-readable DHCP option name.
+     * @param code DHCP option code
+     * @return user-readable DHCP option name
+     */
     public static final String getDhoName(byte code) {
     	return _DHO_NAMES.get(code);
     }
