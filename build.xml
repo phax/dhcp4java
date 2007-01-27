@@ -1,108 +1,141 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<project name="dhcp4java"
-         default="make"
-         basedir=".">
-    <property name="root.dir"			value="." />
-    <property name="src.dir"			value="${root.dir}/src" />
-    <property name="classes.dir"		value="${root.dir}/bin" />
-    <property name="javadoc.dir"		value="${root.dir}/javadoc" />
-    <property name="lib.dir"			value="${root.dir}/lib/" />
-    <property name="verbose"			value="false"/>
-    <property name="JAR.filename"		value="dhcp4java" />
-	<property name="version"			value="0.71"/>
+<project name="dhcp4java" default="make" basedir=".">
+	<description>
+		dhcp4java build file
+	</description>
 
-    <!-- The classpath to be used to compile the project -->
-    <path id="base.classpath">
-        <pathelement location="${classes.dir}" />
-    </path>
+	<property name="dist"				value="_dist" />
+	<property name="build"				value="${dist}/build" />
 	
-	<path id="libs">
-		<pathelement location="lib/args4j-2.0.7.jar"/>
-		<pathelement location="lib/junit-4.1.jar"/>
-		<pathelement location="lib/jaxb-api.jar"/>
-		<pathelement location="lib/jaxb-impl.jar"/>
-		<pathelement location="lib/jaxb-impl.jar"/>
+	<property name="src.java"			value="src"/>
+	<property name="src.jaxb"			value="xml"/>
+	<property name="src.jaxb.generated"	value="src-generated"/>
+	
+	<property name="verbose"			value="false"/>
+	<property name="jar.filename"		value="dhcp4java" />
+	<property name="version"			value="0.71"/>
+	
+	<path id="lib.redist">
+		<fileset dir="lib-redist">
+			<include name="*.jar"/>
+		</fileset>
 	</path>
 
-    <!-- Delete the generated directories -->
-    <target name="clean"
-            description="Removes all the generated files or directories"
-            depends="clean-classes">
-        <delete dir="${JAR.filename}" />
+	
+	<!-- init -->
+	<target name="-init" depends="clean">
+		<!-- Create the time stamp -->
+		<tstamp/>
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${dist}"/>
+		<mkdir dir="${build}"/>
+	</target>
+
+	<!-- Compile classes -->
+	<target name="compile" description="Compiles the project classes" depends="-init,jaxb">
+		<javac	destdir="${build}"
+				srcdir="${src.java};${src.jaxb.generated}"
+				target="1.5"
+				deprecation="on"
+				debug="on">
+			<classpath>
+				<pathelement location="${build}" />
+				<path refid="lib.redist"/>
+			</classpath>
+		</javac>
+	</target>
+
+
+<!--	<property name="root.dir"			value="." />-->
+<!--	<property name="classes.dir"		value="${root.dir}/bin" />-->
+	<property name="javadoc.dir"		value="${dist}/javadoc" />
+<!--	<property name="lib.dir"			value="${root.dir}/lib/" />-->
+
+	
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: jaxb                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="jaxb" depends="-init">
+<!--    	<delete>
+    		<fileset dir="${src.jaxb.generated}" includes="*.java"/>
+    	</delete>-->
+        <!-- TODO -->
     </target>
 
-    <!-- Removes all the compiled Java classes -->
-    <target name="clean-classes"
-            description="Removes all the compiled Java classes">
-        <delete dir="${classes.dir}" />
-    </target>
 
-    <!-- Directories building -->
-    <target name="init"
-            description="Creates building directories">
-        <mkdir dir="${classes.dir}" />
-    </target>
 
-    <!-- Compile classes -->
-    <target name="compile"
-            description="Compiles the project classes"
-            depends="init">
-        <javac destdir="${classes.dir}"
-               deprecation="on"
-               verbose="${verbose}"
-               debug="on">
-            <src path="${src.dir}"/>
-            <include name="org/**"/>
-            <classpath>
-                <path refid="base.classpath" />
-            	<path refid="xom-libs" />
-            </classpath>
-        </javac>
-    </target>
+	<target name="dist" depends="compile" description="generate the distribution" >
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist}/lib"/>
 
-    <!-- Copy properties to classes dir (needed to run webapp) -->
-    <target name="copy"
-            description="Copies the properties files in the classes directory">
-        <copy todir="${classes.dir}" flatten="yes">
-            <fileset dir="${src.dir}">
-                <include name="*.properties" />
-            </fileset>
-        </copy>
-    </target>
+		<!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+		<jar jarfile="${dist}/lib/MyProject-${DSTAMP}.jar" basedir="${build}"/>
+	</target>
 
-    <!-- Creates the Jar file -->
-    <target name="jar"
+	<!-- Delete the generated directories -->
+	<target name="clean" description="Removes all the generated files or directories">
+		<delete dir="${dist}"/>
+	</target>
+
+	<!-- Copy properties to classes dir (needed to run webapp) -->
+	<target name="copy" description="Copies the properties files in the classes directory">
+		<copy todir="${build}">
+			<fileset dir="${src.java}">
+				<include name="**/*.properties" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- Creates the Jar file -->
+	<target name="jar"
             description="Builds the JAR file"
-            depends="init, compile, copy">
-        <jar destfile="${JAR.filename}.jar">
-            <fileset dir="${classes.dir}">
-                <include name="**/*"/>
-                <exclude name="**/*Test"/>
-            </fileset>
-        </jar>
+            depends="-init, compile, copy">
+		<jar destfile="${dist}/${jar.filename}-${version}.jar">
+			<fileset dir="${build}">
+				<include name="**/*"/>
+			</fileset>
+		</jar>
+		<delete dir="${build}"/>
+	</target>
+
+	<!-- Creates the Javadoc -->
+	<target name="javadoc" description="Create the javadoc">
+		<javadoc	destdir="${javadoc.dir}"
+					access="protected"
+					author="true"
+					sourcepath="${src.java}"
+					splitindex="true"
+					use="true"
+					version="true"
+					source="1.5"
+					packagenames="org.*"
+					>
+			<classpath>
+				<path location="${dist}/${jar.filename}-${version}.jar"/>
+				<path refid="lib.redist"/>
+			</classpath>
+		</javadoc>
+		<zip	destfile="${dist}/${jar.filename}-${version}.javadoc.zip">
+			<zipfileset dir="${javadoc.dir}" prefix="javadoc"/>
+		</zip>
+		<delete dir="${javadoc.dir}"/>
+	</target>
+	
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: sources                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="sources" depends="-init">
+		<zip	destfile="${dist}/${jar.filename}-${version}.src.zip"
+				basedir="."
+				excludes="_dist/**, bin/**, .*, .*/**">
+		</zip>
     </target>
 
-    <!-- Creates the Javadoc -->
-    <target name="javadoc"
-            description="Create the javadoc">
-        <javadoc destdir="${javadoc.dir}/">
-            <fileset dir="${src.dir}">
-                <include name="**/*"/>
-                <exclude name="**/*Test"/>
-            </fileset>
-        </javadoc>
-    </target>
 
-    <!-- Creates the Live Autonome JAR (DEV) -->
-    <target name="make"
+
+	<!-- Creates the Live Autonome JAR (DEV) -->
+	<target name="make"
             description="Creates the WAR file for Live Autonome"
-            depends="jar"/>
+            depends="jar,javadoc,sources"/>
 
-    <target name="install"
-            description="Deploys the webapps"
-            depends="make"/>
-
-    <target name="rebuild-all"
-            description="Cleans building directories then rebuilds and install a new WAR file"
-            depends="clean, make"/>
 </project>
