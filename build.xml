@@ -131,11 +131,25 @@
 		</zip>
     </target>
 
+	
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: tgz                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="tgz">
+		<tar destfile="${dist}/${jar.filename}-${version}.bin.tgz" compression="gzip">
+			<tarfileset file="${dist}/${jar.filename}-${version}.jar" />
+			<tarfileset dir="config" prefix="config"/>
+			<tarfileset dir="backenddb" prefix="backenddb"/>
+			<tarfileset dir="lib-redist" prefix="lib-redist"/>
+		</tar>
+    </target>
+
+
 
 
 	<!-- Creates the Live Autonome JAR (DEV) -->
 	<target name="make"
             description="Creates the WAR file for Live Autonome"
-            depends="jar,javadoc,sources"/>
+            depends="jar,javadoc,sources,tgz"/>
 
 </project>
