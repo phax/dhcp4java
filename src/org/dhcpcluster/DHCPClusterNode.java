@@ -259,7 +259,7 @@ public class DHCPClusterNode implements Serializable, Runnable {
 		}
 	}
 
-	private static final String CONFIG_DIR = "config";
+	private static final String CONFIG_DIR = "conf";
 	private static final String DHCPD_PROPERTIES = "DHCPd.properties";
 	private static final String CONFIG_READER = "config.reader";
 }
