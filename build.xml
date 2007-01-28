@@ -16,7 +16,7 @@
 	<property name="version"			value="0.71"/>
 	
 	<path id="lib.redist">
-		<fileset dir="lib-redist">
+		<fileset dir="lib">
 			<include name="*.jar"/>
 		</fileset>
 	</path>
@@ -138,9 +138,9 @@
     <target name="tgz">
 		<tar destfile="${dist}/${jar.filename}-${version}.bin.tgz" compression="gzip">
 			<tarfileset file="${dist}/${jar.filename}-${version}.jar" />
-			<tarfileset dir="config" prefix="config"/>
+			<tarfileset dir="conf" prefix="conf"/>
 			<tarfileset dir="backenddb" prefix="backenddb"/>
-			<tarfileset dir="lib-redist" prefix="lib-redist"/>
+			<tarfileset dir="lib" prefix="lib"/>
 		</tar>
     </target>
 
