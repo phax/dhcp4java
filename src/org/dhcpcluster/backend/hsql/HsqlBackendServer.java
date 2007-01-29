@@ -21,6 +21,7 @@ package org.dhcpcluster.backend.hsql;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,11 +56,37 @@ public class HsqlBackendServer {
 		//sqlServer.setLogWriter(logger.)
 		sqlServer.start();
 		
-
+		Runtime.getRuntime().addShutdownHook(new HsqlShutdownHook());
 		
 	}
 	
 	public void startServer() throws SQLException {
 		conn = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost/dhcpcluster", "sa", "");
 	}
+	
+	class HsqlShutdownHook extends Thread {
+
+		/* (non-Javadoc)
+		 * @see java.lang.Thread#run()
+		 */
+		@Override
+		public void run() {
+			//logger.entering("HsqlBackendServer:HsqlShutdownHook", "run");
+			if (conn == null) {
+				return;
+			}
+			try {
+				logger.fine("issuing SHUTDOWN sql command");
+				Statement st = conn.createStatement();
+				st.executeUpdate("SHUTDOWN");
+				logger.fine("SHUTDOWN sql command complete");
+			} catch (SQLException e) {
+				logger.log(Level.SEVERE, "Cannot SHUTDOWN db", e);
+			}
+			//logger.exiting("HsqlBackendServer:HsqlShutdownHook", "run");
+		}
+		
+	}
 }
+
+
