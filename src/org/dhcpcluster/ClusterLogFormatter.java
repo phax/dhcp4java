@@ -23,6 +23,7 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Formatter;
+import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 /**
@@ -55,9 +56,15 @@ public class ClusterLogFormatter extends Formatter {
 		dat.setTime(record.getMillis());
 		sb.append(dateFormat.format(dat));
 		sb.append(" ");
-		sb.append(record.getLevel().getName());
-		sb.append(": (");
-		
+		String level = record.getLevel().getName();
+		sb.append(level);
+		for (int i=level.length(); i<"WARNING".length(); i++) {
+			sb.append(' ');
+		}
+		sb.append(": ");
+		sb.append(formatMessage(record));
+
+		sb.append(" (");
 		if (record.getSourceClassName() != null) {
 			sb.append(record.getSourceClassName());
 		} else {
@@ -67,8 +74,7 @@ public class ClusterLogFormatter extends Formatter {
 			sb.append(" ");
 			sb.append(record.getSourceMethodName());
 		}
-		sb.append(") ");
-		sb.append(formatMessage(record));
+		sb.append(")");
 		sb.append(lineSeparator);
 		if (record.getThrown() != null) {
 			try {
