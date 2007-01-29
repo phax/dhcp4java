@@ -96,6 +96,7 @@
 			</fileset>
 		</jar>
 		<delete dir="${build}"/>
+		<copy file="${dist}/${jar.filename}-${version}.jar" tofile="${jar.filename}-${version}.jar"/>
 	</target>
 
 	<!-- Creates the Javadoc -->
@@ -141,11 +142,13 @@
 			<tarfileset dir="conf" prefix="conf"/>
 			<tarfileset dir="backenddb" prefix="backenddb"/>
 			<tarfileset dir="lib" prefix="lib"/>
+			<tarfileset dir="launch" prefix="launch"/>
+			<tarfileset dir="launch" prefix="launch" mode="755">
+				<include name="wrapper"/>
+				<include name="dhcpcluster.sh"/>
+			</tarfileset>
 		</tar>
     </target>
-
-
-
 
 	<!-- Creates the Live Autonome JAR (DEV) -->
 	<target name="make"
