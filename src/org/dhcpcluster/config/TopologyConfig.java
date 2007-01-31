@@ -21,6 +21,7 @@ package org.dhcpcluster.config;
 import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -67,6 +68,10 @@ public class TopologyConfig implements Serializable {
      */
     public TopologyConfig() {
     	
+    }
+    
+    public Collection<Subnet> getSubnetCollection() {
+    	return subnetsByCidr.values();
     }
     
     public Subnet findSubnetByCidr(InetCidr cidr) {

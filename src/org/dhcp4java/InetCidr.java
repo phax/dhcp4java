@@ -97,6 +97,17 @@ public class InetCidr implements Serializable {
     public int getMask() {
         return this.mask;
     }
+    
+    /**
+     * Returns a <tt>long</tt> representation of Cidr.
+     * 
+     * <P>The high 32 bits contain the mask, the low 32 bits the network address.
+     * 
+     * @return the <tt>long</tt> representation of the Cidr
+     */
+    public long toLong() {
+    	return (addr & 0xFFFFFFFFL) | (mask << 32L);
+    }
 
     public int hashCode() {
         return this.addr ^ this.mask;

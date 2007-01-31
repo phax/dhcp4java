@@ -34,6 +34,7 @@ import java.util.logging.Logger;
 import org.dhcp4java.DHCPCoreServer;
 import org.dhcp4java.DHCPServerInitException;
 import org.dhcp4java.DHCPServlet;
+import org.dhcpcluster.backend.DHCPBackendIntf;
 import org.dhcpcluster.backend.hsql.HsqlBackendServer;
 import org.dhcpcluster.config.ConfigException;
 import org.dhcpcluster.config.FrontendConfig;
@@ -76,6 +77,9 @@ public class DHCPClusterNode implements Serializable, Runnable {
 	/* The DHCP Server Core used */
 	private DHCPCoreServer						internalServer;
 	
+	/* Backend */
+	private DHCPBackendIntf					backend;
+	
 	/* Thread called when Finalizing */
 	private Thread								finalizerThread;
 	
@@ -98,6 +102,9 @@ public class DHCPClusterNode implements Serializable, Runnable {
 	 */
 	public DHCPClusterNode(Properties bootstrapProps) throws ConfigException, DHCPServerInitException {
 		this.bootstrapProps = bootstrapProps;
+		
+		// registering shutdown hook
+		Runtime.getRuntime().addShutdownHook(new ClusterShutdownHook());
 		
 		try {
 			// instanciate config reader object
@@ -129,6 +136,10 @@ public class DHCPClusterNode implements Serializable, Runnable {
 		if (topologyConfig.get() == null) {
 			throw new NullPointerException("topologyConfig is null");
 		}
+    	
+		// start backend
+    	backend = startBackend();
+    	backend.prepareBackend(getTopologyConfig());
 		
 		// instanciate DHCP Servlet
 		internalServlet = new MainServlet(this);
@@ -143,6 +154,8 @@ public class DHCPClusterNode implements Serializable, Runnable {
 		
 		// now initializing the server
 		internalServer = DHCPCoreServer.initServer(internalServlet, serverProps);
+		
+		
 		// intitalization complete
 	}
 	
@@ -243,20 +256,42 @@ public class DHCPClusterNode implements Serializable, Runnable {
     	Properties props = new Properties();
     	props.load(bootstrapFile);
     	
-    	startBackend();
-    	
     	DHCPClusterNode cluster = new DHCPClusterNode(props);
     	cluster.run();
     }
 	
-	private static void startBackend() {
+	private static DHCPBackendIntf startBackend() {
 		try {
 			HsqlBackendServer db = new HsqlBackendServer();
 			db.startServer();
+			return db;
 		} catch (SQLException e) {
 			logger.log(Level.SEVERE, "Cannot connect to DB", e);
 			throw new RuntimeException(e);
 		}
+	}
+	
+
+	private class ClusterShutdownHook extends Thread {
+
+		/**
+		 * Hook registered at server shutdown.
+		 * 
+		 * <p>Order of actions:<br>
+		 * 1. Stop the server i.e. stop accepting new packets
+		 * 2. close the backend, do any needed cleaning tasks
+		 * 
+		 */
+		@Override
+		public void run() {
+			logger.info("Shutdown: Entering Shutdown sequence.");
+			logger.info("Shtudown: 1. Stopping server");
+			// TODO
+			backend.shutdown();
+			logger.info("Shtudown: 2. Closing backend");
+
+		}
+		
 	}
 
 	private static final String CONFIG_DIR = "conf";

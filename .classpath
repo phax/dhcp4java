@@ -8,7 +8,7 @@
 	<classpathentry kind="lib" path="lib/wrapper.jar"/>
 	<classpathentry kind="lib" path="lib/activation.jar"/>
 	<classpathentry kind="lib" path="lib/args4j-2.0.7.jar"/>
-	<classpathentry kind="lib" path="lib/hsqldb.jar"/>
+	<classpathentry sourcepath="lib-dev/hsqldb-src.zip" kind="lib" path="lib/hsqldb.jar"/>
 	<classpathentry sourcepath="lib-dev/jaxb-api-src.zip" kind="lib" path="lib/jaxb-api.jar"/>
 	<classpathentry sourcepath="lib-dev/jaxb-impl.src.zip" kind="lib" path="lib/jaxb-impl.jar"/>
 	<classpathentry kind="lib" path="lib/jsr173_1.0_api.jar"/>

@@ -24,6 +24,7 @@ import java.util.Properties;
 import org.dhcp4java.HardwareAddress;
 import org.dhcpcluster.DHCPClusterNode;
 import org.dhcpcluster.config.ConfigException;
+import org.dhcpcluster.config.TopologyConfig;
 import org.dhcpcluster.struct.DHCPLease;
 
 /**
@@ -36,6 +37,11 @@ public interface DHCPBackendIntf {
 	public void init(DHCPClusterNode dhcpCoreServer, Properties configProperties) throws ConfigException;
 	
 	public DHCPLease discover(long networkId, HardwareAddress mac, InetAddress giaddr, int clientClass);
+	
+	public void prepareBackend(TopologyConfig topology);
+	
+	public void shutdown();
+	
 	
 	//public DHCPLease 
 }
