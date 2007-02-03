@@ -75,7 +75,8 @@
 				<giaddr>127.0.0.1</giaddr>
 			</giaddrs>
 			<pools>
-				<range start="192.168.0.15" end="192.168.0.25"/>
+				<range start="192.168.0.15" end="192.168.0.25"/><range start="192.168.0.50" end="192.168.0.90"></range>
+				<range start="192.168.0.200" end="192.168.0.250"></range>
 				<static address="192.168.0.3" ethernet="0:c0:c3:49:2b:57"/>
 				<static address="192.168.0.4" ethernet="01:c0:c3:49:2b:57"/>
 			</pools>
@@ -101,5 +102,6 @@
 			<!--TODO add allow/deny policies-->
 			<lease/>
 		</subnet>
+		<subnet address="10.170.0.0" mask="255.255.0.0"></subnet>
 	</topology>
 </dhcp-server>

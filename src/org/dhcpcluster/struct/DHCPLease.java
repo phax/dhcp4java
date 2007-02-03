@@ -19,8 +19,12 @@
 package org.dhcpcluster.struct;
 
 import java.io.Serializable;
-import java.net.InetAddress;
+import java.sql.Date;
 import java.util.logging.Logger;
+
+import javax.xml.bind.annotation.XmlEnumValue;
+
+import org.dhcpcluster.config.xml.data.OptionMode;
 /**
  * This class represent a DHCP Lease given to a client.
  * 
@@ -36,14 +40,49 @@ public class DHCPLease implements Serializable {
     @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(DHCPLease.class.getName().toLowerCase());
 
+    public enum Status {
+    	
+    	FREE(0),
+    	RESERVED(1);
+    	
+    	private final int code;
+    	
+    	Status(int code) {
+    		this.code = code;
+    	}
+    	public int getCodr() {
+    		return code;
+    	}
+    	public static Status fromInt(int code) {
+    		for (Status s : Status.values()) {
+    			if (s.code == code) {
+    				return s;
+    			}
+    		}
+    		throw new IllegalArgumentException("code="+code+" is not a valid DHCPLease.Status");
+    	}
+    }
+    
+    private Date creationDate;
+    private Date updateDate;
+    private Date expirationDate;
+    
+    private long ip;
+    private byte[] mac;
+    private Status status;
+//
+//	Date creationDate = res.getDate("CREATION_DATE");
+//	Date updateDate = res.getDate("UPDATE_DATE");
+//	Date expirationDate = res.getDate("EXPIRATION_DATE");
+    
     private long classId;
     private long nodeId;
     private long profileId;
     private long concentratorId;
     private long subnetId;
-    private InetAddress subnetIp;
-    private InetAddress maskIp;
-    private InetAddress gatewayIp;
+    private long subnetIp;
+    private long maskIp;
+    private long gatewayIp;
     
     public DHCPLease() {
     	
@@ -80,28 +119,28 @@ public class DHCPLease implements Serializable {
 	/**
 	 * @return Returns the gatewayIp.			// gateway (giaddr) associated to the Lease
 	 */
-	public InetAddress getGatewayIp() {
+	public long getGatewayIp() {
 		return gatewayIp;
 	}
 
 	/**
 	 * @param gatewayIp The gatewayIp to set.
 	 */
-	public void setGatewayIp(InetAddress gatewayIp) {
+	public void setGatewayIp(long gatewayIp) {
 		this.gatewayIp = gatewayIp;
 	}
 
 	/**
 	 * @return Returns the maskIp.
 	 */
-	public InetAddress getMaskIp() {
+	public long getMaskIp() {
 		return maskIp;
 	}
 
 	/**
 	 * @param maskIp The maskIp to set.
 	 */
-	public void setMaskIp(InetAddress maskIp) {
+	public void setMaskIp(long maskIp) {
 		this.maskIp = maskIp;
 	}
 
@@ -150,15 +189,100 @@ public class DHCPLease implements Serializable {
 	/**
 	 * @return Returns the subnetIp.
 	 */
-	public InetAddress getSubnetIp() {
+	public long getSubnetIp() {
 		return subnetIp;
 	}
 
 	/**
 	 * @param subnetIp The subnetIp to set.
 	 */
-	public void setSubnetIp(InetAddress subnetIp) {
+	public void setSubnetIp(long subnetIp) {
 		this.subnetIp = subnetIp;
 	}
+
+	/**
+	 * @return Returns the creationDate.
+	 */
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	/**
+	 * @param creationDate The creationDate to set.
+	 */
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	/**
+	 * @return Returns the expirationDate.
+	 */
+	public Date getExpirationDate() {
+		return expirationDate;
+	}
+
+	/**
+	 * @param expirationDate The expirationDate to set.
+	 */
+	public void setExpirationDate(Date expirationDate) {
+		this.expirationDate = expirationDate;
+	}
+
+	/**
+	 * @return Returns the updateDate.
+	 */
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+
+	/**
+	 * @param updateDate The updateDate to set.
+	 */
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+
+	/**
+	 * @return Returns the ip.
+	 */
+	public long getIp() {
+		return ip;
+	}
+
+	/**
+	 * @param ip The ip to set.
+	 */
+	public void setIp(long ip) {
+		this.ip = ip;
+	}
+
+	/**
+	 * @return Returns the mac.
+	 */
+	public byte[] getMac() {
+		return mac;
+	}
+
+	/**
+	 * @param mac The mac to set.
+	 */
+	public void setMac(byte[] mac) {
+		this.mac = mac;
+	}
+
+	/**
+	 * @return Returns the status.
+	 */
+	public Status getStatus() {
+		return status;
+	}
+
+	/**
+	 * @param status The status to set.
+	 */
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+	
         
 }
