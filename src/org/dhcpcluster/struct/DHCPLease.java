@@ -22,9 +22,6 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.util.logging.Logger;
 
-import javax.xml.bind.annotation.XmlEnumValue;
-
-import org.dhcpcluster.config.xml.data.OptionMode;
 /**
  * This class represent a DHCP Lease given to a client.
  * 
@@ -43,7 +40,8 @@ public class DHCPLease implements Serializable {
     public enum Status {
     	
     	FREE(0),
-    	RESERVED(1);
+    	RESERVED(1),
+    	OTHER(2);
     	
     	private final int code;
     	
