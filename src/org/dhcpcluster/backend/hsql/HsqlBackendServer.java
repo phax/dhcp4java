@@ -78,10 +78,9 @@ public class HsqlBackendServer implements DHCPBackendIntf {
 		conn = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost/dhcpcluster", "sa", "");
 		
 		// testing
-		
-		DataAccess.getLeasesFromRanges(conn, 10, 20);
-		DataAccess.getLease(conn, 10);
-		DataAccess.getLease(conn, 11);
+//		DataAccess.getLeasesFromRanges(conn, 10, 20);
+//		DataAccess.getLease(conn, 10);
+//		DataAccess.getLease(conn, 11);
 	}
 	
 	/* (non-Javadoc)
@@ -112,6 +111,7 @@ public class HsqlBackendServer implements DHCPBackendIntf {
 			
 			// delete all from T_POOL & T_POOL_SET
 			deletePools(conn);
+			deleteBubbles(conn);
 			deletePoolSets(conn);
 			
 			insertPoolsAndPoolSets(conn, topology.getSubnetCollection());

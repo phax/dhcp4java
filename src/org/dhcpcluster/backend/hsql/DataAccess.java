@@ -37,6 +37,7 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 
 import org.dhcp4java.Util;
 import org.dhcpcluster.struct.AddressRange;
@@ -65,6 +66,14 @@ public class DataAccess {
 		qRunner.update(conn, SHUTDOWN);
 	}
 	
+	public static int identity(Connection conn) throws SQLException {
+		assert(conn != null);
+		Integer id = (Integer) qRunner.query(conn, IDENTITY, identityRsh);
+		return id;
+	}
+
+	private static final ResultSetHandler identityRsh = new ScalarHandler();
+	
 	public static void deletePools(Connection conn) throws SQLException {
 		assert(conn != null);
 		int res = qRunner.update(conn, DELETE_T_POOL);
@@ -75,6 +84,12 @@ public class DataAccess {
 		assert(conn != null);
 		int res = qRunner.update(conn, DELETE_T_POOL_SET);
 		logger.fine("Delete all from T_POOL_SET: "+res+" deleted");
+	}
+	
+	public static void deleteBubbles(Connection conn) throws SQLException {
+		assert(conn != null);
+		int res = qRunner.update(conn, DELETE_T_BUBBLE);
+		logger.fine("Delete all from T_BUBBLE: "+res+" deleted");
 	}
 	
 	public static void insertPoolsAndPoolSets(Connection conn, Collection<Subnet> subnetColl) throws SQLException {
@@ -94,7 +109,8 @@ public class DataAccess {
 					throw new SQLException("Cannot update T_POOL_SET");
 				}
 				for (AddressRange range : subnet.getAddrRanges()) {
-					pstPool.setLong(1, Util.inetAddress2Long(range.getRangeStart()));
+					long rangeId = Util.inetAddress2Long(range.getRangeStart());
+					pstPool.setLong(1, rangeId);
 					pstPool.setLong(2, Util.inetAddress2Long(range.getRangeEnd()));
 					pstPool.setNull(3, Types.BIGINT);
 					pstPool.setLong(4, subnet.getCidr().toLong());
@@ -103,6 +119,8 @@ public class DataAccess {
 					if (res != 1) {
 						throw new SQLException("Cannot update T_POOL");
 					}
+					// create bubbles
+					insertBubbles(conn, range, rangeId);
 				}
 			}
 		} finally {
@@ -111,6 +129,68 @@ public class DataAccess {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param conn
+	 * @param range
+	 * @param rangeId
+	 * @throws SQLException
+	 */
+	public static void insertBubbles(Connection conn, AddressRange range, long rangeId) throws SQLException {
+		assert(conn != null);
+		int nextBubble = 0;
+		long rangeStart = Util.inetAddress2Long(range.getRangeStart());
+		long rangeEnd = Util.inetAddress2Long(range.getRangeEnd());
+		List<DHCPLease> leaseList = getLeasesFromRanges(conn, rangeStart, rangeEnd);
+		for (DHCPLease lease : leaseList) {
+			long leaseAddr = lease.getIp();
+			if (leaseAddr < rangeEnd) {
+				// inserting new bubble
+				nextBubble = insertBubble(conn, leaseAddr+1, rangeEnd, nextBubble);
+			}
+			rangeEnd = leaseAddr-1;
+		}
+		if (rangeStart <= rangeEnd) {
+			nextBubble = insertBubble(conn, rangeStart, rangeEnd, nextBubble);
+		}
+		if (nextBubble != 0) {
+			// update t_pool
+			updatePoolFirstBubble(conn, rangeId, nextBubble);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param conn
+	 * @param start
+	 * @param end
+	 * @param nextBubble
+	 * @return the id of the newly created bubble
+	 * @throws SQLException
+	 */
+	public static int insertBubble(Connection conn, long start, long end, int nextBubble) throws SQLException {
+		assert(conn != null);
+		Object[] args = new Object[3];
+		args[0] = (Long) start;
+		args[1] = (Long) end;
+		args[2] = (nextBubble != 0) ? nextBubble : null;
+		if (qRunner.update(conn, INSERT_T_BUBBLE, args) != 1) {
+			logger.warning("Cannot insert T_BUBBLE: start="+start+" end="+end+" next="+nextBubble);
+			return 0;
+		} else {
+			return identity(conn);
+		}
+	}
+	
+	public static void updatePoolFirstBubble(Connection conn, long poolId, int bubbleId) throws SQLException {
+		assert(conn != null);
+		Object[] args = new Object[2];
+		args[0] = (Long) poolId;
+		args[1] = (Integer) bubbleId;
+		if (qRunner.update(conn, UPDATE_T_POOL_FIRST_BUBBLE, args) != 1) {
+			logger.severe("Cannot update T_POOL id="+poolId+" first_bubble="+bubbleId);
+		}
+	}
 	/**
 	 * 
 	 * @param ip primary key, IP address as <tt>long</tt>
@@ -180,12 +260,17 @@ public class DataAccess {
 	private static final ResultSetHandler leaseListHandler = new BeanListHandler(DHCPLease.class, new BasicRowProcessor(new LeaseHandler()));
 
 	private static final String	SHUTDOWN = queries.get("SHUTDOWN");
+	private static final String	IDENTITY = queries.get("IDENTITY");
 	
 	private static final String	DELETE_T_POOL = queries.get("DELETE_T_POOL");
 	private static final String	DELETE_T_POOL_SET = queries.get("DELETE_T_POOL_SET");
+	private static final String	DELETE_T_BUBBLE = queries.get("DELETE_T_BUBBLE");
 
 	private static final String	INSERT_T_POOL_SET = queries.get("INSERT_T_POOL_SET");
 	private static final String	INSERT_T_POOL = queries.get("INSERT_T_POOL");
+	private static final String	INSERT_T_BUBBLE = queries.get("INSERT_T_BUBBLE");
+	
+	private static final String	UPDATE_T_POOL_FIRST_BUBBLE = queries.get("UPDATE_T_POOL_FIRST_BUBBLE");
 
 	private static final String	SELECT_LEASE = queries.get("SELECT_LEASE");
 	private static final String	SELECT_LEASE_RANGE = queries.get("SELECT_LEASE_RANGE");
