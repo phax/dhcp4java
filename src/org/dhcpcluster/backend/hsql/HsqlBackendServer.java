@@ -47,9 +47,7 @@ import static org.dhcpcluster.backend.hsql.DataAccess.*;
 public class HsqlBackendServer implements DHCPBackendIntf {
 
 	private static final Logger logger = Logger.getLogger(HsqlBackendServer.class.getName().toLowerCase());
-	
-
-	
+		
 	private Server sqlServer = null;
 	private Connection conn = null;
 	

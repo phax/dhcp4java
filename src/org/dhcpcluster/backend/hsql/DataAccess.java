@@ -185,12 +185,13 @@ public class DataAccess {
 	public static void updatePoolFirstBubble(Connection conn, long poolId, int bubbleId) throws SQLException {
 		assert(conn != null);
 		Object[] args = new Object[2];
-		args[0] = (Long) poolId;
-		args[1] = (Integer) bubbleId;
+		args[0] = (Integer) bubbleId;
+		args[1] = (Long) poolId;
 		if (qRunner.update(conn, UPDATE_T_POOL_FIRST_BUBBLE, args) != 1) {
 			logger.severe("Cannot update T_POOL id="+poolId+" first_bubble="+bubbleId);
 		}
 	}
+	
 	/**
 	 * 
 	 * @param ip primary key, IP address as <tt>long</tt>
