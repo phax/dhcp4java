@@ -19,6 +19,7 @@
 package org.dhcp4java.test;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.dhcp4java.InetCidr;
 import org.dhcp4java.Util;
@@ -136,5 +137,11 @@ public class InetCidrTest {
 	@Test (expected=IllegalArgumentException.class)
 	public void testAddr2CidrIPv6() throws Exception {
 		InetCidr.addr2Cidr(InetAddress.getByName("1080:0:0:0:8:800:200C:417A"));
+	}
+	
+	@Test
+	public void testToLong() throws UnknownHostException {
+		InetCidr cidr = new InetCidr(InetAddress.getByName("10.11.12.0"), 24);
+		assertEquals(0x180A0B0C00L, cidr.toLong());
 	}
 }

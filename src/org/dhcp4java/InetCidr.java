@@ -106,7 +106,7 @@ public class InetCidr implements Serializable {
      * @return the <tt>long</tt> representation of the Cidr
      */
     public long toLong() {
-    	return (addr & 0xFFFFFFFFL) | (mask << 32L);
+    	return (addr & 0xFFFFFFFFL) + ( ((long)mask) << 32);
     }
 
     public int hashCode() {
