@@ -108,8 +108,8 @@ public class HsqlBackendServer implements DHCPBackendIntf {
 			conn.setAutoCommit(false);
 			
 			// delete all from T_POOL & T_POOL_SET
-			deletePools(conn);
 			deleteBubbles(conn);
+			deletePools(conn);
 			deletePoolSets(conn);
 			
 			insertPoolsAndPoolSets(conn, topology.getSubnetCollection());

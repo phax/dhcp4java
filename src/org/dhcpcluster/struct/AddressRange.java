@@ -112,6 +112,14 @@ public final class AddressRange implements Serializable, Comparable {
 	public InetAddress getRangeStart() {
 		return Util.long2InetAddress(rangeStart);
 	}
+	
+	public long getRangeStartLong() {
+		return rangeStart;
+	}
+	
+	public long getRangeEndLong() {
+		return rangeEnd;
+	}
 
 	/**
      * returns true if two <tt>DHCPOption</tt> objects are equal, i.e. have same <tt>code</tt>
