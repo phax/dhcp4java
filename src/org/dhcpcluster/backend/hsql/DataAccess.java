@@ -228,7 +228,6 @@ public class DataAccess {
 
 	/* QueryLoader for loading sql from properties files */
 	static final Map<String, String>				queries;
-
 	static {
 		try {
 			queries = QueryLoader.instance().load("/org/dhcpcluster/backend/hsql/queries.properties");
