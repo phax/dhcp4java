@@ -40,8 +40,10 @@ public class DHCPLease implements Serializable {
     public enum Status {
     	
     	FREE(0),
-    	RESERVED(1),
-    	OTHER(2);
+    	OFFERED(1),
+    	USED(2),
+    	EXPIRED(3),
+    	ABANDONED(4);
     	
     	private final int code;
     	

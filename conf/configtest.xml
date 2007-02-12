@@ -102,6 +102,11 @@
 			<!--TODO add allow/deny policies-->
 			<lease/>
 		</subnet>
-		<subnet address="10.170.0.0" mask="255.255.0.0"></subnet>
+		<subnet address="10.170.0.0" mask="255.255.0.0">
+			<pools>
+				<range start="10.170.1.10" end="10.170.1.15"></range>
+				<range start="10.170.1.20" end="10.170.1.200"></range>
+			</pools>
+		</subnet>
 	</topology>
 </dhcp-server>

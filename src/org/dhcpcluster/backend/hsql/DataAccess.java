@@ -253,7 +253,6 @@ public class DataAccess {
 
 	private static final String	SELECT_LEASE = queries.get("SELECT_LEASE");
 	private static final String	SELECT_LEASE_RANGE = queries.get("SELECT_LEASE_RANGE");
-	private static final String	INSERT_LEASE = queries.get("INSERT_LEASE");
 
 }
 

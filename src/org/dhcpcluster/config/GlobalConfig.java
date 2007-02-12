@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.logging.Logger;
 
+import org.dhcpcluster.struct.NodePolicy;
 import org.dhcpcluster.struct.NodeRoot;
 
 /**
@@ -43,18 +44,12 @@ public class GlobalConfig implements Serializable {
     /** Comment to be used freely */
     private String comment = null;
     
-    /** default lease time */
-    private int defLeaseTime = 86400;
-    
-    /** maximum lease time */
-    private int maxLeaseTime = -1;
-    
     /** server identifier, i.e. the IP address of the server cluster as seen by the client
      *  This id can be overriden by the front-end identifier.
      *  */
     private InetAddress serverIdentifier = null;
     
-    private final NodeRoot rootNode = new NodeRoot();
+    private final NodeRoot rootNode = new NodeRoot(new NodePolicy());
     
     /** handles options to apply post subnet */
     private final NodeRoot postNode = new NodeRoot();
@@ -96,33 +91,6 @@ public class GlobalConfig implements Serializable {
 		this.comment = comment;
 	}
 
-	/**
-	 * @return Returns the defLeaseTime.
-	 */
-	public int getDefLeaseTime() {
-		return defLeaseTime;
-	}
-
-	/**
-	 * @param defLeaseTime The defLeaseTime to set.
-	 */
-	public void setDefLeaseTime(int defLeaseTime) {
-		this.defLeaseTime = defLeaseTime;
-	}
-
-	/**
-	 * @return Returns the maxLeaseTime.
-	 */
-	public int getMaxLeaseTime() {
-		return maxLeaseTime;
-	}
-
-	/**
-	 * @param maxLeaseTime The maxLeaseTime to set.
-	 */
-	public void setMaxLeaseTime(int maxLeaseTime) {
-		this.maxLeaseTime = maxLeaseTime;
-	}
 
 	/**
 	 * @return Returns the serverIdentifier.

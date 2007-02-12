@@ -48,7 +48,7 @@ public class LeaseStoredProcedures {
 			return 0;
 		}
 		assert(res.length == 3);
-		long bubbleId = (Long) res[0];
+		long bubbleId = (Integer) res[0];
 		long startIp = (Long) res[1];
 		long endIp = (Long) res[2];
 		
@@ -59,17 +59,28 @@ public class LeaseStoredProcedures {
 			args[1] = (Long) bubbleId;
 			if (qRunner.update(conn, UPDATE_BUBBLE_START_IP, args) != 1) {
 				logger.severe("Cannot update bubble startIp="+(startIp+1)+" bubble_id="+bubbleId);
-				return 0;
+				return -1;
 			}
 		} else {
 			// delete bubble which is now empty
 			if (qRunner.update(conn, DELETE_BUBBLE_ID, (Long) bubbleId) != 1) {
 				logger.severe("Cannot delete bubble bubble_id="+bubbleId);
-				return 0;
+				return -2;
 			}
 		}
 		// create of modify lease
-		
+		Object[] args = new Object[7];
+		args[0] = (Long) startIp;		// ip
+		args[1] = null;					// creation date
+		args[2] = null;					// update date
+		args[3] = null;					// expiration date
+		args[4] = mac;					// mac address
+		args[5] = null;					// uid
+		args[6] = 1;					// status
+		if (qRunner.update(conn, INSERT_LEASE, args) != 1) {
+			logger.severe("Cannot insert Lease ip="+startIp+" mac="+mac);
+			return -3;
+		}
 		
 		return startIp;		// this is the ip of the prepared lease
 	}
@@ -77,4 +88,5 @@ public class LeaseStoredProcedures {
 	private static final String	SELECT_BUBBLE_FROM_POOL_SET = queries.get("SELECT_BUBBLE_FROM_POOL_SET");
 	private static final String	UPDATE_BUBBLE_START_IP = queries.get("UPDATE_BUBBLE_START_IP");
 	private static final String	DELETE_BUBBLE_ID = queries.get("DELETE_BUBBLE_ID");
+	private static final String	INSERT_LEASE = queries.get("INSERT_LEASE");
 }

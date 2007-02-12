@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import org.dhcpcluster.config.GlobalConfig;
 import org.dhcpcluster.config.xml.data.DhcpServer;
 import org.dhcpcluster.config.xml.data.Lease;
+import org.dhcpcluster.struct.NodePolicy;
 
 /**
  * 
@@ -64,8 +65,13 @@ public final class XmlGlobalConfigReader {
 		if (globalData.getPolicy() != null) {
 	    	Lease leaseTime = globalData.getPolicy().getLease();
 	    	if (leaseTime != null) {
-	    		globalConfig.getRootNode().setDefaultLease(leaseTime.getDefault());
-	    		globalConfig.getRootNode().setMaxLease(leaseTime.getMax());
+	    		NodePolicy policy = globalConfig.getRootNode().getPolicy();
+	    		if (policy == null) {
+	    			policy = new NodePolicy();
+	    			globalConfig.getRootNode().setPolicy(policy);
+	    		}
+	    		policy.setDefaultLease(leaseTime.getDefault());
+	    		policy.setMaxLease(leaseTime.getMax());
 	    	}
 		}
 		

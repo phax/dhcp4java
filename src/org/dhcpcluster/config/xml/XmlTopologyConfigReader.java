@@ -31,6 +31,7 @@ import org.dhcpcluster.config.xml.data.Pools;
 import org.dhcpcluster.config.xml.data.TypeNodeSubnet;
 import org.dhcpcluster.struct.AddressRange;
 import org.dhcpcluster.struct.Node;
+import org.dhcpcluster.struct.NodePolicy;
 import org.dhcpcluster.struct.NodeRoot;
 import org.dhcpcluster.struct.Subnet;
 
@@ -101,8 +102,13 @@ public final class XmlTopologyConfigReader {
     	node.setDhcpOptions(XmlOptionFactory.parseOptions(xNode.getOptions()));
     	Lease leaseTime = xNode.getLease();
     	if (leaseTime != null) {
-    		node.setDefaultLease(leaseTime.getDefault());
-    		node.setMaxLease(leaseTime.getMax());
+    		NodePolicy policy = node.getPolicy();
+    		if (policy != null) {
+    			policy = new NodePolicy();
+    			node.setPolicy(policy);
+    		}
+    		policy.setDefaultLease(leaseTime.getDefault());
+    		policy.setMaxLease(leaseTime.getMax());
     	}
     	if (xNode.getSubNodes() != null) {
         	for (TypeNodeSubnet xSubnode : xNode.getSubNodes().getNodeOrSubnet()) {
@@ -122,8 +128,13 @@ public final class XmlTopologyConfigReader {
 		subnet.setDhcpOptions(XmlOptionFactory.parseOptions(xSubnet.getOptions()));
     	Lease leaseTime = xSubnet.getLease();
     	if (leaseTime != null) {
-    		subnet.setDefaultLease(leaseTime.getDefault());
-    		subnet.setMaxLease(leaseTime.getMax());
+    		NodePolicy policy = subnet.getPolicy();
+    		if (policy == null) {
+    			policy = new NodePolicy();
+    			subnet.setPolicy(policy);
+    		}
+    		policy.setDefaultLease(leaseTime.getDefault());
+    		policy.setMaxLease(leaseTime.getMax());
     	}
     	// now parsing <ranges> and <static>
     	if (xSubnet.getPools() != null) {

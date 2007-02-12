@@ -38,6 +38,8 @@ public class NodeRoot implements Serializable {
     protected String nodeType = null;
     protected String nodeId = null;
     
+    protected NodePolicy	policy = null;
+    
     /** filter applicable to Subnet */
     protected RequestFilter				requestFilter = ALWAYS_TRUE_FILTER;
     
@@ -47,10 +49,11 @@ public class NodeRoot implements Serializable {
     /** parent node in node tree */
     protected NodeRoot						parentNode = null;
     
-    private int							defaultLease = 86400;
-    private int							maxLease = 86400;
-
     public NodeRoot() {
+    }
+    
+    public NodeRoot(NodePolicy policy) {
+    	this.policy = policy;
     }
     
     /**
@@ -132,31 +135,17 @@ public class NodeRoot implements Serializable {
 	}
 
 	/**
-	 * @return Returns the defaultLease.
+	 * @return Returns the policy.
 	 */
-	public int getDefaultLease() {
-		return defaultLease;
+	public NodePolicy getPolicy() {
+		return policy;
 	}
 
 	/**
-	 * @param defaultLease The defaultLease to set.
+	 * @param policy The policy to set.
 	 */
-	public void setDefaultLease(int defaultLease) {
-		this.defaultLease = defaultLease;
-	}
-
-	/**
-	 * @return Returns the maxLease.
-	 */
-	public int getMaxLease() {
-		return maxLease;
-	}
-
-	/**
-	 * @param maxLease The maxLease to set.
-	 */
-	public void setMaxLease(int maxLease) {
-		this.maxLease = maxLease;
+	public void setPolicy(NodePolicy policy) {
+		this.policy = policy;
 	}
 
 	/**
