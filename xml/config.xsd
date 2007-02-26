@@ -154,13 +154,7 @@
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
-							<xs:element name="policy" minOccurs="0">
-								<xs:complexType>
-									<xs:all>
-										<xs:element ref="lease" minOccurs="0"/>
-									</xs:all>
-								</xs:complexType>
-							</xs:element>
+							<xs:element ref="policy" minOccurs="0"/>
 						</xs:all>
 					</xs:complexType>
 				</xs:element>
@@ -457,7 +451,7 @@
 			<xs:extension base="type-node-subnet">
 				<xs:all>
 					<xs:element ref="filter" minOccurs="0"/>
-					<xs:element ref="lease" minOccurs="0"/>
+					<xs:element ref="policy" minOccurs="0"/>
 					<xs:element ref="options" minOccurs="0"/>
 					<xs:element ref="sub-nodes" minOccurs="0"/>
 				</xs:all>
@@ -469,7 +463,7 @@
 			<xs:extension base="type-node-subnet">
 				<xs:all>
 					<xs:element ref="filter" minOccurs="0"/>
-					<xs:element ref="lease" minOccurs="0"/>
+					<xs:element ref="policy" minOccurs="0"/>
 					<xs:element ref="options" minOccurs="0"/>
 					<xs:element ref="giaddrs" minOccurs="0"/>
 					<xs:element ref="pools" minOccurs="0"/>
@@ -535,16 +529,6 @@
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="lease">
-		<xs:complexType>
-			<xs:complexContent>
-				<xs:extension base="empty-type">
-					<xs:attribute name="default" type="xs:int" use="optional" default="86400"/>
-					<xs:attribute name="max" type="xs:int" use="optional" default="86400"/>
-				</xs:extension>
-			</xs:complexContent>
-		</xs:complexType>
-	</xs:element>
 	<xs:complexType name="optionsType">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:annotation>
@@ -563,4 +547,12 @@
 			<xs:group ref="group-option-string"/>
 		</xs:choice>
 	</xs:complexType>
+	<xs:element name="policy">
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="lease-default" type="xs:int" default="86400" minOccurs="0"/>
+				<xs:element name="lease-max" type="xs:int" default="86400" minOccurs="0"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
 </xs:schema>

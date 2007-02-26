@@ -26,7 +26,7 @@ import org.dhcp4java.InetCidr;
 import org.dhcpcluster.config.ConfigException;
 import org.dhcpcluster.config.TopologyConfig;
 import org.dhcpcluster.config.xml.data.DhcpServer;
-import org.dhcpcluster.config.xml.data.Lease;
+import org.dhcpcluster.config.xml.data.Policy;
 import org.dhcpcluster.config.xml.data.Pools;
 import org.dhcpcluster.config.xml.data.TypeNodeSubnet;
 import org.dhcpcluster.struct.AddressRange;
@@ -100,16 +100,9 @@ public final class XmlTopologyConfigReader {
     	node.setNodeId(xNode.getNodeId());
     	node.setRequestFilter(XmlFilterFactory.makeFilterRoot(xNode.getFilter()));
     	node.setDhcpOptions(XmlOptionFactory.parseOptions(xNode.getOptions()));
-    	Lease leaseTime = xNode.getLease();
-    	if (leaseTime != null) {
-    		NodePolicy policy = node.getPolicy();
-    		if (policy != null) {
-    			policy = new NodePolicy();
-    			node.setPolicy(policy);
-    		}
-    		policy.setDefaultLease(leaseTime.getDefault());
-    		policy.setMaxLease(leaseTime.getMax());
-    	}
+    	
+    	node.setPolicy(parsePolicy(xNode.getPolicy(), node.getPolicy(), null));
+
     	if (xNode.getSubNodes() != null) {
         	for (TypeNodeSubnet xSubnode : xNode.getSubNodes().getNodeOrSubnet()) {
         		node.getNodeList().add(parseSubNode(xSubnode));
@@ -126,16 +119,9 @@ public final class XmlTopologyConfigReader {
 		subnet.setNodeId(xSubnet.getNodeId());
 		subnet.setRequestFilter(XmlFilterFactory.makeFilterRoot(xSubnet.getFilter()));
 		subnet.setDhcpOptions(XmlOptionFactory.parseOptions(xSubnet.getOptions()));
-    	Lease leaseTime = xSubnet.getLease();
-    	if (leaseTime != null) {
-    		NodePolicy policy = subnet.getPolicy();
-    		if (policy == null) {
-    			policy = new NodePolicy();
-    			subnet.setPolicy(policy);
-    		}
-    		policy.setDefaultLease(leaseTime.getDefault());
-    		policy.setMaxLease(leaseTime.getMax());
-    	}
+
+    	subnet.setPolicy(parsePolicy(xSubnet.getPolicy(), subnet.getPolicy(), null));
+
     	// now parsing <ranges> and <static>
     	if (xSubnet.getPools() != null) {
     		for (Object o : xSubnet.getPools().getRangeOrStatic()) {
@@ -165,6 +151,26 @@ public final class XmlTopologyConfigReader {
     public static final void addStatic(Subnet subnet, Pools.Static xStatic) {
     	HardwareAddress mac = HardwareAddress.getHardwareAddressByString(xStatic.getEthernet());
     	subnet.addStaticAddress(mac, xStatic.getAddress());
+    }
+    
+    public static final NodePolicy parsePolicy(Policy xmlPolicy, NodePolicy curPolicy, NodePolicy parentPolicy) {
+    	if (xmlPolicy == null) {		// no policy to parse
+    		return curPolicy;
+    	}
+
+		if (curPolicy == null) {
+			curPolicy = new NodePolicy(parentPolicy);
+		}
+		
+		Integer leaseDefault = xmlPolicy.getLeaseDefault();
+		if (leaseDefault != null) {
+			curPolicy.setDefaultLease(leaseDefault);
+		}
+		Integer leaseMax = xmlPolicy.getLeaseMax();
+		if (leaseMax != null) {
+			curPolicy.setMaxLease(leaseMax);
+		}
+		return curPolicy;
     }
     
 //    public static List<Object> decapsulateJaxbList(List<JAXBElement<?>> list) {

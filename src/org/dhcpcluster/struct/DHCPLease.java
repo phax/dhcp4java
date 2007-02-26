@@ -19,7 +19,6 @@
 package org.dhcpcluster.struct;
 
 import java.io.Serializable;
-import java.sql.Date;
 import java.util.logging.Logger;
 
 /**
@@ -32,7 +31,7 @@ import java.util.logging.Logger;
  */
 public class DHCPLease implements Serializable {
 	
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(DHCPLease.class.getName().toLowerCase());
@@ -50,7 +49,7 @@ public class DHCPLease implements Serializable {
     	Status(int code) {
     		this.code = code;
     	}
-    	public int getCodr() {
+    	public int getCode() {
     		return code;
     	}
     	public static Status fromInt(int code) {
@@ -63,12 +62,14 @@ public class DHCPLease implements Serializable {
     	}
     }
     
-    private Date creationDate;
-    private Date updateDate;
-    private Date expirationDate;
+    private long creationDate;
+    private long updateDate;
+    private long expirationDate;
+    private long recycleDate;
     
     private long ip;
     private byte[] mac;
+    private String uid = null;
     private Status status;
 //
 //	Date creationDate = res.getDate("CREATION_DATE");
@@ -203,42 +204,56 @@ public class DHCPLease implements Serializable {
 	/**
 	 * @return Returns the creationDate.
 	 */
-	public Date getCreationDate() {
+	public long getCreationDate() {
 		return creationDate;
 	}
 
 	/**
 	 * @param creationDate The creationDate to set.
 	 */
-	public void setCreationDate(Date creationDate) {
+	public void setCreationDate(long creationDate) {
 		this.creationDate = creationDate;
 	}
 
 	/**
 	 * @return Returns the expirationDate.
 	 */
-	public Date getExpirationDate() {
+	public long getExpirationDate() {
 		return expirationDate;
 	}
 
 	/**
 	 * @param expirationDate The expirationDate to set.
 	 */
-	public void setExpirationDate(Date expirationDate) {
+	public void setExpirationDate(long expirationDate) {
 		this.expirationDate = expirationDate;
+	}
+
+	/**
+	 * @return Returns the recycleDate.
+	 */
+	public long getRecycleDate() {
+		return recycleDate;
+	}
+
+	/**
+	 * @param recycleDate The recycleDate to set.
+	 */
+	public void setRecycleDate(long recycleDate) {
+		this.recycleDate = recycleDate;
 	}
 
 	/**
 	 * @return Returns the updateDate.
 	 */
-	public Date getUpdateDate() {
+	public long getUpdateDate() {
 		return updateDate;
 	}
 
 	/**
 	 * @param updateDate The updateDate to set.
 	 */
-	public void setUpdateDate(Date updateDate) {
+	public void setUpdateDate(long updateDate) {
 		this.updateDate = updateDate;
 	}
 
@@ -262,12 +277,18 @@ public class DHCPLease implements Serializable {
 	public byte[] getMac() {
 		return mac;
 	}
+	public String getMacHex() {
+		return bytesToHex(mac);
+	}
 
 	/**
 	 * @param mac The mac to set.
 	 */
 	public void setMac(byte[] mac) {
 		this.mac = mac;
+	}
+	public void setMacHex(String s) {
+		this.mac = hex2Bytes(s);
 	}
 
 	/**
@@ -283,6 +304,58 @@ public class DHCPLease implements Serializable {
 	public void setStatus(Status status) {
 		this.status = status;
 	}
+
+	/**
+	 * @return Returns the uid.
+	 */
+	public String getUid() {
+		return uid;
+	}
+
+	/**
+	 * @param uid The uid to set.
+	 */
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
 	
+
+    /**
+     * Converts byte to hex string (2 chars) (uppercase)
+     */
+    private static final char[] hex = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+    private static final String bytesToHex(byte[] buf) {
+    	if (buf ==  null) {
+    		return "";
+    	}
+    	StringBuffer sbuf = new StringBuffer(buf.length*2);
+    	for (int k=0; k<buf.length; k++) {
+    		int i = (buf[k] & 0xFF);
+    		sbuf.append(hex[(i & 0xF0) >> 4])
+            	.append(hex[i & 0x0F]);
+    	}
+    	return sbuf.toString();
+    }
+    /**
+     * Convert hes String to byte[]
+     */
+    private static final byte[] hex2Bytes(String s) {
+    	if (s == null) {
+    		return null;
+    	}
+    	int len = s.length();
+        if ((len & 1) != 0) {
+            len--;
+        }
+
+        byte[] buf = new byte[len / 2];
+
+        for (int index = 0; index < len; index++) {
+            final int stringIndex = index << 1;
+            buf[index] = (byte) Integer.parseInt(s.substring(stringIndex, stringIndex + 2), 16);
+        }
+        return buf;
+    }
+
         
 }

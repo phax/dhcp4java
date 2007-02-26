@@ -25,6 +25,9 @@ import java.util.logging.Logger;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ArrayHandler;
+import org.dhcp4java.InetCidr;
+import org.dhcp4java.Util;
+import org.dhcpcluster.struct.DHCPLease;
 
 import static org.dhcpcluster.backend.hsql.DataAccess.queries;
 
@@ -40,6 +43,18 @@ public class LeaseStoredProcedures {
 	private static final QueryRunner 			qRunner = new QueryRunner();
 	private static final ResultSetHandler 	arrayHandler = new ArrayHandler();
 	
+	/**
+	 * 
+	 * @param conn
+	 * @param poolId
+	 * @param mac
+	 * @return the IP address to be sent back to the client (always > 0 if successful)<br>
+	 * 			 0: out of free addresses, the tables are full<br>
+	 * 			-1: could not update the T_BUBBLE table<br>
+	 * 			-2: could not delete in T_BUBBLE table<br>
+	 * 			-3: could not update the T_LEASE table
+	 * @throws SQLException
+	 */
 	public static long findDiscoverLease(Connection conn, long poolId, String mac) throws SQLException {
 		// find first free bubble for poolId
 		Object[] res = (Object[]) qRunner.query(conn, SELECT_BUBBLE_FROM_POOL_SET, (Long) poolId, arrayHandler);
@@ -68,6 +83,7 @@ public class LeaseStoredProcedures {
 				return -2;
 			}
 		}
+		
 		// create of modify lease
 		Object[] args = new Object[7];
 		args[0] = (Long) startIp;		// ip
@@ -83,6 +99,68 @@ public class LeaseStoredProcedures {
 		}
 		
 		return startIp;		// this is the ip of the prepared lease
+	}
+	
+	/**
+	 * 
+	 * <p>Note: the caller must first check that the requested address is indeed in the LAN. No check here.
+	 * @param conn
+	 * @param poolId
+	 * @param requestedIp
+	 * @param mac
+	 * @return status of the request, positive is ok, 0 is must be ignored, negative must be an NAK<br>  
+	 * @throws SQLException
+	 */
+	public static int confirmOfferLease (Connection conn, long poolId, long requestedIp, int leaseTime, int margin, String macHex, String uid) throws SQLException {
+		if ((macHex == null) || (macHex.length() < 2)) {
+			throw new IllegalArgumentException("macHex is null or too short:"+macHex);
+		}
+		DHCPLease curLease = DataAccess.getLease(conn, requestedIp);
+		long now = System.currentTimeMillis();
+		if (curLease == null) {
+			logger.fine("No active lease for ip: "+requestedIp);
+			// create new lease
+			curLease = new DHCPLease();
+			curLease.setIp(requestedIp);
+			curLease.setCreationDate(now);
+			curLease.setUpdateDate(now);
+			curLease.setExpirationDate(now + 1000L*leaseTime);
+			curLease.setRecycleDate(now + ((1000L * margin)/100L) * leaseTime);
+			curLease.setMacHex(macHex);
+			curLease.setUid(uid);
+			curLease.setStatus(DHCPLease.Status.USED);
+			DataAccess.insertLease(conn, curLease);
+			return 2;
+		}
+		// we have an already existing lease for this IP address
+		// is it the same client ?
+		DHCPLease.Status curStatus = curLease.getStatus();
+		// is the ip allowable ?
+		if (curStatus == DHCPLease.Status.ABANDONED) {
+			return -1;
+		}
+		if (macHex.equalsIgnoreCase(curLease.getMacHex())) {
+			// ok this is allowed, be allow a new lease period
+			curLease.setUpdateDate(now);
+			curLease.setExpirationDate(now + 1000L*leaseTime);
+			curLease.setRecycleDate(now + ((1000L * margin)/100L) * leaseTime);
+			curLease.setUid(uid);
+			DataAccess.updateLease(conn, curLease);
+			if (curStatus == DHCPLease.Status.OFFERED) {
+				return 1;
+			} else {
+				return 2;
+			}
+		}
+		return -2;		// address is not usable for this client
+	}
+	
+	public static String longAddressToString(long ip) {
+		return Util.long2InetAddress(ip).getHostAddress();
+	}
+	
+	public static String longCidrToString(long cidr) {
+		return InetCidr.fromLong(cidr).toString();
 	}
 
 	private static final String	SELECT_BUBBLE_FROM_POOL_SET = queries.get("SELECT_BUBBLE_FROM_POOL_SET");

@@ -66,6 +66,9 @@
 		<post-options>
 			<option code="82" mirror="true"/>
 		</post-options>
+		<policy>
+			<lease-default>3600</lease-default>
+		</policy>
 	</global>
 	<topology>
 		<subnet address="192.168.0.0" mask="255.255.252.0" comment="Free comment!">
@@ -99,8 +102,9 @@
 				<!--				<lease defalut="86400" max="86400"/>-->
 			</options>
 			<!--TODO add static addresses-->
-			<!--TODO add allow/deny policies-->
-			<lease/>
+			<!--TODO add allow/deny policies--><policy>
+	<lease-max>7200</lease-max>
+</policy>
 		</subnet>
 		<subnet address="10.170.0.0" mask="255.255.0.0">
 			<pools>

@@ -29,14 +29,23 @@ public class NodePolicy implements Serializable {
 
     private static final long serialVersionUID = 3L;
 	
-	private int							defaultLease = 86400;
-    private int							maxLease = 86400;
+    private NodePolicy						parentPolicy = null;
+    
+	private Integer						defaultLease = 86400;
+    private Integer						maxLease = 86400;
+    
+    public NodePolicy() {
+    }
+    
+    public NodePolicy(NodePolicy parentPolicy) {
+    	this.parentPolicy = parentPolicy;
+    }
     
 	/**
 	 * @return Returns the defaultLease.
 	 */
 	public int getDefaultLease() {
-		return defaultLease;
+		return genericGetInt(defaultLease, (parentPolicy != null) ? parentPolicy.getDefaultLease() : null, DEFAULT_LEASE);
 	}
 	/**
 	 * @param defaultLease The defaultLease to set.
@@ -48,7 +57,7 @@ public class NodePolicy implements Serializable {
 	 * @return Returns the maxLease.
 	 */
 	public int getMaxLease() {
-		return maxLease;
+		return genericGetInt(maxLease, (parentPolicy != null) ? parentPolicy.getMaxLease() : null, MAX_LEASE);
 	}
 	/**
 	 * @param maxLease The maxLease to set.
@@ -57,5 +66,16 @@ public class NodePolicy implements Serializable {
 		this.maxLease = maxLease;
 	}
 
-    
+	protected int genericGetInt(Integer curValue, Integer parentValue, int defaultValue) {
+		if (curValue != null) {
+			return curValue;
+		}
+		if (parentValue != null) {
+			return parentValue;
+		}
+		return defaultValue;
+	}
+	
+    private static final int				DEFAULT_LEASE = 86400;
+    private static final int				MAX_LEASE = 86400;
 }

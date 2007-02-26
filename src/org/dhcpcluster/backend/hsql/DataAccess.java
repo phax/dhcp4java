@@ -20,6 +20,7 @@ package org.dhcpcluster.backend.hsql;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -153,6 +154,38 @@ public class DataAccess {
 		}
 	}
 	
+	public static void insertLease(Connection conn, DHCPLease lease) throws SQLException {
+		assert(conn != null);
+		Object[] args = new Object[8];
+		args[0] = (Long) lease.getIp();
+		args[1] = (Long) lease.getCreationDate();
+		args[2] = (Long) lease.getUpdateDate();
+		args[3] = (Long) lease.getExpirationDate();
+		args[4] = (Long) lease.getRecycleDate();
+		args[5] = (String) lease.getMacHex();
+		args[6] = (String) lease.getUid();
+		args[7] = (Integer) lease.getStatus().getCode();
+		if (qRunner.update(conn, INSERT_LEASE, args) != 1) {
+			logger.warning("Cannot insert T_LEASE: ip="+lease.getIp());
+		}
+	}
+
+	public static void updateLease(Connection conn, DHCPLease lease) throws SQLException {
+		assert(conn != null);
+		Object[] args = new Object[8];
+		args[0] = (Long) lease.getCreationDate();
+		args[1] = (Long) lease.getUpdateDate();
+		args[2] = (Long) lease.getExpirationDate();
+		args[3] = (Long) lease.getRecycleDate();
+		args[4] = (String) lease.getMacHex();
+		args[5] = (String) lease.getUid();
+		args[6] = (Integer) lease.getStatus().getCode();
+		args[7] = (Long) lease.getIp();
+		if (qRunner.update(conn, UPDATE_LEASE, args) != 1) {
+			logger.warning("Cannot insert T_LEASE: ip="+lease.getIp());
+		}
+	}
+	
 	/**
 	 * 
 	 * @param conn
@@ -210,21 +243,6 @@ public class DataAccess {
 		return lLeases;
 	}
 	
-	public static DHCPLease makeDHCPLease(ResultSet res) throws SQLException {
-		if (res == null) {
-			throw new NullPointerException();
-		}
-		DHCPLease lease = new DHCPLease();
-		lease.setIp(res.getLong("IP"));
-		lease.setCreationDate(res.getDate("CREATION_DATE"));
-		lease.setUpdateDate(res.getDate("UPDATE_DATE"));
-		lease.setExpirationDate(res.getDate("EXPIRATION_DATE"));
-		//lease.setMac(res.getString("MAC"));
-		//lease.setUid(res.getString("UID"));
-		lease.setStatus(DHCPLease.Status.fromInt(res.getInt("STATUS")));
-		
-		return null;
-	}
 
 	/* QueryLoader for loading sql from properties files */
 	static final Map<String, String>				queries;
@@ -250,6 +268,8 @@ public class DataAccess {
 	private static final String	INSERT_T_POOL_SET = queries.get("INSERT_T_POOL_SET");
 	private static final String	INSERT_T_POOL = queries.get("INSERT_T_POOL");
 	private static final String	INSERT_T_BUBBLE = queries.get("INSERT_T_BUBBLE");
+	private static final String	INSERT_LEASE = queries.get("INSERT_LEASE");
+	private static final String	UPDATE_LEASE = queries.get("UPDATE_LEASE");
 
 	private static final String	SELECT_LEASE = queries.get("SELECT_LEASE");
 	private static final String	SELECT_LEASE_RANGE = queries.get("SELECT_LEASE_RANGE");
@@ -293,13 +313,21 @@ class LeaseHandler extends CustomBeanProcessor {
 		}
 		DHCPLease lease = new DHCPLease();
 		lease.setIp(rs.getLong("IP"));
-		lease.setCreationDate(rs.getDate("CREATION_DATE"));
-		lease.setUpdateDate(rs.getDate("UPDATE_DATE"));
-		lease.setExpirationDate(rs.getDate("EXPIRATION_DATE"));
-		//lease.setMac(res.getString("MAC"));
-		//lease.setUid(res.getString("UID"));
+		lease.setCreationDate(dateToLong(rs.getDate("CREATION_DATE")));
+		lease.setUpdateDate(dateToLong(rs.getDate("UPDATE_DATE")));
+		lease.setExpirationDate(dateToLong(rs.getDate("EXPIRATION_DATE")));
+		lease.setMacHex(rs.getString("MAC"));
+		lease.setUid(rs.getString("UID"));
 		lease.setStatus(DHCPLease.Status.fromInt(rs.getInt("STATUS")));
 		return lease;
+	}
+	
+	private static final long dateToLong(Date date) {
+		if (date == null) {
+			return 0;
+		} else {
+			return date.getTime();
+		}
 	}
 
 }
