@@ -105,8 +105,23 @@ public class InetCidr implements Serializable {
      * 
      * @return the <tt>long</tt> representation of the Cidr
      */
-    public long toLong() {
+    public final long toLong() {
     	return (addr & 0xFFFFFFFFL) + ( ((long)mask) << 32);
+    }
+    
+    /**
+     * Creates a new <tt>InetCidr</tt> from its <tt>long</tt> representation.
+     * @param l the Cidr in its "long" format
+     * @return the object
+     * @throws IllegalArgumentException
+     */
+    public final InetCidr fromLong(long l) {
+    	if (l < 0) {
+    		throw new IllegalArgumentException("l must not be negative: "+l);
+    	}
+    	long ip = l & 0xFFFFFFFFL;
+    	long mask = l >> 32L;
+    	return new InetCidr(Util.long2InetAddress(ip), (int) mask);
     }
 
     public int hashCode() {
