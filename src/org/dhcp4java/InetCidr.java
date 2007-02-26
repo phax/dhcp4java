@@ -115,7 +115,7 @@ public class InetCidr implements Serializable {
      * @return the object
      * @throws IllegalArgumentException
      */
-    public final InetCidr fromLong(long l) {
+    public static final InetCidr fromLong(long l) {
     	if (l < 0) {
     		throw new IllegalArgumentException("l must not be negative: "+l);
     	}
