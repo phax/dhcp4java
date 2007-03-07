@@ -13,5 +13,7 @@
 	<classpathentry sourcepath="lib-dev/jaxb-impl.src.zip" kind="lib" path="lib/jaxb-impl.jar"/>
 	<classpathentry kind="lib" path="lib/jsr173_1.0_api.jar"/>
 	<classpathentry sourcepath="lib-dev/commons-dbutils-1.1-src.zip" kind="lib" path="lib/commons-dbutils-1.1.jar"/>
+	<classpathentry kind="src" path="PerfTests"/>
+	<classpathentry sourcepath="lib-dev/log4j-1.2.14-src.zip" kind="lib" path="lib/log4j-1.2.14.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
