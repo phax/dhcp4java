@@ -19,7 +19,8 @@
 package org.dhcpcluster.struct;
 
 import java.io.Serializable;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Logger;
 
 /**
  * This class represent a DHCP Lease given to a client.
@@ -34,7 +35,7 @@ public class DHCPLease implements Serializable {
     private static final long serialVersionUID = 2L;
 
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(DHCPLease.class.getName().toLowerCase());
+	private static final Logger logger = Logger.getLogger(DHCPLease.class);
 
     public enum Status {
     	

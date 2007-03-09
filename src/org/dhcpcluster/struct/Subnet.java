@@ -27,8 +27,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Logger;
 import org.dhcp4java.DHCPOption;
 import org.dhcp4java.HardwareAddress;
 import org.dhcp4java.InetCidr;
@@ -43,7 +43,7 @@ public class Subnet extends NodeRoot implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = Logger.getLogger(Subnet.class.getName().toLowerCase());
+    private static final Logger logger = Logger.getLogger(Subnet.class);
     
     /** network range of the subnet = CIDR */
     protected final InetCidr cidr;
@@ -147,7 +147,7 @@ public class Subnet extends NodeRoot implements Serializable {
 		
 		// check if mac address is already assigned
 		if (staticAddressesByMac.containsKey(macAddr)) {
-			logger.warning("Hardware address ["+macAddr+"]already has an IP address statically assigned");
+			logger.warn("Hardware address ["+macAddr+"]already has an IP address statically assigned");
 		}
 		
 		// assign address

@@ -20,7 +20,8 @@ package org.dhcpcluster.config;
 
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Logger;
 
 /**
  * 
@@ -32,7 +33,7 @@ public class FrontendConfig implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(FrontendConfig.class.getName().toLowerCase());
+	private static final Logger logger = Logger.getLogger(FrontendConfig.class);
     
     private InetAddress	listenIp = null;
     private int			listenPort = 67;

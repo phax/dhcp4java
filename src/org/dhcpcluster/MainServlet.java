@@ -38,7 +38,7 @@ import org.dhcpcluster.struct.Subnet;
  */
 public class MainServlet extends DHCPServlet {
 
-    private static final Logger logger = Logger.getLogger(MainServlet.class.getName().toLowerCase());
+    private static final Logger logger = Logger.getLogger(MainServlet.class);
 
     /* link to the cluster node object */
     private final DHCPClusterNode clusterNode;

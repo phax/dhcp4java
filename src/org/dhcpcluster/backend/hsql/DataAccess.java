@@ -53,7 +53,7 @@ import static org.apache.commons.dbutils.DbUtils.closeQuietly;
  */
 public class DataAccess {
 
-	private static final Logger logger = Logger.getLogger(DataAccess.class.getName().toLowerCase());
+	private static final Logger logger = Logger.getLogger(DataAccess.class);
 	
 	private static QueryRunner qRunner = new QueryRunner();
 	

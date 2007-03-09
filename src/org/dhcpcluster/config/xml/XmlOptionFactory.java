@@ -24,10 +24,10 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBElement;
 
+import org.apache.log4j.Logger;
 import org.dhcp4java.DHCPConstants;
 import org.dhcp4java.DHCPOption;
 import org.dhcpcluster.config.xml.data.Option;
@@ -52,7 +52,7 @@ import org.dhcpcluster.struct.DHCPRichOption;
 public class XmlOptionFactory {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(XmlOptionFactory.class.getName().toLowerCase());
+	private static final Logger logger = Logger.getLogger(XmlOptionFactory.class);
 
 	/**
 	 * Class is not instantiable.
@@ -88,7 +88,7 @@ public class XmlOptionFactory {
 			resOption.addObject(opt.getValueByteOrValueShortOrValueInt());
 			return resOption.getResultDHCPOption();
 		} else {
-			logger.severe("Unknown option object: "+obj);
+			logger.error("Unknown option object: "+obj);
 			return null;
 		}
     }
@@ -100,7 +100,7 @@ public class XmlOptionFactory {
 		optName = optName.replace("-", "_").toUpperCase();
 		Byte codeByte = DHCPConstants.getDhoNamesReverse(optName);
 		if (codeByte == null) {
-			logger.warning("Unrecognized option name: "+optName);
+			logger.warn("Unrecognized option name: "+optName);
 			return null;
 		}
 		Object o = obj.getValue();
@@ -131,7 +131,7 @@ public class XmlOptionFactory {
 		} else if (o instanceof TypeOptionString) {
 			resOption.addObject(((TypeOptionString)o).getValueString());
 		} else {
-			logger.warning("Unsupported value type: "+o.toString());
+			logger.warn("Unsupported value type: "+o.toString());
 		}
 		return resOption.getResultDHCPOption();
 	}
@@ -212,7 +212,7 @@ final class DHCPOptionBuilder {
 					}
 				}
 			} else {
-				logger.warning("Unsupported value type: "+o.toString());
+				logger.warn("Unsupported value type: "+o.toString());
 			}
 		} catch (IOException e) {
 			throw new IllegalStateException();		// never happens

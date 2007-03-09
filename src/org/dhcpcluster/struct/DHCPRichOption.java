@@ -18,7 +18,7 @@
  */
 package org.dhcpcluster.struct;
 
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 
 import org.dhcp4java.DHCPOption;
 import org.dhcp4java.DHCPPacket;
@@ -34,7 +34,7 @@ import org.dhcp4java.DHCPPacket;
 public class DHCPRichOption extends DHCPOption {
 	private static final long   serialVersionUID = 3L;
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(DHCPRichOption.class.getName().toLowerCase());
+	private static final Logger logger = Logger.getLogger(DHCPRichOption.class);
 
     public enum Mode { REPLACE, CONCAT, REGEX };
 

@@ -19,8 +19,8 @@
 package org.dhcpcluster.config.xml;
 
 import java.net.InetAddress;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Logger;
 import org.dhcp4java.HardwareAddress;
 import org.dhcp4java.InetCidr;
 import org.dhcpcluster.config.ConfigException;
@@ -43,7 +43,7 @@ import org.dhcpcluster.struct.Subnet;
 public final class XmlTopologyConfigReader {
 
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(XmlTopologyConfigReader.class.getName().toLowerCase());
+	private static final Logger logger = Logger.getLogger(XmlTopologyConfigReader.class);
     
     /**
      * Class is not instantiable.

@@ -18,8 +18,9 @@
  */
 package org.dhcpcluster.config.xml;
 
-import java.util.logging.Logger;
 
+
+import org.apache.log4j.Logger;
 import org.dhcpcluster.config.GlobalConfig;
 import org.dhcpcluster.config.xml.data.DhcpServer;
 import org.dhcpcluster.config.xml.data.Policy;
@@ -33,7 +34,7 @@ import org.dhcpcluster.struct.NodePolicy;
 public final class XmlGlobalConfigReader {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(XmlGlobalConfigReader.class.getName().toLowerCase());
+	private static final Logger logger = Logger.getLogger(XmlGlobalConfigReader.class);
 	
 	public static GlobalConfig xmlGlobalConfigReader(DhcpServer.Global globalData) {
 		GlobalConfig globalConfig = new GlobalConfig();

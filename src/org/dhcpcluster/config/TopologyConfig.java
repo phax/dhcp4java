@@ -24,8 +24,8 @@ import java.net.InetAddress;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Logger;
 import org.dhcp4java.DHCPConstants;
 import org.dhcp4java.InetCidr;
 import org.dhcpcluster.filter.AlwaysTrueFilter;
@@ -43,7 +43,7 @@ public class TopologyConfig implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(GlobalConfig.class.getName().toLowerCase());
+	private static final Logger logger = Logger.getLogger(GlobalConfig.class);
 
     /** list of subnets hashed by their cidr */
     private final Map<InetCidr, Subnet> subnetsByCidr = new HashMap<InetCidr, Subnet>();

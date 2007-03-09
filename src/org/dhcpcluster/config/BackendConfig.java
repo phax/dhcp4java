@@ -19,7 +19,8 @@
 package org.dhcpcluster.config;
 
 import java.io.Serializable;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Logger;
 /**
  * 
  * @author Stephan Hadinger
@@ -30,7 +31,7 @@ public class BackendConfig implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(BackendConfig.class.getName().toLowerCase());
+	private static final Logger logger = Logger.getLogger(BackendConfig.class);
 
     private String			jdbcUrl = null;
     private String			jdbcUser = null;

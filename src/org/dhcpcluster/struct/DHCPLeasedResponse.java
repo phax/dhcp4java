@@ -19,8 +19,8 @@
 package org.dhcpcluster.struct;
 
 import java.io.Serializable;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Logger;
 import org.dhcp4java.DHCPPacket;
 /**
  * This class represents a composite response: DHCPPacket + DHCPLease.
@@ -35,7 +35,7 @@ public class DHCPLeasedResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(DHCPLeasedResponse.class.getName().toLowerCase());
+	private static final Logger logger = Logger.getLogger(DHCPLeasedResponse.class);
 
     private DHCPPacket	response;
     private DHCPLease  lease;

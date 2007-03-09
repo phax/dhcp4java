@@ -20,8 +20,8 @@ package org.dhcpcluster.config.xml;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Logger;
 import org.dhcpcluster.config.xml.data.Filter;
 import org.dhcpcluster.config.xml.data.TypeFilterRoot;
 import org.dhcpcluster.filter.AlwaysFalseFilter;
@@ -41,7 +41,7 @@ import org.dhcpcluster.filter.StringOptionFilter.CompareMode;
  */
 public class XmlFilterFactory {
 
-	private static final Logger logger = Logger.getLogger(XmlFilterFactory.class.getName().toLowerCase());
+	private static final Logger logger = Logger.getLogger(XmlFilterFactory.class);
 
 	private XmlFilterFactory() {
 		throw new UnsupportedOperationException();
@@ -108,7 +108,7 @@ public class XmlFilterFactory {
 				op = NumOptionFilter.CompareOp.GT;
 				break;
 			default:
-				logger.severe("Unrecognized operation: "+filter.getOp().value() + ", default to ALWAYS_FALSE");
+				logger.error("Unrecognized operation: "+filter.getOp().value() + ", default to ALWAYS_FALSE");
 				return ALWAYS_FALSE_FILTER;
 		}
 		return new NumOptionFilter(filter.getCode(), filter.getValueInt(), op);
@@ -127,7 +127,7 @@ public class XmlFilterFactory {
     			mode = CompareMode.REGEX;
     			break;
     		default:
-				logger.severe("Unrecognized operation: "+filter.getMode().value() + ", default to ALWAYS_FALSE");
+				logger.error("Unrecognized operation: "+filter.getMode().value() + ", default to ALWAYS_FALSE");
 				return ALWAYS_FALSE_FILTER;
     	}
     	return new StringOptionFilter(filter.getCode(), filter.getValueString(), mode);

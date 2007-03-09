@@ -21,8 +21,8 @@ package org.dhcpcluster.struct;
 import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Logger;
 import org.dhcp4java.InetCidr;
 import org.dhcp4java.Util;
 
@@ -48,7 +48,7 @@ public final class AddressRange implements Serializable, Comparable {
     private static final long serialVersionUID = 1L;
 
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(AddressRange.class.getName().toLowerCase());
+	private static final Logger logger = Logger.getLogger(AddressRange.class);
     
     /** first ip address in the range (inclusive) */
     private final long rangeStart;

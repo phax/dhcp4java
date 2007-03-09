@@ -40,7 +40,7 @@ import static org.dhcpcluster.backend.hsql.DataAccess.queries;
  */
 public class LeaseStoredProcedures {
 
-	private static final Logger logger = Logger.getLogger(LeaseStoredProcedures.class.getName().toLowerCase());
+	private static final Logger logger = Logger.getLogger(LeaseStoredProcedures.class);
 
 	private static final QueryRunner 			qRunner = new QueryRunner();
 	private static final ResultSetHandler 	arrayHandler = new ArrayHandler();

@@ -21,7 +21,8 @@ package org.dhcpcluster.struct;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Logger;
 
 /**
  * 
@@ -32,7 +33,7 @@ public class Node extends NodeRoot implements Serializable {
     private static final long serialVersionUID = 2L;
 
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(Node.class.getName().toLowerCase());
+	private static final Logger logger = Logger.getLogger(Node.class);
 
     
     protected  List<NodeRoot>					nodeList = new LinkedList<NodeRoot>();
