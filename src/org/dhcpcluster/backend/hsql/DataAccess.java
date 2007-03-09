@@ -67,6 +67,11 @@ public class DataAccess {
 		qRunner.update(conn, SHUTDOWN);
 	}
 	
+	public static void shutdownCompact(Connection conn) throws SQLException {
+		assert(conn != null);
+		qRunner.update(conn, SHUTDOWN_COMPACT);
+	}
+	
 	public static int identity(Connection conn) throws SQLException {
 		assert(conn != null);
 		Integer id = (Integer) qRunner.query(conn, IDENTITY, identityRsh);
@@ -243,6 +248,22 @@ public class DataAccess {
 		return lLeases;
 	}
 	
+	public static void insertLeaseArchive(Connection conn, long ip, Date creation, Date update, Date expiration, String mac, String uid, int prevStatus) throws SQLException {
+		assert(conn != null);
+		Object[] args = new Object[7];
+		args[0] = (Long) ip;
+		args[1] = creation;
+		args[2] = update;
+		args[3] = expiration;
+		args[4] = mac;
+		args[5] = uid;
+		args[6] = (Integer) prevStatus;
+		if (qRunner.update(conn, INSERT_T_LEASE_ARCHIVE, args) != 1) {
+			logger.warning("Cannot insert INSERT_T_LEASE_ARCHIVE: ip="+ip);
+		}
+
+	}
+	
 
 	/* QueryLoader for loading sql from properties files */
 	static final Map<String, String>				queries;
@@ -259,6 +280,7 @@ public class DataAccess {
 	private static final ResultSetHandler leaseListHandler = new BeanListHandler(DHCPLease.class, new BasicRowProcessor(new LeaseHandler()));
 
 	private static final String	SHUTDOWN = queries.get("SHUTDOWN");
+	private static final String	SHUTDOWN_COMPACT = queries.get("SHUTDOWN_COMPACT");
 	private static final String	IDENTITY = queries.get("IDENTITY");
 	
 	private static final String	DELETE_T_POOL = queries.get("DELETE_T_POOL");
@@ -273,6 +295,8 @@ public class DataAccess {
 
 	private static final String	SELECT_LEASE = queries.get("SELECT_LEASE");
 	private static final String	SELECT_LEASE_RANGE = queries.get("SELECT_LEASE_RANGE");
+
+	private static final String	INSERT_T_LEASE_ARCHIVE = queries.get("INSERT_T_LEASE_ARCHIVE");
 
 }
 
