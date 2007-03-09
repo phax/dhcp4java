@@ -41,7 +41,7 @@ import org.hsqldb.Server;
  */
 public class HsqlCsvLog {
 
-	private static final Logger logger = Logger.getLogger(HsqlCsvLog.class.getName().toLowerCase());
+	private static final Logger logger = Logger.getLogger(HsqlCsvLog.class);
 
 	private static final PrintWriter		logWriter = new PrintWriter(new LogOutputStream(Level.INFO));
 	private static final PrintWriter		errWriter = new PrintWriter(new LogOutputStream(Level.ERROR));
