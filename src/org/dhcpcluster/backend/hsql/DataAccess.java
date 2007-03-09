@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.dbutils.BasicRowProcessor;
 import org.apache.commons.dbutils.QueryLoader;
@@ -39,6 +37,7 @@ import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
+import org.apache.log4j.Logger;
 
 import org.dhcp4java.Util;
 import org.dhcpcluster.struct.AddressRange;
@@ -83,19 +82,19 @@ public class DataAccess {
 	public static void deletePools(Connection conn) throws SQLException {
 		assert(conn != null);
 		int res = qRunner.update(conn, DELETE_T_POOL);
-		logger.fine("Delete all from T_POOL: "+res+" deleted");
+		logger.debug("Delete all from T_POOL: "+res+" deleted");
 	}
 	
 	public static void deletePoolSets(Connection conn) throws SQLException {
 		assert(conn != null);
 		int res = qRunner.update(conn, DELETE_T_POOL_SET);
-		logger.fine("Delete all from T_POOL_SET: "+res+" deleted");
+		logger.debug("Delete all from T_POOL_SET: "+res+" deleted");
 	}
 	
 	public static void deleteBubbles(Connection conn) throws SQLException {
 		assert(conn != null);
 		int res = qRunner.update(conn, DELETE_T_BUBBLE);
-		logger.fine("Delete all from T_BUBBLE: "+res+" deleted");
+		logger.debug("Delete all from T_BUBBLE: "+res+" deleted");
 	}
 	
 	public static void insertPoolsAndPoolSets(Connection conn, Collection<Subnet> subnetColl) throws SQLException {
@@ -171,7 +170,7 @@ public class DataAccess {
 		args[6] = (String) lease.getUid();
 		args[7] = (Integer) lease.getStatus().getCode();
 		if (qRunner.update(conn, INSERT_LEASE, args) != 1) {
-			logger.warning("Cannot insert T_LEASE: ip="+lease.getIp());
+			logger.warn("Cannot insert T_LEASE: ip="+lease.getIp());
 		}
 	}
 
@@ -187,7 +186,7 @@ public class DataAccess {
 		args[6] = (Integer) lease.getStatus().getCode();
 		args[7] = (Long) lease.getIp();
 		if (qRunner.update(conn, UPDATE_LEASE, args) != 1) {
-			logger.warning("Cannot insert T_LEASE: ip="+lease.getIp());
+			logger.warn("Cannot insert T_LEASE: ip="+lease.getIp());
 		}
 	}
 	
@@ -206,7 +205,7 @@ public class DataAccess {
 		args[1] = (Long) start;
 		args[2] = (Long) end;
 		if (qRunner.update(conn, INSERT_T_BUBBLE, args) != 1) {
-			logger.warning("Cannot insert T_BUBBLE: rangeId="+rangeId+" start="+start+" end="+end);
+			logger.warn("Cannot insert T_BUBBLE: rangeId="+rangeId+" start="+start+" end="+end);
 		}
 	}
 
@@ -225,7 +224,7 @@ public class DataAccess {
 		try  {
 			return (DHCPLease) qRunner.query(conn, SELECT_LEASE, ip, leaseHandler);
 		} catch (SQLException e) {
-			logger.log(Level.SEVERE, "Unexpected SQLException when getting Lease", e);
+			logger.error("Unexpected SQLException when getting Lease", e);
 			throw e;
 		} finally {
 			//
@@ -259,7 +258,7 @@ public class DataAccess {
 		args[5] = uid;
 		args[6] = (Integer) prevStatus;
 		if (qRunner.update(conn, INSERT_T_LEASE_ARCHIVE, args) != 1) {
-			logger.warning("Cannot insert INSERT_T_LEASE_ARCHIVE: ip="+ip);
+			logger.warn("Cannot insert INSERT_T_LEASE_ARCHIVE: ip="+ip);
 		}
 
 	}
@@ -271,7 +270,7 @@ public class DataAccess {
 		try {
 			queries = QueryLoader.instance().load("/org/dhcpcluster/backend/hsql/queries.properties");
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Cannot load properties /org/dhcpcluster/backend/hsql/queries.properties", e);
+			logger.fatal("Cannot load properties /org/dhcpcluster/backend/hsql/queries.properties", e);
 			throw new IllegalStateException(e);
 		}
 	}

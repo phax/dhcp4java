@@ -19,9 +19,8 @@
 package org.dhcpcluster;
 
 import java.net.InetAddress;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Logger;
 import org.dhcp4java.DHCPOption;
 import org.dhcp4java.DHCPPacket;
 import org.dhcp4java.DHCPResponseFactory;
@@ -74,8 +73,8 @@ public class MainServlet extends DHCPServlet {
 		/* 1. Filter client from global parameters */
 		RequestFilter globalFilter = topologyConfig.getGlobalFilter();
 		if (!globalFilter.isRequestAccepted(request)) {
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("Request rejected on global filter "+request);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Request rejected on global filter "+request);
 			}
 			return null;		// escape
 		}
@@ -85,15 +84,15 @@ public class MainServlet extends DHCPServlet {
 				
 		// what have we got for a subnet ?
 		if (subnet == null) {
-			logger.warning("Packet is not in any subnet: "+request);
+			logger.warn("Packet is not in any subnet: "+request);
 			return null;		// ignore request
 		}
 		
 		/* 3. filter by specific subnet parameters */
 		if (!subnet.isRequestAccepted(request)) {
 			if (!globalFilter.isRequestAccepted(request)) {
-				if (logger.isLoggable(Level.FINE)) {
-					logger.fine("Request rejected on node filter "+request);
+				if (logger.isDebugEnabled()) {
+					logger.debug("Request rejected on node filter "+request);
 				}
 				return null;		// escape
 			}
@@ -156,8 +155,8 @@ public class MainServlet extends DHCPServlet {
 		/* 1. Filter client from global parameters */
 		RequestFilter globalFilter = topologyConfig.getGlobalFilter();
 		if (!globalFilter.isRequestAccepted(request)) {
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("Request rejected on global filter "+request);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Request rejected on global filter "+request);
 			}
 			return null;		// escape
 		}
@@ -167,7 +166,7 @@ public class MainServlet extends DHCPServlet {
 				
 		// what have we got for a subnet ?
 		if (subnet == null) {
-			logger.warning("Packet is not in any subnet: "+request);
+			logger.warn("Packet is not in any subnet: "+request);
 			return null;		// ignore request
 		}
 		

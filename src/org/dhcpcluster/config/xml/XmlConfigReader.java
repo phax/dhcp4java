@@ -22,13 +22,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.log4j.Logger;
 import org.dhcpcluster.DHCPClusterNode;
 import org.dhcpcluster.config.ConfigException;
 import org.dhcpcluster.config.FrontendConfig;
@@ -44,7 +43,7 @@ import org.dhcpcluster.config.xml.data.DhcpServer;
  */
 public class XmlConfigReader implements GenericConfigReader {
 	
-	private static final Logger logger = Logger.getLogger(XmlConfigReader.class.getName().toLowerCase());
+	private static final Logger logger = Logger.getLogger(XmlConfigReader.class);
 
 	private boolean inited = false;
 	
@@ -64,11 +63,11 @@ public class XmlConfigReader implements GenericConfigReader {
 			throw new NullPointerException();
 		}
 		String xmlFilename = configProperties.getProperty(CONFIG_XML_FILE);
-		logger.config("xmlResourcePath ="+xmlFilename);
+		logger.info("xmlResourcePath ="+xmlFilename);
 		try {
 			xml = new FileInputStream(xmlFilename);
 		} catch (FileNotFoundException e) {
-			logger.log(Level.SEVERE, "File not found!"+xmlFilename, e);
+			logger.fatal("File not found", e);
     		throw new ConfigException("File not found!"+xmlFilename, e);
 		}
     	//InputStream xml = ClassLoader.getSystemResourceAsStream("org/dhcp4java/server/config/xml/configtest.xml");
@@ -77,7 +76,7 @@ public class XmlConfigReader implements GenericConfigReader {
     		parseXmlFile(xml);
     		inited = true;
     	} catch (ConfigException e) {
-    		logger.log(Level.SEVERE, "config exception", e);
+    		logger.fatal("config exception", e);
     	}
 		// TODO
 	}
@@ -133,7 +132,7 @@ public class XmlConfigReader implements GenericConfigReader {
 			Unmarshaller u = jc.createUnmarshaller();
 			dhcpServerData = (DhcpServer)u.unmarshal(xml);
 		} catch (JAXBException e) {
-			logger.log(Level.SEVERE, "XML Parsing error", e);
+			logger.fatal("XML Parsing error", e);
 			throw new ConfigException("XML Parsing error", e);
 		}
 		// ready to read data in memory

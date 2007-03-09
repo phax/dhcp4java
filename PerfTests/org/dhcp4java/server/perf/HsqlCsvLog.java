@@ -26,11 +26,10 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.dhcpcluster.backend.LogOutputStream;
 import org.dhcpcluster.backend.hsql.DataAccess;
 import org.hsqldb.Server;
@@ -45,13 +44,13 @@ public class HsqlCsvLog {
 	private static final Logger logger = Logger.getLogger(HsqlCsvLog.class.getName().toLowerCase());
 
 	private static final PrintWriter		logWriter = new PrintWriter(new LogOutputStream(Level.INFO));
-	private static final PrintWriter		errWriter = new PrintWriter(new LogOutputStream(Level.SEVERE));
+	private static final PrintWriter		errWriter = new PrintWriter(new LogOutputStream(Level.ERROR));
 	
 	private static Server sqlServer;
 	
 	public static void initServer() {
 		if (!loadDriver("org.hsqldb.jdbcDriver")) {
-			logger.severe("Cannot load hsql driver org.hsqldb.jdbcDriver");
+			logger.fatal("Cannot load hsql driver org.hsqldb.jdbcDriver");
 		}
 		
 		sqlServer = new Server();
@@ -71,7 +70,7 @@ public class HsqlCsvLog {
 		assert(conn != null);
 		QueryRunner qRunner = new QueryRunner();
 		int res = qRunner.update(conn, "DELETE FROM T_LEASE_ARCHIVE");
-		logger.fine("Delete all from T_LEASE_ARCHIVE: "+res+" deleted");
+		logger.debug("Delete all from T_LEASE_ARCHIVE: "+res+" deleted");
 	}
 	
 	private static void insert1Log(Connection conn) throws SQLException {
@@ -94,7 +93,6 @@ public class HsqlCsvLog {
 	public static void main(String[] args) throws IOException, SQLException {
 		Connection conn;
 		int len = 100000;
-		LogManager.getLogManager().readConfiguration(ClassLoader.getSystemResourceAsStream("logging.properties"));
 		
 		initServer();
 		conn = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost/dhcpclusterPerf", "sa", "");

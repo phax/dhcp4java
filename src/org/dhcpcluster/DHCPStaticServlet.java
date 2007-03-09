@@ -22,9 +22,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Logger;
 import org.dhcp4java.DHCPOption;
 import org.dhcp4java.DHCPPacket;
 import org.dhcp4java.DHCPResponseFactory;
@@ -68,7 +67,7 @@ public class DHCPStaticServlet extends DHCPServlet {
 						InetAddress addr = InetAddress.getByName(addrString);
                         this.macIpMap.put(key.substring(CLIENT_MAC_PREFIX.length()), addr);
 					} catch (UnknownHostException e) {
-						logger.log(Level.SEVERE, "Could not parse InetAddress "+addrString, e);
+						logger.error("Could not parse InetAddress "+addrString, e);
 					}
 				}
 			}
@@ -159,7 +158,7 @@ public class DHCPStaticServlet extends DHCPServlet {
 	 */
 	@Override
 	protected DHCPPacket doDecline(DHCPPacket request) {
-		logger.warning("DHCPDECLINE received:"+request.toString());
+		logger.warn("DHCPDECLINE received:"+request.toString());
 		return null;
 	}
 
@@ -208,10 +207,10 @@ public class DHCPStaticServlet extends DHCPServlet {
 	public static void main(String[] args) {
         try {
             DHCPCoreServer server = DHCPCoreServer.initServer(new DHCPStaticServlet(), null);
-            logger.setLevel(Level.OFF);
+            //logger.setLevel(Level.OFF);
             new Thread(server).start();
         } catch (DHCPServerInitException e) {
-            logger.log(Level.SEVERE, "Server init", e);
+            logger.fatal("Server init", e);
         }
     }
 }

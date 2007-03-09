@@ -21,11 +21,11 @@ package org.dhcpcluster.backend.hsql;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.util.logging.Logger;
 
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ArrayHandler;
+import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.ISO8601DateFormat;
 import org.dhcp4java.InetCidr;
 import org.dhcp4java.Util;
@@ -61,7 +61,7 @@ public class LeaseStoredProcedures {
 		// find first free bubble for poolId
 		Object[] res = (Object[]) qRunner.query(conn, SELECT_BUBBLE_FROM_POOL_SET, (Long) poolId, arrayHandler);
 		if (res == null) {
-			logger.warning("No lease left for poolId="+poolId);
+			logger.warn("No lease left for poolId="+poolId);
 			return 0;
 		}
 		assert(res.length == 3);
@@ -75,13 +75,13 @@ public class LeaseStoredProcedures {
 			args[0] = (Long) (startIp + 1);
 			args[1] = (Long) bubbleId;
 			if (qRunner.update(conn, UPDATE_BUBBLE_START_IP, args) != 1) {
-				logger.severe("Cannot update bubble startIp="+(startIp+1)+" bubble_id="+bubbleId);
+				logger.error("Cannot update bubble startIp="+(startIp+1)+" bubble_id="+bubbleId);
 				return -1;
 			}
 		} else {
 			// delete bubble which is now empty
 			if (qRunner.update(conn, DELETE_BUBBLE_ID, (Long) bubbleId) != 1) {
-				logger.severe("Cannot delete bubble bubble_id="+bubbleId);
+				logger.error("Cannot delete bubble bubble_id="+bubbleId);
 				return -2;
 			}
 		}
@@ -96,7 +96,7 @@ public class LeaseStoredProcedures {
 		args[5] = null;					// uid
 		args[6] = 1;					// status
 		if (qRunner.update(conn, INSERT_LEASE, args) != 1) {
-			logger.severe("Cannot insert Lease ip="+startIp+" mac="+mac);
+			logger.error("Cannot insert Lease ip="+startIp+" mac="+mac);
 			return -3;
 		}
 		
@@ -120,7 +120,7 @@ public class LeaseStoredProcedures {
 		DHCPLease curLease = DataAccess.getLease(conn, requestedIp);
 		long now = System.currentTimeMillis();
 		if (curLease == null) {
-			logger.fine("No active lease for ip: "+requestedIp);
+			logger.debug("No active lease for ip: "+requestedIp);
 			// create new lease
 			curLease = new DHCPLease();
 			curLease.setIp(requestedIp);

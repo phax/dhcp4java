@@ -27,10 +27,8 @@ import java.sql.SQLException;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Logger;
 import org.dhcp4java.DHCPCoreServer;
 import org.dhcp4java.DHCPServerInitException;
 import org.dhcp4java.DHCPServlet;
@@ -118,7 +116,7 @@ public class DHCPClusterNode implements Serializable, Runnable {
 			Object[] constrParams = { };
 			configReader = (GenericConfigReader) configReaderClassname.getConstructor(constrSignature).newInstance(constrParams);
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Unable to load configuration", e);
+			logger.fatal("Unable to load configuration", e);
 			throw new ConfigException("Unable to load configuration", e);
 		}
 		
@@ -230,8 +228,6 @@ public class DHCPClusterNode implements Serializable, Runnable {
 	 * @param args
 	 */
 	public static void main(String[] args) throws IOException, URISyntaxException, ConfigException, DHCPServerInitException {
-		// set all logging levels
-    	LogManager.getLogManager().readConfiguration(ClassLoader.getSystemResourceAsStream("logging.properties"));
     	
     	// parse command-line options
     	ClusterOptions bean = new ClusterOptions();
@@ -266,7 +262,7 @@ public class DHCPClusterNode implements Serializable, Runnable {
 			db.startServer();
 			return db;
 		} catch (SQLException e) {
-			logger.log(Level.SEVERE, "Cannot connect to DB", e);
+			logger.fatal("Cannot connect to DB", e);
 			throw new RuntimeException(e);
 		}
 	}

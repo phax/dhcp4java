@@ -24,9 +24,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.dhcp4java.HardwareAddress;
 import org.dhcpcluster.DHCPClusterNode;
 import org.dhcpcluster.backend.DHCPBackendIntf;
@@ -46,17 +46,17 @@ import static org.dhcpcluster.backend.hsql.DataAccess.*;
  */
 public class HsqlBackendServer implements DHCPBackendIntf {
 
-	private static final Logger logger = Logger.getLogger(HsqlBackendServer.class.getName().toLowerCase());
+	private static final Logger logger = Logger.getLogger(HsqlBackendServer.class);
 		
 	private Server sqlServer = null;
 	private Connection conn = null;
 	
 	private final PrintWriter		logWriter = new PrintWriter(new LogOutputStream(Level.INFO));
-	private final PrintWriter		errWriter = new PrintWriter(new LogOutputStream(Level.SEVERE));
+	private final PrintWriter		errWriter = new PrintWriter(new LogOutputStream(Level.ERROR));
 	
 	public HsqlBackendServer() {
 		if (!loadDriver("org.hsqldb.jdbcDriver")) {
-			logger.severe("Cannot load hsql driver org.hsqldb.jdbcDriver");
+			logger.fatal("Cannot load hsql driver org.hsqldb.jdbcDriver");
 		}
 		
 		sqlServer = new Server();
@@ -116,7 +116,7 @@ public class HsqlBackendServer implements DHCPBackendIntf {
 			conn.commit();
 			
 		} catch (SQLException e) {
-			logger.log(Level.SEVERE, "Unexpected SQLException when preparing backend", e);
+			logger.fatal("Unexpected SQLException when preparing backend", e);
 		} finally {
 			closeQuietly(conn);
 		}
@@ -124,11 +124,11 @@ public class HsqlBackendServer implements DHCPBackendIntf {
 
 	public void shutdown() {
 		try {
-			logger.fine("issuing SHUTDOWN sql command");
+			logger.debug("issuing SHUTDOWN sql command");
 			DataAccess.shutdown(conn);
-			logger.fine("SHUTDOWN sql command complete");
+			logger.debug("SHUTDOWN sql command complete");
 		} catch (SQLException e) {
-			logger.log(Level.SEVERE, "Cannot SHUTDOWN db", e);
+			logger.error("Cannot SHUTDOWN db", e);
 		} finally {
 			closeQuietly(conn);
 		}

@@ -20,8 +20,9 @@ package org.dhcpcluster.backend;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  * 
@@ -30,7 +31,7 @@ import java.util.logging.Logger;
  */
 public class LogOutputStream extends OutputStream {
 
-	private static final Logger logger = Logger.getLogger(LogOutputStream.class.getName().toLowerCase());
+	private static final Logger logger = Logger.getLogger(LogOutputStream.class);
 	
 	private final Level		logLevel;
 	
@@ -60,7 +61,7 @@ public class LogOutputStream extends OutputStream {
 		while ((message.endsWith("\r")) || (message.endsWith("\n"))) {
 			message = message.substring(0, message.length() - 1);
 		}
-		logger.logp(logLevel, "hsql", logLevel.equals(Level.INFO) ? "log" : "error", message);
+		logger.log(logLevel, message);
 	}
 
     static String bytesToString(byte[] buf, int src, int len) {
