@@ -19,12 +19,14 @@
 package org.dhcpcluster.backend.hsql;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ArrayHandler;
+import org.apache.log4j.helpers.ISO8601DateFormat;
 import org.dhcp4java.InetCidr;
 import org.dhcp4java.Util;
 import org.dhcpcluster.struct.DHCPLease;
@@ -162,6 +164,28 @@ public class LeaseStoredProcedures {
 	public static String longCidrToString(long cidr) {
 		return InetCidr.fromLong(cidr).toString();
 	}
+	
+
+	public static void logLease(long ip, Date creation, Date update, Date expiration, DHCPLease.Status prevStatus, String mac,
+									String uid, String icc) {
+		StringBuffer sb = new StringBuffer(127);
+		sb.append(Util.long2InetAddress(ip).getHostAddress());
+		sb.append(';');
+		dateFormatter.format(creation, sb, null);
+		sb.append(';');
+		dateFormatter.format(update, sb, null);
+		sb.append(';');
+		dateFormatter.format(expiration, sb, null);
+		sb.append(';');
+		sb.append(prevStatus.toString()).append(';');
+		sb.append(mac).append(';');
+		sb.append((uid!=null)? uid: "").append(';');
+		sb.append((icc!=null)? icc: "");
+		archiveLog.info(sb);
+	}
+
+	private static final ISO8601DateFormat dateFormatter = new ISO8601DateFormat();
+	private static final org.apache.log4j.Logger archiveLog = org.apache.log4j.Logger.getLogger("archive.dhcp");
 
 	private static final String	SELECT_BUBBLE_FROM_POOL_SET = queries.get("SELECT_BUBBLE_FROM_POOL_SET");
 	private static final String	UPDATE_BUBBLE_START_IP = queries.get("UPDATE_BUBBLE_START_IP");
