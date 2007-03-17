@@ -1,0 +1,90 @@
+/*  projection.css - MoinMoin Slide Styles
+
+Copyright (c) 2003 by Juergen Hermann
+*/
+@import url("monobook.css");
+@import url("screen.css");
+
+html { line-height: 1.8em; }
+
+#page {
+    margin: 0;
+    padding: 0;
+    border: none;
+    z-index: 1;
+    padding-bottom: 1em;
+}
+
+#content {
+    padding: 1em;
+}
+
+body, b, em, a, span, div, p, td { font-size: 22pt; }
+
+h1 {
+    font-size: 16pt;
+    margin: 0;
+    background: #81BBF2;
+}
+
+h2 {
+    font-size: 32pt;
+    margin-top: 0.5em;
+    padding-left: 1em;
+    padding-right: 1em;
+    border-bottom: 4px solid blue;
+}
+
+h3 { font-size: 22pt; }
+h4 { font-size: 20pt; }
+h5 { font-size: 18pt; }
+h6 { font-size: 16pt; }
+tt,pre { font-size: 18pt; }
+sup, sub { font-size: 14pt; }
+
+
+#pageinfo {
+	display: none;
+}
+
+#timings{
+	display: none;
+}
+
+#navigation {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	padding: 0;
+	border-top: 1px dotted #808080;
+	color: #808080;  
+	font-size: 10pt;
+    z-index: 2;
+    background: White;
+}
+
+#navigation ul {
+    margin: 8pt;
+	text-align: center;
+}
+
+#navigation a {
+ 	text-decoration: none;
+}
+
+#navigation li {
+	display: inline;
+    text-align: center;
+	margin: 0 2pt;
+	padding: 0;
+}
+
+#navigation li.current {
+    border: 1pt solid #808080;
+    padding: 2pt 4pt;
+}
+
+.codenumbers{
+   display: None;
+}
