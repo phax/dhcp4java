@@ -51,6 +51,7 @@ public class HsqlBackendServer implements DHCPBackendIntf {
 	private Server sqlServer = null;
 	private Connection conn = null;
 	
+	private final PrintWriter		debugWriter = new PrintWriter(new LogOutputStream(Level.DEBUG));
 	private final PrintWriter		logWriter = new PrintWriter(new LogOutputStream(Level.INFO));
 	private final PrintWriter		errWriter = new PrintWriter(new LogOutputStream(Level.ERROR));
 	
@@ -61,9 +62,10 @@ public class HsqlBackendServer implements DHCPBackendIntf {
 		
 		sqlServer = new Server();
 		sqlServer.setErrWriter(errWriter);
-		sqlServer.setLogWriter(logWriter);
+		sqlServer.setLogWriter(debugWriter);
 		
 		sqlServer.setSilent(true);
+		sqlServer.setLogWriter(logWriter);
 		sqlServer.setTrace(true);
 		sqlServer.setAddress("localhost");
 		sqlServer.setDatabaseName(0, "dhcpcluster");
@@ -73,6 +75,7 @@ public class HsqlBackendServer implements DHCPBackendIntf {
 	}
 	
 	public void startServer() throws SQLException {
+		DriverManager.setLogWriter(debugWriter);
 		conn = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost/dhcpcluster", "sa", "");
 		
 		// testing
