@@ -20,6 +20,8 @@ package org.dhcp4java.test;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.dhcp4java.InetCidr;
 import org.dhcp4java.Util;
@@ -61,6 +63,25 @@ public class InetCidrTest {
 	@Test (expected=IllegalArgumentException.class)
 	public void testConstructorBadArgMaskTooBig() throws Exception {
 		new InetCidr(InetAddress.getByName("16.17.18.19"), 33);
+	}
+	
+	@Test
+	public void testConstructor2() throws Exception {
+		InetCidr cidr0 = new InetCidr(InetAddress.getByName("10.11.12.0"), 24);
+		InetCidr cidr1 = new InetCidr(InetAddress.getByName("10.11.12.0"), InetAddress.getByName("255.255.255.0"));
+		assertEquals(cidr0, cidr1);
+	}
+	@Test (expected=NullPointerException.class)
+	public void testConstructorBadArgNull2() {
+		new InetCidr(null, null);
+	}
+	@Test (expected=IllegalArgumentException.class)
+	public void testConstructorBadArgIPv62() throws Exception {
+		new InetCidr(InetAddress.getByName("1080:0:0:0:8:800:200C:417A"), InetAddress.getByName("255.255.255.0"));
+	}
+	@Test (expected=IllegalArgumentException.class)
+	public void testConstructorBadArgMask() throws Exception {
+		new InetCidr(InetAddress.getByName("10.11.12.0"), InetAddress.getByName("255.255.255.12"));
 	}
 
 	@Test
@@ -144,4 +165,81 @@ public class InetCidrTest {
 		InetCidr cidr = new InetCidr(InetAddress.getByName("10.11.12.0"), 24);
 		assertEquals(0x180A0B0C00L, cidr.toLong());
 	}
+	
+	@Test
+	public void testFromLong() throws UnknownHostException {
+		InetCidr cidr = new InetCidr(InetAddress.getByName("10.11.12.0"), 24);
+		assertEquals(cidr, InetCidr.fromLong(0x180A0B0C00L));
+		assertEquals(cidr, InetCidr.fromLong(0x180A0B0CFFL));
+	}
+	@Test (expected=IllegalArgumentException.class)
+	public void testFromLongNegative() {
+		InetCidr.fromLong(-1);
+	}
+	
+	@Test
+	public void testCompareTo() throws UnknownHostException {
+		InetCidr cidr0 = new InetCidr(InetAddress.getByName("10.11.12.0"), 24);
+		InetCidr cidr1 = new InetCidr(InetAddress.getByName("10.11.12.0"), 24);
+		InetCidr cidr2 = new InetCidr(InetAddress.getByName("10.11.12.0"), 23);
+		InetCidr cidr3 = new InetCidr(InetAddress.getByName("10.11.12.0"), 25);
+		InetCidr cidr4 = new InetCidr(InetAddress.getByName("10.11.11.0"), 24);
+		InetCidr cidr5 = new InetCidr(InetAddress.getByName("10.11.13.0"), 24);
+		InetCidr cidr6 = new InetCidr(InetAddress.getByName("11.11.12.0"), 24);
+		InetCidr cidr7 = new InetCidr(InetAddress.getByName("129.11.12.0"), 24);
+
+		assertEquals(0, cidr0.compareTo(cidr0));
+		assertEquals(0, cidr0.compareTo(cidr1));
+		assertEquals(1, cidr1.compareTo(cidr2));
+		assertEquals(-1, cidr1.compareTo(cidr3));
+		assertEquals(1, cidr1.compareTo(cidr4));
+		assertEquals(-1, cidr1.compareTo(cidr5));
+		assertEquals(-1, cidr1.compareTo(cidr6));
+		assertEquals(-1, cidr1.compareTo(cidr7));
+	}
+	
+	@Test
+	public void testIsInetCidrListSorted() throws Exception {
+		InetCidr cidr1 = new InetCidr(InetAddress.getByName("10.11.12.0"), 24);
+//		InetCidr cidr2 = new InetCidr(InetAddress.getByName("10.11.12.0"), 23);
+		InetCidr cidr3 = new InetCidr(InetAddress.getByName("10.11.12.0"), 25);
+//		InetCidr cidr4 = new InetCidr(InetAddress.getByName("10.11.11.0"), 24);
+		InetCidr cidr5 = new InetCidr(InetAddress.getByName("10.11.13.0"), 24);
+//		InetCidr cidr6 = new InetCidr(InetAddress.getByName("11.11.12.0"), 24);
+		InetCidr cidr7 = new InetCidr(InetAddress.getByName("129.11.12.0"), 24);
+		
+		assertEquals(true, InetCidr.isInetCidrListSorted(null));
+		List<InetCidr> list1 = new ArrayList<InetCidr>();
+		list1.add(cidr1);
+		list1.add(cidr3);
+		list1.add(cidr5);
+		list1.add(cidr7);
+		assertEquals(true, InetCidr.isInetCidrListSorted(list1));
+		list1 = new ArrayList<InetCidr>();
+		list1.add(cidr1);
+		list1.add(cidr5);
+		list1.add(cidr3);
+		list1.add(cidr7);
+		assertEquals(false, InetCidr.isInetCidrListSorted(list1));
+		list1 = new ArrayList<InetCidr>();
+		list1.add(cidr1);
+		list1.add(cidr3);
+		list1.add(cidr3);
+		list1.add(cidr5);
+		list1.add(cidr7);
+		assertEquals(false, InetCidr.isInetCidrListSorted(list1));
+	}
+	@Test (expected=NullPointerException.class)
+	public void testIsInetCidrListSortedNullElement() throws Exception {
+		List<InetCidr> list1 = new ArrayList<InetCidr>();
+		list1.add(null);
+		InetCidr.isInetCidrListSorted(list1);
+	}
+	
+	@Test (expected=NullPointerException.class)
+	public void testCompareToNull() throws UnknownHostException {
+		InetCidr cidr1 = new InetCidr(InetAddress.getByName("10.11.12.0"), 24);
+		cidr1.compareTo(null);
+	}
+	
 }

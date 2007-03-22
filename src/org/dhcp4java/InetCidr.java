@@ -23,6 +23,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.dhcp4java.Util;
@@ -31,7 +32,7 @@ import org.dhcp4java.Util;
  * @author yshi7355
  *
  */
-public class InetCidr implements Serializable {
+public class InetCidr implements Serializable, Comparable {
 	private static final long serialVersionUID = 1L;
 
     private final int addr;
@@ -188,6 +189,68 @@ public class InetCidr implements Serializable {
             cidrs[32 - i] = new InetCidr(Util.int2InetAddress(addrInt & gCidrMask[i]), i);
         }
         return cidrs;
+    }
+    
+    /**
+     * Compare two InetCidr by its addr as main criterion, mask as second.
+     * 
+     * <p>Note: this class has a natural ordering that is inconsistent with equals.
+     * @param o
+     * @return
+     */
+	public int compareTo(Object o) {
+		if (o == null) {
+			throw new NullPointerException();
+		}
+		if (equals(o)) {
+			return 0;
+		}
+		InetCidr oo = (InetCidr) o;
+		if (int2UnsignedLong(this.addr) < int2UnsignedLong(oo.addr)) {
+			return -1;
+		} else if (int2UnsignedLong(this.addr) > int2UnsignedLong(oo.addr)) {
+			return 1;
+		} else {		// addr are identical, now coparing mask
+			if (this.mask < oo.mask) {
+				return -1;
+			} else if (this.mask > oo.mask) {
+				return 1;
+			} else {
+				return 0;		// shoul not happen
+			}
+		}
+	}
+
+    private final static long int2UnsignedLong(int i) {
+    	return (((long)i) & 0xFFFFFFFFL);
+    }
+
+	/**
+     * Checks whether a list of InetCidr is strictly sorted (no 2 equal objects).
+     * 
+     * @param list list of potentially sorted <tt>InetCidr</tt>
+     * @return true if <tt>list</tt> is sorted or <tt>null</tt>
+     * @throws NullPointerException if one or more elements of the list are null
+     */
+    public static boolean isInetCidrListSorted(List<InetCidr> list) {
+    	if (list == null) {
+    		return true;
+    	}
+    	InetCidr pivot = null;
+    	for (InetCidr cidr : list) {
+    		if (cidr == null) {
+    			throw new NullPointerException();
+    		}
+    		if (pivot == null) {
+    			pivot = cidr;
+    		} else {
+    			if (pivot.compareTo(cidr) >= 0) {
+    				return false;
+    			}
+    			pivot = cidr;
+    		}
+    	}
+    	return true;
     }
 
     private static final String[] CIDR_MASKS = {
