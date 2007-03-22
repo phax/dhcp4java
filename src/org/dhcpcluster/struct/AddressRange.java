@@ -21,6 +21,7 @@ package org.dhcpcluster.struct;
 import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dhcp4java.InetCidr;
@@ -159,6 +160,9 @@ public final class AddressRange implements Serializable, Comparable {
 	/**
 	 * Compares this object with the specified object for order.
 	 * 
+	 * <p>rangeStart is first compared, if equal then rangeEnd is compared.
+	 * 
+     * <p>Note: this class has a natural ordering that is inconsistent with equals.
 	 * @param o the Object to be compared.
 	 * @return a negative integer, zero, or a positive integer as this object is less than, equal to, 
 	 * 			or greater than the specified object.
@@ -180,5 +184,34 @@ public final class AddressRange implements Serializable, Comparable {
 			return 0;
 		}
 	}
+	
+
+	/**
+     * Checks whether a list of AddressRange is strictly sorted (no 2 equal objects).
+     * 
+     * @param list list of potentially sorted <tt>AddressRange</tt>
+     * @return true if <tt>list</tt> is sorted or <tt>null</tt>
+     * @throws NullPointerException if one or more elements of the list are null
+     */
+    public static boolean isAddressRangeListSorted(List<AddressRange> list) {
+    	if (list == null) {
+    		return true;
+    	}
+    	AddressRange pivot = null;
+    	for (AddressRange adrr : list) {
+    		if (adrr == null) {
+    			throw new NullPointerException();
+    		}
+    		if (pivot == null) {
+    			pivot = adrr;
+    		} else {
+    			if (pivot.compareTo(adrr) >= 0) {
+    				return false;
+    			}
+    			pivot = adrr;
+    		}
+    	}
+    	return true;
+    }
 
 }
