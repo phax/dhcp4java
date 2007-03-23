@@ -193,7 +193,7 @@ public final class AddressRange implements Serializable, Comparable {
      * @return true if <tt>list</tt> is sorted or <tt>null</tt>
      * @throws NullPointerException if one or more elements of the list are null
      */
-    public static boolean isAddressRangeListSorted(List<AddressRange> list) {
+    public static boolean isSorted(List<AddressRange> list) {
     	if (list == null) {
     		return true;
     	}
@@ -209,6 +209,36 @@ public final class AddressRange implements Serializable, Comparable {
     				return false;
     			}
     			pivot = adrr;
+    		}
+    	}
+    	return true;
+    }
+
+    /**
+     * Checks whether the list does not contain any overlapping address ranges.
+     * 
+     * <p>Pre-requisite: list must be already sorted.
+     * @param list sorted list of <tt>AddressRange</tt>
+     * @return true if it does not contain any overlapping address ranges, true if list is null
+     * @throws NullPointerException if a list element is null
+     */
+    public static boolean hasNoOverlap(List<AddressRange> list) {
+    	if (list == null) {
+    		return true;
+    	}
+    	assert(isSorted(list));
+    	long pivotEnd = -1;
+    	for (AddressRange adrr : list) {
+    		if (adrr == null) {
+    			throw new NullPointerException();
+    		}
+    		if (pivotEnd < 0) {
+    			pivotEnd = adrr.getRangeEndLong();
+    		} else {
+    			if (adrr.getRangeStartLong() <= pivotEnd) {
+    				return false;
+    			}
+    			pivotEnd = adrr.getRangeEndLong();
     		}
     	}
     	return true;

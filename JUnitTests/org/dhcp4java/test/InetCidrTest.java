@@ -247,7 +247,7 @@ public class InetCidrTest {
 		InetCidr cidr1 = new InetCidr(InetAddress.getByName("10.11.12.0"), 24);
 		InetCidr cidr2 = new InetCidr(InetAddress.getByName("10.11.12.0"), 23);
 		InetCidr cidr3 = new InetCidr(InetAddress.getByName("10.11.12.0"), 25);
-		InetCidr cidr4 = new InetCidr(InetAddress.getByName("10.11.11.0"), 24);
+//		InetCidr cidr4 = new InetCidr(InetAddress.getByName("10.11.11.0"), 24);
 		InetCidr cidr5 = new InetCidr(InetAddress.getByName("10.11.13.0"), 24);
 		InetCidr cidr6 = new InetCidr(InetAddress.getByName("11.11.12.0"), 24);
 		InetCidr cidr7 = new InetCidr(InetAddress.getByName("129.11.12.0"), 24);
