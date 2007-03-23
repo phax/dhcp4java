@@ -88,7 +88,7 @@ public class InetCidrTest {
 	public void testAddrmask2CidrGood() {
 		InetAddress ip = Util.int2InetAddress(0x12345678);
 		InetCidr cidr1 = new InetCidr(ip, 30);
-		InetCidr cidr2 = InetCidr.addrmask2Cidr(ip, Util.int2InetAddress(0xFFFFFFFC));
+		InetCidr cidr2 = new InetCidr(ip, Util.int2InetAddress(0xFFFFFFFC));
 		assertEquals(cidr1, cidr2);
 	}
 	
@@ -121,18 +121,18 @@ public class InetCidrTest {
 		assertFalse(cidr1.equals(new InetCidr(InetAddress.getByName("225.17.252.0"), 24)));
 	}
 	
-	@Test (expected=IllegalArgumentException.class)
+	@Test (expected=NullPointerException.class)
 	public void testAddrmask2CidrAddrNull() {
-		InetCidr.addrmask2Cidr(null, Util.int2InetAddress(0x12345678));
+		new InetCidr(null, Util.int2InetAddress(0x12345678));
 	}
-	@Test (expected=IllegalArgumentException.class)
+	@Test (expected=NullPointerException.class)
 	public void testAddrmask2CidrAddrMask() {
-		InetCidr.addrmask2Cidr(Util.int2InetAddress(0x12345678), null);
+		new InetCidr(Util.int2InetAddress(0x12345678), null);
 	}
 	@Test (expected=IllegalArgumentException.class)
 	public void testAddrmask2CidrBadMask() {
 		InetAddress ip = Util.int2InetAddress(0x12345678);
-		InetCidr.addrmask2Cidr(ip, ip);		// exception should be raised here
+		new InetCidr(ip, ip);		// exception should be raised here
 	}
 	
 	@Test
@@ -208,38 +208,71 @@ public class InetCidrTest {
 //		InetCidr cidr6 = new InetCidr(InetAddress.getByName("11.11.12.0"), 24);
 		InetCidr cidr7 = new InetCidr(InetAddress.getByName("129.11.12.0"), 24);
 		
-		assertEquals(true, InetCidr.isInetCidrListSorted(null));
+		assertEquals(true, InetCidr.isSorted(null));
 		List<InetCidr> list1 = new ArrayList<InetCidr>();
 		list1.add(cidr1);
 		list1.add(cidr3);
 		list1.add(cidr5);
 		list1.add(cidr7);
-		assertEquals(true, InetCidr.isInetCidrListSorted(list1));
+		assertEquals(true, InetCidr.isSorted(list1));
 		list1 = new ArrayList<InetCidr>();
 		list1.add(cidr1);
 		list1.add(cidr5);
 		list1.add(cidr3);
 		list1.add(cidr7);
-		assertEquals(false, InetCidr.isInetCidrListSorted(list1));
+		assertEquals(false, InetCidr.isSorted(list1));
 		list1 = new ArrayList<InetCidr>();
 		list1.add(cidr1);
 		list1.add(cidr3);
 		list1.add(cidr3);
 		list1.add(cidr5);
 		list1.add(cidr7);
-		assertEquals(false, InetCidr.isInetCidrListSorted(list1));
+		assertEquals(false, InetCidr.isSorted(list1));
 	}
 	@Test (expected=NullPointerException.class)
 	public void testIsInetCidrListSortedNullElement() throws Exception {
 		List<InetCidr> list1 = new ArrayList<InetCidr>();
 		list1.add(null);
-		InetCidr.isInetCidrListSorted(list1);
+		InetCidr.isSorted(list1);
 	}
 	
 	@Test (expected=NullPointerException.class)
 	public void testCompareToNull() throws UnknownHostException {
 		InetCidr cidr1 = new InetCidr(InetAddress.getByName("10.11.12.0"), 24);
 		cidr1.compareTo(null);
+	}
+	
+	@Test
+	public void testHasNoOverlap() throws UnknownHostException {
+		InetCidr cidr1 = new InetCidr(InetAddress.getByName("10.11.12.0"), 24);
+		InetCidr cidr2 = new InetCidr(InetAddress.getByName("10.11.12.0"), 23);
+		InetCidr cidr3 = new InetCidr(InetAddress.getByName("10.11.12.0"), 25);
+		InetCidr cidr4 = new InetCidr(InetAddress.getByName("10.11.11.0"), 24);
+		InetCidr cidr5 = new InetCidr(InetAddress.getByName("10.11.13.0"), 24);
+		InetCidr cidr6 = new InetCidr(InetAddress.getByName("11.11.12.0"), 24);
+		InetCidr cidr7 = new InetCidr(InetAddress.getByName("129.11.12.0"), 24);
+		List<InetCidr> list = new ArrayList<InetCidr>();
+		list.add(cidr1);
+		list.add(cidr5);
+		list.add(cidr6);
+		list.add(cidr7);
+		assertEquals(true, InetCidr.hasNoOverlap(list));
+		list.clear();
+		list.add(cidr1);
+		list.add(cidr2);
+		list.add(cidr3);
+		assertEquals(false, InetCidr.hasNoOverlap(list));
+		list.clear();
+		list.add(new InetCidr(InetAddress.getByName("10.11.0.0"), 16));
+		list.add(cidr1);
+		assertEquals(false, InetCidr.hasNoOverlap(list));
+		assertEquals(true, InetCidr.hasNoOverlap(null));
+	}
+	@Test (expected=NullPointerException.class)
+	public void testHasNoOverlapNullElement() {
+		List<InetCidr> list = new ArrayList<InetCidr>();
+		list.add(null);
+		InetCidr.hasNoOverlap(list);
 	}
 	
 }

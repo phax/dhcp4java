@@ -60,10 +60,21 @@ public class InetCidr implements Serializable, Comparable {
         }
 
         // apply mask to address
-        this.addr = Util.inetAddress2Int(addr) & gCidrMask[mask];
+        this.addr = Util.inetAddress2Int(addr) & (int) gCidrMask[mask];
         this.mask = mask;
     }
-    
+
+    /**
+     * Constructs a <tt>InetCidr</tt> provided an ip address and an ip mask.
+     * 
+     * <p>If the mask is not valid, an exception is raised.
+     * 
+     * @param addr the ip address (IPv4)
+     * @param netMask the ip mask
+     * @return the cidr
+     * @throws IllegalArgumentException if <tt>addr</tt> or <tt>netMask</tt> is <tt>null</tt>.
+     * @throws IllegalArgumentException if the <tt>netMask</tt> is not a valid one.
+     */
     public InetCidr(InetAddress addr, InetAddress netMask) {
     	if ((addr == null) || (netMask == null)) {
     		throw new NullPointerException();
@@ -76,9 +87,8 @@ public class InetCidr implements Serializable, Comparable {
     	if (mask == null) {
     		throw new IllegalArgumentException("netmask: "+netMask+" is not a valid mask");
     	}
-        this.addr = Util.inetAddress2Int(addr) & gCidrMask[mask];
+        this.addr = Util.inetAddress2Int(addr) & (int) gCidrMask[mask];
         this.mask = mask;
-        // TODO add to unit test
     }
 
     public String toString() {
@@ -91,6 +101,12 @@ public class InetCidr implements Serializable, Comparable {
      */
     public InetAddress getAddr() {
         return Util.int2InetAddress(addr);
+    }
+    /**
+     * @return Returns the addr as a long.
+     */
+    public long getAddrLong() {
+    	return ((long)addr) & 0xFFFFFFFFL;
     }
     /**
      * @return Returns the mask.
@@ -140,34 +156,6 @@ public class InetCidr implements Serializable, Comparable {
     }
 
     /**
-     * Constructs a <tt>InetCidr</tt> provided an ip address and an ip mask.
-     * 
-     * <p>If the mask is not valid, an exception is raised.
-     * 
-     * @param addr the ip address (IPv4)
-     * @param mask the ip mask
-     * @return the cidr
-     * @throws IllegalArgumentException if <tt>addr</tt> or <tt>mask</tt> is <tt>null</tt>.
-     * @throws IllegalArgumentException if the mask is not a valid one.
-     */
-    public static final InetCidr addrmask2Cidr(InetAddress addr, InetAddress mask) {
-    	if (addr == null) {
-            throw new IllegalArgumentException("addr must not be null");
-    	}
-        if (mask == null) {
-            throw new IllegalArgumentException("mask must not be null");
-        }
-
-        final Integer maskIndex = gCidr.get(mask);
-
-        if (maskIndex == null) {
-        	throw new IllegalArgumentException("invalid mask: " + mask.getHostAddress());
-        }
-
-        return new InetCidr(addr, maskIndex);
-    }
-
-    /**
      * Returns an array of all cidr combinations with the provided ip address.
      * 
      * <p>The array is ordered from the most specific to the most general mask.
@@ -186,7 +174,7 @@ public class InetCidr implements Serializable, Comparable {
         InetCidr[] cidrs   = new InetCidr[32];
 
         for (int i = cidrs.length; i >= 1; i--) {
-            cidrs[32 - i] = new InetCidr(Util.int2InetAddress(addrInt & gCidrMask[i]), i);
+            cidrs[32 - i] = new InetCidr(Util.int2InetAddress(addrInt & (int)gCidrMask[i]), i);
         }
         return cidrs;
     }
@@ -232,7 +220,7 @@ public class InetCidr implements Serializable, Comparable {
      * @return true if <tt>list</tt> is sorted or <tt>null</tt>
      * @throws NullPointerException if one or more elements of the list are null
      */
-    public static boolean isInetCidrListSorted(List<InetCidr> list) {
+    public static boolean isSorted(List<InetCidr> list) {
     	if (list == null) {
     		return true;
     	}
@@ -248,6 +236,36 @@ public class InetCidr implements Serializable, Comparable {
     				return false;
     			}
     			pivot = cidr;
+    		}
+    	}
+    	return true;
+    }
+    
+    /**
+     * Checks whether the list does not contain any overlapping cidr(s).
+     * 
+     * <p>Pre-requisite: list must be already sorted.
+     * @param list sorted list of <tt>InetCidr</tt>
+     * @return true if it does not contain any overlapping cidr, true if list is null
+     * @throws NullPointerException if a list element is null
+     */
+    public static boolean hasNoOverlap(List<InetCidr> list) {
+    	if (list == null) {
+    		return true;
+    	}
+    	assert(isSorted(list));
+    	long pivotEnd = -1;
+    	for (InetCidr cidr : list) {
+    		if (cidr == null) {
+    			throw new NullPointerException();
+    		}
+    		if (pivotEnd < 0) {
+    			pivotEnd = cidr.getAddrLong() + (gCidrMask[cidr.getMask()] ^ 0xFFFFFFFFL);
+    		} else {
+    			if (cidr.getAddrLong() <= pivotEnd) {
+    				return false;
+    			}
+    			pivotEnd = cidr.getAddrLong() + (gCidrMask[cidr.getMask()] ^ 0xFFFFFFFFL);
     		}
     	}
     	return true;
@@ -288,8 +306,8 @@ public class InetCidr implements Serializable, Comparable {
             "255.255.255.255"
     };
 
-    private static final Map<InetAddress, Integer> gCidr     = new HashMap<InetAddress, Integer>(48);
-    private static final int[]                     gCidrMask = new int[33];
+    private static final Map<InetAddress, Integer>	gCidr     = new HashMap<InetAddress, Integer>(48);
+    private static final long[]						gCidrMask = new long[33];
 
     static {
         try {
@@ -297,7 +315,7 @@ public class InetCidr implements Serializable, Comparable {
             for (int i = 0; i < CIDR_MASKS.length; i++) {
                 InetAddress mask = InetAddress.getByName(CIDR_MASKS[i]);
 
-                gCidrMask[i + 1] = Util.inetAddress2Int(mask);
+                gCidrMask[i + 1] = Util.inetAddress2Long(mask);
                 gCidr.put(mask, i + 1);
             }
         } catch (UnknownHostException e) {
