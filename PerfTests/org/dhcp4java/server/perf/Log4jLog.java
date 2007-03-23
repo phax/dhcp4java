@@ -43,7 +43,7 @@ public class Log4jLog {
 		
 		for (int i=0; i<len; i++) {
 			now++;
-			LeaseStoredProcedures.logLease(now, date, date, date, DHCPLease.Status.fromInt(2), "foo", "bar", null);
+			LeaseStoredProcedures.logLease(now, date, date, date, DHCPLease.Status.fromInt(1), DHCPLease.Status.fromInt(2), "foo", "bar", null);
 		}
 	}
 	

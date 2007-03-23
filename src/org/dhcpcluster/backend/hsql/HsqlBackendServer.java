@@ -114,6 +114,7 @@ public class HsqlBackendServer implements DHCPBackendIntf {
 			deleteBubbles(conn);
 			deletePools(conn);
 			deletePoolSets(conn);
+			conn.commit();
 			
 			insertPoolsAndPoolSets(conn, topology.getSubnetCollection());
 			conn.commit();

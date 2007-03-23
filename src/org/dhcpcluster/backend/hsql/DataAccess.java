@@ -275,8 +275,8 @@ public class DataAccess {
 		}
 	}
 
-	private static final ResultSetHandler leaseHandler = new BeanHandler(DHCPLease.class, new BasicRowProcessor(new LeaseHandler()));
-	private static final ResultSetHandler leaseListHandler = new BeanListHandler(DHCPLease.class, new BasicRowProcessor(new LeaseHandler()));
+	static final ResultSetHandler leaseHandler = new BeanHandler(DHCPLease.class, new BasicRowProcessor(new LeaseHandler()));
+	static final ResultSetHandler leaseListHandler = new BeanListHandler(DHCPLease.class, new BasicRowProcessor(new LeaseHandler()));
 
 	private static final String	SHUTDOWN = queries.get("SHUTDOWN");
 	private static final String	SHUTDOWN_COMPACT = queries.get("SHUTDOWN_COMPACT");

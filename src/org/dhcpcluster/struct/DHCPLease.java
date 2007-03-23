@@ -43,7 +43,7 @@ public class DHCPLease implements Serializable {
     	OFFERED(1),
     	USED(2),
     	EXPIRED(3),
-    	ABANDONED(4);
+    	ABANDONED(-1);
     	
     	private final int code;
     	

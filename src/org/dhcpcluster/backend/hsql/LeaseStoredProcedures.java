@@ -58,6 +58,14 @@ public class LeaseStoredProcedures {
 	 * @throws SQLException
 	 */
 	public static long findDiscoverLease(Connection conn, long poolId, String mac) throws SQLException {
+		assert(conn != null);
+		// first find if the client already has an allocated lease on that network
+		DHCPLease[] leases = (DHCPLease[]) qRunner.query(conn, SELECT_LEASE_MAC, mac, DataAccess.leaseListHandler);
+		if ((leases != null) && (leases.length > 0)) {
+			// check if one lease is in the correct address pool
+			// TODO
+		}
+		
 		// find first free bubble for poolId
 		Object[] res = (Object[]) qRunner.query(conn, SELECT_BUBBLE_FROM_POOL_SET, (Long) poolId, arrayHandler);
 		if (res == null) {
@@ -100,6 +108,7 @@ public class LeaseStoredProcedures {
 			return -3;
 		}
 		
+		//logLease(startIp, )
 		return startIp;		// this is the ip of the prepared lease
 	}
 	
@@ -166,7 +175,7 @@ public class LeaseStoredProcedures {
 	}
 	
 
-	public static void logLease(long ip, Date creation, Date update, Date expiration, DHCPLease.Status prevStatus, String mac,
+	public static void logLease(long ip, Date creation, Date update, Date expiration, DHCPLease.Status status, DHCPLease.Status prevStatus, String mac,
 									String uid, String icc) {
 		StringBuffer sb = new StringBuffer(127);
 		sb.append(Util.long2InetAddress(ip).getHostAddress());
@@ -177,6 +186,7 @@ public class LeaseStoredProcedures {
 		sb.append(';');
 		dateFormatter.format(expiration, sb, null);
 		sb.append(';');
+		sb.append(status.toString()).append(';');
 		sb.append(prevStatus.toString()).append(';');
 		sb.append(mac).append(';');
 		sb.append((uid!=null)? uid: "").append(';');
@@ -191,4 +201,5 @@ public class LeaseStoredProcedures {
 	private static final String	UPDATE_BUBBLE_START_IP = queries.get("UPDATE_BUBBLE_START_IP");
 	private static final String	DELETE_BUBBLE_ID = queries.get("DELETE_BUBBLE_ID");
 	private static final String	INSERT_LEASE = queries.get("INSERT_LEASE");
+	private static final String	SELECT_LEASE_MAC = queries.get("SELECT_LEASE_MAC");
 }
