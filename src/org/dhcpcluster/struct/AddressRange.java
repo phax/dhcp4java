@@ -41,7 +41,7 @@ import org.dhcp4java.Util;
  * @author Stephan Hadinger
  * @version 0.71
  */
-public final class AddressRange implements Serializable, Comparable {
+public final class AddressRange implements Serializable, Comparable<AddressRange> {
 
 	/*
 	 * Invariant: rangeStart <= rangeEnd
@@ -167,11 +167,10 @@ public final class AddressRange implements Serializable, Comparable {
 	 * @return a negative integer, zero, or a positive integer as this object is less than, equal to, 
 	 * 			or greater than the specified object.
 	 */
-	public int compareTo(Object o) {
-		if (o == null) {
+	public int compareTo(AddressRange range) {
+		if (range == null) {
 			throw new NullPointerException();
 		}
-		AddressRange range = (AddressRange) o;
 		if (range.rangeStart < this.rangeStart) {
 			return -1;
 		} else if (range.rangeStart > this.rangeStart) {
@@ -219,29 +218,27 @@ public final class AddressRange implements Serializable, Comparable {
      * 
      * <p>Pre-requisite: list must be already sorted.
      * @param list sorted list of <tt>AddressRange</tt>
-     * @return true if it does not contain any overlapping address ranges, true if list is null
      * @throws NullPointerException if a list element is null
+     * @throws IllegalStateException if there is overlapping
      */
-    public static boolean hasNoOverlap(List<AddressRange> list) {
+    public static void checkNoOverlap(List<AddressRange> list) {
     	if (list == null) {
-    		return true;
+    		return;
     	}
     	assert(isSorted(list));
+    	AddressRange prev = null;
     	long pivotEnd = -1;
     	for (AddressRange adrr : list) {
     		if (adrr == null) {
     			throw new NullPointerException();
     		}
-    		if (pivotEnd < 0) {
-    			pivotEnd = adrr.getRangeEndLong();
-    		} else {
-    			if (adrr.getRangeStartLong() <= pivotEnd) {
-    				return false;
-    			}
-    			pivotEnd = adrr.getRangeEndLong();
-    		}
+
+			if ((prev != null) && (adrr.getRangeStartLong() <= pivotEnd)) {
+				throw new IllegalStateException("Overlapping AddressRange: "+prev+", "+adrr);
+			}
+			pivotEnd = adrr.getRangeEndLong();
+			prev = adrr;
     	}
-    	return true;
     }
 
 }

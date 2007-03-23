@@ -39,6 +39,7 @@ import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.log4j.Logger;
 
+import org.dhcp4java.InetCidr;
 import org.dhcp4java.Util;
 import org.dhcpcluster.struct.AddressRange;
 import org.dhcpcluster.struct.DHCPLease;
@@ -97,10 +98,25 @@ public class DataAccess {
 		logger.debug("Delete all from T_BUBBLE: "+res+" deleted");
 	}
 	
+	private static void checkNotOverlap(Collection<Subnet> subnetColl) {
+		List<InetCidr> cidrList = new ArrayList<InetCidr>(subnetColl.size());
+		for (Subnet subnet : subnetColl) {
+			cidrList.add(subnet.getCidr());
+			List<AddressRange> adrRanges = new ArrayList<AddressRange>(subnet.getAddrRanges().size());
+			for (AddressRange adrr : subnet.getAddrRanges()) {
+				adrRanges.add(adrr);
+			}
+			AddressRange.checkNoOverlap(adrRanges);
+		}
+		InetCidr.checkNoOverlap(cidrList);
+	}
+	
 	public static void insertPoolsAndPoolSets(Connection conn, Collection<Subnet> subnetColl) throws SQLException {
 		assert(conn != null);
 		PreparedStatement pstPoolSet = null;
 		PreparedStatement pstPool = null;
+		
+		checkNotOverlap(subnetColl);
 
 		try {
 			pstPoolSet = conn.prepareStatement(INSERT_T_POOL_SET);

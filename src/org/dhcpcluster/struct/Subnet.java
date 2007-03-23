@@ -39,7 +39,7 @@ import org.dhcpcluster.filter.RequestFilter;
  * @author Stephan Hadinger
  * @version 0.71
  */
-public class Subnet extends NodeRoot implements Serializable {
+public class Subnet extends NodeRoot implements Serializable, Comparable<Subnet> {
 
     private static final long serialVersionUID = 1L;
 
@@ -182,5 +182,16 @@ public class Subnet extends NodeRoot implements Serializable {
 		}
 		this.giaddrs.add(giaddr);
 	}
-	
+
+    /**
+     * Compare two Subnets, by comparing their InetCidr
+     * 
+     * <p>Note: this class has a natural ordering that is inconsistent with equals.
+     * @param o
+     * @return
+     */
+	public int compareTo(Subnet o) {
+		return cidr.compareTo(o.getCidr());
+	}
+
 }
