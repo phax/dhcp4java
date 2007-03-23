@@ -28,6 +28,7 @@ import org.dhcp4java.Util;
 import org.junit.Test;
 
 
+import junit.framework.Assert;
 import junit.framework.JUnit4TestAdapter;
 
 import static junit.framework.Assert.assertEquals;
@@ -256,23 +257,31 @@ public class InetCidrTest {
 		list.add(cidr5);
 		list.add(cidr6);
 		list.add(cidr7);
-		assertEquals(true, InetCidr.hasNoOverlap(list));
+		InetCidr.checkNoOverlap(list);
 		list.clear();
 		list.add(cidr1);
 		list.add(cidr2);
 		list.add(cidr3);
-		assertEquals(false, InetCidr.hasNoOverlap(list));
+		try {
+			InetCidr.checkNoOverlap(list);
+			Assert.fail();
+		} catch (IllegalStateException e) {
+		}
 		list.clear();
 		list.add(new InetCidr(InetAddress.getByName("10.11.0.0"), 16));
 		list.add(cidr1);
-		assertEquals(false, InetCidr.hasNoOverlap(list));
-		assertEquals(true, InetCidr.hasNoOverlap(null));
+		try {
+			InetCidr.checkNoOverlap(list);
+			Assert.fail();
+		} catch (IllegalStateException e) {
+		}
+		InetCidr.checkNoOverlap(null);
 	}
 	@Test (expected=NullPointerException.class)
 	public void testHasNoOverlapNullElement() {
 		List<InetCidr> list = new ArrayList<InetCidr>();
 		list.add(null);
-		InetCidr.hasNoOverlap(list);
+		InetCidr.checkNoOverlap(list);
 	}
 	
 }

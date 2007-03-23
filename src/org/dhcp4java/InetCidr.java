@@ -32,7 +32,7 @@ import org.dhcp4java.Util;
  * @author yshi7355
  *
  */
-public class InetCidr implements Serializable, Comparable {
+public class InetCidr implements Serializable, Comparable<InetCidr> {
 	private static final long serialVersionUID = 1L;
 
     private final int addr;
@@ -186,22 +186,21 @@ public class InetCidr implements Serializable, Comparable {
      * @param o
      * @return
      */
-	public int compareTo(Object o) {
+	public int compareTo(InetCidr o) {
 		if (o == null) {
 			throw new NullPointerException();
 		}
 		if (equals(o)) {
 			return 0;
 		}
-		InetCidr oo = (InetCidr) o;
-		if (int2UnsignedLong(this.addr) < int2UnsignedLong(oo.addr)) {
+		if (int2UnsignedLong(this.addr) < int2UnsignedLong(o.addr)) {
 			return -1;
-		} else if (int2UnsignedLong(this.addr) > int2UnsignedLong(oo.addr)) {
+		} else if (int2UnsignedLong(this.addr) > int2UnsignedLong(o.addr)) {
 			return 1;
 		} else {		// addr are identical, now coparing mask
-			if (this.mask < oo.mask) {
+			if (this.mask < o.mask) {
 				return -1;
-			} else if (this.mask > oo.mask) {
+			} else if (this.mask > o.mask) {
 				return 1;
 			} else {
 				return 0;		// shoul not happen
@@ -249,26 +248,21 @@ public class InetCidr implements Serializable, Comparable {
      * @return true if it does not contain any overlapping cidr, true if list is null
      * @throws NullPointerException if a list element is null
      */
-    public static boolean hasNoOverlap(List<InetCidr> list) {
-    	if (list == null) {
-    		return true;
-    	}
+    public static void checkNoOverlap(List<InetCidr> list) {
+    	if (list == null) { return; }
     	assert(isSorted(list));
+    	InetCidr prev = null;
     	long pivotEnd = -1;
     	for (InetCidr cidr : list) {
     		if (cidr == null) {
     			throw new NullPointerException();
     		}
-    		if (pivotEnd < 0) {
-    			pivotEnd = cidr.getAddrLong() + (gCidrMask[cidr.getMask()] ^ 0xFFFFFFFFL);
-    		} else {
-    			if (cidr.getAddrLong() <= pivotEnd) {
-    				return false;
-    			}
-    			pivotEnd = cidr.getAddrLong() + (gCidrMask[cidr.getMask()] ^ 0xFFFFFFFFL);
-    		}
+			if ((prev != null) && (cidr.getAddrLong() <= pivotEnd)) {
+				throw new IllegalStateException("Overlapping cidr: "+prev+", "+cidr);
+			}
+			pivotEnd = cidr.getAddrLong() + (gCidrMask[cidr.getMask()] ^ 0xFFFFFFFFL);
+			prev = cidr;
     	}
-    	return true;
     }
 
     private static final String[] CIDR_MASKS = {
