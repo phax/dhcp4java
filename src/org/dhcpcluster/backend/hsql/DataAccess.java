@@ -19,6 +19,7 @@
 package org.dhcpcluster.backend.hsql;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -46,6 +47,7 @@ import org.dhcpcluster.struct.DHCPLease;
 import org.dhcpcluster.struct.Subnet;
 
 import static org.apache.commons.dbutils.DbUtils.closeQuietly;
+import static org.dhcpcluster.backend.hsql.DataAccess.queries;
 
 /**
  * 
@@ -174,7 +176,7 @@ public class DataAccess {
 		}
 	}
 	
-	public static void insertLease(Connection conn, DHCPLease lease) throws SQLException {
+	public static boolean insertLease(Connection conn, DHCPLease lease) throws SQLException {
 		assert(conn != null);
 		Object[] args = new Object[8];
 		args[0] = (Long) lease.getIp();
@@ -187,7 +189,9 @@ public class DataAccess {
 		args[7] = (Integer) lease.getStatus().getCode();
 		if (qRunner.update(conn, INSERT_LEASE, args) != 1) {
 			logger.warn("Cannot insert T_LEASE: ip="+lease.getIp());
+			return false;
 		}
+		return true;
 	}
 
 	public static void updateLease(Connection conn, DHCPLease lease) throws SQLException {
@@ -278,7 +282,19 @@ public class DataAccess {
 		}
 
 	}
+
+	public static AddressRange[] selectPoolsFromPoolSet(Connection conn, long poolId) throws SQLException {
+		assert(conn != null);
+		return (AddressRange[]) qRunner.query(conn, SELECT_T_POOL_RANGES_FROM_SET_ID, poolId, addressRangeHandler);
+	}
 	
+	public static DHCPLease[] selectActiveLeasesByIcc(Connection conn, String icc) throws SQLException {
+		assert(conn != null);
+		if ((icc == null) || (icc.length() == 0)) {
+			return null;
+		}
+		return (DHCPLease[]) qRunner.query(conn, SELECT_LEASE_ACTIVE_ICC, icc, leaseListHandler);
+	}
 
 	/* QueryLoader for loading sql from properties files */
 	static final Map<String, String>				queries;
@@ -293,6 +309,7 @@ public class DataAccess {
 
 	static final ResultSetHandler leaseHandler = new BeanHandler(DHCPLease.class, new BasicRowProcessor(new LeaseHandler()));
 	static final ResultSetHandler leaseListHandler = new BeanListHandler(DHCPLease.class, new BasicRowProcessor(new LeaseHandler()));
+	static final ResultSetHandler addressRangeHandler = new BeanListHandler(AddressRange.class, new BasicRowProcessor(new AddressRangeHandler()));
 
 	private static final String	SHUTDOWN = queries.get("SHUTDOWN");
 	private static final String	SHUTDOWN_COMPACT = queries.get("SHUTDOWN_COMPACT");
@@ -310,6 +327,8 @@ public class DataAccess {
 
 	private static final String	SELECT_LEASE = queries.get("SELECT_LEASE");
 	private static final String	SELECT_LEASE_RANGE = queries.get("SELECT_LEASE_RANGE");
+	private static final String	SELECT_LEASE_ACTIVE_ICC = queries.get("SELECT_LEASE_ACTIVE_ICC");
+	private static final String	SELECT_T_POOL_RANGES_FROM_SET_ID = queries.get("SELECT_T_POOL_RANGES_FROM_SET_ID");
 
 	private static final String	INSERT_T_LEASE_ARCHIVE = queries.get("INSERT_T_LEASE_ARCHIVE");
 
@@ -369,4 +388,16 @@ class LeaseHandler extends CustomBeanProcessor {
 		}
 	}
 
+}
+
+class AddressRangeHandler extends CustomBeanProcessor {
+	@Override
+	public AddressRange toBean(ResultSet rs, Class type) throws SQLException {
+		if (rs == null) {
+			throw new NullPointerException();
+		}
+		InetAddress start = Util.long2InetAddress(rs.getLong("START_IP"));
+		InetAddress end = Util.long2InetAddress(rs.getLong("END_IP"));
+		return new AddressRange(start, end);
+	}
 }
