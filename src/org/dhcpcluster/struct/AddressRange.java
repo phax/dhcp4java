@@ -172,13 +172,13 @@ public final class AddressRange implements Serializable, Comparable<AddressRange
 			throw new NullPointerException();
 		}
 		if (range.rangeStart < this.rangeStart) {
-			return -1;
+			return 1;
 		} else if (range.rangeStart > this.rangeStart) {
-			return 1;
-		} else if (range.rangeEnd < this.rangeEnd) {
 			return -1;
-		} else if (range.rangeEnd > this.rangeEnd) {
+		} else if (range.rangeEnd < this.rangeEnd) {
 			return 1;
+		} else if (range.rangeEnd > this.rangeEnd) {
+			return -1;
 		} else {
 			return 0;
 		}
