@@ -282,6 +282,5 @@ public class LeaseStoredProcedures {
 	private static final String	SELECT_BUBBLE_FROM_POOL_SET = queries.get("SELECT_BUBBLE_FROM_POOL_SET");
 	private static final String	UPDATE_BUBBLE_START_IP = queries.get("UPDATE_BUBBLE_START_IP");
 	private static final String	DELETE_BUBBLE_ID = queries.get("DELETE_BUBBLE_ID");
-	private static final String	INSERT_LEASE = queries.get("INSERT_LEASE");
 	private static final String	SELECT_LEASE_MAC = queries.get("SELECT_LEASE_MAC");
 }

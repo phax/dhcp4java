@@ -67,7 +67,7 @@ public class TopologyConfig implements Serializable {
      *
      */
     public TopologyConfig() {
-    	
+//    	 empty constructor
     }
     
     public Collection<Subnet> getSubnetCollection() {

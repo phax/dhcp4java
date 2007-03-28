@@ -36,7 +36,7 @@ import static junit.framework.Assert.*;
 public class DHCPOptionTest {
 	
 	private static final String testString = "foobar";
-	private static final byte[] buf = testString.getBytes();
+	private static final byte[] buf0 = testString.getBytes();
 
 	public static junit.framework.Test suite() {
 	       return new JUnit4TestAdapter(DHCPOptionTest.class);
@@ -53,13 +53,13 @@ public class DHCPOptionTest {
 
 	@Test
 	public void testConstructor() {
-		DHCPOption opt = new DHCPOption(DHO_DHCP_MESSAGE, buf);
+		DHCPOption opt = new DHCPOption(DHO_DHCP_MESSAGE, buf0);
 		
 		assertEquals(opt.getCode(), DHO_DHCP_MESSAGE);
 		assertFalse(opt.isMirror());
-		assertTrue(Arrays.equals(opt.getValue(), buf));
-		assertTrue(opt.getValue() != buf);		// value should be cloned
-		assertTrue(opt.getValueFast() == buf);	// but fast variant should not clone
+		assertTrue(Arrays.equals(opt.getValue(), buf0));
+		assertTrue(opt.getValue() != buf0);		// value should be cloned
+		assertTrue(opt.getValueFast() == buf0);	// but fast variant should not clone
 	}
 	
 	@Test
@@ -73,8 +73,8 @@ public class DHCPOptionTest {
 	
 	@Test
 	public void testEquals() {
-		DHCPOption opt1 = new DHCPOption(DHO_BOOTFILE, buf);
-		DHCPOption opt2 = new DHCPOption(DHO_BOOTFILE, buf.clone());
+		DHCPOption opt1 = new DHCPOption(DHO_BOOTFILE, buf0);
+		DHCPOption opt2 = new DHCPOption(DHO_BOOTFILE, buf0.clone());
 		
 		assertTrue(opt1.equals(opt1));
 		assertTrue(opt1.equals(opt2));
@@ -93,7 +93,7 @@ public class DHCPOptionTest {
 		assertTrue(opt2.equals(opt1));
 		assertFalse(opt1.equals(null));
 		assertFalse(opt1.equals(new Integer(1)));
-		assertFalse(opt1.equals(new DHCPOption(DHO_BOOTFILE, buf)));
+		assertFalse(opt1.equals(new DHCPOption(DHO_BOOTFILE, buf0)));
 	}
 	@Test
 	public void testEqualsMirror() {
@@ -116,15 +116,15 @@ public class DHCPOptionTest {
 	
 	@Test
 	public void testHashCode() {
-		DHCPOption opt1 = new DHCPOption(DHO_BOOTFILE, buf);
-		DHCPOption opt2 = new DHCPOption(DHO_DHCP_MESSAGE, buf);
+		DHCPOption opt1 = new DHCPOption(DHO_BOOTFILE, buf0);
+		DHCPOption opt2 = new DHCPOption(DHO_DHCP_MESSAGE, buf0);
 		assertTrue(opt1.hashCode() != 0);
 		assertTrue(opt1.hashCode() != opt2.hashCode());
 	}
 	
 	@Test
 	public void testToString() {
-		DHCPOption opt1 = new DHCPOption(DHO_BOOTFILE, buf);
+		DHCPOption opt1 = new DHCPOption(DHO_BOOTFILE, buf0);
 		assertEquals(opt1.toString(), "DHO_BOOTFILE(67)=\"foobar\"");
 	}
 	

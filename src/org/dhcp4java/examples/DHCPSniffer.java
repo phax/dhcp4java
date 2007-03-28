@@ -34,6 +34,7 @@ import org.dhcp4java.DHCPPacket;
  */
 public class DHCPSniffer {
     private DHCPSniffer() {
+    	throw new UnsupportedOperationException();
     }
 
     public static void main(String[] args) {

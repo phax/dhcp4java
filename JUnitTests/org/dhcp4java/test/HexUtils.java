@@ -36,6 +36,7 @@ public class HexUtils {
 //	private static boolean logDEBUG =Logger.logger.shouldLog(Logger.DEBUG,HexUtil.class);
 
     private HexUtils() {
+    	throw new UnsupportedOperationException();
     }
 
     /**

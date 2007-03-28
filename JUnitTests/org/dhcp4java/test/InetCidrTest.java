@@ -266,6 +266,7 @@ public class InetCidrTest {
 			InetCidr.checkNoOverlap(list);
 			Assert.fail();
 		} catch (IllegalStateException e) {
+			// good
 		}
 		list.clear();
 		list.add(new InetCidr(InetAddress.getByName("10.11.0.0"), 16));
@@ -274,6 +275,7 @@ public class InetCidrTest {
 			InetCidr.checkNoOverlap(list);
 			Assert.fail();
 		} catch (IllegalStateException e) {
+			// good
 		}
 		InetCidr.checkNoOverlap(null);
 	}

@@ -38,6 +38,7 @@ public final class DHCPResponseFactory {
 
     // Suppresses default constructor, ensuring non-instantiability.
 	private DHCPResponseFactory() {
+		throw new UnsupportedOperationException();
 	}
     
 	@SuppressWarnings("unused")

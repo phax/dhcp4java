@@ -125,6 +125,7 @@ public class DHCPOption implements Serializable {
      * returns true if two <tt>DHCPOption</tt> objects are equal, i.e. have same <tt>code</tt>
      * and same <tt>value</tt>.
      */
+    @Override
     public boolean equals(Object o) {
     	if (o == this) {
             return true;
@@ -881,6 +882,7 @@ public class DHCPOption implements Serializable {
      * 
      * @return a string representation of the object.
      */
+    @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
 
@@ -1365,7 +1367,7 @@ public class DHCPOption implements Serializable {
 
     // ========================================================================
     // main: print DHCP options for Javadoc
-    public static void main(String[] args) throws IllegalAccessException {
+    public static void main(String[] args) {
         String all     = "";
         String inet1   = "";
         String inets   = "";

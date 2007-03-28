@@ -59,7 +59,7 @@ public class GlobalConfig implements Serializable {
      * 
      */
     public GlobalConfig() {
-    	
+//    	 empty constructor
     }
 
 	/* (non-Javadoc)

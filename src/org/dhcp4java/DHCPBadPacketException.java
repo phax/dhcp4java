@@ -37,6 +37,7 @@ public class DHCPBadPacketException extends IllegalArgumentException {
      * Constructs an <tt>DHCPBadPacketException</tt> with no detail message.
      */
     public DHCPBadPacketException() {
+    	// empty constructor
     }
     /**
      * Constructs an <tt>DHCPBadPacketException</tt> with the specified detail message.

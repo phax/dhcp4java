@@ -38,6 +38,7 @@ public class BackendConfig implements Serializable {
     private String			jdbcPassword = null;
     
     public BackendConfig() {
+    	// empty constructor
     }
     
 	/**

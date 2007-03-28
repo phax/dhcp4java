@@ -44,6 +44,7 @@ public class FrontendConfig implements Serializable {
     private int			threadsKeepalive = 10000;	// 10s default
     
     public FrontendConfig() {
+    	// empty constructor
     }
     
 	/**

@@ -36,7 +36,7 @@ public class DHCPRichOption extends DHCPOption {
     @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(DHCPRichOption.class);
 
-    public enum Mode { REPLACE, CONCAT, REGEX };
+    public enum Mode { REPLACE, CONCAT, REGEX }
 
     private Mode mode = Mode.REPLACE;
     

@@ -48,6 +48,7 @@ public class ClusterLogFormatter extends Formatter {
 	 *            the log record to be formatted.
 	 * @return a formatted log record
 	 */
+	@Override
 	public synchronized String format(LogRecord record) {
 		StringBuffer sb = new StringBuffer();
 		
@@ -83,6 +84,7 @@ public class ClusterLogFormatter extends Formatter {
 				pw.close();
 				sb.append(sw.toString());
 			} catch (Exception ex) {
+				// do nothing
 			}
 		}
 		return sb.toString();

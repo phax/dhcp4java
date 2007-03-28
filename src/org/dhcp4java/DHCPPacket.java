@@ -367,7 +367,7 @@ public class DHCPPacket implements Cloneable, Serializable {
      * @throws IllegalArgumentException datagram is <tt>null</tt>
      * @throws IOException
      */
-    public static DHCPPacket getPacket(DatagramPacket datagram) throws DHCPBadPacketException, IOException {
+    public static DHCPPacket getPacket(DatagramPacket datagram) throws DHCPBadPacketException {
     	if (datagram == null) {
             throw new IllegalArgumentException("datagram is null");
         }
@@ -523,15 +523,15 @@ public class DHCPPacket implements Cloneable, Serializable {
      * @param  buffer  byte array to convert to a DHCPMessage object
      * @param  offset starting offset for the buffer
      * @param  length length of the buffer
-     * @param  address the address from which the packet was sent, or <tt>null</tt>
-     * @param  port the port from which the packet was sent
+     * @param  address0 the address from which the packet was sent, or <tt>null</tt>
+     * @param  port0 the port from which the packet was sent
      * @param  strict do we read in strict mode?
      * @throws IllegalArgumentException if buffer is <tt>null</tt>...
      * @throws IndexOutOfBoundsException offset..offset+length is out of buffer bounds
      * @throws DHCPBadPacketException datagram is malformed
      */
     protected DHCPPacket marshall(byte[] buffer, int offset, int length,
-                                  InetAddress address, int port, boolean strict) {
+                                  InetAddress address0, int port0, boolean strict) {
         // do some basic sanity checks
         // ibuff, offset & length are valid?
         if (buffer == null) {
@@ -559,8 +559,8 @@ public class DHCPPacket implements Cloneable, Serializable {
         }
         
         // copy address and port
-        this.address = address; // no need to clone, InetAddress is immutable
-        this.port    = port;
+        this.address = address0; // no need to clone, InetAddress is immutable
+        this.port    = port0;
         
         try {
             // turn buffer into a readable stream

@@ -30,7 +30,7 @@ import org.dhcp4java.DHCPPacket;
  */
 public final class NumOptionFilter implements RequestFilter {
 
-	public enum CompareOp { EQ, NE, GT, LT, GE, LE };
+	public enum CompareOp { EQ, NE, GT, LT, GE, LE }
 	
 	private final byte code;
 	private final CompareOp compareOp;

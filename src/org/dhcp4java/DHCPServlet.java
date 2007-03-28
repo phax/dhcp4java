@@ -18,7 +18,6 @@
  */
 package org.dhcp4java;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.Properties;
@@ -115,8 +114,6 @@ public class DHCPServlet {
             return responseDatagram;
         } catch (DHCPBadPacketException e) {
             logger.log(Level.INFO, "Invalid DHCP packet received", e);
-        } catch (IOException e) {
-            logger.log(Level.INFO, "IOEXception", e);
         } catch (Exception e) {
             logger.log(Level.INFO, "Unexpected Exception", e);
         }

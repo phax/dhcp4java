@@ -50,6 +50,7 @@ public class NodeRoot implements Serializable {
     protected NodeRoot						parentNode = null;
     
     public NodeRoot() {
+    	// empty constructor
     }
     
     public NodeRoot(NodePolicy policy) {

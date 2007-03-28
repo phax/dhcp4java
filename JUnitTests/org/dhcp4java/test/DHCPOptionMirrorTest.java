@@ -54,7 +54,6 @@ public class DHCPOptionMirrorTest {
     
     @Test
     public void testConstructor() {
-    	assertTrue(opt instanceof DHCPOption);
     	assertEquals(DHO_DHCP_LEASE_TIME, opt.getCode());
     	assertNull(opt.getValue());
     }

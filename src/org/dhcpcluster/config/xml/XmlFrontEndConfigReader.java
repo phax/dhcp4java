@@ -29,6 +29,7 @@ import org.dhcpcluster.config.xml.data.DhcpServer;
 public class XmlFrontEndConfigReader {
 	
 	private XmlFrontEndConfigReader() {
+		// empty constructor
 	}
 
 	public static FrontendConfig parseFrontEnd(DhcpServer.FrontEnd frontEndData) {

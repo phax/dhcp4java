@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.Properties;
 import java.util.concurrent.Executor;
@@ -158,7 +157,7 @@ public class DHCPClusterNode implements Serializable, Runnable {
 	}
 	
 	public void init() {
-		
+		// empty constructor
 	}
 
 	
@@ -227,7 +226,7 @@ public class DHCPClusterNode implements Serializable, Runnable {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) throws IOException, URISyntaxException, ConfigException, DHCPServerInitException {
+	public static void main(String[] args) throws IOException, ConfigException, DHCPServerInitException {
     	
     	// parse command-line options
     	ClusterOptions bean = new ClusterOptions();

@@ -32,7 +32,7 @@ import org.dhcp4java.DHCPPacket;
  */
 public final class StringOptionFilter implements RequestFilter {
 	
-	public enum CompareMode { EXACT, CASE_INSENSITIVE, REGEX };
+	public enum CompareMode { EXACT, CASE_INSENSITIVE, REGEX }
 	
 	private final byte code;
 	private final String compareString;

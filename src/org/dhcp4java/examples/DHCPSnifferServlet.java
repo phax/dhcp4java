@@ -41,6 +41,7 @@ public class DHCPSnifferServlet extends DHCPServlet {
      * 
      * @see org.dhcp4java.DHCPServlet#service(org.dhcp4java.DHCPPacket)
      */
+    @Override
     public DHCPPacket service(DHCPPacket request) {
         logger.info(request.toString());
         return null;

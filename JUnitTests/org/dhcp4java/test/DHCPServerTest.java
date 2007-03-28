@@ -40,7 +40,7 @@ public class DHCPServerTest {
     private static final String SERVER_ADDR = "127.0.0.1";
     private static final int    SERVER_PORT = 6767;
     
-    private DHCPCoreServer server = null;
+    private DHCPCoreServer server0 = null;
     
     public static junit.framework.Test suite() {
         return new JUnit4TestAdapter(DHCPServerTest.class);
@@ -53,9 +53,9 @@ public class DHCPServerTest {
     
     @After
     public void stopServer() {
-    	if (server != null) {
-    		server.stopServer();
-    		server = null;
+    	if (server0 != null) {
+    		server0.stopServer();
+    		server0 = null;
     	}
     }
     
@@ -70,7 +70,7 @@ public class DHCPServerTest {
         localProperties.put(DHCPCoreServer.SERVER_ADDRESS, SERVER_ADDR + ':' + SERVER_PORT);
         localProperties.put(DHCPCoreServer.SERVER_THREADS, "1");
         
-        server = DHCPCoreServer.initServer(new DHCPServerTestServlet(), localProperties);
+        server0 = DHCPCoreServer.initServer(new DHCPServerTestServlet(), localProperties);
         DHCPCoreServer.initServer(new DHCPServerTestServlet(), localProperties);
         
     }
@@ -120,7 +120,7 @@ public class DHCPServerTest {
 }
 
 class DHCPServerTestServlet extends DHCPServlet {
-	
+	// 
 	
 	
 }

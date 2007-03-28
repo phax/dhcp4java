@@ -37,6 +37,7 @@ public class DHCPClient {
     };
 
     private DHCPClient() {
+    	throw new UnsupportedOperationException();
     }
 
     public static void main(String[] args) {

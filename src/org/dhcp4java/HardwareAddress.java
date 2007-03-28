@@ -64,10 +64,12 @@ public class HardwareAddress implements Serializable {
 		return hardwareAddress.clone();
 	}
 
+	@Override
     public int hashCode() {
     	return this.hardwareType ^ Arrays.hashCode(hardwareAddress);
     }
 
+    @Override
     public boolean equals(Object obj) {
         if ((obj == null) || (!(obj instanceof HardwareAddress))) {
             return false;

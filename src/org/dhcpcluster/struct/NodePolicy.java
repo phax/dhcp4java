@@ -35,6 +35,7 @@ public class NodePolicy implements Serializable {
     private Integer						maxLease = 86400;
     
     public NodePolicy() {
+    	// empty constructor
     }
     
     public NodePolicy(NodePolicy parentPolicy) {

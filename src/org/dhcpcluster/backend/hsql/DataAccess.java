@@ -47,7 +47,6 @@ import org.dhcpcluster.struct.DHCPLease;
 import org.dhcpcluster.struct.Subnet;
 
 import static org.apache.commons.dbutils.DbUtils.closeQuietly;
-import static org.dhcpcluster.backend.hsql.DataAccess.queries;
 
 /**
  * 
@@ -240,7 +239,6 @@ public class DataAccess {
 			throw new NullPointerException();
 		}
 		
-		QueryRunner qRunner = new QueryRunner();
 		try  {
 			return (DHCPLease) qRunner.query(conn, SELECT_LEASE, ip, leaseHandler);
 		} catch (SQLException e) {
@@ -257,7 +255,6 @@ public class DataAccess {
 			throw new NullPointerException();
 		}
 		
-		QueryRunner qRunner = new QueryRunner();
 		Long[] ll = new Long[2];
 		ll[0] = start;
 		ll[1] = end;
@@ -352,7 +349,7 @@ class ListResultSetHandler implements ResultSetHandler {
         List<Object> results = new ArrayList<Object>();
         while (rs.next()) {
         	results.add(rsh.handle(rs));
-        };
+        }
         return results;
 	}
 	

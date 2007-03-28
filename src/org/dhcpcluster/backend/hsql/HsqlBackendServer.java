@@ -49,7 +49,7 @@ public class HsqlBackendServer implements DHCPBackendIntf {
 	private static final Logger logger = Logger.getLogger(HsqlBackendServer.class);
 		
 	private Server sqlServer = null;
-	private Connection conn = null;
+	private Connection conn0 = null;
 	
 	private final PrintWriter		debugWriter = new PrintWriter(new LogOutputStream(Level.DEBUG));
 	private final PrintWriter		logWriter = new PrintWriter(new LogOutputStream(Level.INFO));
@@ -76,12 +76,12 @@ public class HsqlBackendServer implements DHCPBackendIntf {
 	
 	public void startServer() throws SQLException {
 		DriverManager.setLogWriter(debugWriter);
-		conn = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost/dhcpcluster", "sa", "");
+		conn0 = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost/dhcpcluster", "sa", "");
 		
 		// testing
-//		DataAccess.getLeasesFromRanges(conn, 10, 20);
-//		DataAccess.getLease(conn, 10);
-//		DataAccess.getLease(conn, 11);
+//		DataAccess.getLeasesFromRanges(conn0, 10, 20);
+//		DataAccess.getLease(conn0, 10);
+//		DataAccess.getLease(conn0, 11);
 	}
 	
 	/* (non-Javadoc)
@@ -129,12 +129,12 @@ public class HsqlBackendServer implements DHCPBackendIntf {
 	public void shutdown() {
 		try {
 			logger.debug("issuing SHUTDOWN sql command");
-			DataAccess.shutdown(conn);
+			DataAccess.shutdown(conn0);
 			logger.debug("SHUTDOWN sql command complete");
 		} catch (SQLException e) {
 			logger.error("Cannot SHUTDOWN db", e);
 		} finally {
-			closeQuietly(conn);
+			closeQuietly(conn0);
 		}
 	}
 

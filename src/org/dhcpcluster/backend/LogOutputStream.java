@@ -18,7 +18,6 @@
  */
 package org.dhcpcluster.backend;
 
-import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.log4j.Level;
@@ -43,7 +42,7 @@ public class LogOutputStream extends OutputStream {
 	 * @see java.io.OutputStream#write(byte[], int, int)
 	 */
 	@Override
-	public void write(byte[] b, int off, int len) throws IOException {
+	public void write(byte[] b, int off, int len) {
 		String s = bytesToString(b, off, len);
 		log(s);
 	}
@@ -52,7 +51,7 @@ public class LogOutputStream extends OutputStream {
 	 * @see java.io.OutputStream#write(int)
 	 */
 	@Override
-	public void write(int b) throws IOException {
+	public void write(int b) {
 		// TODO Auto-generated method stub
 		
 	}

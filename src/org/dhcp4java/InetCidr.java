@@ -83,14 +83,15 @@ public class InetCidr implements Serializable, Comparable<InetCidr> {
     		!(netMask instanceof Inet4Address)) {
             throw new IllegalArgumentException("Only IPv4 addresses supported");
     	}
-    	Integer mask = gCidr.get(netMask);
-    	if (mask == null) {
+    	Integer intMask = gCidr.get(netMask);
+    	if (intMask == null) {
     		throw new IllegalArgumentException("netmask: "+netMask+" is not a valid mask");
     	}
-        this.addr = Util.inetAddress2Int(addr) & (int) gCidrMask[mask];
-        this.mask = mask;
+        this.addr = Util.inetAddress2Int(addr) & (int) gCidrMask[intMask];
+        this.mask = intMask;
     }
 
+    @Override
     public String toString() {
         return Util.int2InetAddress(addr).getHostAddress()+ '/' + this.mask;
     }
@@ -106,7 +107,7 @@ public class InetCidr implements Serializable, Comparable<InetCidr> {
      * @return Returns the addr as a long.
      */
     public long getAddrLong() {
-    	return ((long)addr) & 0xFFFFFFFFL;
+    	return addr & 0xFFFFFFFFL;
     }
     /**
      * @return Returns the mask.
@@ -141,10 +142,12 @@ public class InetCidr implements Serializable, Comparable<InetCidr> {
     	return new InetCidr(Util.long2InetAddress(ip), (int) mask);
     }
 
+    @Override
     public int hashCode() {
         return this.addr ^ this.mask;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if ((obj == null) || (!(obj instanceof InetCidr))) {
             return false;
@@ -209,7 +212,7 @@ public class InetCidr implements Serializable, Comparable<InetCidr> {
 	}
 
     private final static long int2UnsignedLong(int i) {
-    	return (((long)i) & 0xFFFFFFFFL);
+    	return (i & 0xFFFFFFFFL);
     }
 
 	/**

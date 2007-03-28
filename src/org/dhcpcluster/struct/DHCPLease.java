@@ -87,7 +87,7 @@ public class DHCPLease implements Serializable {
     private long gatewayIp;
     
     public DHCPLease() {
-    	
+    	// empty constructor
     }
 
 	/**

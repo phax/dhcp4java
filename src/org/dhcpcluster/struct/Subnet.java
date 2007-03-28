@@ -80,6 +80,7 @@ public class Subnet extends NodeRoot implements Serializable, Comparable<Subnet>
 	/**
 	 * @return Returns the comment.
 	 */
+	@Override
 	public String getComment() {
 		return comment;
 	}
@@ -87,6 +88,7 @@ public class Subnet extends NodeRoot implements Serializable, Comparable<Subnet>
 	/**
 	 * @param comment The comment to set.
 	 */
+	@Override
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
@@ -118,6 +120,7 @@ public class Subnet extends NodeRoot implements Serializable, Comparable<Subnet>
 	/**
 	 * @return Returns the dhcpOptions.
 	 */
+	@Override
 	public DHCPOption[] getDhcpOptions() {
 		return dhcpOptions;
 	}
@@ -125,6 +128,7 @@ public class Subnet extends NodeRoot implements Serializable, Comparable<Subnet>
 	/**
 	 * @param dhcpOptions The dhcpOptions to set.
 	 */
+	@Override
 	public void setDhcpOptions(DHCPOption[] dhcpOptions) {
 		this.dhcpOptions = dhcpOptions;
 	}
@@ -162,6 +166,7 @@ public class Subnet extends NodeRoot implements Serializable, Comparable<Subnet>
 	/**
 	 * @return Returns the requestFilter.
 	 */
+	@Override
 	public RequestFilter getRequestFilter() {
 		return requestFilter;
 	}
@@ -169,6 +174,7 @@ public class Subnet extends NodeRoot implements Serializable, Comparable<Subnet>
 	/**
 	 * @param requestFilter The requestFilter to set.
 	 */
+	@Override
 	public void setRequestFilter(RequestFilter requestFilter) {
 		this.requestFilter = requestFilter;
 	}

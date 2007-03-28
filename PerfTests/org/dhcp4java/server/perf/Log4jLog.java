@@ -18,7 +18,6 @@
  */
 package org.dhcp4java.server.perf;
 
-import java.io.IOException;
 import java.sql.Date;
 
 import org.apache.log4j.Logger;
@@ -51,7 +50,7 @@ public class Log4jLog {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		DOMConfigurator.configure(Loader.getResource("log4j.xml"));
 		int len = 5;
 		

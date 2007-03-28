@@ -20,7 +20,6 @@ package org.dhcp4java.server.perf;
 
 import static org.apache.commons.dbutils.DbUtils.loadDriver;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.Date;
@@ -90,7 +89,7 @@ public class HsqlCsvLog {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) throws IOException, SQLException {
+	public static void main(String[] args) throws SQLException {
 		Connection conn;
 		int len = 100000;
 		

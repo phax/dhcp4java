@@ -50,7 +50,7 @@ public abstract class CustomBeanProcessor extends BeanProcessor {
         List<Object> results = new ArrayList<Object>();
         while (rs.next()) {
         	results.add(this.toBean(rs, type));
-        };
+        }
         return results;
 	}
 	

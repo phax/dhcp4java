@@ -39,6 +39,7 @@ public class Node extends NodeRoot implements Serializable {
     protected  List<NodeRoot>					nodeList = new LinkedList<NodeRoot>();
 
     public Node() {
+    	// empty constructor
     }
     
     
