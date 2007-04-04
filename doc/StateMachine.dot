@@ -1,0 +1,44 @@
+digraph "Lease state transitions" {
+	
+node [
+fillcolor="azure2"
+fontname="arialbd"
+fontsize="10"
+width="0.8"
+style="filled"
+fillcolor="azure2"
+fixedsize="true"
+];
+edge [
+	arrowhead="vee"
+	arrowsize="2"
+	];
+	
+"NO" [
+regular="true"
+shape="circle"
+style="filled,dashed"
+label="no lease"
+];
+"FREE" [
+shape="circle"
+style="filled,bold"
+label="Status=\nFREE"
+];
+"OFFERED" [
+align="left"
+regular="true"
+shape="circle"
+label="Status=\nOFFERED"
+];
+"NO" -> "OFFERED" [
+constraint="true"
+decorate="false"
+labelfloat="false"
+];
+"FREE" -> "OFFERED" [
+constraint="true"
+decorate="false"
+labelfloat="false"
+];
+}
