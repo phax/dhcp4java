@@ -1,0 +1,378 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+ lang="en" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>
+    Hsqldb Back-end    [dhcp4java]
+  </title>
+
+  <link rel="stylesheet" media="screen" type="text/css" href="static/main.css" />
+<link rel="stylesheet" media="print" type="text/css" href="static/print.css" />
+<script type="text/javascript" charset="utf-8" src="lib/exe/js.php@edit=0&amp;write=0&amp;.js" ></script>
+
+<!--  <link rel="shortcut icon" href="/lib/tpl/sidebar/images/favicon.ico" />-->
+
+  </head>
+
+<body class='sidebar_inside_left'>
+<div class="dokuwiki">
+  
+  <div class="stylehead">
+
+    <div class="header">
+      <div class="pagename">
+        [[<a>Hsqldb Back-end</a>]]
+      </div>
+      <div class="logo">
+        <a href="http://localhost/"  name="dokuwiki__top" id="dokuwiki__top" accesskey="h" title="[ALT+H]">dhcp4java</a>      </div>
+
+      <div class="clearer"></div>
+    </div>
+
+    
+    <div class="bar" id="bar__top">
+      <div class="bar-left" id="bar__topleft">
+                      </div>
+
+      <div class="bar-right" id="bar__topright">
+                &nbsp;
+      </div>
+
+      <div class="clearer"></div>
+    </div>
+
+    
+    
+  </div>
+  
+  
+  <div class="page">
+    <!-- wikipage start -->
+    <div class="toc">
+<div class="tocheader toctoggle" id="toc__header">Table of Contents</div>
+<div id="toc__inside">
+
+<ul class="toc">
+<li class="level1"><div class="li"><span class="li"><a href="hsqldb_backend.html#hsqldb_back-end" class="toc">Hsqldb Back-end</a></span></div>
+<ul class="toc">
+<li class="level2"><div class="li"><span class="li"><a href="hsqldb_backend.html#pros" class="toc">Pros</a></span></div></li>
+<li class="level2"><div class="li"><span class="li"><a href="hsqldb_backend.html#cons" class="toc">Cons</a></span></div></li>
+<li class="level2"><div class="li"><span class="li"><a href="hsqldb_backend.html#design_decisions" class="toc">Design decisions</a></span></div></li>
+<li class="level2"><div class="li"><span class="li"><a href="hsqldb_backend.html#running_modes_and_performance" class="toc">Running modes and performance</a></span></div></li>
+<li class="level2"><div class="li"><span class="li"><a href="hsqldb_backend.html#leases_state_transitions" class="toc">Leases state transitions</a></span></div></li>
+<li class="level2"><div class="li"><span class="li"><a href="hsqldb_backend.html#data_model" class="toc">Data model</a></span></div></li>
+<li class="level2"><div class="li"><span class="li"><a href="hsqldb_backend.html#serving_dhcpdiscover" class="toc">Serving DHCPDiscover</a></span></div></li>
+<li class="level2"><div class="li"><span class="li"><a href="hsqldb_backend.html#dhcp_discover_stored_procedure" class="toc">DHCP_DISCOVER stored procedure</a></span></div></li>
+<li class="level2"><div class="li"><span class="li"><a href="hsqldb_backend.html#batch_clean-up" class="toc">Batch clean-up</a></span></div></li></ul>
+</li></ul>
+</div>
+</div>
+
+
+
+<h1><a name="hsqldb_back-end" id="hsqldb_back-end">Hsqldb Back-end</a></h1>
+<div class="level1">
+
+<p>
+ This is the default back-end for DHCP Cluster. It is based on &ldquo;Hypersonic DB&rdquo; which is a simple and very fast database in pure Java, suitable for small to medium size deployments.
+</p>
+
+<p>
+This back-end allows for fast deployment of end-to-end DHCP solutions without installing or managing a separate database (MySQL, Oracle...).
+</p>
+
+<p>
+This back-end offers high brute performance, but is not suitable for high-availability cluster solutions or highly scalable services.
+</p>
+
+</div>
+
+<h2><a name="pros" id="pros">Pros</a></h2>
+<div class="level2">
+<ul>
+<li class="level1"><div class="li"> Pure Java module running in the same process as the DHCP server - simple to install and to manage - equivalent to many other free solutions</div>
+</li>
+<li class="level1"><div class="li"> Very fast database engine capable of managing requests in-memory; it can be typically 20x faster than classical databases</div>
+</li>
+</ul>
+
+</div>
+
+<h2><a name="cons" id="cons">Cons</a></h2>
+<div class="level2">
+<ul>
+<li class="level1"><div class="li"> database is not multi-threaded (yet multi-thread safe); this can become a bottleneck issue for very high performance servers</div>
+</li>
+<li class="level1"><div class="li"> there is no support for active high-availability modes allowing automatic failover from one server to another in case of hardware failure</div>
+</li>
+</ul>
+
+</div>
+
+<h2><a name="design_decisions" id="design_decisions">Design decisions</a></h2>
+<div class="level2">
+
+<p>
+ The Hsqldb back-end is kept as small and simple as possible.
+</p>
+
+<p>
+It is currently only used to keep track of client leases. All other configuration parameters are stored in a single <acronym title="Extensible Markup Language">XML</acronym> file, separated in 4 sections: front-end, back-end, global parameters, network topology.
+</p>
+
+<p>
+There is basically only one persistant table: T_LEASE, which stores usage of IP addresses.
+</p>
+
+<p>
+Other non-persistent table are created in-memory for lease calculation and OFFER tracking: 
+</p>
+<ul>
+<li class="level1"><div class="li"> minimal topology description: T_POOL lists all dynamic address pools available for address distribution, all pools in the same network are linked through the T_POOL_SET table</div>
+</li>
+<li class="level1"><div class="li"> to accelerate calculation of free addresses in pools, a T_BUBBLE keeps track of blocks (bubbles) of free addresses in each pool. These bubbles listed through a linked list.</div>
+</li>
+<li class="level1"><div class="li"> offers are temporarily kept in the table T_OFFER which is memory-only (not persistent), since offers have only a 60 seconds life-time. A timed-out offer becomes a free bubble again.</div>
+</li>
+</ul>
+
+</div>
+
+<h2><a name="running_modes_and_performance" id="running_modes_and_performance">Running modes and performance</a></h2>
+<div class="level2">
+
+<p>
+ During debug and development, it is interesting to run the db in &ldquo;Server&rdquo; mode, which opens a server socket. The front-end connects via this socket despite the fact that the db runs in the same VM as the front-end. This allows for external client connection for manual data inspection. For maximum performance, you can swith to in-process mode where communication goes directly without going through network layers; this however prevents external client connection.
+</p>
+
+<p>
+TODO : howto and performance gain
+</p>
+
+<p>
+The table T_LEASE is kept entirely in-memory by default for simpliest and maximum performance. Data commited is however immediately written to disk into a <acronym title="Structured Query Language">SQL</acronym> script. This <acronym title="Structured Query Language">SQL</acronym> script is completely reloaded at next startup.
+</p>
+
+<p>
+If the lease volume increases widely, it can be interesting to switch this table to cached mode, where the data is kept on disk and only partially cached in memory. Performance will be slightly reduced but server restart will be faster.
+</p>
+
+<p>
+TODO
+</p>
+
+</div>
+
+<h2><a name="leases_state_transitions" id="leases_state_transitions">Leases state transitions</a></h2>
+<div class="level2">
+
+<p>
+<img src="_media/statemachine.png" class="media" title="" alt="" />
+</p>
+
+</div>
+
+<h2><a name="data_model" id="data_model">Data model</a></h2>
+<div class="level2">
+
+<p>
+ <img src="_media/datamodel.png" class="mediaright" title="Data Model" alt="Data Model" /> 
+</p>
+<table class="inline">
+	<tr>
+		<th class="centeralign" colspan="3">  Table T_LEASE  </th>
+	</tr>
+	<tr>
+		<th>IP</th><td>BIGINT PK</td><td>binary (long) representation of the IPv4 address of the lease</td>
+	</tr>
+	<tr>
+		<th>CREATE_DATE</th><td>TIMESTAMP</td><td>time when the lease was initially created for this client (mac)</td>
+	</tr>
+	<tr>
+		<th>UPDATE_DATE</th><td>TIMESTAMP</td><td>time when the lease was last updated</td>
+	</tr>
+	<tr>
+		<th>EXPIRE_DATE</th><td>TIMESTAMP</td><td>end of lease time</td>
+	</tr>
+	<tr>
+		<th>RECYCLE_DATE</th><td>TIMESTAMP </td><td>time when the IP can be reallocated (including a secure margin to take into account clock drifts)</td>
+	</tr>
+	<tr>
+		<th>MAC</th><td>VARCHAR</td><td>MAC address of the client</td>
+	</tr>
+	<tr>
+		<th>STATUS</th><td>INTEGER</td><td>current status of the lease<br/>
+ -1: ABANDONED (address not usable)<br/>
+ 0:FREE<br/>
+ 1:OFFERED<br/>
+ 2:USED</td>
+	</tr>
+</table>
+<table class="inline">
+	<tr>
+		<th class="centeralign" colspan="3">  Table T_POOL_SET  </th>
+	</tr>
+	<tr>
+		<th>SET_ID</th><td>BIGINT PK</td><td>id (long) of the pool set</td>
+	</tr>
+</table>
+<table class="inline">
+	<tr>
+		<th class="centeralign" colspan="3">  Table T_POOL  </th>
+	</tr>
+	<tr>
+		<th>START_IP</th><td>BIGINT PK</td><td>start address of the pool as binary (long) IPv4 address</td>
+	</tr>
+	<tr>
+		<th>END_IP</th><td>BIGINT</td><td>end address of the pool as binary (long) IPv4 address</td>
+	</tr>
+	<tr>
+		<th>CLASSES</th><td>INTEGER</td><td><em>[reserved for future use]</em></td>
+	</tr>
+	<tr>
+		<th>SET_ID</th><td>BIGINT</td><td>foreign key to T_POOL_SET entity</td>
+	</tr>
+</table>
+<table class="inline">
+	<tr>
+		<th class="centeralign" colspan="3">  T_BUBBLE  </th>
+	</tr>
+	<tr>
+		<th>BUBBLE_ID</th><td>INTEGER PK</td><td>auto-increment identifier</td>
+	</tr>
+	<tr>
+		<th>POOL_ID</th><td>BIGINT</td><td>foreign key to T_POOL entity</td>
+	</tr>
+	<tr>
+		<th>START_IP</th><td>BIGINT</td><td>start address of the free address bubble</td>
+	</tr>
+	<tr>
+		<th>END_IP</th><td>BIGINT</td><td>end address of the free address bubble</td>
+	</tr>
+</table>
+
+</div>
+
+<h2><a name="serving_dhcpdiscover" id="serving_dhcpdiscover">Serving DHCPDiscover</a></h2>
+<div class="level2">
+
+<p>
+ The first sequence in IP address allocation is the client sending a DHCPDiscover request and the server sending back a DHCPOffer with a (hopefully) proposed IP address.
+</p>
+
+<p>
+The internal sequence when receiving a DHCPDiscover is as follows: 
+</p>
+<ol>
+<li class="level1"><div class="li"> Applying Front-End rules to filter out requests (cf. Front End TODO)</div>
+</li>
+<li class="level1"><div class="li"> Find out in which subnet the client is, hence which address pools are eligible for address allocation</div>
+</li>
+<li class="level1"><div class="li"> Check if there rules allocating a static address to this client, if so directly send back the response</div>
+</li>
+<li class="level1"><div class="li"> If there are dynamic addresses pools, call the DB stored procedure &ldquo;DHCP_DISCOVER&rdquo; to ask for an IP address</div>
+</li>
+</ol>
+
+</div>
+
+<h2><a name="dhcp_discover_stored_procedure" id="dhcp_discover_stored_procedure">DHCP_DISCOVER stored procedure</a></h2>
+<div class="level2">
+
+<p>
+ This stored procedure is responsible for finding a suitable IP address for the client.
+</p>
+
+<p>
+Pre-conditions: 
+</p>
+<ul>
+<li class="level1"><div class="li"> <span style="background-color: #ff0">TODO</span></div>
+</li>
+</ul>
+
+</div>
+
+<h2><a name="batch_clean-up" id="batch_clean-up">Batch clean-up</a></h2>
+<div class="level2">
+
+<p>
+ When leases RECYCLE_DATE is past, they are eligible for garbage collection. The garbage collector is called every 5 minutes to reclaim free leases.
+</p>
+
+<p>
+<em>Design issue</em>: there can be a significant delay between the time a lease has expired and the time when the address is free to be allocated to another client. The trade-off is in favor of runtime performance causing potentially some address starving in extreme conditions. However, a specific &ldquo;urgent&rdquo; clean-up may be introduced in case of an free address starvation.
+</p>
+
+</div>
+
+    <!-- wikipage stop -->
+  </div>
+  <div id="sidebar">
+    <div id="sidebar_content">      
+
+
+<h1><a name="dhcp4java" id="dhcp4java">dhcp4java</a></h1>
+<div class="level1">
+<ul>
+<li class="level1"><div class="li"> <a href="index.html" class="wikilink1" title="index">Home</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="introduction.html" class="wikilink1" title="introduction">Introduction</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="design_goals.html" class="wikilink1" title="design_goals">Design Goals</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="architecture.html" class="wikilink1" title="architecture">Architecture</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="hsqldb_backend.html" class="wikilink1" title="hsqldb_backend">Hsqldb Back-end</a></div>
+</li>
+</ul>
+
+</div>
+<!-- SECTION "dhcp4java" [2-132] -->
+<h2><a name="ressources" id="ressources">Ressources</a></h2>
+<div class="level2">
+<ul>
+<li class="level1"><div class="li"> <a href="download.html" class="wikilink1" title="download">Download</a></div>
+</li>
+</ul>
+
+
+
+</div>
+<!-- SECTION "Ressources" [133-] -->    </div>
+  </div>
+
+  <div class="clearer">&nbsp;</div>
+
+  
+  <div class="stylefoot">
+
+    <div class="meta">
+      <div class="user">
+              </div>
+      <div class="doc">
+        hsqldb_backend.txt &middot; Last modified: 2007/04/05 09:43 by shadinger      </div>
+    </div>
+
+   
+    <div class="bar" id="bar__bottom">
+      <div style="float:left;">
+        <font size="1">hosted by </font> <A href="http://sourceforge.net"><IMG src="http://sourceforge.net/sflogo.php?group_id=160305" width="88" height="31"border="0" alt="SourceForge Logo"></A></font>
+      </div>
+      <div class="bar-left" id="bar__bottomleft">
+                      </div>
+      <div class="bar-right" id="bar__bottomright">
+                                                <a class="nolink" href="hsqldb_backend.html#dokuwiki__top"><input type="button" class="button" value="Back to top" onclick="window.scrollTo(0, 0)" title="Back to top" /></a>&nbsp;
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+  </div>
+
+</div>
+
+
+</body>
+</html>

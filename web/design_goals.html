@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+ lang="en" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>
+    Design Goals    [dhcp4java]
+  </title>
+
+  <link rel="stylesheet" media="screen" type="text/css" href="static/main.css" />
+<link rel="stylesheet" media="print" type="text/css" href="static/print.css" />
+<script type="text/javascript" charset="utf-8" src="lib/exe/js.php@edit=0&amp;write=0&amp;.js" ></script>
+
+<!--  <link rel="shortcut icon" href="/lib/tpl/sidebar/images/favicon.ico" />-->
+
+  </head>
+
+<body class='sidebar_inside_left'>
+<div class="dokuwiki">
+  
+  <div class="stylehead">
+
+    <div class="header">
+      <div class="pagename">
+        [[<a>Design Goals</a>]]
+      </div>
+      <div class="logo">
+        <a href="http://localhost/"  name="dokuwiki__top" id="dokuwiki__top" accesskey="h" title="[ALT+H]">dhcp4java</a>      </div>
+
+      <div class="clearer"></div>
+    </div>
+
+    
+    <div class="bar" id="bar__top">
+      <div class="bar-left" id="bar__topleft">
+                      </div>
+
+      <div class="bar-right" id="bar__topright">
+                &nbsp;
+      </div>
+
+      <div class="clearer"></div>
+    </div>
+
+    
+    
+  </div>
+  
+  
+  <div class="page">
+    <!-- wikipage start -->
+    <div class="toc">
+<div class="tocheader toctoggle" id="toc__header">Table of Contents</div>
+<div id="toc__inside">
+
+<ul class="toc">
+<li class="level1"><div class="li"><span class="li"><a href="design_goals.html#design_goals" class="toc">Design Goals</a></span></div>
+<ul class="toc">
+<li class="level2"><div class="li"><span class="li"><a href="design_goals.html#design_goals1" class="toc">Design goals</a></span></div></li>
+<li class="level2"><div class="li"><span class="li"><a href="design_goals.html#design_principles" class="toc">Design principles</a></span></div></li></ul>
+</li></ul>
+</div>
+</div>
+
+
+
+<h1><a name="design_goals" id="design_goals">Design Goals</a></h1>
+<div class="level1">
+
+<p>
+ This server is designed to be the foundation of wide range from local LAN server to large scale DHCP servers for <acronym title="Internet Service Provider">ISP</acronym> or telcos. It is capable of serving over millions of customers using low cost servers.
+</p>
+
+</div>
+
+<h2><a name="design_goals1" id="design_goals1">Design goals</a></h2>
+<div class="level2">
+<ul>
+<li class="level1"><div class="li"> <strong>Availability</strong>: state-less front-end servers. A majority of maintenance operations should not require server restart, especially topology (subnets) modification and updates. High availability should be easy to achieve with standard and simple load balancers. In case of failure of one component (frontend or backend) other components should enter a fallback mode where they are serving &ldquo;at best&rdquo; clients: e.g. renewing politely leases.</div>
+</li>
+<li class="level1"><div class="li"> <strong>Adaptability</strong>: being able to adapt server needs to many contexts: pre-provisioned, dynamic, calculated, using database (free or not) or LDAP storage, allowing connection to IT legacy systmes.</div>
+</li>
+<li class="level1"><div class="li"> <strong>Security</strong>: frontend servers are exposed like any other internet servers. This server should not add any security breach in whatever form. Thanks to Java, buffer overflow are very unlikely. The server shoudl also defend itself against brute-force arracks and DOS/DDOS.</div>
+</li>
+<li class="level1"><div class="li"> <strong>Operations</strong>: being designed to be integrated to a large scale network infrastructure, it should be easy to manage and monitor using different tools on the market. SNMP management interface would be good. Server implementation should be designed with easy installation in mind.</div>
+</li>
+<li class="level1"><div class="li"> <strong>Scalability</strong>: designed for millions of customers, the whole server infrastructure must be highly performant, supporting multi-threading, and scalable, capable of serving &gt;1000 requests/s with standard x86 servers. In frontend/backend architectures, components should be as loosely coupled as possible.</div>
+</li>
+</ul>
+
+</div>
+
+<h2><a name="design_principles" id="design_principles">Design principles</a></h2>
+<div class="level2">
+<ul>
+<li class="level1"><div class="li"> <strong>Simplicity</strong>: mother of all virtues, it is the one design principle guiding all our developments. However we recognize it is hard to measure.</div>
+</li>
+<li class="level1"><div class="li"> <strong>100% pure Java</strong>: yes! Java is capable of implementing a low-level network server with excellent performance, even compared with C-based products.</div>
+</li>
+<li class="level1"><div class="li"> <strong>Java5</strong>:</div>
+</li>
+</ul>
+
+</div>
+
+    <!-- wikipage stop -->
+  </div>
+  <div id="sidebar">
+    <div id="sidebar_content">      
+
+
+<h1><a name="dhcp4java" id="dhcp4java">dhcp4java</a></h1>
+<div class="level1">
+<ul>
+<li class="level1"><div class="li"> <a href="index.html" class="wikilink1" title="index">Home</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="introduction.html" class="wikilink1" title="introduction">Introduction</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="design_goals.html" class="wikilink1" title="design_goals">Design Goals</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="architecture.html" class="wikilink1" title="architecture">Architecture</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="hsqldb_backend.html" class="wikilink1" title="hsqldb_backend">Hsqldb Back-end</a></div>
+</li>
+</ul>
+
+</div>
+<!-- SECTION "dhcp4java" [2-132] -->
+<h2><a name="ressources" id="ressources">Ressources</a></h2>
+<div class="level2">
+<ul>
+<li class="level1"><div class="li"> <a href="download.html" class="wikilink1" title="download">Download</a></div>
+</li>
+</ul>
+
+
+
+</div>
+<!-- SECTION "Ressources" [133-] -->    </div>
+  </div>
+
+  <div class="clearer">&nbsp;</div>
+
+  
+  <div class="stylefoot">
+
+    <div class="meta">
+      <div class="user">
+              </div>
+      <div class="doc">
+        design_goals.txt &middot; Last modified: 2007/04/06 16:16 by shadinger      </div>
+    </div>
+
+   
+    <div class="bar" id="bar__bottom">
+      <div style="float:left;">
+        <font size="1">hosted by </font> <A href="http://sourceforge.net"><IMG src="http://sourceforge.net/sflogo.php?group_id=160305" width="88" height="31"border="0" alt="SourceForge Logo"></A></font>
+      </div>
+      <div class="bar-left" id="bar__bottomleft">
+                      </div>
+      <div class="bar-right" id="bar__bottomright">
+                                                <a class="nolink" href="design_goals.html#dokuwiki__top"><input type="button" class="button" value="Back to top" onclick="window.scrollTo(0, 0)" title="Back to top" /></a>&nbsp;
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+  </div>
+
+</div>
+
+
+</body>
+</html>
