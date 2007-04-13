@@ -49,6 +49,8 @@
 <!--	<property name="root.dir"			value="." />-->
 <!--	<property name="classes.dir"		value="${root.dir}/bin" />-->
 	<property name="javadoc.dir"		value="${dist}/javadoc" />
+	<property name="javadoc-api.dir"		value="${dist}/javadoc-api" />
+	<property name="javadoc-server.dir"		value="${dist}/javadoc-server" />
 <!--	<property name="lib.dir"			value="${root.dir}/lib/" />-->
 
 	
@@ -99,9 +101,32 @@
 		<copy file="${dist}/${jar.filename}-${version}.jar" tofile="${jar.filename}-${version}.jar"/>
 	</target>
 
-	<!-- Creates the Javadoc -->
-	<target name="javadoc" description="Create the javadoc">
-		<javadoc	destdir="${javadoc.dir}"
+	<!-- Creates the Javadoc api -->
+	<target name="javadoc-api" description="Create the javadoc-api">
+		<javadoc	destdir="${javadoc-api.dir}"
+					access="protected"
+					author="true"
+					sourcepath="${src.java}"
+					splitindex="true"
+					use="true"
+					version="true"
+					source="1.5"
+					packagenames="org.dhcp4java.*"
+					>
+			<classpath>
+				<path location="${dist}/${jar.filename}-${version}.jar"/>
+				<path refid="lib.redist"/>
+			</classpath>
+		</javadoc>
+		<zip	destfile="${dist}/${jar.filename}-api-${version}.javadoc.zip">
+			<zipfileset dir="${javadoc-api.dir}" prefix="javadoc-api"/>
+		</zip>
+		<delete dir="${javadoc-api.dir}"/>
+	</target>
+
+	<!-- Creates the Javadoc api -->
+	<target name="javadoc-server" description="Create the javadoc-server">
+		<javadoc	destdir="${javadoc-server.dir}"
 					access="protected"
 					author="true"
 					sourcepath="${src.java}"
@@ -116,10 +141,10 @@
 				<path refid="lib.redist"/>
 			</classpath>
 		</javadoc>
-		<zip	destfile="${dist}/${jar.filename}-${version}.javadoc.zip">
-			<zipfileset dir="${javadoc.dir}" prefix="javadoc"/>
+		<zip	destfile="${dist}/${jar.filename}-server-${version}.javadoc.zip">
+			<zipfileset dir="${javadoc-server.dir}" prefix="javadoc-server"/>
 		</zip>
-		<delete dir="${javadoc.dir}"/>
+		<delete dir="${javadoc-server.dir}"/>
 	</target>
 	
     <!-- - - - - - - - - - - - - - - - - - 
@@ -153,6 +178,6 @@
 	<!-- Creates the Live Autonome JAR (DEV) -->
 	<target name="make"
             description="Creates the WAR file for Live Autonome"
-            depends="jar,javadoc,sources,tgz"/>
+            depends="jar,javadoc-api,javadoc-server,sources,tgz"/>
 
 </project>
