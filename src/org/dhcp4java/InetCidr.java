@@ -71,7 +71,6 @@ public class InetCidr implements Serializable, Comparable<InetCidr> {
      * 
      * @param addr the ip address (IPv4)
      * @param netMask the ip mask
-     * @return the cidr
      * @throws IllegalArgumentException if <tt>addr</tt> or <tt>netMask</tt> is <tt>null</tt>.
      * @throws IllegalArgumentException if the <tt>netMask</tt> is not a valid one.
      */
@@ -187,7 +186,7 @@ public class InetCidr implements Serializable, Comparable<InetCidr> {
      * 
      * <p>Note: this class has a natural ordering that is inconsistent with equals.
      * @param o
-     * @return
+     * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
      */
 	public int compareTo(InetCidr o) {
 		if (o == null) {
@@ -248,8 +247,8 @@ public class InetCidr implements Serializable, Comparable<InetCidr> {
      * 
      * <p>Pre-requisite: list must be already sorted.
      * @param list sorted list of <tt>InetCidr</tt>
-     * @return true if it does not contain any overlapping cidr, true if list is null
      * @throws NullPointerException if a list element is null
+     * @throws IllegalStateException if overlapping cidr are detected
      */
     public static void checkNoOverlap(List<InetCidr> list) {
     	if (list == null) { return; }
