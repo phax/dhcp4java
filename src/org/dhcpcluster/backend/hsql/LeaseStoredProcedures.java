@@ -58,8 +58,11 @@ public class LeaseStoredProcedures {
 	 * @throws SQLException
 	 */
 	public static long dhcpDiscover(Connection conn, long poolId, String macHex, int iccQuota, String icc,
-											long leaseTime, int leaseTimeMarginPercent, long offerTime) throws SQLException {
+											long offerTime) throws SQLException {
 		assert(conn != null);
+		if ((macHex == null) || (macHex.length() < 2)) {
+			throw new IllegalArgumentException("macHex is null or too short:"+macHex);
+		}
 		boolean autocommitSave = conn.getAutoCommit();
 		conn.setAutoCommit(false);
 		boolean commit = false;
@@ -169,15 +172,15 @@ public class LeaseStoredProcedures {
 				if (status == Status.OFFERED) {
 					// Step 3.1- If it already exists in OFFERED state, extend the EXPIRATION_DATE and update UPDATE_DATE
 					existingLease.setUpdateDate(now);
-					existingLease.setExpirationDate(now+offerTime);
+					existingLease.setExpirationDate(now + 1000L*offerTime);
 					if (!DataAccess.updateLease(conn, existingLease)) {
 						return -3;
 					}
 				} else if (status == Status.USED) {
 					// Step 3.2- If it already exists in USED state, just update the UPDATE_DATE
 					existingLease.setUpdateDate(now);
-					if (existingLease.getExpirationDate() < now + offerTime) {
-						existingLease.setExpirationDate(now + offerTime);
+					if (existingLease.getExpirationDate() < now + 1000L*offerTime) {
+						existingLease.setExpirationDate(now + 1000L*offerTime);
 					}
 					if (!DataAccess.updateLease(conn, existingLease)) {
 						return -3;
@@ -188,8 +191,8 @@ public class LeaseStoredProcedures {
 				} else if (status == Status.FREE) {
 					existingLease.setCreationDate(now);
 					existingLease.setUpdateDate(now);
-					existingLease.setExpirationDate(now + offerTime);
-					existingLease.setRecycleDate(now + offerTime);
+					existingLease.setExpirationDate(now + 1000L*offerTime);
+					existingLease.setRecycleDate(now + 1000L*offerTime);
 					existingLease.setMacHex(macHex);
 					// TODO existingLease.setIcc();
 					existingLease.setStatus(Status.OFFERED);
@@ -209,8 +212,8 @@ public class LeaseStoredProcedures {
 				newLease.setIp(candidateAdr);
 				newLease.setCreationDate(now);
 				newLease.setUpdateDate(now);
-				newLease.setExpirationDate(now + offerTime);
-				newLease.setRecycleDate(now + offerTime);
+				newLease.setExpirationDate(now + 1000L*offerTime);
+				newLease.setRecycleDate(now + 1000L*offerTime);
 				newLease.setMacHex(macHex);
 				//TODO ICC newLease.setUid();
 				newLease.setStatus(DHCPLease.Status.OFFERED);
@@ -240,48 +243,80 @@ public class LeaseStoredProcedures {
 	 * @return status of the request, positive is ok, 0 is must be ignored, negative must be an NAK<br>  
 	 * @throws SQLException
 	 */
-	public static int confirmOfferLease (Connection conn, long poolId, long requestedIp, int leaseTime, int margin, String macHex, String uid) throws SQLException {
+	public static int dhcpRequest(Connection conn, long poolId, long requestedIp, int leaseTime, int margin, String macHex, String uid) throws SQLException {
+		assert(conn != null);
 		if ((macHex == null) || (macHex.length() < 2)) {
 			throw new IllegalArgumentException("macHex is null or too short:"+macHex);
 		}
-		DHCPLease curLease = DataAccess.getLease(conn, requestedIp);
 		long now = System.currentTimeMillis();
-		if (curLease == null) {
-			logger.debug("No active lease for ip: "+requestedIp);
-			// create new lease
-			curLease = new DHCPLease();
-			curLease.setIp(requestedIp);
-			curLease.setCreationDate(now);
-			curLease.setUpdateDate(now);
-			curLease.setExpirationDate(now + 1000L*leaseTime);
-			curLease.setRecycleDate(now + ((1000L * margin)/100L) * leaseTime);
-			curLease.setMacHex(macHex);
-			curLease.setUid(uid);
-			curLease.setStatus(DHCPLease.Status.USED);
-			DataAccess.insertLease(conn, curLease);
-			return 2;
-		}
-		// we have an already existing lease for this IP address
-		// is it the same client ?
-		DHCPLease.Status curStatus = curLease.getStatus();
-		// is the ip allowable ?
-		if (curStatus == DHCPLease.Status.ABANDONED) {
-			return -1;
-		}
-		if (macHex.equalsIgnoreCase(curLease.getMacHex())) {
-			// ok this is allowed, be allow a new lease period
-			curLease.setUpdateDate(now);
-			curLease.setExpirationDate(now + 1000L*leaseTime);
-			curLease.setRecycleDate(now + ((1000L * margin)/100L) * leaseTime);
-			curLease.setUid(uid);
-			DataAccess.updateLease(conn, curLease);
-			if (curStatus == DHCPLease.Status.OFFERED) {
-				return 1;
+		
+		boolean autocommitSave = conn.getAutoCommit();
+		conn.setAutoCommit(false);
+		boolean commit = false;
+		try {
+			// Step 1 - Retrieve the lease for the requested IP
+			DHCPLease existingLease = DataAccess.getLease(conn, requestedIp);
+	
+			if (existingLease != null) {
+				Status status = existingLease.getStatus();
+				if ((status == Status.OFFERED) || (status == Status.USED)) {
+					// Step 1.1 - if status is OFFERED or USED, check if it is used by the same client
+					if (macHex.equalsIgnoreCase(existingLease.getMacHex())) {
+						// Same client, we confirm the lease
+						existingLease.setUpdateDate(now);
+						// TODO verify if the lease can only be increased, or can it be shrinked ?
+						existingLease.setExpirationDate(now + 1000L*leaseTime);
+						existingLease.setRecycleDate(now + ((1000L * margin)/100L) * leaseTime);
+						// TODO existingLease.setIcc
+						existingLease.setStatus(Status.USED);
+						if (!DataAccess.updateLease(conn, existingLease)) {
+							return -3;
+						}
+						return 3;
+					} else {
+						// address already used by another client
+						return -3;
+					}
+				} else if (status == Status.FREE) {
+					existingLease.setCreationDate(now);
+					existingLease.setUpdateDate(now);
+					existingLease.setExpirationDate(now + 1000L*leaseTime);
+					existingLease.setRecycleDate(now + ((1000L * margin)/100L) * leaseTime);
+					existingLease.setMacHex(macHex);
+					existingLease.setStatus(DHCPLease.Status.USED);
+					if (!DataAccess.updateLease(conn, existingLease)) {
+						return -3;
+					}
+					return 4;
+				} else if (status == Status.ABANDONED) {
+					// address is not usable
+					return -5;
+				}
 			} else {
+				logger.debug("No active lease for ip: "+requestedIp);
+				// create new lease
+				existingLease = new DHCPLease();
+				existingLease.setIp(requestedIp);
+				existingLease.setCreationDate(now);
+				existingLease.setUpdateDate(now);
+				existingLease.setExpirationDate(now + 1000L*leaseTime);
+				existingLease.setRecycleDate(now + ((1000L * margin)/100L) * leaseTime);
+				existingLease.setMacHex(macHex);
+				// TODO existingLease.setUid(uid);
+				existingLease.setStatus(DHCPLease.Status.USED);
+				if (!DataAccess.insertLease(conn, existingLease)) {
+					return -3;
+				}
 				return 2;
 			}
+			// TODO how to reach this code ?
+			return -2;		// address is not usable for this client
+		} finally {
+			if (!commit) {
+				conn.rollback();
+			}
+			conn.setAutoCommit(autocommitSave);
 		}
-		return -2;		// address is not usable for this client
 	}
 	
 	public static String longAddressToString(long ip) {
