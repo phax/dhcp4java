@@ -23,14 +23,13 @@ import java.sql.Date;
 import java.sql.SQLException;
 
 import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.ResultSetHandler;
-import org.apache.commons.dbutils.handlers.ArrayHandler;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.ISO8601DateFormat;
 import org.dhcp4java.InetCidr;
 import org.dhcp4java.Util;
 import org.dhcpcluster.struct.AddressRange;
 import org.dhcpcluster.struct.DHCPLease;
+import org.dhcpcluster.struct.DHCPLease.Status;
 
 import static org.dhcpcluster.backend.hsql.DataAccess.queries;
 
@@ -44,7 +43,6 @@ public class LeaseStoredProcedures {
 	private static final Logger logger = Logger.getLogger(LeaseStoredProcedures.class);
 
 	private static final QueryRunner 			qRunner = new QueryRunner();
-	private static final ResultSetHandler 	arrayHandler = new ArrayHandler();
 	
 	/**
 	 * 
@@ -59,19 +57,22 @@ public class LeaseStoredProcedures {
 	 * 			-4: ICC quota reached, cannot allocate a new lease for this ICC
 	 * @throws SQLException
 	 */
-	public static long findDiscoverLease(Connection conn, long poolId, String mac, int iccQuota, String icc) throws SQLException {
+	public static long dhcpDiscover(Connection conn, long poolId, String macHex, int iccQuota, String icc,
+											long leaseTime, int leaseTimeMarginPercent, long offerTime) throws SQLException {
 		assert(conn != null);
 		boolean autocommitSave = conn.getAutoCommit();
 		conn.setAutoCommit(false);
 		boolean commit = false;
+		DHCPLease existingLease = null;
 		try {
 			long candidateAdr = -1;
 			
 			// ============================================================
-			// Step 1- Check if there is already an active lease for this client in these address pools
+			// Step 1- Check if the client already has an active lease in the specified address pool
 			
-			// first find if the client already has an allocated lease on that network
-			DHCPLease[] leases = (DHCPLease[]) qRunner.query(conn, SELECT_LEASE_MAC, mac, DataAccess.leaseListHandler);
+			// Select T_LEASE table with client’s Mac address and Status is not FREE or ABANDONED,
+			DHCPLease[] leases = (DHCPLease[]) qRunner.query(conn, SELECT_LEASE_MAC, macHex, DataAccess.leaseListHandler);
+			// then filtering the result set with the specified address pool.
 			if ((leases != null) && (leases.length > 0)) {
 				// check if one lease is in the correct address pool
 				AddressRange[] pools = DataAccess.selectPoolsFromPoolSet(conn, poolId);
@@ -94,6 +95,7 @@ public class LeaseStoredProcedures {
 						} else {
 							// found an in-range lease
 							candidateAdr = leaseAdrL;
+							existingLease = leases[leaseIdx];
 							break;
 						}
 					}
@@ -101,7 +103,7 @@ public class LeaseStoredProcedures {
 			}
 	
 			// ============================================================
-			// Step 2- If no address found, find out a free address
+			// Step 2- If no active lease is found, then look for the first free available address
 			// ============================================================
 			// Step 2.1- Check if we have not reach the ICC quota
 			
@@ -114,25 +116,27 @@ public class LeaseStoredProcedures {
 						return -4;
 					}
 				}
+				// TODO we could change the request with a SELECT COUNT(*)...
 			}
 	
 			// ============================================================
-			// Step 2.2- Try to find a free address in the bubbles
+			// Step 2.2- Find a the first free address in the address pool
+			// Select T_BUBBLE to find the first free bubble, retrieve the first address
+			// then update the bubble: increase its start address or delete it if it becomes empty
 			
 			// TODO check algorithm
 			if (candidateAdr < 0) {
 				// we must allocate a new free address
 				
 				// find first free bubble for poolId
-				Object[] res = (Object[]) qRunner.query(conn, SELECT_BUBBLE_FROM_POOL_SET, (Long) poolId, arrayHandler);
-				if (res == null) {
+				Bubble bubble = DataAccess.selectBubblesByPoolId(conn, poolId); 
+				if (bubble == null) {
 					logger.warn("No lease left for poolId="+poolId);
 					return 0;
 				}
-				assert(res.length == 3);
-				long bubbleId = (Integer) res[0];
-				long startIp = (Long) res[1];
-				long endIp = (Long) res[2];
+				long bubbleId = bubble.getId();
+				long startIp = bubble.getStart();
+				long endIp = bubble.getEnd();
 				
 				if (startIp < endIp) {
 					// we shrink the bubble
@@ -155,39 +159,71 @@ public class LeaseStoredProcedures {
 			}
 
 			// ============================================================
-			// Step 3- Reserve the new lease
+			// Step 3- Reserve a new lease
 
-			// ============================================================
-			// Step 3.1- Retrieve the lease if it already exists
+			Long now = System.currentTimeMillis();
 			
-			DHCPLease curLease = DataAccess.getLease(conn, candidateAdr);
-			if (curLease == null) {
+			if (existingLease != null) {
+				DHCPLease.Status status = existingLease.getStatus();
+				
+				if (status == Status.OFFERED) {
+					// Step 3.1- If it already exists in OFFERED state, extend the EXPIRATION_DATE and update UPDATE_DATE
+					existingLease.setUpdateDate(now);
+					existingLease.setExpirationDate(now+offerTime);
+					if (!DataAccess.updateLease(conn, existingLease)) {
+						return -3;
+					}
+				} else if (status == Status.USED) {
+					// Step 3.2- If it already exists in USED state, just update the UPDATE_DATE
+					existingLease.setUpdateDate(now);
+					if (existingLease.getExpirationDate() < now + offerTime) {
+						existingLease.setExpirationDate(now + offerTime);
+					}
+					if (!DataAccess.updateLease(conn, existingLease)) {
+						return -3;
+					}
+				} else if (status == Status.ABANDONED) {
+					// Step 3.3- If it already exists in ABANDONED state, this is an internal error (pre-condition violation), return error (-5)
+					return -5;
+				} else if (status == Status.FREE) {
+					existingLease.setCreationDate(now);
+					existingLease.setUpdateDate(now);
+					existingLease.setExpirationDate(now + offerTime);
+					existingLease.setRecycleDate(now + offerTime);
+					existingLease.setMacHex(macHex);
+					// TODO existingLease.setIcc();
+					existingLease.setStatus(Status.OFFERED);
+					if (!DataAccess.updateLease(conn, existingLease)) {
+						return -3;
+					}
+				} else {
+					logger.warn("Unhandled status code for lease: "+status+" for IP: "+Util.long2InetAddress(existingLease.getIp()).getHostAddress());
+					return -6;
+				}
+			} else {
 				// ============================================================
 				// Step 3.2- Register a new lease
 
 				// insert lease into T_LEASE
-				Long now = System.currentTimeMillis();
 				DHCPLease newLease = new DHCPLease();
 				newLease.setIp(candidateAdr);
 				newLease.setCreationDate(now);
 				newLease.setUpdateDate(now);
-				newLease.setExpirationDate(now + 10000);
-				newLease.setRecycleDate(now + 10000 + 10000);
-				newLease.setMac(mac.getBytes());
-				//newLease.setUid();
+				newLease.setExpirationDate(now + offerTime);
+				newLease.setRecycleDate(now + offerTime);
+				newLease.setMacHex(macHex);
+				//TODO ICC newLease.setUid();
 				newLease.setStatus(DHCPLease.Status.OFFERED);
 				if (!DataAccess.insertLease(conn, newLease)) {
 					return -3;					// cannot insert new lease
 				}
-				commit = true;				// intend to commit now
-					
 			}
+			conn.commit();
+			commit = true;				// intend to commit now
 			
 			return candidateAdr;		// this is the ip of the prepared lease
 		} finally {
-			if (commit) {
-				conn.commit();
-			} else {
+			if (!commit) {
 				conn.rollback();
 			}
 			conn.setAutoCommit(autocommitSave);
@@ -279,7 +315,6 @@ public class LeaseStoredProcedures {
 	private static final ISO8601DateFormat dateFormatter = new ISO8601DateFormat();
 	private static final org.apache.log4j.Logger archiveLog = org.apache.log4j.Logger.getLogger("archive.dhcp");
 
-	private static final String	SELECT_BUBBLE_FROM_POOL_SET = queries.get("SELECT_BUBBLE_FROM_POOL_SET");
 	private static final String	UPDATE_BUBBLE_START_IP = queries.get("UPDATE_BUBBLE_START_IP");
 	private static final String	DELETE_BUBBLE_ID = queries.get("DELETE_BUBBLE_ID");
 	private static final String	SELECT_LEASE_MAC = queries.get("SELECT_LEASE_MAC");

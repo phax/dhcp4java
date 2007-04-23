@@ -1,4 +1,4 @@
-CREATE ALIAS DHCP_DISCOVER FOR "org.dhcpcluster.backend.hsql.LeaseStoredProcedures.findDiscoverLease"
+CREATE ALIAS DHCP_DISCOVER FOR "org.dhcpcluster.backend.hsql.LeaseStoredProcedures.dhcpDiscover"
 CREATE ALIAS IP FOR "org.dhcpcluster.backend.hsql.LeaseStoredProcedures.longAddressToString"
 CREATE ALIAS CIDR FOR "org.dhcpcluster.backend.hsql.LeaseStoredProcedures.longCidrToString"
 CREATE SCHEMA PUBLIC AUTHORIZATION DBA

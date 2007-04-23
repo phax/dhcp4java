@@ -196,7 +196,7 @@ public class DataAccess {
 		return true;
 	}
 
-	public static void updateLease(Connection conn, DHCPLease lease) throws SQLException {
+	public static boolean updateLease(Connection conn, DHCPLease lease) throws SQLException {
 		assert(conn != null);
 		Object[] args = new Object[8];
 		args[0] = (Long) lease.getCreationDate();
@@ -208,8 +208,10 @@ public class DataAccess {
 		args[6] = (Integer) lease.getStatus().getCode();
 		args[7] = (Long) lease.getIp();
 		if (qRunner.update(conn, UPDATE_LEASE, args) != 1) {
-			logger.warn("Cannot insert T_LEASE: ip="+lease.getIp());
+			logger.warn("Cannot update T_LEASE: ip="+lease.getIp());
+			return false;
 		}
+		return true;
 	}
 	
 	/**
@@ -295,6 +297,11 @@ public class DataAccess {
 		}
 		return (DHCPLease[]) qRunner.query(conn, SELECT_LEASE_ACTIVE_ICC, icc, leaseListHandler);
 	}
+	
+	public static Bubble selectBubblesByPoolId(Connection conn, long poolId) throws SQLException {
+		assert(conn != null);
+		return (Bubble) qRunner.query(conn, SELECT_BUBBLE_FROM_POOL_SET, (Long) poolId, bubbleHandler);
+	}
 
 	/* QueryLoader for loading sql from properties files */
 	static final Map<String, String>				queries;
@@ -308,8 +315,10 @@ public class DataAccess {
 	}
 
 	static final ResultSetHandler leaseHandler = new BeanHandler(DHCPLease.class, new BasicRowProcessor(new LeaseHandler()));
+	static final ResultSetHandler bubbleHandler = new BeanHandler(Bubble.class, new BasicRowProcessor(new BubbleHandler()));
 	static final ResultSetHandler leaseListHandler = new BeanListHandler(DHCPLease.class, new BasicRowProcessor(new LeaseHandler()));
 	static final ResultSetHandler addressRangeHandler = new BeanListHandler(AddressRange.class, new BasicRowProcessor(new AddressRangeHandler()));
+
 
 	private static final String	SHUTDOWN = queries.get("SHUTDOWN");
 	private static final String	SHUTDOWN_COMPACT = queries.get("SHUTDOWN_COMPACT");
@@ -317,6 +326,7 @@ public class DataAccess {
 	
 	private static final String	DELETE_T_POOL = queries.get("DELETE_T_POOL");
 	private static final String	DELETE_T_POOL_SET = queries.get("DELETE_T_POOL_SET");
+	private static final String	SELECT_BUBBLE_FROM_POOL_SET = queries.get("SELECT_BUBBLE_FROM_POOL_SET");
 	private static final String	DELETE_T_BUBBLE = queries.get("DELETE_T_BUBBLE");
 
 	private static final String	INSERT_T_POOL_SET = queries.get("INSERT_T_POOL_SET");
@@ -400,4 +410,91 @@ class AddressRangeHandler extends CustomBeanProcessor {
 		InetAddress end = Util.long2InetAddress(rs.getLong("END_IP"));
 		return new AddressRange(start, end);
 	}
+}
+
+class BubbleHandler extends CustomBeanProcessor {
+	@Override
+	public Bubble toBean(ResultSet rs, Class type) throws SQLException {
+		if (rs == null) {
+			throw new NullPointerException();
+		}
+		Bubble bubble = new Bubble(rs.getInt("BUBBLE_ID"));
+		bubble.setStart(rs.getLong("START_IP"));
+		bubble.setEnd(rs.getLong("END_IP"));
+		bubble.setPoolId(rs.getLong("POOL_ID"));
+		return bubble;
+	}
+}
+
+/**
+ * Java mapping of the T_BUBBLE table
+ *
+ */
+class Bubble {
+	
+	private int			id = 0;
+	private long			start = -1;
+	private long			end = -1;
+	private long			poolId = -1;
+	
+	public Bubble(int id) {
+		this.id = id;
+	}
+
+	/**
+	 * @return Returns the end.
+	 */
+	public long getEnd() {
+		return end;
+	}
+
+	/**
+	 * @param end The end to set.
+	 */
+	public void setEnd(long end) {
+		this.end = end;
+	}
+
+	/**
+	 * @return Returns the id.
+	 */
+	public int getId() {
+		return id;
+	}
+
+	/**
+	 * @param id The id to set.
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	/**
+	 * @return Returns the poolId.
+	 */
+	public long getPoolId() {
+		return poolId;
+	}
+
+	/**
+	 * @param poolId The poolId to set.
+	 */
+	public void setPoolId(long poolId) {
+		this.poolId = poolId;
+	}
+
+	/**
+	 * @return Returns the start.
+	 */
+	public long getStart() {
+		return start;
+	}
+
+	/**
+	 * @param start The start to set.
+	 */
+	public void setStart(long start) {
+		this.start = start;
+	}
+	
 }
