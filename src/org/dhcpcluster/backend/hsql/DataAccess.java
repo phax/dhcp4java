@@ -52,7 +52,7 @@ import static org.apache.commons.dbutils.DbUtils.closeQuietly;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.71
+ * @version 0.72
  */
 public class DataAccess {
 

@@ -29,7 +29,7 @@ import org.dhcpcluster.struct.NodePolicy;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.71
+ * @version 0.72
  */
 public final class XmlGlobalConfigReader {
 

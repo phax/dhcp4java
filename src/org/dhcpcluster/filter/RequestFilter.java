@@ -23,7 +23,7 @@ import org.dhcp4java.DHCPPacket;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.71
+ * @version 0.72
  */
 public interface RequestFilter {
 	public boolean isRequestAccepted(DHCPPacket request);

@@ -38,7 +38,7 @@ import org.dhcpcluster.struct.Subnet;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.71
+ * @version 0.72
  */
 public final class XmlTopologyConfigReader {
 

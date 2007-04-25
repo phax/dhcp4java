@@ -40,7 +40,7 @@ import org.dhcpcluster.DHCPStaticServlet;
  * A simple client used for testing DHCPStaticServlet under stress conditions.
  * 
  * @author Stephan Hadinger
- * @version 0.71
+ * @version 0.72
  */
 public class DHCPStressTest {
 	private static final Logger logger = Logger.getLogger("org.dhcp4java.examples.dhcpstresstest");

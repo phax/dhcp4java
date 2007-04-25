@@ -39,7 +39,7 @@ import org.dhcp4java.Util;
  * <p>This class is immutable.
  * 
  * @author Stephan Hadinger
- * @version 0.71
+ * @version 0.72
  */
 public final class AddressRange implements Serializable, Comparable<AddressRange> {
 

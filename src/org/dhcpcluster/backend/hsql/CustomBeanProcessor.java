@@ -28,7 +28,7 @@ import org.apache.commons.dbutils.BeanProcessor;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.71
+ * @version 0.72
  */
 public abstract class CustomBeanProcessor extends BeanProcessor {
 

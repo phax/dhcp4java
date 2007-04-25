@@ -36,7 +36,7 @@ import static org.dhcp4java.DHCPConstants.*;
  * a <tt>main()</tt> method so you can easily launch the server by running the servlet.
  * 
  * @author Stephan Hadinger
- * @version 0.71
+ * @version 0.72
  */
 public class DHCPServlet {
     private static final Logger logger = Logger.getLogger(DHCPServlet.class.getName().toLowerCase());

@@ -22,7 +22,7 @@ package org.dhcpcluster.config;
  * Thrown to indicate there was a problem starting the DHCP Server.
  * 
  * @author Stephan Hadinger
- * @version 0.71
+ * @version 0.72
  */
 public class ConfigException extends RuntimeException {
 	private static final long serialVersionUID = 1L;

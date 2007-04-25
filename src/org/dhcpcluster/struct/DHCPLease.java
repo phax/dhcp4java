@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
  * <p>This class is basically a databean and has very little business logic.
  * 
  * @author Stephan Hadinger
- * @version 0.71
+ * @version 0.72
  */
 public class DHCPLease implements Serializable {
 	

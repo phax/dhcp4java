@@ -23,7 +23,7 @@ import java.io.Serializable;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.71
+ * @version 0.72
  */
 public class NodePolicy implements Serializable {
 

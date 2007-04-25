@@ -51,7 +51,7 @@ import org.kohsuke.args4j.Option;
  * <p>Bootstrap is done through a properties file.
  * 
  * @author Stephan Hadinger
- * @version 0.71
+ * @version 0.72
  */
 public class DHCPClusterNode implements Serializable, Runnable {
 

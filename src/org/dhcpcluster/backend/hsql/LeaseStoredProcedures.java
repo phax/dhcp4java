@@ -36,7 +36,7 @@ import static org.dhcpcluster.backend.hsql.DataAccess.queries;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.71
+ * @version 0.72
  */
 public class LeaseStoredProcedures {
 
@@ -169,6 +169,11 @@ public class LeaseStoredProcedures {
 			if (existingLease != null) {
 				DHCPLease.Status status = existingLease.getStatus();
 				
+				// check whether the lease has expired but has not been garbarge collected
+				if (existingLease.getRecycleDate() < now) {
+					status = Status.FREE;
+				}
+				
 				if (status == Status.OFFERED) {
 					// Step 3.1- If it already exists in OFFERED state, extend the EXPIRATION_DATE and update UPDATE_DATE
 					existingLease.setUpdateDate(now);
@@ -250,34 +255,43 @@ public class LeaseStoredProcedures {
 		}
 		long now = System.currentTimeMillis();
 		
-		boolean autocommitSave = conn.getAutoCommit();
+		boolean autocommitSave = conn.getAutoCommit();		// for restoring previous autocommit state on exit
 		conn.setAutoCommit(false);
-		boolean commit = false;
+		boolean commit = false;							// if false, we do a rollback on exit
 		try {
 			// Step 1 - Retrieve the lease for the requested IP
 			DHCPLease existingLease = DataAccess.getLease(conn, requestedIp);
 	
 			if (existingLease != null) {
 				Status status = existingLease.getStatus();
-				if ((status == Status.OFFERED) || (status == Status.USED)) {
-					// Step 1.1 - if status is OFFERED or USED, check if it is used by the same client
-					if (macHex.equalsIgnoreCase(existingLease.getMacHex())) {
-						// Same client, we confirm the lease
-						existingLease.setUpdateDate(now);
-						// TODO verify if the lease can only be increased, or can it be shrinked ?
-						existingLease.setExpirationDate(now + 1000L*leaseTime);
-						existingLease.setRecycleDate(now + ((1000L * margin)/100L) * leaseTime);
-						// TODO existingLease.setIcc
-						existingLease.setStatus(Status.USED);
-						if (!DataAccess.updateLease(conn, existingLease)) {
-							return -3;
-						}
-						return 3;
-					} else {
-						// address already used by another client
+				
+				// check whether the lease has expired but has not been garbarge collected
+				if (existingLease.getRecycleDate() < now) {
+					status = Status.FREE;
+				}
+				
+				// nominal case
+				
+				if ( ((status == Status.OFFERED) || (status == Status.USED))  &&
+						macHex.equalsIgnoreCase(existingLease.getMacHex()) ) {
+					// Step 1.1 - [Nominal] if status is OFFERED or USED, and lease is owned by same client
+					existingLease.setUpdateDate(now);
+					// TODO verify if the lease can only be increased, or can it be shrinked ?
+					existingLease.setExpirationDate(now + 1000L*leaseTime);
+					existingLease.setRecycleDate(now + ((1000L * margin)/100L) * leaseTime);
+					// TODO existingLease.setIcc
+					existingLease.setStatus(Status.USED);		// force tu USED if it was OFFERED
+					if (!DataAccess.updateLease(conn, existingLease)) {
 						return -3;
 					}
+					return 3;
+				} else if ((status == Status.OFFERED) || (status == Status.USED)) {
+					// Step 1.2 - if status if OFFERED or USED and lease is owned by another client, return an error (-2)
+				} else if (status == Status.ABANDONED) {
+					// Step 1.3 - if Status if ABANDONED, address is not usable, return an error (-5)
+					return -5;
 				} else if (status == Status.FREE) {
+					// Step 1.4 - if status is FREE, we use optimistic behaviour and give the lease
 					existingLease.setCreationDate(now);
 					existingLease.setUpdateDate(now);
 					existingLease.setExpirationDate(now + 1000L*leaseTime);
@@ -288,9 +302,6 @@ public class LeaseStoredProcedures {
 						return -3;
 					}
 					return 4;
-				} else if (status == Status.ABANDONED) {
-					// address is not usable
-					return -5;
 				}
 			} else {
 				logger.debug("No active lease for ip: "+requestedIp);

@@ -22,7 +22,7 @@ package org.dhcp4java;
  * Thrown to indicate there was a problem starting the DHCP Server.
  * 
  * @author Stephan Hadinger
- * @version 0.71
+ * @version 0.72
  */
 public class DHCPServerInitException extends Exception {
 	private static final long serialVersionUID = 1L;

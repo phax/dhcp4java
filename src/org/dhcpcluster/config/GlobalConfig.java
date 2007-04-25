@@ -28,7 +28,7 @@ import org.dhcpcluster.struct.NodeRoot;
 /**
  * 
  * @author Stephan Hadinger
- * @version 0.71
+ * @version 0.72
  */
 public class GlobalConfig implements Serializable {
 	

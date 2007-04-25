@@ -28,7 +28,7 @@ import org.dhcp4java.DHCPPacket;
  * <p>Both object often go together. This class is a simple structure.
  * 
  * @author Stephan Hadinger
- * @version 0.71
+ * @version 0.72
  */
 public class DHCPLeasedResponse implements Serializable {
 
