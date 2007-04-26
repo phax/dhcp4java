@@ -26,12 +26,10 @@ import org.dhcp4java.InetCidr;
 import org.dhcpcluster.config.ConfigException;
 import org.dhcpcluster.config.TopologyConfig;
 import org.dhcpcluster.config.xml.data.DhcpServer;
-import org.dhcpcluster.config.xml.data.Policy;
 import org.dhcpcluster.config.xml.data.Pools;
 import org.dhcpcluster.config.xml.data.TypeNodeSubnet;
 import org.dhcpcluster.struct.AddressRange;
 import org.dhcpcluster.struct.Node;
-import org.dhcpcluster.struct.NodePolicy;
 import org.dhcpcluster.struct.NodeRoot;
 import org.dhcpcluster.struct.Subnet;
 
@@ -98,10 +96,8 @@ public final class XmlTopologyConfigReader {
     	node.setComment(xNode.getComment());
     	node.setNodeType(xNode.getNodeType());
     	node.setNodeId(xNode.getNodeId());
-    	node.setRequestFilter(XmlFilterFactory.makeFilterRoot(xNode.getFilter()));
-    	node.setDhcpOptions(XmlOptionFactory.parseOptions(xNode.getOptions()));
-    	
-    	node.setPolicy(parsePolicy(xNode.getPolicy(), node.getPolicy(), null));
+    	// TODO missing extension mechanism (parent node or explicit extension)
+    	XmlPolicyFactory.parsePolicy(xNode.getPolicy(), node.getPolicy());
 
     	if (xNode.getSubNodes() != null) {
         	for (TypeNodeSubnet xSubnode : xNode.getSubNodes().getNodeOrSubnet()) {
@@ -117,10 +113,7 @@ public final class XmlTopologyConfigReader {
 		subnet.setComment(xSubnet.getComment());
 		subnet.setNodeType(xSubnet.getNodeType());
 		subnet.setNodeId(xSubnet.getNodeId());
-		subnet.setRequestFilter(XmlFilterFactory.makeFilterRoot(xSubnet.getFilter()));
-		subnet.setDhcpOptions(XmlOptionFactory.parseOptions(xSubnet.getOptions()));
-
-    	subnet.setPolicy(parsePolicy(xSubnet.getPolicy(), subnet.getPolicy(), null));
+		XmlPolicyFactory.parsePolicy(xSubnet.getPolicy(), subnet.getPolicy());
 
     	// now parsing <ranges> and <static>
     	if (xSubnet.getPools() != null) {
@@ -152,248 +145,5 @@ public final class XmlTopologyConfigReader {
     	HardwareAddress mac = HardwareAddress.getHardwareAddressByString(xStatic.getEthernet());
     	subnet.addStaticAddress(mac, xStatic.getAddress());
     }
-    
-    public static final NodePolicy parsePolicy(Policy xmlPolicy, NodePolicy curPolicy, NodePolicy parentPolicy) {
-    	if (xmlPolicy == null) {		// no policy to parse
-    		return curPolicy;
-    	}
 
-		if (curPolicy == null) {
-			curPolicy = new NodePolicy(parentPolicy);
-		}
-		
-		Integer leaseDefault = xmlPolicy.getLeaseDefault();
-		if (leaseDefault != null) {
-			curPolicy.setDefaultLease(leaseDefault);
-		}
-		Integer leaseMax = xmlPolicy.getLeaseMax();
-		if (leaseMax != null) {
-			curPolicy.setMaxLease(leaseMax);
-		}
-		return curPolicy;
-    }
-    
-//    public static List<Object> decapsulateJaxbList(List<JAXBElement<?>> list) {
-//    	LinkedList<Object> res = new LinkedList<Object>();
-//    	for (JAXBElement<?> o : list) {
-//    		res.add(o.getValue());
-//    	}
-//    	return res;
-//    }
-    
-//	public static TopologyConfig xmlTopologyReader1(Element subnetsElt) throws ConfigException {
-//		try {
-//			TopologyConfig topologyConfiguration = new TopologyConfig();
-//			
-//			// parse subnets
-//			Elements subnets = subnetsElt.getChildElements("subnet");
-//			if (logger.isLoggable(Level.FINE)) {
-//				logger.fine("subnet: "+subnets.size()+" found");
-//			}
-//			
-//			for (int i=0; i<subnets.size(); i++) {
-//				Subnet subnet = null;
-//				try {
-//					Element subnetElt = subnets.get(i);
-//					getElementPath(subnetElt);
-//					
-//					String address = get1Attribute(subnetElt, "address");
-//					logger.finest("address: "+address);
-//					String mask = get1Attribute(subnetElt, "mask");
-//					logger.finest("mask: "+mask);
-//					
-//					String comment = getOptAttribute(subnetElt, "comment");
-//					
-//					InetCidr cidr = new InetCidr(InetAddress.getByName(address),
-//												 InetAddress.getByName(mask));
-//					
-//					// instantiate the Subnet object
-//					subnet = new Subnet(cidr);
-//					subnet.setComment(comment);
-//					
-//					// check for giaddrs
-//					Elements giaddrs = subnetElt.getChildElements("giaddr");
-//					
-//					for (int j=0; j<giaddrs.size(); j++) {
-//						Element giaddr = giaddrs.get(j);
-//						subnet.getGiaddrs().add(InetAddress.getByName(giaddr.getValue()));
-//					}
-//					
-//					// look for ranges
-//					Elements ranges = subnetElt.getChildElements("range");
-//					readAddressRanges(subnet, ranges);
-//					
-//					// look for static ip addresses
-//					Elements statics= subnetElt.getChildElements("static");
-//					readStaticAddresses(subnet, statics);
-//
-//					// look for options
-//					Elements optionsRoot = subnetElt.getChildElements("options");
-//					if (optionsRoot.size() > 1) {
-//						throw new ConfigException("too many options sections: "+optionsRoot.size());
-//					}
-//					if (optionsRoot.size() == 1) {
-//						readOptionElements(subnet, optionsRoot.get(0).getChildElements());
-//					}
-//				} catch (ConfigException e) {
-//					logger.log(Level.WARNING, "error reading subnet configuration", e);
-//				} finally {
-//					// do we do something with the subnet ?
-//					if (subnet != null) {
-//						topologyConfiguration.addSubnet(subnet);
-//					}
-//				}
-//			}
-//			
-//			return topologyConfiguration;
-//		} catch (IOException e) {
-//			logger.log(Level.FINE, "ioerror", e);
-//			throw new ConfigException("IO exception", e);
-//		}
-//	}
-
-	/**
-	 * Read address ranges from the XML configuration file.
-	 * 
-	 * @param subnet the <tt>Subnet</tt> object being created 
-	 * @param ranges list of "range" xml elements
-	 */
-//	private static void readAddressRanges(Subnet subnet, Elements ranges) {
-//		for (int j=0; j<ranges.size(); j++) {
-//			AddressRange range = null;
-//			try {
-//				Element rangeElt = ranges.get(j);
-//				String rangeStart = rangeElt.getAttributeValue("start");
-//				String rangeEnd = rangeElt.getAttributeValue("end");
-//				if (rangeStart == null) {
-//					throw new ConfigException("range @start missing in "+getElementPath(rangeElt));
-//				}
-//				if (rangeEnd == null) {
-//					throw new ConfigException("range @end missing in "+getElementPath(rangeElt));
-//				}
-//				if (logger.isLoggable(Level.FINEST)) {
-//					logger.finest("range start: "+rangeStart+", range end: "+rangeEnd+", from "+getElementPath(rangeElt));
-//				}
-//				
-//				range = new AddressRange(InetAddress.getByName(rangeStart),
-//										 InetAddress.getByName(rangeEnd));
-//			} catch (ConfigException e) {
-//				logger.log(Level.WARNING, "address range is invalid", e);
-//			} catch (UnknownHostException e) {
-//				logger.log(Level.WARNING, "error parsing address", e);
-//			} finally {
-//				if (range != null) {
-//					subnet.getAddrRanges().add(range);
-//				}
-//			}
-//		}
-//
-//	}
-	
-	/**
-	 * Reads the <tt>static</tt> element and adds it to the <tt>Subnet</tt>.
-	 * 
-	 * @param subnet
-	 * @param statics
-	 */
-//	private static void readStaticAddresses(Subnet subnet, Elements statics) throws ConfigException {
-//		for (int i=0; i<statics.size(); i++) {
-//			HardwareAddress macAddr = null;
-//			InetAddress ipAddr = null;
-//			try {
-//				Element staticElt = statics.get(i);
-//				String addressAttr = staticElt.getAttributeValue("address");
-//				String ethernetAttr = staticElt.getAttributeValue("ethernet");
-//				if (addressAttr == null) {
-//					throw new ConfigException("static @address missing in "+getElementPath(staticElt));
-//				}
-//				ipAddr = InetAddress.getByName(addressAttr);
-//				if (addressAttr == null) {
-//					throw new ConfigException("static @ethernet missing in "+getElementPath(staticElt));
-//				}
-//				macAddr = HardwareAddress.getHardwareAddressByString(ethernetAttr);
-//			} catch (ConfigException e) {
-//				logger.log(Level.WARNING, "static is invalid", e);
-//			} catch (UnknownHostException e) {
-//				logger.log(Level.WARNING, "error parsing address", e);
-//			} catch (Exception e) {
-//				logger.log(Level.WARNING, "general exception", e);
-//			} finally {
-//				if ((macAddr != null) && (ipAddr != null)) {
-//					subnet.addStaticAddress(macAddr, ipAddr);
-//				}
-//			}
-//		}
-//	}
-//	
-	
-	/**
-	 * Read the "option" elements from the "options" section in the XML config file.
-	 * 
-	 * @param subnet the <tt>Subnet</tt> object being created 
-	 * @param options list of "option" xml elements
-	 */
-//	private static void readOptionElements(Subnet subnet, Elements options) {
-//		List<DHCPOption> dhcpOptions = new LinkedList<DHCPOption>();
-//		optionloop: for (int j=0; j<options.size(); j++) {
-//			try {
-//				Element option = options.get(j);
-//				String optionName = option.getLocalName();
-//				byte code;
-//				DHCPOption dhcpOption;
-//
-//				// ===== <option>
-//				if (optionName.equals("option")) {
-//					// get "code" attribute
-//					String codeAttr = option.getAttributeValue("code");
-//					if (codeAttr == null) {
-//						throw new ConfigException("no code attrtibute for "+getElementPath(option));
-//					}
-//					code = (byte) Integer.parseInt(codeAttr);
-//				} else if (optionName.startsWith("option-")) {		// option prefixed with "option"
-//					String dhcpOptionName = "DHO_"+optionName.substring("option-".length()).toUpperCase().replace('-', '_');
-//					Byte codeByte = DHCPConstants.getDhoNamesReverse(dhcpOptionName);
-//					if (codeByte != null) {
-//						code = codeByte;
-//					} else {
-//						throw new ConfigException("unknow dhcp option: "+optionName);
-//					}
-//				} else {			// ignoring anything else
-//					logger.warning("ignoring non-option: "+getElementPath(option));
-//					continue optionloop;
-//				}
-//				logger.finest("option: code="+code);
-//				
-//				dhcpOption = readOptionValue(code, option);
-//				if (dhcpOption != null) {
-//					dhcpOptions.add(dhcpOption);
-//				}
-//			} catch (NumberFormatException e) {
-//				logger.log(Level.WARNING, "bad code attribute format", e);
-//			} catch (ConfigException e) {
-//				logger.log(Level.WARNING, "error parsing option", e);
-//			} catch (IOException e) {
-//				logger.log(Level.WARNING, "IO error", e);
-//			}
-//		}
-//		subnet.setDhcpOptions(dhcpOptions.toArray(DHCPOPTION_0));
-//	}
-	
-	
-	/**
-	 * Read the value sub-portion of an option element
-	 * 
-	 * @param option
-	 * @return
-	 * @throws ConfigException
-	 * @throws IOException
-	 */
-//			} else if (valueName.equals("value-string-item")) {
-//				String stringItem = valueElt.getValue();
-//				if (stringItem.length() > 255) {
-//					throw new ConfigException("length of string-item is > 255: "+valueElt.getValue());
-//				}
-//				outputStream.writeByte(stringItem.length());
-//				outputStream.writeBytes(stringItem);
-	
 }

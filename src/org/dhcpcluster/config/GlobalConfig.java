@@ -23,7 +23,6 @@ import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 import org.dhcpcluster.struct.NodePolicy;
-import org.dhcpcluster.struct.NodeRoot;
 
 /**
  * 
@@ -49,10 +48,7 @@ public class GlobalConfig implements Serializable {
      *  */
     private InetAddress serverIdentifier = null;
     
-    private final NodeRoot rootNode = new NodeRoot(new NodePolicy());
-    
-    /** handles options to apply post subnet */
-    private final NodeRoot postNode = new NodeRoot();
+    private NodePolicy serverPolicy = new NodePolicy();
     
     /**
      * Constructor of server's global configuration object.
@@ -107,18 +103,10 @@ public class GlobalConfig implements Serializable {
 	}
 
 	/**
-	 * @return Returns the rootNode.
+	 * @return Returns the serverPolicy.
 	 */
-	public NodeRoot getRootNode() {
-		return rootNode;
+	public NodePolicy getServerPolicy() {
+		return serverPolicy;
 	}
-
-	/**
-	 * @return Returns the postNode.
-	 */
-	public NodeRoot getPostNode() {
-		return postNode;
-	}
-
     
 }

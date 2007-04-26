@@ -111,12 +111,6 @@
 									</xs:attribute>
 								</xs:complexType>
 							</xs:element>
-						</xs:all>
-					</xs:complexType>
-				</xs:element>
-				<xs:element name="back-end">
-					<xs:complexType>
-						<xs:sequence>
 							<xs:element name="jdbc" minOccurs="0">
 								<xs:complexType>
 									<xs:complexContent>
@@ -128,8 +122,11 @@
 									</xs:complexContent>
 								</xs:complexType>
 							</xs:element>
-						</xs:sequence>
+						</xs:all>
 					</xs:complexType>
+				</xs:element>
+				<xs:element name="back-end">
+					<xs:complexType/>
 				</xs:element>
 				<xs:element name="global">
 					<xs:complexType>
@@ -139,22 +136,7 @@
 									<xs:attribute name="identifier" type="inet-address" use="required"/>
 								</xs:complexType>
 							</xs:element>
-							<xs:element ref="filter" minOccurs="0"/>
-							<xs:element name="pre-options" type="optionsType" minOccurs="0"/>
-							<xs:element name="post-options" type="optionsType" minOccurs="0"/>
-							<xs:element name="classes" minOccurs="0">
-								<xs:complexType>
-									<xs:sequence minOccurs="0" maxOccurs="unbounded">
-										<xs:element name="class">
-											<xs:complexType>
-												<xs:group ref="filter-group"/>
-												<xs:attribute name="classid" type="xs:string" use="required"/>
-											</xs:complexType>
-										</xs:element>
-									</xs:sequence>
-								</xs:complexType>
-							</xs:element>
-							<xs:element ref="policy" minOccurs="0"/>
+							<xs:element name="server-policy" type="policyType"/>
 						</xs:all>
 					</xs:complexType>
 				</xs:element>
@@ -196,7 +178,11 @@
 			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="options" type="optionsType"/>
+	<xs:element name="options" type="optionsType">
+		<xs:annotation>
+			<xs:documentation>List of options to send to client</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<!--=== option value elements ===-->
 	<xs:element name="mirror" type="empty-type">
 		<xs:annotation>
@@ -436,6 +422,9 @@
 		</xs:choice>
 	</xs:group>
 	<xs:element name="filter">
+		<xs:annotation>
+			<xs:documentation>Filter to apply to client requests. Requests not satisfying filter are silently ignored.</xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:group ref="filter-group"/>
 		</xs:complexType>
@@ -450,9 +439,7 @@
 		<xs:complexContent>
 			<xs:extension base="type-node-subnet">
 				<xs:all>
-					<xs:element ref="filter" minOccurs="0"/>
 					<xs:element ref="policy" minOccurs="0"/>
-					<xs:element ref="options" minOccurs="0"/>
 					<xs:element ref="sub-nodes" minOccurs="0"/>
 				</xs:all>
 			</xs:extension>
@@ -462,9 +449,7 @@
 		<xs:complexContent>
 			<xs:extension base="type-node-subnet">
 				<xs:all>
-					<xs:element ref="filter" minOccurs="0"/>
 					<xs:element ref="policy" minOccurs="0"/>
-					<xs:element ref="options" minOccurs="0"/>
 					<xs:element ref="giaddrs" minOccurs="0"/>
 					<xs:element ref="pools" minOccurs="0"/>
 				</xs:all>
@@ -547,12 +532,47 @@
 			<xs:group ref="group-option-string"/>
 		</xs:choice>
 	</xs:complexType>
-	<xs:element name="policy">
-		<xs:complexType>
-			<xs:all>
-				<xs:element name="lease-default" type="xs:int" default="86400" minOccurs="0"/>
-				<xs:element name="lease-max" type="xs:int" default="86400" minOccurs="0"/>
-			</xs:all>
-		</xs:complexType>
+	<xs:element name="policy" type="policyType">
+		<xs:annotation>
+			<xs:documentation>Policy for the current node or subnet, can be server-wide or local to node</xs:documentation>
+		</xs:annotation>
 	</xs:element>
+	<xs:complexType name="policyType">
+		<xs:all>
+			<xs:element ref="filter" minOccurs="0"/>
+			<xs:element ref="options" minOccurs="0"/>
+			<xs:element name="post-options" type="optionsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>List of options to append after all other options (used for rare cases)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="lease-time" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Specify lease times (in seconds)</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="lease_default" use="optional">
+						<xs:annotation>
+							<xs:documentation>Default lease time (in seconds)</xs:documentation>
+						</xs:annotation>
+						<xs:simpleType>
+							<xs:restriction base="xs:int">
+								<xs:minInclusive value="0"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
+					<xs:attribute name="lease-max" use="optional">
+						<xs:annotation>
+							<xs:documentation>Max lease time accepted for client (in seconds). It should be greater or aquel than 'lease-default', It defauls to 'lease-default'</xs:documentation>
+						</xs:annotation>
+						<xs:simpleType>
+							<xs:restriction base="xs:int">
+								<xs:minInclusive value="0"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+		</xs:all>
+	</xs:complexType>
 </xs:schema>

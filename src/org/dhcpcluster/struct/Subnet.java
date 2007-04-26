@@ -29,11 +29,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dhcp4java.DHCPOption;
 import org.dhcp4java.HardwareAddress;
 import org.dhcp4java.InetCidr;
 import org.dhcpcluster.config.ConfigException;
-import org.dhcpcluster.filter.RequestFilter;
 /**
  * 
  * @author Stephan Hadinger
@@ -117,22 +115,6 @@ public class Subnet extends NodeRoot implements Serializable, Comparable<Subnet>
 		return addrRanges;
 	}
 
-	/**
-	 * @return Returns the dhcpOptions.
-	 */
-	@Override
-	public DHCPOption[] getDhcpOptions() {
-		return dhcpOptions;
-	}
-
-	/**
-	 * @param dhcpOptions The dhcpOptions to set.
-	 */
-	@Override
-	public void setDhcpOptions(DHCPOption[] dhcpOptions) {
-		this.dhcpOptions = dhcpOptions;
-	}
-
 	public void addStaticAddress(HardwareAddress macAddr, InetAddress ipAddr) throws ConfigException {
 		if (macAddr == null) {
 			throw new NullPointerException("hardwareAddr is null");
@@ -161,22 +143,6 @@ public class Subnet extends NodeRoot implements Serializable, Comparable<Subnet>
 	
 	public InetAddress getStaticAddress(HardwareAddress mac) {
 		return staticAddressesByMac.get(mac);
-	}
-
-	/**
-	 * @return Returns the requestFilter.
-	 */
-	@Override
-	public RequestFilter getRequestFilter() {
-		return requestFilter;
-	}
-
-	/**
-	 * @param requestFilter The requestFilter to set.
-	 */
-	@Override
-	public void setRequestFilter(RequestFilter requestFilter) {
-		this.requestFilter = requestFilter;
 	}
 	
 	public void addGiaddr(InetAddress giaddr) {

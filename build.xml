@@ -13,7 +13,7 @@
 	
 	<property name="verbose"			value="false"/>
 	<property name="jar.filename"		value="dhcp4java" />
-	<property name="version"			value="0.71"/>
+	<property name="version"			value="0.72"/>
 	
 	<path id="lib.redist">
 		<fileset dir="lib">
@@ -95,6 +95,11 @@
 		<jar destfile="${dist}/${jar.filename}-${version}.jar">
 			<fileset dir="${build}">
 				<include name="**/*"/>
+			</fileset>
+		</jar>
+		<jar destfile="${dist}/${jar.filename}-api-${version}.jar">
+			<fileset dir="${build}">
+				<include name="**/dhcp4java/**/*"/>
 			</fileset>
 		</jar>
 		<delete dir="${build}"/>

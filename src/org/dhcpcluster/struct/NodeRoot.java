@@ -19,10 +19,7 @@
 package org.dhcpcluster.struct;
 
 import java.io.Serializable;
-import org.dhcp4java.DHCPOption;
 import org.dhcp4java.DHCPPacket;
-import org.dhcpcluster.filter.AlwaysTrueFilter;
-import org.dhcpcluster.filter.RequestFilter;
 
 /**
  * 
@@ -38,23 +35,14 @@ public class NodeRoot implements Serializable {
     protected String nodeType = null;
     protected String nodeId = null;
     
-    protected NodePolicy	policy = null;
+    protected final NodePolicy	policy = new NodePolicy();
     
-    /** filter applicable to Subnet */
-    protected RequestFilter				requestFilter = ALWAYS_TRUE_FILTER;
-    
-    /** array of dhcp options */
-    protected DHCPOption[]					dhcpOptions = DHCPOPTION_0;
     
     /** parent node in node tree */
     protected NodeRoot						parentNode = null;
     
     public NodeRoot() {
     	// empty constructor
-    }
-    
-    public NodeRoot(NodePolicy policy) {
-    	this.policy = policy;
     }
     
     /**
@@ -64,12 +52,7 @@ public class NodeRoot implements Serializable {
      * @param response DHCP response being built to send back to client
      */
     public void applyOptions(DHCPPacket request, DHCPPacket response) {
-    	if (parentNode != null) {
-    		parentNode.applyOptions(request, response);
-    	}
-    	for (DHCPOption opt : dhcpOptions) {
-    		response.setOption(opt.applyOption(request));
-    	}
+    	policy.applyOptions(request, response);
     }
     
     /**
@@ -81,18 +64,10 @@ public class NodeRoot implements Serializable {
      * @return is the request to be handleds
      */
     public boolean isRequestAccepted(DHCPPacket request) {
-    	if (parentNode != null) {
-    		if (!parentNode.isRequestAccepted(request)) {
-    			return false;
-    		}
-    	}
-    	return requestFilter.isRequestAccepted(request);
+    	return policy.isRequestAccepted(request);
     }
     
     
-    protected static final DHCPOption[] DHCPOPTION_0 = new DHCPOption[0];
-    protected static final RequestFilter ALWAYS_TRUE_FILTER = new AlwaysTrueFilter();
-
 	/**
 	 * @return Returns the comment.
 	 */
@@ -107,46 +82,12 @@ public class NodeRoot implements Serializable {
 		this.comment = comment;
 	}
 
-	/**
-	 * @return Returns the dhcpOptions.
-	 */
-	public DHCPOption[] getDhcpOptions() {
-		return dhcpOptions;
-	}
-
-	/**
-	 * @param dhcpOptions The dhcpOptions to set.
-	 */
-	public void setDhcpOptions(DHCPOption[] dhcpOptions) {
-		this.dhcpOptions = dhcpOptions;
-	}
-
-	/**
-	 * @return Returns the requestFilter.
-	 */
-	public RequestFilter getRequestFilter() {
-		return requestFilter;
-	}
-
-	/**
-	 * @param requestFilter The requestFilter to set.
-	 */
-	public void setRequestFilter(RequestFilter requestFilter) {
-		this.requestFilter = requestFilter;
-	}
 
 	/**
 	 * @return Returns the policy.
 	 */
 	public NodePolicy getPolicy() {
 		return policy;
-	}
-
-	/**
-	 * @param policy The policy to set.
-	 */
-	public void setPolicy(NodePolicy policy) {
-		this.policy = policy;
 	}
 
 	/**
@@ -189,7 +130,7 @@ public class NodeRoot implements Serializable {
 	 */
 	public void setParentNode(NodeRoot parentNode) {
 		this.parentNode = parentNode;
+		policy.setParentPolicy(parentNode.getPolicy());
 	}
-	
 	
 }

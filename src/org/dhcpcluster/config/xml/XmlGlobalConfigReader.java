@@ -23,8 +23,6 @@ package org.dhcpcluster.config.xml;
 import org.apache.log4j.Logger;
 import org.dhcpcluster.config.GlobalConfig;
 import org.dhcpcluster.config.xml.data.DhcpServer;
-import org.dhcpcluster.config.xml.data.Policy;
-import org.dhcpcluster.struct.NodePolicy;
 
 /**
  * 
@@ -43,43 +41,10 @@ public final class XmlGlobalConfigReader {
 		if (globalData.getServer() != null) {
 			globalConfig.setServerIdentifier(globalData.getServer().getIdentifier());
 		}
-		
-		// <filter>
-		if (globalData.getFilter() != null) {
-			globalConfig.getRootNode().setRequestFilter(XmlFilterFactory.makeFilterRoot(globalData.getFilter()));
-		}
-		
-		// <pre-options>
-		if (globalData.getPreOptions() != null) {
-			globalConfig.getRootNode().setDhcpOptions(XmlOptionFactory.parseOptions(globalData.getPreOptions()));
-		}
-		
-		// <post-options>
-		if (globalData.getPostOptions() != null) {
-			globalConfig.getPostNode().setDhcpOptions(XmlOptionFactory.parseOptions(globalData.getPostOptions()));
-		}
-		
-		// <classes>
-		// TODO
-		
-		// <lease>
-		if (globalData.getPolicy() != null) {
-			Policy xmlPolicy = globalData.getPolicy();
-			// create policy if object is not defined
-    		NodePolicy policy = globalConfig.getRootNode().getPolicy();
-    		if (policy == null) {
-    			policy = new NodePolicy();
-    			globalConfig.getRootNode().setPolicy(policy);
-    		}
-    		
-			Integer leaseDefault = xmlPolicy.getLeaseDefault();
-			if (leaseDefault != null) {
-				policy.setDefaultLease(leaseDefault);
-			}
-			Integer leaseMax = xmlPolicy.getLeaseMax();
-			if (leaseMax != null) {
-				policy.setMaxLease(leaseMax);
-			}
+
+		// <policy>
+		if (globalData.getServerPolicy() != null) {
+			XmlPolicyFactory.parsePolicy(globalData.getServerPolicy(), globalConfig.getServerPolicy());
 		}
 		
 		return globalConfig;

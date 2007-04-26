@@ -118,13 +118,13 @@ public class MainServlet extends DHCPServlet {
 				
 		/* 6. calculate client options */
 		/* 6a. global pre-options */
-		globalConfig.getRootNode().applyOptions(request, response);
+		globalConfig.getServerPolicy().applyOptions(request, response);
 		
 		/* 6b. recursive options from nodes top-down */
 		subnet.applyOptions(request, response);
 		
 		/* 6c. global post-options (e.g. option 82 needs to be last one) */
-		globalConfig.getPostNode().applyOptions(request, response);
+		globalConfig.getServerPolicy().applyPostOptions(request, response);
 
 		return response;
 	}
@@ -193,15 +193,14 @@ public class MainServlet extends DHCPServlet {
 
 		/* 6. calculate client options */
 		/* 6a. global pre-options */
-		globalConfig.getRootNode().applyOptions(request, response);
+		globalConfig.getServerPolicy().applyOptions(request, response);
 		
 		/* 6b. recursive options from nodes top-down */
 		subnet.applyOptions(request, response);
 		
 		/* 6c. global post-options (e.g. option 82 needs to be last one) */
-		globalConfig.getPostNode().applyOptions(request, response);
+		globalConfig.getServerPolicy().applyPostOptions(request, response);
 		
 		return response;
-	}
-	
+	}	
 }
