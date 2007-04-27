@@ -439,7 +439,11 @@
 		<xs:complexContent>
 			<xs:extension base="type-node-subnet">
 				<xs:all>
-					<xs:element ref="policy" minOccurs="0"/>
+					<xs:element name="policy" type="policyType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Policy for the current node or subnet, can be server-wide or local to node</xs:documentation>
+						</xs:annotation>
+					</xs:element>
 					<xs:element ref="sub-nodes" minOccurs="0"/>
 				</xs:all>
 			</xs:extension>
@@ -449,7 +453,11 @@
 		<xs:complexContent>
 			<xs:extension base="type-node-subnet">
 				<xs:all>
-					<xs:element ref="policy" minOccurs="0"/>
+					<xs:element name="policy" type="policyType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Policy for the current node or subnet, can be server-wide or local to node</xs:documentation>
+						</xs:annotation>
+					</xs:element>
 					<xs:element ref="giaddrs" minOccurs="0"/>
 					<xs:element ref="pools" minOccurs="0"/>
 				</xs:all>
@@ -532,11 +540,6 @@
 			<xs:group ref="group-option-string"/>
 		</xs:choice>
 	</xs:complexType>
-	<xs:element name="policy" type="policyType">
-		<xs:annotation>
-			<xs:documentation>Policy for the current node or subnet, can be server-wide or local to node</xs:documentation>
-		</xs:annotation>
-	</xs:element>
 	<xs:complexType name="policyType">
 		<xs:all>
 			<xs:element ref="filter" minOccurs="0"/>
