@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.ISO8601DateFormat;
 import org.dhcp4java.InetCidr;
 import org.dhcp4java.Util;
+import org.dhcpcluster.SystemTime;
 import org.dhcpcluster.struct.AddressRange;
 import org.dhcpcluster.struct.DHCPLease;
 import org.dhcpcluster.struct.DHCPLease.Status;
@@ -164,7 +165,7 @@ public class LeaseStoredProcedures {
 			// ============================================================
 			// Step 3- Reserve a new lease
 
-			Long now = System.currentTimeMillis();
+			Long now = SystemTime.currentTimeMillis();
 			
 			if (existingLease != null) {
 				DHCPLease.Status status = existingLease.getStatus();
@@ -253,7 +254,7 @@ public class LeaseStoredProcedures {
 		if ((macHex == null) || (macHex.length() < 2)) {
 			throw new IllegalArgumentException("macHex is null or too short:"+macHex);
 		}
-		long now = System.currentTimeMillis();
+		long now = SystemTime.currentTimeMillis();
 		
 		boolean autocommitSave = conn.getAutoCommit();		// for restoring previous autocommit state on exit
 		conn.setAutoCommit(false);
