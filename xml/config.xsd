@@ -126,7 +126,17 @@
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="back-end">
-					<xs:complexType/>
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="hsql" minOccurs="0">
+								<xs:complexType>
+									<xs:attribute name="adress" type="xs:string" use="required"/>
+									<xs:attribute name="db-name" type="xs:string" use="required"/>
+									<xs:attribute name="db-path" type="xs:string" use="required"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:all>
+					</xs:complexType>
 				</xs:element>
 				<xs:element name="global">
 					<xs:complexType>

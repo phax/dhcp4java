@@ -6,7 +6,9 @@
 		<threads nb="2" max="10" core="2" keepalive="10000"/>
 		<jdbc user="sa" url="jdbc:hsqldb:hsql://localhost/dhcpcluster" password=""/>
 	</front-end>
-	<back-end/>
+	<back-end>
+		<hsql adress="localhost" db-name="dhcpcluster" db-path="./db/dhcpcluster"/>
+	</back-end>
 	<global>
 		<server identifier="192.168.1.1"/>
 		<server-policy>
