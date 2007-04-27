@@ -1,0 +1,4 @@
+- provide getter for backend object in DHCPClusterNode
+- rename "cluster" to "node" in main
+- use back-end parameters
+- use jdbc parameters in front-end
