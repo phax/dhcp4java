@@ -67,6 +67,7 @@ public class DHCPClusterNode implements Serializable, Runnable {
 	private AtomicReference<FrontendConfig>	frontendConfig = new AtomicReference<FrontendConfig>();
 	private AtomicReference<GlobalConfig>		globalConfig = new AtomicReference<GlobalConfig>();
 	private AtomicReference<TopologyConfig>	topologyConfig = new AtomicReference<TopologyConfig>();
+
 	
 	/* The DHCP Servlet used */
 	private DHCPServlet						internalServlet;
@@ -123,6 +124,7 @@ public class DHCPClusterNode implements Serializable, Runnable {
 		frontendConfig.set(configReader.getFrontEndConfig());
 		globalConfig.set(configReader.getGlobalConfig());
 		topologyConfig.set(configReader.getTopologyConfig());
+
 		// check configuration
 		if (frontendConfig.get() == null) {
 			throw new NullPointerException("frontendConfig is null");
@@ -135,7 +137,7 @@ public class DHCPClusterNode implements Serializable, Runnable {
 		}
     	
 		// start backend
-    	backend = startBackend();
+    	backend = startBackend(bootstrapProps);
     	backend.prepareBackend(getTopologyConfig());
 		
 		// instanciate DHCP Servlet
@@ -255,9 +257,9 @@ public class DHCPClusterNode implements Serializable, Runnable {
     	cluster.run();
     }
 	
-	private static DHCPBackendIntf startBackend() {
+	private static DHCPBackendIntf startBackend(Properties props) {
 		try {
-			HsqlBackendServer db = new HsqlBackendServer();
+			HsqlBackendServer db = new HsqlBackendServer(props);
 			db.startServer();
 			return db;
 		} catch (SQLException e) {

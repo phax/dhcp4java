@@ -16,7 +16,7 @@
  *	License along with this library; if not, write to the Free Software
  *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.dhcpcluster.config;
+package org.dhcpcluster.backend.hsql;
 
 import java.io.Serializable;
 
@@ -28,55 +28,74 @@ import org.apache.log4j.Logger;
  */
 public class BackendConfig implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(BackendConfig.class);
 
-    private String			jdbcUrl = null;
-    private String			jdbcUser = null;
-    private String			jdbcPassword = null;
+    private String			hsqlAddress = null;
+    private String			hsqlDbName = null;
+    private String			hsqlDbPath = null;
+    private int			hsqlDbNumber = 0;
     
     public BackendConfig() {
     	// empty constructor
     }
-    
+
 	/**
-	 * @return Returns the jdbcPassword.
+	 * @return Returns the hsqlAddress.
 	 */
-	public String getJdbcPassword() {
-		return jdbcPassword;
+	public String getHsqlAddress() {
+		return hsqlAddress;
 	}
+
 	/**
-	 * @param jdbcPassword The jdbcPassword to set.
+	 * @param hsqlAddress The hsqlAddress to set.
 	 */
-	public void setJdbcPassword(String jdbcPassword) {
-		this.jdbcPassword = jdbcPassword;
+	public void setHsqlAddress(String hsqlAddress) {
+		this.hsqlAddress = hsqlAddress;
 	}
+
 	/**
-	 * @return Returns the jdbcUrl.
+	 * @return Returns the hsqlDbName.
 	 */
-	public String getJdbcUrl() {
-		return jdbcUrl;
+	public String getHsqlDbName() {
+		return hsqlDbName;
 	}
+
 	/**
-	 * @param jdbcUrl The jdbcUrl to set.
+	 * @param hsqlDbName The hsqlDbName to set.
 	 */
-	public void setJdbcUrl(String jdbcUrl) {
-		this.jdbcUrl = jdbcUrl;
+	public void setHsqlDbName(String hsqlDbName) {
+		this.hsqlDbName = hsqlDbName;
 	}
+
 	/**
-	 * @return Returns the jdbcUser.
+	 * @return Returns the hsqlDbPath.
 	 */
-	public String getJdbcUser() {
-		return jdbcUser;
+	public String getHsqlDbPath() {
+		return hsqlDbPath;
 	}
+
 	/**
-	 * @param jdbcUser The jdbcUser to set.
+	 * @param hsqlDbPath The hsqlDbPath to set.
 	 */
-	public void setJdbcUser(String jdbcUser) {
-		this.jdbcUser = jdbcUser;
+	public void setHsqlDbPath(String hsqlDbPath) {
+		this.hsqlDbPath = hsqlDbPath;
 	}
-    
+
+	/**
+	 * @return Returns the hsqlDbNumber.
+	 */
+	public int getHsqlDbNumber() {
+		return hsqlDbNumber;
+	}
+
+	/**
+	 * @param hsqlDbNumber The hsqlDbNumber to set.
+	 */
+	public void setHsqlDbNumber(int hsqlDbNumber) {
+		this.hsqlDbNumber = hsqlDbNumber;
+	}
     
 }

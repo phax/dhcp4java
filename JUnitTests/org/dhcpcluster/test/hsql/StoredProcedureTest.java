@@ -18,9 +18,20 @@
  */
 package org.dhcpcluster.test.hsql;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
 
+import org.apache.commons.dbutils.QueryRunner;
+import org.dhcp4java.DHCPServerInitException;
+import org.dhcpcluster.DHCPClusterNode;
+import org.dhcpcluster.backend.hsql.DataAccess;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Test;
 
 import junit.framework.JUnit4TestAdapter;
 
@@ -32,12 +43,50 @@ public class StoredProcedureTest {
        return new JUnit4TestAdapter(StoredProcedureTest.class);
     }
 	
+	private static DHCPClusterNode node = null;
+	private static Connection conn;
+	
 	@BeforeClass
-	public void launchServer() {
+	public static void launchServer() throws DHCPServerInitException, SQLException {
 		Properties props = new Properties();
 		
 		props.setProperty("config.reader", "org.dhcpcluster.config.xml.XmlConfigReader");
-		props.setProperty("config.xml.file", "./JUnitTests/org/dhcp4java/conf/configtest.xml");
+		props.setProperty("config.xml.file", "./JUnitTests/org/dhcpcluster/test/hsql/conf/configtest.xml");
+		
+		props.setProperty("backend.hsql.address", "localhost");
+		props.setProperty("backend.hsql.dbnumber", "0");
+		props.setProperty("backend.hsql.dbname", "dhcpcluster");
+		props.setProperty("backend.hsql.dbpath", "./JUnitTests/org/dhcpcluster/test/hsql/db/dhcpcluster");
+
+    	node = new DHCPClusterNode(props);
+		conn = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost/dhcpcluster", "sa", "");
+		conn.setAutoCommit(true);
+	}
+	
+	@Before
+	public void prepareDb() throws SQLException {
+		QueryRunner qRunner = new QueryRunner();
+		qRunner.update(conn, "DELETE FROM T_LEASE");
+		conn.commit();
+	}
+	
+	@Test
+	public void testBubbles() {
+		assertTrue(true);
+		node.getFrontendConfig();
+	}
+	
+	@After
+	public void cleanupDb() throws SQLException {
+		conn.rollback();
 	}
 
+	@AfterClass
+	public static void stopServer() {
+		try {
+			DataAccess.shutdown(conn);
+		} catch (SQLException e) {
+			// exception is normal here, broken connection 
+		}
+	}
 }

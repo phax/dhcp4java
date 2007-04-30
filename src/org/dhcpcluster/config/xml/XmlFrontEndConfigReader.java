@@ -18,8 +18,10 @@
  */
 package org.dhcpcluster.config.xml;
 
+import org.dhcpcluster.config.ConfigException;
 import org.dhcpcluster.config.FrontendConfig;
 import org.dhcpcluster.config.xml.data.DhcpServer;
+import org.dhcpcluster.config.xml.data.DhcpServer.FrontEnd.Jdbc;
 
 /**
  * 
@@ -46,6 +48,14 @@ public class XmlFrontEndConfigReader {
 			DhcpServer.FrontEnd.Listen listen = frontEndData.getListen();
 			frontEndConfig.setListenIp(listen.getInet());
 			frontEndConfig.setListenPort(listen.getPort());
+		}
+		if (frontEndData.getJdbc() != null) {
+			Jdbc jdbcData = frontEndData.getJdbc();
+			frontEndConfig.setJdbcUrl(jdbcData.getUrl());
+			frontEndConfig.setJdbcUser(jdbcData.getUser());
+			frontEndConfig.setJdbcPassword(jdbcData.getPassword());
+		} else {
+			throw new ConfigException("<jdbc> element missing in the front-end config.");
 		}
 		
 		return frontEndConfig;

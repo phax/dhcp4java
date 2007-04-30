@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
  */
 public class FrontendConfig implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 3L;
 
     @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(FrontendConfig.class);
@@ -42,6 +42,10 @@ public class FrontendConfig implements Serializable {
     private int			threadsCore = 1;
     private int			threadsMax = 4;
     private int			threadsKeepalive = 10000;	// 10s default
+    
+    private String			jdbcUrl = null;
+    private String			jdbcUser = null;
+    private String			jdbcPassword = null;
     
     public FrontendConfig() {
     	// empty constructor
@@ -118,6 +122,48 @@ public class FrontendConfig implements Serializable {
 	 */
 	public void setThreadsNb(int threadsNb) {
 		this.threadsNb = threadsNb;
+	}
+
+	/**
+	 * @return Returns the jdbcPassword.
+	 */
+	public String getJdbcPassword() {
+		return jdbcPassword;
+	}
+
+	/**
+	 * @param jdbcPassword The jdbcPassword to set.
+	 */
+	public void setJdbcPassword(String jdbcPassword) {
+		this.jdbcPassword = jdbcPassword;
+	}
+
+	/**
+	 * @return Returns the jdbcUrl.
+	 */
+	public String getJdbcUrl() {
+		return jdbcUrl;
+	}
+
+	/**
+	 * @param jdbcUrl The jdbcUrl to set.
+	 */
+	public void setJdbcUrl(String jdbcUrl) {
+		this.jdbcUrl = jdbcUrl;
+	}
+
+	/**
+	 * @return Returns the jdbcUser.
+	 */
+	public String getJdbcUser() {
+		return jdbcUser;
+	}
+
+	/**
+	 * @param jdbcUser The jdbcUser to set.
+	 */
+	public void setJdbcUser(String jdbcUser) {
+		this.jdbcUser = jdbcUser;
 	}
 
 }

@@ -54,10 +54,17 @@ public class HsqlBackendServer implements DHCPBackendIntf {
 	private final PrintWriter		debugWriter = new PrintWriter(new LogOutputStream(Level.DEBUG));
 	private final PrintWriter		logWriter = new PrintWriter(new LogOutputStream(Level.INFO));
 	private final PrintWriter		errWriter = new PrintWriter(new LogOutputStream(Level.ERROR));
+
+    private String			hsqlAddress = null;
+    private String			hsqlDbName = null;
+    private String			hsqlDbPath = null;
+    private int			hsqlDbNumber = 0;
 	
-	public HsqlBackendServer() {
-		if (!loadDriver("org.hsqldb.jdbcDriver")) {
-			logger.fatal("Cannot load hsql driver org.hsqldb.jdbcDriver");
+	public HsqlBackendServer(Properties props) {
+		parseHsqlProperties(props);
+		
+		if (!loadDriver(HSQL_DRIVER)) {
+			logger.fatal("Cannot load hsql driver "+HSQL_DRIVER);
 		}
 		
 		sqlServer = new Server();
@@ -67,9 +74,9 @@ public class HsqlBackendServer implements DHCPBackendIntf {
 		sqlServer.setSilent(true);
 		sqlServer.setLogWriter(logWriter);
 		sqlServer.setTrace(true);
-		sqlServer.setAddress("localhost");
-		sqlServer.setDatabaseName(0, "dhcpcluster");
-		sqlServer.setDatabasePath(0, "./db/dhcpcluster");
+		sqlServer.setAddress(hsqlAddress);
+		sqlServer.setDatabaseName(hsqlDbNumber, hsqlDbName);
+		sqlServer.setDatabasePath(hsqlDbNumber, hsqlDbPath);
 		//sqlServer.setLogWriter(logger.)
 		sqlServer.start();
 	}
@@ -137,7 +144,29 @@ public class HsqlBackendServer implements DHCPBackendIntf {
 			closeQuietly(conn0);
 		}
 	}
+	
+	private void parseHsqlProperties(Properties props) throws ConfigException {
+		hsqlAddress = props.getProperty(HSQL_ADDRESS, "localhost");
+		String propHsqlDbNumber = props.getProperty(HSQL_DBNUMBER);
+		if (propHsqlDbNumber != null) {
+			hsqlDbNumber = Integer.parseInt(propHsqlDbNumber);
+		}
+		hsqlDbName = props.getProperty(HSQL_DBNAME);
+		if (hsqlDbName == null) {
+			throw new ConfigException("Property "+HSQL_DBNAME+" is null");
+		}
+		hsqlDbPath = props.getProperty(HSQL_DBPATH);
+		if (hsqlDbPath == null) {
+			throw new ConfigException("Property "+HSQL_DBPATH+" is null");
+		}
+	}
+	
+	private static final String		HSQL_ADDRESS="backend.hsql.address";
+	private static final String		HSQL_DBNUMBER="backend.hsql.dbnumber";
+	private static final String		HSQL_DBNAME="backend.hsql.dbname";
+	private static final String		HSQL_DBPATH="backend.hsql.dbpath";
 
+	private static final String		HSQL_DRIVER = "org.hsqldb.jdbcDriver";
 }
 
 
