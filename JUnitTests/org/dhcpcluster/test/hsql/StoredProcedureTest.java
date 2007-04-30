@@ -21,12 +21,18 @@ package org.dhcpcluster.test.hsql;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 
 import org.apache.commons.dbutils.QueryRunner;
 import org.dhcp4java.DHCPServerInitException;
 import org.dhcpcluster.DHCPClusterNode;
+import org.dhcpcluster.SystemTime;
 import org.dhcpcluster.backend.hsql.DataAccess;
+import org.dhcpcluster.backend.hsql.HsqlBackendServer;
+import org.dhcpcluster.backend.hsql.LeaseStoredProcedures;
+import org.dhcpcluster.struct.DHCPLease;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -67,13 +73,34 @@ public class StoredProcedureTest {
 	public void prepareDb() throws SQLException {
 		QueryRunner qRunner = new QueryRunner();
 		qRunner.update(conn, "DELETE FROM T_LEASE");
+		node.getBackend().prepareBackend(node.getTopologyConfig());
 		conn.commit();
 	}
 	
 	@Test
-	public void testBubbles() {
-		assertTrue(true);
-		node.getFrontendConfig();
+	public void testSimpleCycle() throws Exception {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = (Date)formatter.parse("01/01/2007");
+        long now = date.getTime();
+		SystemTime.setForcedTime(date.getTime());
+		SystemTime.setForcedMode(true);
+		
+		long poolId = -1;
+		long res;
+		// bad PoolId
+		res = LeaseStoredProcedures.dhcpDiscover(conn, poolId, "001122334455", -1, null, 60);
+		assertEquals(0L, res);
+		
+		// PoolID = 97721516032
+		poolId = 97721516032L;
+		res = LeaseStoredProcedures.dhcpDiscover(conn, poolId, "001122334455", -1, null, 60);
+		assertEquals(3232235535L, res);
+		DHCPLease lease = DataAccess.getLease(conn, res);
+		assertEquals(res, lease.getIp());
+		assertEquals(now, lease.getCreationDate());
+		assertEquals(now, lease.getUpdateDate());
+		assertEquals(now + 60000L, lease.getExpirationDate());
+		assertEquals(now + 60000L, lease.getRecycleDate());
 	}
 	
 	@After

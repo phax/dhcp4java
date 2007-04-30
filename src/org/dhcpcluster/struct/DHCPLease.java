@@ -350,7 +350,7 @@ public class DHCPLease implements Serializable {
 
         byte[] buf = new byte[len / 2];
 
-        for (int index = 0; index < len; index++) {
+        for (int index = 0; index < len/2; index++) {
             final int stringIndex = index << 1;
             buf[index] = (byte) Integer.parseInt(s.substring(stringIndex, stringIndex + 2), 16);
         }

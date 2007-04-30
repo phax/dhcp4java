@@ -21,6 +21,7 @@ package org.dhcpcluster.backend.hsql;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.log4j.Logger;
@@ -75,9 +76,9 @@ public class LeaseStoredProcedures {
 			// Step 1- Check if the client already has an active lease in the specified address pool
 			
 			// Select T_LEASE table with client’s Mac address and Status is not FREE or ABANDONED,
-			DHCPLease[] leases = (DHCPLease[]) qRunner.query(conn, SELECT_LEASE_MAC, macHex, DataAccess.leaseListHandler);
+			List<DHCPLease> leases = (List<DHCPLease>) qRunner.query(conn, SELECT_LEASE_MAC, macHex, DataAccess.leaseListHandler);
 			// then filtering the result set with the specified address pool.
-			if ((leases != null) && (leases.length > 0)) {
+			if ((leases != null) && (leases.size() > 0)) {
 				// check if one lease is in the correct address pool
 				AddressRange[] pools = DataAccess.selectPoolsFromPoolSet(conn, poolId);
 				if ((pools != null) && (pools.length > 0)) {
@@ -88,8 +89,8 @@ public class LeaseStoredProcedures {
 					// 2- pools[] is a sorted array, non-empty
 					int leaseIdx = 0;
 					int poolIdx = 0;
-					while ((leaseIdx < leases.length) && (poolIdx < pools.length)) {
-						long leaseAdrL = leases[leaseIdx].getIp();
+					while ((leaseIdx < leases.size()) && (poolIdx < pools.length)) {
+						long leaseAdrL = leases.get(leaseIdx).getIp();
 						if (leaseAdrL < pools[poolIdx].getRangeStartLong()) {
 							// go to next lease
 							leaseIdx++;
@@ -99,7 +100,7 @@ public class LeaseStoredProcedures {
 						} else {
 							// found an in-range lease
 							candidateAdr = leaseAdrL;
-							existingLease = leases[leaseIdx];
+							existingLease = leases.get(leaseIdx);
 							break;
 						}
 					}
@@ -238,7 +239,7 @@ public class LeaseStoredProcedures {
 			conn.setAutoCommit(autocommitSave);
 		}
 	}
-	
+
 	/**
 	 * 
 	 * <p>Note: the caller must first check that the requested address is indeed in the LAN. No check here.

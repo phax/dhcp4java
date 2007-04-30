@@ -25,6 +25,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -182,10 +183,10 @@ public class DataAccess {
 		assert(conn != null);
 		Object[] args = new Object[8];
 		args[0] = (Long) lease.getIp();
-		args[1] = (Long) lease.getCreationDate();
-		args[2] = (Long) lease.getUpdateDate();
-		args[3] = (Long) lease.getExpirationDate();
-		args[4] = (Long) lease.getRecycleDate();
+		args[1] = (Timestamp) new Timestamp(lease.getCreationDate());
+		args[2] = (Timestamp) new Timestamp(lease.getUpdateDate());
+		args[3] = (Timestamp) new Timestamp(lease.getExpirationDate());
+		args[4] = (Timestamp) new Timestamp(lease.getRecycleDate());
 		args[5] = (String) lease.getMacHex();
 		args[6] = (String) lease.getUid();
 		args[7] = (Integer) lease.getStatus().getCode();
@@ -199,10 +200,10 @@ public class DataAccess {
 	public static boolean updateLease(Connection conn, DHCPLease lease) throws SQLException {
 		assert(conn != null);
 		Object[] args = new Object[8];
-		args[0] = (Long) lease.getCreationDate();
-		args[1] = (Long) lease.getUpdateDate();
-		args[2] = (Long) lease.getExpirationDate();
-		args[3] = (Long) lease.getRecycleDate();
+		args[0] = (Timestamp) new Timestamp(lease.getCreationDate());
+		args[1] = (Timestamp) new Timestamp(lease.getUpdateDate());
+		args[2] = (Timestamp) new Timestamp(lease.getExpirationDate());
+		args[3] = (Timestamp) new Timestamp(lease.getRecycleDate());
 		args[4] = (String) lease.getMacHex();
 		args[5] = (String) lease.getUid();
 		args[6] = (Integer) lease.getStatus().getCode();
@@ -381,16 +382,17 @@ class LeaseHandler extends CustomBeanProcessor {
 		}
 		DHCPLease lease = new DHCPLease();
 		lease.setIp(rs.getLong("IP"));
-		lease.setCreationDate(dateToLong(rs.getDate("CREATION_DATE")));
-		lease.setUpdateDate(dateToLong(rs.getDate("UPDATE_DATE")));
-		lease.setExpirationDate(dateToLong(rs.getDate("EXPIRATION_DATE")));
+		lease.setCreationDate(dateToLong(rs.getTimestamp("CREATION_DATE")));
+		lease.setUpdateDate(dateToLong(rs.getTimestamp("UPDATE_DATE")));
+		lease.setExpirationDate(dateToLong(rs.getTimestamp("EXPIRATION_DATE")));
+		lease.setRecycleDate(dateToLong(rs.getTimestamp("RECYCLE_DATE")));
 		lease.setMacHex(rs.getString("MAC"));
 		lease.setUid(rs.getString("UID"));
 		lease.setStatus(DHCPLease.Status.fromInt(rs.getInt("STATUS")));
 		return lease;
 	}
 	
-	private static final long dateToLong(Date date) {
+	private static final long dateToLong(Timestamp date) {
 		if (date == null) {
 			return 0;
 		} else {
