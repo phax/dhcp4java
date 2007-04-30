@@ -111,7 +111,7 @@
 									</xs:attribute>
 								</xs:complexType>
 							</xs:element>
-							<xs:element name="jdbc" minOccurs="0">
+							<xs:element name="jdbc">
 								<xs:complexType>
 									<xs:complexContent>
 										<xs:extension base="empty-type">
@@ -120,19 +120,6 @@
 											<xs:attribute name="password" type="xs:string" use="required"/>
 										</xs:extension>
 									</xs:complexContent>
-								</xs:complexType>
-							</xs:element>
-						</xs:all>
-					</xs:complexType>
-				</xs:element>
-				<xs:element name="back-end">
-					<xs:complexType>
-						<xs:all>
-							<xs:element name="hsql" minOccurs="0">
-								<xs:complexType>
-									<xs:attribute name="adress" type="xs:string" use="required"/>
-									<xs:attribute name="db-name" type="xs:string" use="required"/>
-									<xs:attribute name="db-path" type="xs:string" use="required"/>
 								</xs:complexType>
 							</xs:element>
 						</xs:all>
