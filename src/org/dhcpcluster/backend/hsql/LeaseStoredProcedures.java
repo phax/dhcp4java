@@ -80,8 +80,8 @@ public class LeaseStoredProcedures {
 			// then filtering the result set with the specified address pool.
 			if ((leases != null) && (leases.size() > 0)) {
 				// check if one lease is in the correct address pool
-				AddressRange[] pools = DataAccess.selectPoolsFromPoolSet(conn, poolId);
-				if ((pools != null) && (pools.length > 0)) {
+				List<AddressRange> pools = DataAccess.selectPoolsFromPoolSet(conn, poolId);
+				if ((pools != null) && (pools.size() > 0)) {
 					// Check whether a lease address is already in a pool
 					// so that we can reuse it exonomically
 					// PRE-REQUISITE:
@@ -89,12 +89,12 @@ public class LeaseStoredProcedures {
 					// 2- pools[] is a sorted array, non-empty
 					int leaseIdx = 0;
 					int poolIdx = 0;
-					while ((leaseIdx < leases.size()) && (poolIdx < pools.length)) {
+					while ((leaseIdx < leases.size()) && (poolIdx < pools.size())) {
 						long leaseAdrL = leases.get(leaseIdx).getIp();
-						if (leaseAdrL < pools[poolIdx].getRangeStartLong()) {
+						if (leaseAdrL < pools.get(poolIdx).getRangeStartLong()) {
 							// go to next lease
 							leaseIdx++;
-						} else if (leaseAdrL > pools[poolIdx].getRangeEndLong()) {
+						} else if (leaseAdrL > pools.get(poolIdx).getRangeEndLong()) {
 							// go to next pool
 							poolIdx++;
 						} else {
@@ -114,9 +114,9 @@ public class LeaseStoredProcedures {
 			
 			// first, do we need a quota check, i.e. quota is > 0 and an ICC has been passed as parameter
 			if ((iccQuota > 0) && (icc != null) && (icc.length() > 0)) {
-				DHCPLease[] leaseSameIcc = DataAccess.selectActiveLeasesByIcc(conn, icc);
-				if ((leaseSameIcc != null) && (leaseSameIcc.length > 0)) {
-					if (leaseSameIcc.length > iccQuota) {
+				List<DHCPLease> leaseSameIcc = DataAccess.selectActiveLeasesByIcc(conn, icc);
+				if ((leaseSameIcc != null) && (leaseSameIcc.size() > 0)) {
+					if (leaseSameIcc.size() > iccQuota) {
 						// icc quota reached, cannot allocate a new address
 						return -4;
 					}
@@ -180,6 +180,7 @@ public class LeaseStoredProcedures {
 					// Step 3.1- If it already exists in OFFERED state, extend the EXPIRATION_DATE and update UPDATE_DATE
 					existingLease.setUpdateDate(now);
 					existingLease.setExpirationDate(now + 1000L*offerTime);
+					existingLease.setRecycleDate(now + 1000L*offerTime);
 					if (!DataAccess.updateLease(conn, existingLease)) {
 						return -3;
 					}
@@ -189,6 +190,9 @@ public class LeaseStoredProcedures {
 					if (existingLease.getExpirationDate() < now + 1000L*offerTime) {
 						existingLease.setExpirationDate(now + 1000L*offerTime);
 					}
+					if (existingLease.getRecycleDate() < now + 1000L*offerTime) {
+						existingLease.setRecycleDate(now + 1000L*offerTime);
+					}
 					if (!DataAccess.updateLease(conn, existingLease)) {
 						return -3;
 					}
@@ -196,7 +200,7 @@ public class LeaseStoredProcedures {
 					// Step 3.3- If it already exists in ABANDONED state, this is an internal error (pre-condition violation), return error (-5)
 					return -5;
 				} else if (status == Status.FREE) {
-					existingLease.setCreationDate(now);
+					// Creation date is unchanged as it is the same Mac address
 					existingLease.setUpdateDate(now);
 					existingLease.setExpirationDate(now + 1000L*offerTime);
 					existingLease.setRecycleDate(now + 1000L*offerTime);

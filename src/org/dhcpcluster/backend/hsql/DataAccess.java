@@ -286,17 +286,17 @@ public class DataAccess {
 
 	}
 
-	public static AddressRange[] selectPoolsFromPoolSet(Connection conn, long poolId) throws SQLException {
+	public static List<AddressRange> selectPoolsFromPoolSet(Connection conn, long poolId) throws SQLException {
 		assert(conn != null);
-		return (AddressRange[]) qRunner.query(conn, SELECT_T_POOL_RANGES_FROM_SET_ID, poolId, addressRangeHandler);
+		return (List<AddressRange>) qRunner.query(conn, SELECT_T_POOL_RANGES_FROM_SET_ID, poolId, addressRangeHandler);
 	}
 	
-	public static DHCPLease[] selectActiveLeasesByIcc(Connection conn, String icc) throws SQLException {
+	public static List<DHCPLease> selectActiveLeasesByIcc(Connection conn, String icc) throws SQLException {
 		assert(conn != null);
 		if ((icc == null) || (icc.length() == 0)) {
 			return null;
 		}
-		return (DHCPLease[]) qRunner.query(conn, SELECT_LEASE_ACTIVE_ICC, icc, leaseListHandler);
+		return (List<DHCPLease>) qRunner.query(conn, SELECT_LEASE_ACTIVE_ICC, icc, leaseListHandler);
 	}
 	
 	public static Bubble selectBubblesByPoolId(Connection conn, long poolId) throws SQLException {
