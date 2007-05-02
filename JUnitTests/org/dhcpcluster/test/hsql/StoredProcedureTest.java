@@ -30,8 +30,6 @@ import org.dhcp4java.DHCPServerInitException;
 import org.dhcpcluster.DHCPClusterNode;
 import org.dhcpcluster.SystemTime;
 import org.dhcpcluster.backend.hsql.DataAccess;
-import org.dhcpcluster.backend.hsql.HsqlBackendServer;
-import org.dhcpcluster.backend.hsql.LeaseStoredProcedures;
 import org.dhcpcluster.struct.DHCPLease;
 import org.dhcpcluster.struct.DHCPLease.Status;
 import org.junit.After;
@@ -92,12 +90,12 @@ public class StoredProcedureTest {
 		long poolId = -1;
 		long res;
 		// bad PoolId
-		res = LeaseStoredProcedures.dhcpDiscover(conn, poolId, macAdr, -1, null, 60);
+		res = DataAccess.callDhcpDiscoverSP(conn, poolId, macAdr, -1, null, 60);
 		assertEquals(0L, res);
 		
 		// PoolID = 97721516032
 		poolId = 97721516032L;
-		res = LeaseStoredProcedures.dhcpDiscover(conn, poolId, macAdr, -1, null, 60);
+		res = DataAccess.callDhcpDiscoverSP(conn, poolId, macAdr, -1, null, 60);
 		assertEquals(3232235535L, res);
 		DHCPLease lease = DataAccess.getLease(conn, res);
 		assertEquals(res, lease.getIp());
@@ -111,7 +109,7 @@ public class StoredProcedureTest {
 		// small advance in time (30s)
 		now += 30000;
 		SystemTime.setForcedTime(now);
-		res = LeaseStoredProcedures.dhcpDiscover(conn, poolId, macAdr, -1, null, 60);
+		res = DataAccess.callDhcpDiscoverSP(conn, poolId, macAdr, -1, null, 60);
 		assertEquals(3232235535L, res);
 		lease = DataAccess.getLease(conn, res);
 		assertEquals(res, lease.getIp());
@@ -125,7 +123,7 @@ public class StoredProcedureTest {
 		// now go next day, without GC (status is always OFFERED)
 		now += 1000L * 3600 * 24;
 		SystemTime.setForcedTime(now);
-		res = LeaseStoredProcedures.dhcpDiscover(conn, poolId, macAdr, -1, null, 60);
+		res = DataAccess.callDhcpDiscoverSP(conn, poolId, macAdr, -1, null, 60);
 		assertEquals(3232235535L, res);
 		lease = DataAccess.getLease(conn, res);
 		assertEquals(res, lease.getIp());
@@ -143,7 +141,7 @@ public class StoredProcedureTest {
 		lease = DataAccess.getLease(conn, 3232235535L);
 		lease.setStatus(Status.USED);
 		DataAccess.updateLease(conn, lease);
-		res = LeaseStoredProcedures.dhcpDiscover(conn, poolId, macAdr, -1, null, 60);
+		res = DataAccess.callDhcpDiscoverSP(conn, poolId, macAdr, -1, null, 60);
 		assertEquals(3232235535L, res);
 		lease = DataAccess.getLease(conn, res);
 		assertEquals(res, lease.getIp());
@@ -156,7 +154,7 @@ public class StoredProcedureTest {
 
 		// second mac address
 		long creationDate2 = now;
-		res = LeaseStoredProcedures.dhcpDiscover(conn, poolId, macAdr2 /* new mac */, -1, null, 60);
+		res = DataAccess.callDhcpDiscoverSP(conn, poolId, macAdr2 /* new mac */, -1, null, 60);
 		assertEquals(3232235536L, res);
 		lease = DataAccess.getLease(conn, res);
 		assertEquals(res, lease.getIp());
@@ -171,7 +169,7 @@ public class StoredProcedureTest {
 		lease = DataAccess.getLease(conn, 3232235536L);
 		lease.setStatus(Status.ABANDONED);
 		DataAccess.updateLease(conn, lease);
-		res = LeaseStoredProcedures.dhcpDiscover(conn, poolId, macAdr2 /* new mac */, -1, null, 60);
+		res = DataAccess.callDhcpDiscoverSP(conn, poolId, macAdr2 /* new mac */, -1, null, 60);
 		assertEquals(3232235537L, res);
 		lease = DataAccess.getLease(conn, res);
 		assertEquals(res, lease.getIp());
@@ -189,7 +187,7 @@ public class StoredProcedureTest {
 		lease = DataAccess.getLease(conn, 3232235536L);
 		lease.setStatus(Status.USED);
 		DataAccess.updateLease(conn, lease);
-		res = LeaseStoredProcedures.dhcpDiscover(conn, poolId, macAdr2 /* new mac */, -1, null, 60);
+		res = DataAccess.callDhcpDiscoverSP(conn, poolId, macAdr2 /* new mac */, -1, null, 60);
 		assertEquals(3232235536L, res);
 		lease = DataAccess.getLease(conn, res);
 		assertEquals(res, lease.getIp());
@@ -204,12 +202,12 @@ public class StoredProcedureTest {
 	
 	@Test(expected=NullPointerException.class)
 	public void dhcpDiscoverConnNull() throws SQLException {
-		LeaseStoredProcedures.dhcpDiscover(null, 0, "0011", 0, null, 0);
+		DataAccess.callDhcpDiscoverSP(null, 0, "0011", 0, null, 0);
 	}
 
-	@Test(expected=IllegalArgumentException.class)
+	@Test(expected=SQLException.class)
 	public void dhcpDiscoverMacNull() throws SQLException {
-		LeaseStoredProcedures.dhcpDiscover(conn, 0, null, 0, null, 0);
+		DataAccess.callDhcpDiscoverSP(conn, 0, null, 0, null, 0);
 	}
 	
 	@After

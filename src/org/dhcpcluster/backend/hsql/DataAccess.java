@@ -77,11 +77,11 @@ public class DataAccess {
 	
 	public static int identity(Connection conn) throws SQLException {
 		assert(conn != null);
-		Integer id = (Integer) qRunner.query(conn, IDENTITY, identityRsh);
+		Integer id = (Integer) qRunner.query(conn, IDENTITY, scalarHandler);
 		return id;
 	}
 
-	private static final ResultSetHandler identityRsh = new ScalarHandler();
+	private static final ResultSetHandler scalarHandler = new ScalarHandler();
 	
 	public static void deletePools(Connection conn) throws SQLException {
 		assert(conn != null);
@@ -303,6 +303,18 @@ public class DataAccess {
 		assert(conn != null);
 		return (Bubble) qRunner.query(conn, SELECT_BUBBLE_FROM_POOL_SET, (Long) poolId, bubbleHandler);
 	}
+	
+	public static long callDhcpDiscoverSP(Connection conn, long poolId, String macHex, int iccQuota, String icc,
+											long offerTime) throws SQLException {
+		assert(conn != null);
+		Object[] args = new Object[5];
+		args[0] = (Long) poolId;
+		args[1] = macHex;
+		args[2] = (Integer) iccQuota;
+		args[3] = icc;
+		args[4] = (Long) offerTime;
+		return (Long) qRunner.query(conn, CALL_DHCP_DISCOVER, args, scalarHandler);
+	}
 
 	/* QueryLoader for loading sql from properties files */
 	static final Map<String, String>				queries;
@@ -342,6 +354,8 @@ public class DataAccess {
 	private static final String	SELECT_T_POOL_RANGES_FROM_SET_ID = queries.get("SELECT_T_POOL_RANGES_FROM_SET_ID");
 
 	private static final String	INSERT_T_LEASE_ARCHIVE = queries.get("INSERT_T_LEASE_ARCHIVE");
+
+	private static final String	CALL_DHCP_DISCOVER = queries.get("CALL_DHCP_DISCOVER");
 
 }
 
