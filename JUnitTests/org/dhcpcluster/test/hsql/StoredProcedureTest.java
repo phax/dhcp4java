@@ -21,6 +21,7 @@ package org.dhcpcluster.test.hsql;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
@@ -50,9 +51,13 @@ public class StoredProcedureTest {
 	
 	private static DHCPClusterNode node = null;
 	private static Connection conn;
+	private static long originOfTime;
+
+	private static final String macAdr = "001122334455";
+	private static final String macAdr2 = "001122334456";
 	
 	@BeforeClass
-	public static void launchServer() throws DHCPServerInitException, SQLException {
+	public static void launchServer() throws DHCPServerInitException, SQLException, ParseException {
 		Properties props = new Properties();
 		
 		props.setProperty("config.reader", "org.dhcpcluster.config.xml.XmlConfigReader");
@@ -66,10 +71,18 @@ public class StoredProcedureTest {
     	node = new DHCPClusterNode(props);
 		conn = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost/dhcpcluster", "sa", "");
 		conn.setAutoCommit(true);
+		
+		// change time reference
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = (Date)formatter.parse("01/01/2007");
+        originOfTime = date.getTime();
+		SystemTime.setForcedTime(originOfTime);
+		SystemTime.setForcedMode(true);
 	}
 	
 	@Before
 	public void prepareDb() throws SQLException {
+		SystemTime.setForcedTime(originOfTime);
 		QueryRunner qRunner = new QueryRunner();
 		qRunner.update(conn, "DELETE FROM T_LEASE");
 		node.getBackend().prepareBackend(node.getTopologyConfig());
@@ -77,18 +90,10 @@ public class StoredProcedureTest {
 	}
 	
 	@Test
-	public void testSimpleCycle() throws Exception {
-		String macAdr = "001122334455";
-		String macAdr2 = "001122334456";
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        Date date = (Date)formatter.parse("01/01/2007");
-        long now = date.getTime();
-        long firstTime = now;
-		SystemTime.setForcedTime(date.getTime());
-		SystemTime.setForcedMode(true);
-		
+	public void testDhcpDiscover() throws Exception {
 		long poolId = -1;
 		long res;
+		long now = originOfTime;
 		// bad PoolId
 		res = DataAccess.callDhcpDiscoverSP(conn, poolId, macAdr, -1, null, 60);
 		assertEquals(0L, res);
@@ -99,10 +104,10 @@ public class StoredProcedureTest {
 		assertEquals(3232235535L, res);
 		DHCPLease lease = DataAccess.getLease(conn, res);
 		assertEquals(res, lease.getIp());
-		assertEquals(firstTime, lease.getCreationDate());
-		assertEquals(firstTime, lease.getUpdateDate());
-		assertEquals(firstTime + 60000L, lease.getExpirationDate());
-		assertEquals(firstTime + 60000L, lease.getRecycleDate());
+		assertEquals(originOfTime, lease.getCreationDate());
+		assertEquals(originOfTime, lease.getUpdateDate());
+		assertEquals(originOfTime + 60000L, lease.getExpirationDate());
+		assertEquals(originOfTime + 60000L, lease.getRecycleDate());
 		assertEquals(macAdr, lease.getMacHex());
 		assertEquals(Status.OFFERED, lease.getStatus());
 		
@@ -113,7 +118,7 @@ public class StoredProcedureTest {
 		assertEquals(3232235535L, res);
 		lease = DataAccess.getLease(conn, res);
 		assertEquals(res, lease.getIp());
-		assertEquals(firstTime, lease.getCreationDate());
+		assertEquals(originOfTime, lease.getCreationDate());
 		assertEquals(now, lease.getUpdateDate());
 		assertEquals(now + 60000L, lease.getExpirationDate());
 		assertEquals(now + 60000L, lease.getRecycleDate());
@@ -127,7 +132,7 @@ public class StoredProcedureTest {
 		assertEquals(3232235535L, res);
 		lease = DataAccess.getLease(conn, res);
 		assertEquals(res, lease.getIp());
-		assertEquals(firstTime, lease.getCreationDate());
+		assertEquals(originOfTime, lease.getCreationDate());
 		assertEquals(now, lease.getUpdateDate());
 		assertEquals(now + 60000L, lease.getExpirationDate());
 		assertEquals(now + 60000L, lease.getRecycleDate());
@@ -145,7 +150,7 @@ public class StoredProcedureTest {
 		assertEquals(3232235535L, res);
 		lease = DataAccess.getLease(conn, res);
 		assertEquals(res, lease.getIp());
-		assertEquals(firstTime, lease.getCreationDate());
+		assertEquals(originOfTime, lease.getCreationDate());
 		assertEquals(now, lease.getUpdateDate());
 		assertEquals(now + 60000L, lease.getExpirationDate());
 		assertEquals(now + 60000L, lease.getRecycleDate());
@@ -199,6 +204,97 @@ public class StoredProcedureTest {
 		assertEquals(Status.OFFERED, lease.getStatus());
 		
 	}
+	
+	@Test
+	public void testDhcpRequest() throws Exception {
+		long poolId = -1;
+		long ip;
+		int res;
+		long now = originOfTime;
+		DHCPLease lease;
+
+		// PoolID = 97721516032
+		poolId = 97721516032L;
+		ip = DataAccess.callDhcpDiscoverSP(conn, poolId, macAdr, -1, null, 60);
+		assertEquals(3232235535L, ip);
+		ip = DataAccess.callDhcpDiscoverSP(conn, poolId, macAdr2, -1, null, 60);
+		assertEquals(3232235536L, ip);
+
+		// ===== First try bad calls
+		
+		// change lease2 to ABANDONED
+		lease = DataAccess.getLease(conn, 3232235536L);
+		assertEquals(Status.OFFERED, lease.getStatus());
+		lease.setStatus(Status.ABANDONED);
+		DataAccess.updateLease(conn, lease);
+		// now try to obtain this address
+		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235536L, 86400, 30, macAdr2);
+		assertEquals(-5, res);
+		// same try for another macAdr
+		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235536L, 86400, 30, macAdr);
+		assertEquals(-5, res);
+		// witch back to OFFERED
+		lease = DataAccess.getLease(conn, 3232235536L);
+		lease.setStatus(Status.OFFERED);
+		DataAccess.updateLease(conn, lease);
+		
+		// try to ask with wrong macAdr2
+		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235535L, 86400, 30, macAdr2);
+		assertEquals(-2, res);
+		
+		// now try a correct call
+		now += 10000;
+		SystemTime.setForcedTime(now);
+		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235535L, 86400, 30, macAdr);
+		assertEquals(3, res);
+		lease = DataAccess.getLease(conn, 3232235535L);
+		assertEquals(3232235535L, lease.getIp());
+		assertEquals(originOfTime, lease.getCreationDate());
+		assertEquals(now, lease.getUpdateDate());
+		assertEquals(now + 86400*1000L, lease.getExpirationDate());
+		assertEquals(now + 86400*1000L*(100+30)/100L, lease.getRecycleDate());
+		assertEquals(macAdr, lease.getMacHex());
+		assertEquals(Status.USED, lease.getStatus());
+		
+		// now try a free address
+		now += 10000L;
+		SystemTime.setForcedTime(now);
+		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235537L, 86400, 30, macAdr);
+		assertEquals(2, res);
+		lease = DataAccess.getLease(conn, 3232235537L);
+		assertEquals(3232235537L, lease.getIp());
+		assertEquals(now, lease.getCreationDate());
+		assertEquals(now, lease.getUpdateDate());
+		assertEquals(now + 86400*1000L, lease.getExpirationDate());
+		assertEquals(now + 86400*1000L*(100+30)/100L, lease.getRecycleDate());
+		assertEquals(macAdr, lease.getMacHex());
+		assertEquals(Status.USED, lease.getStatus());
+		
+		// try to reallocate an expired lease
+		now += 60000L;
+		SystemTime.setForcedTime(now);
+		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235536L, 86400, 30, macAdr);
+		assertEquals(4, res);
+		lease = DataAccess.getLease(conn, 3232235536L);
+		assertEquals(3232235536L, lease.getIp());
+		assertEquals(now, lease.getCreationDate());
+		assertEquals(now, lease.getUpdateDate());
+		assertEquals(now + 86400*1000L, lease.getExpirationDate());
+		assertEquals(now + 86400*1000L*(100+30)/100L, lease.getRecycleDate());
+		assertEquals(macAdr, lease.getMacHex());
+		assertEquals(Status.USED, lease.getStatus());
+		
+		// now try to reserve an address which is not in bubble
+		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235534L, 86400, 30, macAdr);
+		assertEquals(-6, res);
+		
+//		long poolId = -1;
+//		long res;
+//		// bad PoolId
+//		res = DataAccess.callDhcpDiscoverSP(conn, poolId, macAdr, -1, null, 60);
+//		assertEquals(0L, res);
+	}
+		
 	
 	@Test(expected=NullPointerException.class)
 	public void dhcpDiscoverConnNull() throws SQLException {

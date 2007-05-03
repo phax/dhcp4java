@@ -30,12 +30,12 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.dbutils.BasicRowProcessor;
 import org.apache.commons.dbutils.QueryLoader;
-import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
@@ -44,6 +44,7 @@ import org.apache.log4j.Logger;
 
 import org.dhcp4java.InetCidr;
 import org.dhcp4java.Util;
+import org.dhcpcluster.backend.QueryRunner2;
 import org.dhcpcluster.struct.AddressRange;
 import org.dhcpcluster.struct.DHCPLease;
 import org.dhcpcluster.struct.Subnet;
@@ -59,7 +60,7 @@ public class DataAccess {
 
 	private static final Logger logger = Logger.getLogger(DataAccess.class);
 	
-	private static QueryRunner qRunner = new QueryRunner();
+	private static QueryRunner2 qRunner = new QueryRunner2();
 	
 	private DataAccess() {
 		throw new UnsupportedOperationException();
@@ -286,11 +287,21 @@ public class DataAccess {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public static List<AddressRange> selectPoolsFromPoolSet(Connection conn, long poolId) throws SQLException {
 		assert(conn != null);
 		return (List<AddressRange>) qRunner.query(conn, SELECT_T_POOL_RANGES_FROM_SET_ID, poolId, addressRangeHandler);
 	}
 	
+	public static Bubble selectBubbleContainingIp(Connection conn, long ip, long poolId) throws SQLException {
+		assert(conn != null);
+		Map<String, Object> args = new HashMap<String, Object>();
+		args.put("ip", (Long) ip);
+		args.put("poolid", (Long) poolId);
+		return (Bubble) qRunner.queryNamedParams(conn, SELECT_BUBBLE_CONTAINING_IP, args, bubbleHandler);
+	}
+	
+	@SuppressWarnings("unchecked")
 	public static List<DHCPLease> selectActiveLeasesByIcc(Connection conn, String icc) throws SQLException {
 		assert(conn != null);
 		if ((icc == null) || (icc.length() == 0)) {
@@ -307,16 +318,29 @@ public class DataAccess {
 	public static long callDhcpDiscoverSP(Connection conn, long poolId, String macHex, int iccQuota, String icc,
 											long offerTime) throws SQLException {
 		assert(conn != null);
-		Object[] args = new Object[5];
-		args[0] = (Long) poolId;
-		args[1] = macHex;
-		args[2] = (Integer) iccQuota;
-		args[3] = icc;
-		args[4] = (Long) offerTime;
-		return (Long) qRunner.query(conn, CALL_DHCP_DISCOVER, args, scalarHandler);
+		Map<String, Object> args = new HashMap<String, Object>();
+		args.put("poolid", (Long) poolId);
+		args.put("mac", macHex);
+		args.put("iccquota", (Integer) iccQuota);
+		args.put("icc", icc);
+		args.put("offertime", (Long) offerTime);
+		return (Long) qRunner.queryNamedParams(conn, CALL_DHCP_DISCOVER, args, scalarHandler);
+	}
+
+	public static int callDhcpRequestSP(Connection conn, long poolId, long requestedIp, int leaseTime, int margin,
+											String macHex) throws SQLException {
+		assert(conn != null);
+		Map<String, Object> args = new HashMap<String, Object>();
+		args.put("poolid", (Long) poolId);
+		args.put("requestedip", (Long) requestedIp);
+		args.put("leasetime", (Integer) leaseTime);
+		args.put("margin", (Integer) margin);
+		args.put("mac", macHex);
+		return (Integer) qRunner.queryNamedParams(conn, CALL_DHCP_REQUEST, args, scalarHandler);
 	}
 
 	/* QueryLoader for loading sql from properties files */
+
 	static final Map<String, String>				queries;
 	static {
 		try {
@@ -348,6 +372,8 @@ public class DataAccess {
 	private static final String	INSERT_LEASE = queries.get("INSERT_LEASE");
 	private static final String	UPDATE_LEASE = queries.get("UPDATE_LEASE");
 
+	private static final String	SELECT_BUBBLE_CONTAINING_IP = queries.get("SELECT_BUBBLE_CONTAINING_IP");
+
 	private static final String	SELECT_LEASE = queries.get("SELECT_LEASE");
 	private static final String	SELECT_LEASE_RANGE = queries.get("SELECT_LEASE_RANGE");
 	private static final String	SELECT_LEASE_ACTIVE_ICC = queries.get("SELECT_LEASE_ACTIVE_ICC");
@@ -356,6 +382,7 @@ public class DataAccess {
 	private static final String	INSERT_T_LEASE_ARCHIVE = queries.get("INSERT_T_LEASE_ARCHIVE");
 
 	private static final String	CALL_DHCP_DISCOVER = queries.get("CALL_DHCP_DISCOVER");
+	private static final String	CALL_DHCP_REQUEST = queries.get("CALL_DHCP_REQUEST");
 
 }
 

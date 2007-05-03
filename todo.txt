@@ -2,3 +2,4 @@
 - rename "cluster" to "node" in main
 - use back-end parameters
 - use jdbc parameters in front-end
+- add index to T_BUBBLE START_IP

@@ -254,7 +254,7 @@ public class LeaseStoredProcedures {
 	 * @return status of the request, positive is ok, 0 is must be ignored, negative must be an NAK<br>  
 	 * @throws SQLException
 	 */
-	public static int dhcpRequest(Connection conn, long poolId, long requestedIp, int leaseTime, int margin, String macHex, String uid) throws SQLException {
+	public static int dhcpRequest(Connection conn, long poolId, long requestedIp, int leaseTime, int margin, String macHex) throws SQLException {
 		assert(conn != null);
 		if ((macHex == null) || (macHex.length() < 2)) {
 			throw new IllegalArgumentException("macHex is null or too short:"+macHex);
@@ -271,6 +271,11 @@ public class LeaseStoredProcedures {
 			if (existingLease != null) {
 				Status status = existingLease.getStatus();
 				
+				if (status == Status.ABANDONED) {
+					// Step 1.3 - if Status if ABANDONED, address is not usable, return an error (-5)
+					return -5;
+				}
+				
 				// check whether the lease has expired but has not been garbarge collected
 				if (existingLease.getRecycleDate() < now) {
 					status = Status.FREE;
@@ -284,46 +289,56 @@ public class LeaseStoredProcedures {
 					existingLease.setUpdateDate(now);
 					// TODO verify if the lease can only be increased, or can it be shrinked ?
 					existingLease.setExpirationDate(now + 1000L*leaseTime);
-					existingLease.setRecycleDate(now + ((1000L * margin)/100L) * leaseTime);
+					existingLease.setRecycleDate(now + ((1000L * (100+margin))/100L) * leaseTime);
 					// TODO existingLease.setIcc
 					existingLease.setStatus(Status.USED);		// force tu USED if it was OFFERED
 					if (!DataAccess.updateLease(conn, existingLease)) {
 						return -3;
 					}
+					conn.commit();
+					commit = true;
 					return 3;
 				} else if ((status == Status.OFFERED) || (status == Status.USED)) {
 					// Step 1.2 - if status if OFFERED or USED and lease is owned by another client, return an error (-2)
-				} else if (status == Status.ABANDONED) {
-					// Step 1.3 - if Status if ABANDONED, address is not usable, return an error (-5)
-					return -5;
+					return -2;
 				} else if (status == Status.FREE) {
+					// TODO reserve address from bubble (except if recycled)
 					// Step 1.4 - if status is FREE, we use optimistic behaviour and give the lease
 					existingLease.setCreationDate(now);
 					existingLease.setUpdateDate(now);
 					existingLease.setExpirationDate(now + 1000L*leaseTime);
-					existingLease.setRecycleDate(now + ((1000L * margin)/100L) * leaseTime);
+					existingLease.setRecycleDate(now + ((1000L * (100+margin))/100L) * leaseTime);
 					existingLease.setMacHex(macHex);
 					existingLease.setStatus(DHCPLease.Status.USED);
 					if (!DataAccess.updateLease(conn, existingLease)) {
 						return -3;
 					}
+					conn.commit();
+					commit = true;
 					return 4;
 				}
 			} else {
 				logger.debug("No active lease for ip: "+requestedIp);
+				// TODO remove from bubble...
+				Bubble containingBubble = DataAccess.selectBubbleContainingIp(conn, requestedIp, poolId);
+				if (containingBubble == null) {
+					return -6;			// address out of availaible pools
+				}
+				
 				// create new lease
 				existingLease = new DHCPLease();
 				existingLease.setIp(requestedIp);
 				existingLease.setCreationDate(now);
 				existingLease.setUpdateDate(now);
 				existingLease.setExpirationDate(now + 1000L*leaseTime);
-				existingLease.setRecycleDate(now + ((1000L * margin)/100L) * leaseTime);
+				existingLease.setRecycleDate(now + ((1000L * (100+margin))/100L) * leaseTime);
 				existingLease.setMacHex(macHex);
-				// TODO existingLease.setUid(uid);
 				existingLease.setStatus(DHCPLease.Status.USED);
 				if (!DataAccess.insertLease(conn, existingLease)) {
 					return -3;
 				}
+				conn.commit();
+				commit = true;
 				return 2;
 			}
 			// TODO how to reach this code ?
