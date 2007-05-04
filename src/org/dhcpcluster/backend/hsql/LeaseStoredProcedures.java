@@ -33,6 +33,8 @@ import org.dhcpcluster.struct.AddressRange;
 import org.dhcpcluster.struct.DHCPLease;
 import org.dhcpcluster.struct.DHCPLease.Status;
 
+import sun.security.krb5.internal.UDPClient;
+
 import static org.dhcpcluster.backend.hsql.DataAccess.queries;
 
 /**
@@ -254,7 +256,8 @@ public class LeaseStoredProcedures {
 	 * @return status of the request, positive is ok, 0 is must be ignored, negative must be an NAK<br>  
 	 * @throws SQLException
 	 */
-	public static int dhcpRequest(Connection conn, long poolId, long requestedIp, int leaseTime, int margin, String macHex) throws SQLException {
+	public static int dhcpRequest(Connection conn, long poolId, long requestedIp, int leaseTime, int margin, String macHex,
+									boolean optimisticAllocation) throws SQLException {
 		assert(conn != null);
 		if ((macHex == null) || (macHex.length() < 2)) {
 			throw new IllegalArgumentException("macHex is null or too short:"+macHex);
@@ -265,6 +268,11 @@ public class LeaseStoredProcedures {
 		conn.setAutoCommit(false);
 		boolean commit = false;							// if false, we do a rollback on exit
 		try {
+			// actions to do on exit
+			boolean updateLease;		// or create a fresh new lease
+			boolean updateBubble;		// do we need to preempt an address in a free bubble
+			boolean renewal = false;	// info: is this a lease renewal ?
+			
 			// Step 1 - Retrieve the lease for the requested IP
 			DHCPLease existingLease = DataAccess.getLease(conn, requestedIp);
 	
@@ -276,55 +284,49 @@ public class LeaseStoredProcedures {
 					return -5;
 				}
 				
+				if (existingLease.getStatus() == Status.FREE) {
+					updateBubble = true;		// this is equivalent to a non-existing lease (except for CreationDate preservation)
+				} else {
+					updateBubble = false;
+				}
+				
 				// check whether the lease has expired but has not been garbarge collected
 				if (existingLease.getRecycleDate() < now) {
 					status = Status.FREE;
 				}
 				
-				// nominal case
-				
+				// reject requests for already allocated addresses				
 				if ( ((status == Status.OFFERED) || (status == Status.USED))  &&
-						macHex.equalsIgnoreCase(existingLease.getMacHex()) ) {
-					// Step 1.1 - [Nominal] if status is OFFERED or USED, and lease is owned by same client
-					existingLease.setUpdateDate(now);
-					// TODO verify if the lease can only be increased, or can it be shrinked ?
-					existingLease.setExpirationDate(now + 1000L*leaseTime);
-					existingLease.setRecycleDate(now + ((1000L * (100+margin))/100L) * leaseTime);
-					// TODO existingLease.setIcc
-					existingLease.setStatus(Status.USED);		// force tu USED if it was OFFERED
-					if (!DataAccess.updateLease(conn, existingLease)) {
-						return -3;
-					}
-					conn.commit();
-					commit = true;
-					return 3;
-				} else if ((status == Status.OFFERED) || (status == Status.USED)) {
+						!macHex.equalsIgnoreCase(existingLease.getMacHex()) ) {
 					// Step 1.2 - if status if OFFERED or USED and lease is owned by another client, return an error (-2)
 					return -2;
-				} else if (status == Status.FREE) {
-					// TODO reserve address from bubble (except if recycled)
-					// Step 1.4 - if status is FREE, we use optimistic behaviour and give the lease
-					existingLease.setCreationDate(now);
-					existingLease.setUpdateDate(now);
-					existingLease.setExpirationDate(now + 1000L*leaseTime);
-					existingLease.setRecycleDate(now + ((1000L * (100+margin))/100L) * leaseTime);
-					existingLease.setMacHex(macHex);
-					existingLease.setStatus(DHCPLease.Status.USED);
-					if (!DataAccess.updateLease(conn, existingLease)) {
-						return -3;
-					}
-					conn.commit();
-					commit = true;
-					return 4;
 				}
+				// every other combination result in a lease update
+				updateLease = true;
 			} else {
 				logger.debug("No active lease for ip: "+requestedIp);
-				// TODO remove from bubble...
-				Bubble containingBubble = DataAccess.selectBubbleContainingIp(conn, requestedIp, poolId);
-				if (containingBubble == null) {
-					return -6;			// address out of availaible pools
-				}
+				updateLease = false;		// force a new lease creation
+				updateBubble = true;
 				
+			}
+			
+			// now do the updates in db
+			if (updateLease) {
+				// only update lease
+				if (!macHex.equalsIgnoreCase(existingLease.getMacHex())) {
+					// if same mac address, we keep the original CreationDate -> renewal
+					existingLease.setCreationDate(now);
+					existingLease.setMacHex(macHex);
+					renewal = true;
+				}
+				existingLease.setUpdateDate(now);
+				existingLease.setExpirationDate(now + 1000L*leaseTime);
+				existingLease.setRecycleDate(now + ((1000L * (100+margin))/100L) * leaseTime);
+				existingLease.setStatus(DHCPLease.Status.USED);
+				if (!DataAccess.updateLease(conn, existingLease)) {
+					return -3;
+				}
+			} else {
 				// create new lease
 				existingLease = new DHCPLease();
 				existingLease.setIp(requestedIp);
@@ -337,12 +339,20 @@ public class LeaseStoredProcedures {
 				if (!DataAccess.insertLease(conn, existingLease)) {
 					return -3;
 				}
-				conn.commit();
-				commit = true;
-				return 2;
 			}
-			// TODO how to reach this code ?
-			return -2;		// address is not usable for this client
+			
+			if (updateBubble) {
+//				 TODO remove from bubble...
+				Bubble containingBubble = DataAccess.selectBubbleContainingIp(conn, requestedIp, poolId);
+				if (containingBubble == null) {
+					return -6;			// address out of availaible pools
+				}
+			}
+			
+			// final commit
+			conn.commit();
+			commit = true;
+			return (renewal ? 4 : 0) + (updateBubble ? 2 : 0) + (updateLease ? 1 : 0);
 		} finally {
 			if (!commit) {
 				conn.rollback();

@@ -228,10 +228,10 @@ public class StoredProcedureTest {
 		lease.setStatus(Status.ABANDONED);
 		DataAccess.updateLease(conn, lease);
 		// now try to obtain this address
-		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235536L, 86400, 30, macAdr2);
+		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235536L, 86400, 30, macAdr2, true);
 		assertEquals(-5, res);
 		// same try for another macAdr
-		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235536L, 86400, 30, macAdr);
+		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235536L, 86400, 30, macAdr, true);
 		assertEquals(-5, res);
 		// witch back to OFFERED
 		lease = DataAccess.getLease(conn, 3232235536L);
@@ -239,14 +239,14 @@ public class StoredProcedureTest {
 		DataAccess.updateLease(conn, lease);
 		
 		// try to ask with wrong macAdr2
-		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235535L, 86400, 30, macAdr2);
+		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235535L, 86400, 30, macAdr2, true);
 		assertEquals(-2, res);
 		
 		// now try a correct call
 		now += 10000;
 		SystemTime.setForcedTime(now);
-		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235535L, 86400, 30, macAdr);
-		assertEquals(3, res);
+		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235535L, 86400, 30, macAdr, true);
+		assertEquals(1, res);
 		lease = DataAccess.getLease(conn, 3232235535L);
 		assertEquals(3232235535L, lease.getIp());
 		assertEquals(originOfTime, lease.getCreationDate());
@@ -259,7 +259,7 @@ public class StoredProcedureTest {
 		// now try a free address
 		now += 10000L;
 		SystemTime.setForcedTime(now);
-		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235537L, 86400, 30, macAdr);
+		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235537L, 86400, 30, macAdr, true);
 		assertEquals(2, res);
 		lease = DataAccess.getLease(conn, 3232235537L);
 		assertEquals(3232235537L, lease.getIp());
@@ -273,8 +273,8 @@ public class StoredProcedureTest {
 		// try to reallocate an expired lease
 		now += 60000L;
 		SystemTime.setForcedTime(now);
-		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235536L, 86400, 30, macAdr);
-		assertEquals(4, res);
+		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235536L, 86400, 30, macAdr, true);
+		assertEquals(5, res);
 		lease = DataAccess.getLease(conn, 3232235536L);
 		assertEquals(3232235536L, lease.getIp());
 		assertEquals(now, lease.getCreationDate());
@@ -285,7 +285,7 @@ public class StoredProcedureTest {
 		assertEquals(Status.USED, lease.getStatus());
 		
 		// now try to reserve an address which is not in bubble
-		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235534L, 86400, 30, macAdr);
+		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235534L, 86400, 30, macAdr, true);
 		assertEquals(-6, res);
 		
 //		long poolId = -1;

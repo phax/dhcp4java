@@ -328,7 +328,7 @@ public class DataAccess {
 	}
 
 	public static int callDhcpRequestSP(Connection conn, long poolId, long requestedIp, int leaseTime, int margin,
-											String macHex) throws SQLException {
+											String macHex, boolean optimisticAllocation) throws SQLException {
 		assert(conn != null);
 		Map<String, Object> args = new HashMap<String, Object>();
 		args.put("poolid", (Long) poolId);
@@ -336,6 +336,7 @@ public class DataAccess {
 		args.put("leasetime", (Integer) leaseTime);
 		args.put("margin", (Integer) margin);
 		args.put("mac", macHex);
+		args.put("optimistic", (Boolean) optimisticAllocation);
 		return (Integer) qRunner.queryNamedParams(conn, CALL_DHCP_REQUEST, args, scalarHandler);
 	}
 
