@@ -23,17 +23,14 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.commons.dbutils.QueryRunner;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.ISO8601DateFormat;
-import org.dhcp4java.InetCidr;
 import org.dhcp4java.Util;
 import org.dhcpcluster.SystemTime;
+import org.dhcpcluster.backend.QueryRunner2;
 import org.dhcpcluster.struct.AddressRange;
 import org.dhcpcluster.struct.DHCPLease;
 import org.dhcpcluster.struct.DHCPLease.Status;
-
-import sun.security.krb5.internal.UDPClient;
 
 import static org.dhcpcluster.backend.hsql.DataAccess.queries;
 
@@ -46,7 +43,7 @@ public class LeaseStoredProcedures {
 
 	private static final Logger logger = Logger.getLogger(LeaseStoredProcedures.class);
 
-	private static final QueryRunner 			qRunner = new QueryRunner();
+	private static final QueryRunner2 			qRunner = new QueryRunner2();
 	
 	/**
 	 * 
@@ -136,33 +133,22 @@ public class LeaseStoredProcedures {
 				// we must allocate a new free address
 				
 				// find first free bubble for poolId
-				Bubble bubble = DataAccess.selectBubblesByPoolId(conn, poolId); 
+				Bubble bubble = DataAccess.selectFirstBubblesOfPoolId(conn, poolId); 
 				if (bubble == null) {
 					logger.warn("No lease left for poolId="+poolId);
 					return 0;
 				}
-				long bubbleId = bubble.getId();
-				long startIp = bubble.getStart();
-				long endIp = bubble.getEnd();
+
+				candidateAdr = bubble.getStart();
 				
-				if (startIp < endIp) {
+				if (bubble.getStart() < bubble.getEnd()) {
 					// we shrink the bubble
-					Object[] args = new Object[2];
-					args[0] = (Long) (startIp + 1);
-					args[1] = (Long) bubbleId;
-					if (qRunner.update(conn, UPDATE_BUBBLE_START_IP, args) != 1) {
-						logger.error("Cannot update bubble startIp="+(startIp+1)+" bubble_id="+bubbleId);
-						return -1;
-					}
+					bubble.setStart(bubble.getStart() + 1);
+					DataAccess.updabeBubble(conn, bubble);
 				} else {
 					// delete bubble which is now empty
-					if (qRunner.update(conn, DELETE_BUBBLE_ID, (Long) bubbleId) != 1) {
-						logger.error("Cannot delete bubble bubble_id="+bubbleId);
-						return -2;
-					}
+					DataAccess.deleteBubble(conn, bubble);
 				}
-				// free address is now ready to be used
-				candidateAdr = startIp;
 			}
 
 			// ============================================================
@@ -183,9 +169,7 @@ public class LeaseStoredProcedures {
 					existingLease.setUpdateDate(now);
 					existingLease.setExpirationDate(now + 1000L*offerTime);
 					existingLease.setRecycleDate(now + 1000L*offerTime);
-					if (!DataAccess.updateLease(conn, existingLease)) {
-						return -3;
-					}
+					DataAccess.updateLease(conn, existingLease);
 				} else if (status == Status.USED) {
 					// Step 3.2- If it already exists in USED state, just update the UPDATE_DATE
 					existingLease.setUpdateDate(now);
@@ -195,9 +179,7 @@ public class LeaseStoredProcedures {
 					if (existingLease.getRecycleDate() < now + 1000L*offerTime) {
 						existingLease.setRecycleDate(now + 1000L*offerTime);
 					}
-					if (!DataAccess.updateLease(conn, existingLease)) {
-						return -3;
-					}
+					DataAccess.updateLease(conn, existingLease);
 				} else if (status == Status.ABANDONED) {
 					// Step 3.3- If it already exists in ABANDONED state, this is an internal error (pre-condition violation), return error (-5)
 					return -5;
@@ -209,9 +191,7 @@ public class LeaseStoredProcedures {
 					existingLease.setMacHex(macHex);
 					// TODO existingLease.setIcc();
 					existingLease.setStatus(Status.OFFERED);
-					if (!DataAccess.updateLease(conn, existingLease)) {
-						return -3;
-					}
+					DataAccess.updateLease(conn, existingLease);
 				} else {
 					logger.warn("Unhandled status code for lease: "+status+" for IP: "+Util.long2InetAddress(existingLease.getIp()).getHostAddress());
 					return -6;
@@ -230,9 +210,7 @@ public class LeaseStoredProcedures {
 				newLease.setMacHex(macHex);
 				//TODO ICC newLease.setUid();
 				newLease.setStatus(DHCPLease.Status.OFFERED);
-				if (!DataAccess.insertLease(conn, newLease)) {
-					return -3;					// cannot insert new lease
-				}
+				DataAccess.insertLease(conn, newLease);
 			}
 			conn.commit();
 			commit = true;				// intend to commit now
@@ -268,6 +246,7 @@ public class LeaseStoredProcedures {
 		conn.setAutoCommit(false);
 		boolean commit = false;							// if false, we do a rollback on exit
 		try {
+			// ============================================================
 			// actions to do on exit
 			boolean updateLease;		// or create a fresh new lease
 			boolean updateBubble;		// do we need to preempt an address in a free bubble
@@ -277,6 +256,7 @@ public class LeaseStoredProcedures {
 			DHCPLease existingLease = DataAccess.getLease(conn, requestedIp);
 	
 			if (existingLease != null) {
+				// ============================================================
 				Status status = existingLease.getStatus();
 				
 				if (status == Status.ABANDONED) {
@@ -304,12 +284,11 @@ public class LeaseStoredProcedures {
 				// every other combination result in a lease update
 				updateLease = true;
 			} else {
-				logger.debug("No active lease for ip: "+requestedIp);
 				updateLease = false;		// force a new lease creation
 				updateBubble = true;
-				
 			}
-			
+
+			// ============================================================
 			// now do the updates in db
 			if (updateLease) {
 				// only update lease
@@ -323,9 +302,7 @@ public class LeaseStoredProcedures {
 				existingLease.setExpirationDate(now + 1000L*leaseTime);
 				existingLease.setRecycleDate(now + ((1000L * (100+margin))/100L) * leaseTime);
 				existingLease.setStatus(DHCPLease.Status.USED);
-				if (!DataAccess.updateLease(conn, existingLease)) {
-					return -3;
-				}
+				DataAccess.updateLease(conn, existingLease);
 			} else {
 				// create new lease
 				existingLease = new DHCPLease();
@@ -336,19 +313,42 @@ public class LeaseStoredProcedures {
 				existingLease.setRecycleDate(now + ((1000L * (100+margin))/100L) * leaseTime);
 				existingLease.setMacHex(macHex);
 				existingLease.setStatus(DHCPLease.Status.USED);
-				if (!DataAccess.insertLease(conn, existingLease)) {
-					return -3;
-				}
+				DataAccess.insertLease(conn, existingLease);
 			}
-			
+
+			// ============================================================
 			if (updateBubble) {
-//				 TODO remove from bubble...
 				Bubble containingBubble = DataAccess.selectBubbleContainingIp(conn, requestedIp, poolId);
 				if (containingBubble == null) {
 					return -6;			// address out of availaible pools
 				}
+				if ((requestedIp > containingBubble.getStart()) && (requestedIp < containingBubble.getEnd())) {
+					// if inside a bubble
+					long bubbleStart = containingBubble.getStart();
+					
+					// first reduce the existing bubble to its high part
+					containingBubble.setStart(requestedIp + 1);
+					DataAccess.updabeBubble(conn, containingBubble);
+					
+					// new create new bubble
+					DataAccess.insertBubble(conn, containingBubble.getPoolId(), bubbleStart, requestedIp - 1);
+				} else if (containingBubble.getStart() == containingBubble.getEnd()) {
+					// single address bubble, we delete it
+					DataAccess.deleteBubble(conn, containingBubble);
+				} else if (requestedIp == containingBubble.getStart()) {
+					// increment start ip
+					containingBubble.setStart(requestedIp +  1);
+					DataAccess.updabeBubble(conn, containingBubble);
+				} else if (requestedIp == containingBubble.getEnd()) {
+					containingBubble.setEnd(requestedIp - 1);
+					DataAccess.updabeBubble(conn, containingBubble);
+				} else {
+					// should be unreachable code
+					assert(false);
+				}
 			}
-			
+
+			// ============================================================
 			// final commit
 			conn.commit();
 			commit = true;
@@ -360,15 +360,6 @@ public class LeaseStoredProcedures {
 			conn.setAutoCommit(autocommitSave);
 		}
 	}
-	
-	public static String longAddressToString(long ip) {
-		return Util.long2InetAddress(ip).getHostAddress();
-	}
-	
-	public static String longCidrToString(long cidr) {
-		return InetCidr.fromLong(cidr).toString();
-	}
-	
 
 	public static void logLease(long ip, Date creation, Date update, Date expiration, DHCPLease.Status status, DHCPLease.Status prevStatus, String mac,
 									String uid, String icc) {
@@ -392,7 +383,5 @@ public class LeaseStoredProcedures {
 	private static final ISO8601DateFormat dateFormatter = new ISO8601DateFormat();
 	private static final org.apache.log4j.Logger archiveLog = org.apache.log4j.Logger.getLogger("archive.dhcp");
 
-	private static final String	UPDATE_BUBBLE_START_IP = queries.get("UPDATE_BUBBLE_START_IP");
-	private static final String	DELETE_BUBBLE_ID = queries.get("DELETE_BUBBLE_ID");
 	private static final String	SELECT_LEASE_MAC = queries.get("SELECT_LEASE_MAC");
 }

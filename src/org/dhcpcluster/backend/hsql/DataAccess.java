@@ -21,7 +21,6 @@ package org.dhcpcluster.backend.hsql;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -146,7 +145,7 @@ public class DataAccess {
 						throw new SQLException("Cannot update T_POOL");
 					}
 					// create bubbles
-					insertBubbles(conn, range, rangeId);
+					createBubbles(conn, range, rangeId);
 				}
 			}
 		} finally {
@@ -162,7 +161,7 @@ public class DataAccess {
 	 * @param rangeId
 	 * @throws SQLException
 	 */
-	public static void insertBubbles(Connection conn, AddressRange range, long rangeId) throws SQLException {
+	public static void createBubbles(Connection conn, AddressRange range, long rangeId) throws SQLException {
 		assert(conn != null);
 		long rangeStart = range.getRangeStartLong();
 		long rangeEnd = range.getRangeEndLong();
@@ -180,7 +179,14 @@ public class DataAccess {
 		}
 	}
 	
-	public static boolean insertLease(Connection conn, DHCPLease lease) throws SQLException {
+	/**
+	 * 
+	 * @param conn
+	 * @param lease
+	 * @return
+	 * @throws SQLException
+	 */
+	public static void insertLease(Connection conn, DHCPLease lease) throws SQLException {
 		assert(conn != null);
 		Object[] args = new Object[8];
 		args[0] = (Long) lease.getIp();
@@ -192,13 +198,17 @@ public class DataAccess {
 		args[6] = (String) lease.getUid();
 		args[7] = (Integer) lease.getStatus().getCode();
 		if (qRunner.update(conn, INSERT_LEASE, args) != 1) {
-			logger.warn("Cannot insert T_LEASE: ip="+lease.getIp());
-			return false;
+			throw new SQLException("Cannot insert T_LEASE: ip="+lease.getIp());
 		}
-		return true;
 	}
 
-	public static boolean updateLease(Connection conn, DHCPLease lease) throws SQLException {
+	/**
+	 * 
+	 * @param conn
+	 * @param lease
+	 * @throws SQLException
+	 */
+	public static void updateLease(Connection conn, DHCPLease lease) throws SQLException {
 		assert(conn != null);
 		Object[] args = new Object[8];
 		args[0] = (Timestamp) new Timestamp(lease.getCreationDate());
@@ -210,10 +220,8 @@ public class DataAccess {
 		args[6] = (Integer) lease.getStatus().getCode();
 		args[7] = (Long) lease.getIp();
 		if (qRunner.update(conn, UPDATE_LEASE, args) != 1) {
-			logger.warn("Cannot update T_LEASE: ip="+lease.getIp());
-			return false;
+			throw new SQLException("Cannot update T_LEASE: ip="+lease.getIp());
 		}
-		return true;
 	}
 	
 	/**
@@ -234,7 +242,37 @@ public class DataAccess {
 			logger.warn("Cannot insert T_BUBBLE: rangeId="+rangeId+" start="+start+" end="+end);
 		}
 	}
-
+	
+	/**
+	 * 
+	 * @param conn
+	 * @param bubble
+	 * @throws SQLException
+	 */
+	public static void deleteBubble(Connection conn, Bubble bubble) throws SQLException {
+		assert(conn != null);
+		if (qRunner.update(conn, DELETE_BUBBLE, (Integer) bubble.getId()) != 1) {
+			throw new SQLException("Cannot delete bubble bubble_id="+bubble.getId());
+		}
+	}
+	
+	/**
+	 * 
+	 * @param conn
+	 * @param bubble
+	 * @return
+	 * @throws SQLException
+	 */
+	public static void updabeBubble(Connection conn, Bubble bubble) throws SQLException {
+		assert(conn != null);
+		Map<String, Object> args = new HashMap<String, Object>();
+		args.put("startip", bubble.getStart());
+		args.put("endip", bubble.getEnd());
+		args.put("bubbleid", bubble.getId());
+		if (qRunner.updateNamesParams(conn, UPDATE_BUBBLE, args) != 1) {
+			throw new SQLException("Cannot update bubble bubble_id="+bubble.getId());
+		}
+	}
 	
 	/**
 	 * 
@@ -270,22 +308,6 @@ public class DataAccess {
 		lLeases = (List<DHCPLease>) qRunner.query(conn, SELECT_LEASE_RANGE, ll, leaseListHandler);
 		return lLeases;
 	}
-	
-	public static void insertLeaseArchive(Connection conn, long ip, Date creation, Date update, Date expiration, String mac, String uid, int prevStatus) throws SQLException {
-		assert(conn != null);
-		Object[] args = new Object[7];
-		args[0] = (Long) ip;
-		args[1] = creation;
-		args[2] = update;
-		args[3] = expiration;
-		args[4] = mac;
-		args[5] = uid;
-		args[6] = (Integer) prevStatus;
-		if (qRunner.update(conn, INSERT_T_LEASE_ARCHIVE, args) != 1) {
-			logger.warn("Cannot insert INSERT_T_LEASE_ARCHIVE: ip="+ip);
-		}
-
-	}
 
 	@SuppressWarnings("unchecked")
 	public static List<AddressRange> selectPoolsFromPoolSet(Connection conn, long poolId) throws SQLException {
@@ -310,7 +332,7 @@ public class DataAccess {
 		return (List<DHCPLease>) qRunner.query(conn, SELECT_LEASE_ACTIVE_ICC, icc, leaseListHandler);
 	}
 	
-	public static Bubble selectBubblesByPoolId(Connection conn, long poolId) throws SQLException {
+	public static Bubble selectFirstBubblesOfPoolId(Connection conn, long poolId) throws SQLException {
 		assert(conn != null);
 		return (Bubble) qRunner.query(conn, SELECT_BUBBLE_FROM_POOL_SET, (Long) poolId, bubbleHandler);
 	}
@@ -366,10 +388,12 @@ public class DataAccess {
 	private static final String	DELETE_T_POOL_SET = queries.get("DELETE_T_POOL_SET");
 	private static final String	SELECT_BUBBLE_FROM_POOL_SET = queries.get("SELECT_BUBBLE_FROM_POOL_SET");
 	private static final String	DELETE_T_BUBBLE = queries.get("DELETE_T_BUBBLE");
+	private static final String	UPDATE_BUBBLE = queries.get("UPDATE_BUBBLE");
 
 	private static final String	INSERT_T_POOL_SET = queries.get("INSERT_T_POOL_SET");
 	private static final String	INSERT_T_POOL = queries.get("INSERT_T_POOL");
 	private static final String	INSERT_T_BUBBLE = queries.get("INSERT_T_BUBBLE");
+	private static final String	DELETE_BUBBLE = queries.get("DELETE_BUBBLE");
 	private static final String	INSERT_LEASE = queries.get("INSERT_LEASE");
 	private static final String	UPDATE_LEASE = queries.get("UPDATE_LEASE");
 
@@ -468,77 +492,4 @@ class BubbleHandler extends CustomBeanProcessor {
 		bubble.setPoolId(rs.getLong("POOL_ID"));
 		return bubble;
 	}
-}
-
-/**
- * Java mapping of the T_BUBBLE table
- *
- */
-class Bubble {
-	
-	private int			id = 0;
-	private long			start = -1;
-	private long			end = -1;
-	private long			poolId = -1;
-	
-	public Bubble(int id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return Returns the end.
-	 */
-	public long getEnd() {
-		return end;
-	}
-
-	/**
-	 * @param end The end to set.
-	 */
-	public void setEnd(long end) {
-		this.end = end;
-	}
-
-	/**
-	 * @return Returns the id.
-	 */
-	public int getId() {
-		return id;
-	}
-
-	/**
-	 * @param id The id to set.
-	 */
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return Returns the poolId.
-	 */
-	public long getPoolId() {
-		return poolId;
-	}
-
-	/**
-	 * @param poolId The poolId to set.
-	 */
-	public void setPoolId(long poolId) {
-		this.poolId = poolId;
-	}
-
-	/**
-	 * @return Returns the start.
-	 */
-	public long getStart() {
-		return start;
-	}
-
-	/**
-	 * @param start The start to set.
-	 */
-	public void setStart(long start) {
-		this.start = start;
-	}
-	
 }

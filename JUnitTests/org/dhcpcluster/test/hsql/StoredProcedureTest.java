@@ -30,6 +30,7 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.dhcp4java.DHCPServerInitException;
 import org.dhcpcluster.DHCPClusterNode;
 import org.dhcpcluster.SystemTime;
+import org.dhcpcluster.backend.hsql.Bubble;
 import org.dhcpcluster.backend.hsql.DataAccess;
 import org.dhcpcluster.struct.DHCPLease;
 import org.dhcpcluster.struct.DHCPLease.Status;
@@ -212,6 +213,7 @@ public class StoredProcedureTest {
 		int res;
 		long now = originOfTime;
 		DHCPLease lease;
+		Bubble bubble;
 
 		// PoolID = 97721516032
 		poolId = 97721516032L;
@@ -269,6 +271,12 @@ public class StoredProcedureTest {
 		assertEquals(now + 86400*1000L*(100+30)/100L, lease.getRecycleDate());
 		assertEquals(macAdr, lease.getMacHex());
 		assertEquals(Status.USED, lease.getStatus());
+		// check bubble
+		bubble = DataAccess.selectBubbleContainingIp(conn, 3232235537L + 1, poolId);
+		assertEquals(3232235537L + 1, bubble.getStart());
+		assertEquals(3232235545L, bubble.getEnd());
+		assertEquals(3232235535L, bubble.getPoolId());
+		
 		
 		// try to reallocate an expired lease
 		now += 60000L;
@@ -288,13 +296,61 @@ public class StoredProcedureTest {
 		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235534L, 86400, 30, macAdr, true);
 		assertEquals(-6, res);
 		
-//		long poolId = -1;
-//		long res;
-//		// bad PoolId
-//		res = DataAccess.callDhcpDiscoverSP(conn, poolId, macAdr, -1, null, 60);
-//		assertEquals(0L, res);
-	}
+		// allocate last address of bubble
+		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235545L, 86400, 30, macAdr, true);
+		assertEquals(2, res);
+		lease = DataAccess.getLease(conn, 3232235545L);
+		assertEquals(3232235545L, lease.getIp());
+		assertEquals(now, lease.getCreationDate());
+		assertEquals(now, lease.getUpdateDate());
+		assertEquals(now + 86400*1000L, lease.getExpirationDate());
+		assertEquals(now + 86400*1000L*(100+30)/100L, lease.getRecycleDate());
+		assertEquals(macAdr, lease.getMacHex());
+		assertEquals(Status.USED, lease.getStatus());
+		// check bubble
+		bubble = DataAccess.selectBubbleContainingIp(conn, 3232235537L + 1, poolId);
+		assertEquals(3232235537L + 1, bubble.getStart());
+		assertEquals(3232235544L, bubble.getEnd());
+		assertEquals(3232235535L, bubble.getPoolId());
 		
+		// allocate second address in bubble -> bubble need to be split
+		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235539L, 86400, 30, macAdr, true);
+		assertEquals(2, res);
+		lease = DataAccess.getLease(conn, 3232235539L);
+		assertEquals(3232235539L, lease.getIp());
+		assertEquals(now, lease.getCreationDate());
+		assertEquals(now, lease.getUpdateDate());
+		assertEquals(now + 86400*1000L, lease.getExpirationDate());
+		assertEquals(now + 86400*1000L*(100+30)/100L, lease.getRecycleDate());
+		assertEquals(macAdr, lease.getMacHex());
+		assertEquals(Status.USED, lease.getStatus());
+		// check bubble low
+		bubble = DataAccess.selectBubbleContainingIp(conn, 3232235538L, poolId);
+		assertEquals(3232235538L, bubble.getStart());
+		assertEquals(3232235538L, bubble.getEnd());
+		assertEquals(3232235535L, bubble.getPoolId());
+		// check bubble high
+		bubble = DataAccess.selectBubbleContainingIp(conn, 3232235540L, poolId);
+		assertEquals(3232235540L, bubble.getStart());
+		assertEquals(3232235544L, bubble.getEnd());
+		assertEquals(3232235535L, bubble.getPoolId());
+		
+		// allocate address in remaining single-address bubble
+		res = DataAccess.callDhcpRequestSP(conn, poolId, 3232235538L, 86400, 30, macAdr, true);
+		assertEquals(2, res);
+		lease = DataAccess.getLease(conn, 3232235538L);
+		assertEquals(3232235538L, lease.getIp());
+		assertEquals(now, lease.getCreationDate());
+		assertEquals(now, lease.getUpdateDate());
+		assertEquals(now + 86400*1000L, lease.getExpirationDate());
+		assertEquals(now + 86400*1000L*(100+30)/100L, lease.getRecycleDate());
+		assertEquals(macAdr, lease.getMacHex());
+		assertEquals(Status.USED, lease.getStatus());
+		// check bubble low
+		bubble = DataAccess.selectBubbleContainingIp(conn, 3232235538L, poolId);
+		assertNull(bubble);
+	}
+
 	
 	@Test(expected=NullPointerException.class)
 	public void dhcpDiscoverConnNull() throws SQLException {
@@ -319,4 +375,6 @@ public class StoredProcedureTest {
 			// exception is normal here, broken connection 
 		}
 	}
+	
+	// TODO add ICC quotas tests on dhcpDiscover
 }
