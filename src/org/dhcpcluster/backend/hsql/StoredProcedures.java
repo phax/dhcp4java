@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.ISO8601DateFormat;
+import org.dhcp4java.InetCidr;
 import org.dhcp4java.Util;
 import org.dhcpcluster.SystemTime;
 import org.dhcpcluster.backend.QueryRunner2;
@@ -360,6 +361,25 @@ public class StoredProcedures {
 			conn.setAutoCommit(autocommitSave);
 		}
 	}
+	
+	/**
+	 * 
+	 * @param ip
+	 * @return
+	 */
+	public static String longAddressToString(long ip) {
+		return Util.long2InetAddress(ip).getHostAddress();
+	}
+	
+	/**
+	 * 
+	 * @param cidr
+	 * @return
+	 */
+	public static String longCidrToString(long cidr) {
+		return InetCidr.fromLong(cidr).toString();
+	}
+	
 
 	public static void logLease(long ip, Date creation, Date update, Date expiration, DHCPLease.Status status, DHCPLease.Status prevStatus, String mac,
 									String uid, String icc) {

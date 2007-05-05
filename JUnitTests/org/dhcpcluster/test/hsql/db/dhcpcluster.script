@@ -1,7 +1,7 @@
-CREATE ALIAS DHCP_DISCOVER FOR "org.dhcpcluster.backend.hsql.LeaseStoredProcedures.dhcpDiscover"
-CREATE ALIAS IP FOR "org.dhcpcluster.backend.hsql.LeaseStoredProcedures.longAddressToString"
-CREATE ALIAS CIDR FOR "org.dhcpcluster.backend.hsql.LeaseStoredProcedures.longCidrToString"
-CREATE ALIAS DHCP_REQUEST FOR "org.dhcpcluster.backend.hsql.LeaseStoredProcedures.dhcpRequest"
+CREATE ALIAS DHCP_DISCOVER FOR "org.dhcpcluster.backend.hsql.StoredProcedures.dhcpDiscover"
+CREATE ALIAS IP FOR "org.dhcpcluster.backend.hsql.StoredProcedures.longAddressToString"
+CREATE ALIAS CIDR FOR "org.dhcpcluster.backend.hsql.StoredProcedures.longCidrToString"
+CREATE ALIAS DHCP_REQUEST FOR "org.dhcpcluster.backend.hsql.StoredProcedures.dhcpRequest"
 CREATE SCHEMA PUBLIC AUTHORIZATION DBA
 CREATE MEMORY TABLE T_POOL(START_IP BIGINT NOT NULL PRIMARY KEY,END_IP BIGINT NOT NULL,CLASSES INTEGER,SET_ID BIGINT NOT NULL)
 CREATE INDEX IPOOL_END_IP ON T_POOL(END_IP)
