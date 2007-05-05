@@ -362,6 +362,28 @@ public class StoredProcedures {
 		}
 	}
 	
+	public static int gcLeaseRange(Connection conn, long firstAdr, long lastAdr) throws SQLException {
+		// TODO
+		assert(conn != null);
+		if (firstAdr > lastAdr) {
+			throw new IllegalArgumentException("firstAdr > lastAdr");
+		}
+		long now = SystemTime.currentTimeMillis();
+		
+		boolean autocommitSave = conn.getAutoCommit();		// for restoring previous autocommit state on exit
+		conn.setAutoCommit(false);
+		boolean commit = false;							// if false, we do a rollback on exit
+		try {
+			
+		} finally {
+			if (!commit) {
+				conn.rollback();
+			}
+			conn.setAutoCommit(autocommitSave);
+		}
+		return 0;
+	}
+	
 	/**
 	 * 
 	 * @param ip

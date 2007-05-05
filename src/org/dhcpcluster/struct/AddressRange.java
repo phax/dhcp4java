@@ -24,7 +24,6 @@ import java.net.InetAddress;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.dhcp4java.InetCidr;
 import org.dhcp4java.Util;
 
 /**
@@ -128,7 +127,7 @@ public final class AddressRange implements Serializable, Comparable<AddressRange
 	 */
 	@Override
 	public boolean equals(Object obj) {
-        if ((obj == null) || (!(obj instanceof InetCidr))) {
+        if ((obj == null) || (!(obj instanceof AddressRange))) {
             return false;
         }
         AddressRange range = (AddressRange) obj;
