@@ -23,7 +23,7 @@ import java.sql.Date;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.Loader;
 import org.apache.log4j.xml.DOMConfigurator;
-import org.dhcpcluster.backend.hsql.LeaseStoredProcedures;
+import org.dhcpcluster.backend.hsql.StoredProcedures;
 import org.dhcpcluster.struct.DHCPLease;
 
 /**
@@ -42,7 +42,7 @@ public class Log4jLog {
 		
 		for (int i=0; i<len; i++) {
 			now++;
-			LeaseStoredProcedures.logLease(now, date, date, date, DHCPLease.Status.fromInt(1), DHCPLease.Status.fromInt(2), "foo", "bar", null);
+			StoredProcedures.logLease(now, date, date, date, DHCPLease.Status.fromInt(1), DHCPLease.Status.fromInt(2), "foo", "bar", null);
 		}
 	}
 	

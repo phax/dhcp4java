@@ -39,9 +39,9 @@ import static org.dhcpcluster.backend.hsql.DataAccess.queries;
  * @author Stephan Hadinger
  * @version 0.72
  */
-public class LeaseStoredProcedures {
+public class StoredProcedures {
 
-	private static final Logger logger = Logger.getLogger(LeaseStoredProcedures.class);
+	private static final Logger logger = Logger.getLogger(StoredProcedures.class);
 
 	private static final QueryRunner2 			qRunner = new QueryRunner2();
 	
