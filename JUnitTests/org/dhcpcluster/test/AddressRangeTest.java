@@ -91,12 +91,33 @@ public class AddressRangeTest {
 	@Test (expected=NullPointerException.class)
 	public void testIsInRangeNull() {
 		AddressRange ar = new AddressRange(adr1, adr2);
-		ar.isInRange(null);
+		ar.isInRange((InetAddress)null);
 	}
 	@Test (expected=IllegalArgumentException.class)
-	public void IllegalArgumentException() {
+	public void testIsInRangeV6() {
 		AddressRange ar = new AddressRange(adr1, adr2);
 		ar.isInRange(adr1v6);
+	}
+	
+	@Test
+	public void testIsInRangeSubrange() throws UnknownHostException {
+		AddressRange ar = new AddressRange(adr1, adr2);
+		assertTrue(ar.isInRange(ar));
+		assertTrue(ar.isInRange(new AddressRange(adr1, adr1)));
+		assertTrue(ar.isInRange(new AddressRange(adr2, adr2)));
+		assertTrue(ar.isInRange(new AddressRange(InetAddress.getByName("192.168.1.26"), InetAddress.getByName("192.168.1.26"))));
+		assertFalse(ar.isInRange(new AddressRange(InetAddress.getByName("192.168.1.24"), InetAddress.getByName("192.168.1.24"))));
+		assertFalse(ar.isInRange(new AddressRange(InetAddress.getByName("192.168.1.24"), InetAddress.getByName("192.168.1.26"))));
+		assertTrue(ar.isInRange(new AddressRange(InetAddress.getByName("192.168.1.25"), InetAddress.getByName("192.168.1.26"))));
+		assertTrue(ar.isInRange(new AddressRange(InetAddress.getByName("192.168.1.44"), InetAddress.getByName("192.168.1.44"))));
+		assertFalse(ar.isInRange(new AddressRange(InetAddress.getByName("192.168.1.46"), InetAddress.getByName("192.168.1.46"))));
+		assertFalse(ar.isInRange(new AddressRange(InetAddress.getByName("192.168.1.44"), InetAddress.getByName("192.168.1.46"))));
+		assertTrue(ar.isInRange(new AddressRange(InetAddress.getByName("192.168.1.44"), InetAddress.getByName("192.168.1.45"))));
+	}
+	@Test (expected=NullPointerException.class)
+	public void testIsInRangeSubrangeNull() {
+		AddressRange ar = new AddressRange(adr1, adr2);
+		ar.isInRange((AddressRange)null);
 	}
 	
 	@Test

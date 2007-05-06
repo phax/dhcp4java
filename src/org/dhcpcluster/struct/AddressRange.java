@@ -98,6 +98,20 @@ public final class AddressRange implements Serializable, Comparable<AddressRange
     	
     	return (adrL >= rangeStart) && (adrL <= rangeEnd);
     }
+    
+    /**
+     * Checks whether the subrange is entirely contained within the AddressRange.
+     * 
+     * @param subrange
+     * @return true if the subrange is within the range
+     */
+    public boolean isInRange(AddressRange subrange) {
+    	if (subrange == null) {
+    		throw new NullPointerException("subange is null");
+    	}
+    	return ((this.getRangeStartLong() <= subrange.getRangeStartLong()) &&
+    			 (this.getRangeEndLong()   >= subrange.getRangeEndLong()));
+    }
 
 	/**
 	 * @return Returns the rangeEnd.
