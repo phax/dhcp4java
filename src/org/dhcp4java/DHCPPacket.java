@@ -474,8 +474,38 @@ public class DHCPPacket implements Cloneable, Serializable {
 
         return b;
     }
+    
+    /**
+     * Returns a hash code value for the object.
+     */
+	@Override
+	public int hashCode() {
+		int h = -1;
+		h ^= this.comment.hashCode();
+		h += this.op;
+		h += this.htype;
+		h += this.hlen;
+		h += this.hops;
+		h += this.xid;
+		h += this.secs;
+		h ^= this.flags;
+		h ^= this.ciaddr.hashCode();
+		h ^= this.yiaddr.hashCode();
+		h ^= this.siaddr.hashCode();
+		h ^= this.giaddr.hashCode();
+		h ^= this.chaddr.hashCode();
+		h ^= this.sname.hashCode();
+		h ^= this.file.hashCode();
+		h ^= this.options.hashCode();
+		h += this.isDhcp ? 1 : 0;
+		h += this.truncated ? 1 : 0;
+		h ^= this.padding.hashCode();
+		h ^= this.address.hashCode();
+		h += this.port;
+		return h;
+	}
 
-    private static boolean equalsStatic(Object a, Object b) {
+	private static boolean equalsStatic(Object a, Object b) {
         return ((a == null) ? (b == null) : a.equals(b));
     }
 
@@ -1609,7 +1639,7 @@ public class DHCPPacket implements Cloneable, Serializable {
     // TODO
     public int getOptionAsNum(byte code) throws IllegalArgumentException {
     	DHCPOption opt = this.getOption(code);
-    	return (opt == null) ? null : opt.getValueAsNum(); 
+    	return (opt != null) ? opt.getValueAsNum() : null; 
     }
     /**
      * Returns a DHCP Option as Byte format.

@@ -9,62 +9,6 @@
 	<global>
 		<server identifier="192.168.1.1"/>
 		<server-policy>
-			<filter>
-				<filter-and>
-					<filter-not>
-						<filter-not>
-							<filter-or>
-								<filter-always-true/>
-								<filter-num-option op="ne" code="5" value-int="12"/>
-								<filter-not>
-									<filter-string-option value-string="toto" code="6"/>
-								</filter-not>
-							</filter-or>
-						</filter-not>
-					</filter-not>
-				</filter-and>
-			</filter>
-			<options>
-				<option code="129">
-					<value-byte>255</value-byte>
-					<value-rawhex>0022FF</value-rawhex>
-				</option>
-				<option-host-name mirror="true">
-					<value-string>foo</value-string>
-				</option-host-name>
-				<option-dhcp-message>
-					<value-string>foobar</value-string>
-				</option-dhcp-message>
-				<option-subnet-mask>
-					<value-inet>255.255.252.0</value-inet>
-				</option-subnet-mask>
-				<option-path-mtu-plateau-table>
-					<value-short>1</value-short>
-					<value-short>2</value-short>
-				</option-path-mtu-plateau-table>
-				<option-boot-size>
-					<value-short>33000</value-short>
-				</option-boot-size>
-				<option-time-offset>
-					<value-int>1234</value-int>
-				</option-time-offset>
-				<option-ip-forwarding>
-					<value-byte>1</value-byte>
-				</option-ip-forwarding>
-				<option-dhcp-parameter-request-list>
-					<value-rawhex>001122</value-rawhex>
-				</option-dhcp-parameter-request-list>
-				<option-dhcp-parameter-request-list>
-					<value-byte>128</value-byte>
-					<value-rawhex>001122</value-rawhex>
-				</option-dhcp-parameter-request-list>
-				<option-routers>
-					<value-inet>204.254.239.1</value-inet>
-				</option-routers>
-			</options>
-			<post-options>
-				<option code="82" mirror="true"/>
-			</post-options>
 			<lease-time lease_default="3600"/>
 		</server-policy>
 	</global>
@@ -83,24 +27,6 @@
 				<static address="192.168.0.4" ethernet="01:c0:c3:49:2b:57"/>
 			</pools>
 			<policy>
-				<options>
-					<option code="15">
-						<value-byte>127</value-byte>
-						<value-inet>192.168.0.11</value-inet>
-					</option>
-					<option code="160">
-						<value-short>1500</value-short>
-					</option>
-					<option-time-servers>
-						<value-inet>192.168.0.10</value-inet>
-					</option-time-servers>
-					<option code="1">
-						<value-byte>255</value-byte>
-					</option>
-					<!--TODO add BOOTP parameters-->
-					<!--TODO add lease and max-lease-->
-					<!--				<lease defalut="86400" max="86400"/>-->
-				</options>
 				<lease-time lease-max="7200"/>
 			</policy>
 		</subnet>

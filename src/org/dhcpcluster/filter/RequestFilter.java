@@ -18,6 +18,8 @@
  */
 package org.dhcpcluster.filter;
 
+import java.io.Serializable;
+
 import org.dhcp4java.DHCPPacket;
 
 /**
@@ -25,6 +27,6 @@ import org.dhcp4java.DHCPPacket;
  * @author Stephan Hadinger
  * @version 0.72
  */
-public interface RequestFilter {
+public interface RequestFilter extends Serializable {
 	public boolean isRequestAccepted(DHCPPacket request);
 }

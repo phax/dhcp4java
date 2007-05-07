@@ -18,6 +18,7 @@
  */
 package org.dhcpcluster.config;
 
+import java.io.Serializable;
 import java.util.Properties;
 
 import org.dhcpcluster.DHCPClusterNode;

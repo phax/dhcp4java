@@ -21,7 +21,6 @@ package org.dhcpcluster;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Properties;
 import java.util.concurrent.Executor;
@@ -53,9 +52,9 @@ import org.kohsuke.args4j.Option;
  * @author Stephan Hadinger
  * @version 0.72
  */
-public class DHCPClusterNode implements Serializable, Runnable {
+public class DHCPClusterNode implements Runnable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
     
 	private static final Logger logger = Logger.getLogger(DHCPClusterNode.class);
 

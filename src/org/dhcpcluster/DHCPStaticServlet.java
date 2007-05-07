@@ -22,6 +22,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.dhcp4java.DHCPOption;
@@ -59,10 +60,10 @@ public class DHCPStaticServlet extends DHCPServlet {
 		DHCPPacket temp = new DHCPPacket();
 		try {
 			// parse all properties to extract static client definitions
-			for (Object keyObject : props.keySet()) {
-				String key = ((String) keyObject).toLowerCase();
+			for (Entry<Object, Object> prop : props.entrySet()) {
+				String key = ((String) prop.getKey()).toLowerCase();
 				if (key.startsWith(CLIENT_MAC_PREFIX)) {
-					String addrString = (String) props.get(keyObject);
+					String addrString = (String) prop.getValue();
 					try {
 						InetAddress addr = InetAddress.getByName(addrString);
                         this.macIpMap.put(key.substring(CLIENT_MAC_PREFIX.length()), addr);

@@ -59,7 +59,6 @@ public class DHCPOptionTest {
 		assertFalse(opt.isMirror());
 		assertTrue(Arrays.equals(opt.getValue(), buf0));
 		assertTrue(opt.getValue() != buf0);		// value should be cloned
-		assertTrue(opt.getValueFast() == buf0);	// but fast variant should not clone
 	}
 	
 	@Test

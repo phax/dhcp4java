@@ -166,4 +166,26 @@ public class Subnet extends NodeRoot implements Serializable, Comparable<Subnet>
 		return cidr.compareTo(o.getCidr());
 	}
 
+	/**
+     * returns true if two <tt>DHCPOption</tt> objects are equal, i.e. have same <tt>code</tt>
+     * and same <tt>value</tt>. 
+	 */
+	@Override
+	public boolean equals(Object obj) {
+        if ((obj == null) || (!(obj instanceof Subnet))) {
+            return false;
+        }
+        Subnet s = (Subnet) obj;
+        return this.cidr.equals(s.getCidr());
+	}
+
+    /**
+     * Returns a hash code value for the object.
+     */
+	@Override
+	public int hashCode() {
+		return this.cidr.hashCode();
+	}
+	
+
 }

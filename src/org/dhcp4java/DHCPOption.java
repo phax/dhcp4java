@@ -33,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -92,7 +93,7 @@ public class DHCPOption implements Serializable {
         }
 
         this.code  = code;
-        this.value = value;
+        this.value = (value != null) ? value.clone() : null;
         this.mirror = mirror;
     }
 
@@ -1031,18 +1032,17 @@ public class DHCPOption implements Serializable {
     		return null;
     	}
     	
-        Map map = agentOptionsToMap(buf);
-        Iterator it = map.keySet().iterator();
+        Map<Byte, String> map = agentOptionsToMap(buf);
         StringBuffer s = new StringBuffer();
-        
-        while (it.hasNext()) {
-            Byte key = (Byte) it.next();
-            s.append('{').append(unsignedByte(key.byteValue())).append("}\"");
-            s.append((String) map.get(key)).append('\"');
-            if (it.hasNext()) {
-                s.append(',');
-            }
+        for (Entry<Byte, String> entry : map.entrySet()) {
+            s.append('{').append(unsignedByte(entry.getKey())).append("}\"");
+            s.append(entry.getValue()).append('\"');
+            s.append(',');
         }
+        if (s.length() > 0) {
+        	s.setLength(s.length() - 1);
+        }
+
         return s.toString();
     }
     /**
@@ -1062,18 +1062,17 @@ public class DHCPOption implements Serializable {
         ByteArrayOutputStream buf = new ByteArrayOutputStream(64);
         DataOutputStream out = new DataOutputStream(buf);
         try {
-        	for (Byte key : map.keySet()) {
-	            String s = map.get(key);
-	            byte[] bufTemp = DHCPPacket.stringToBytes(s);
+        	for (Entry<Byte, String> entry : map.entrySet()) {
+	            byte[] bufTemp = DHCPPacket.stringToBytes(entry.getValue());
 	            int size = bufTemp.length;
 	            assert (size >= 0);
 	            if (size > 255) {
 	            	throw new IllegalArgumentException("Value size is greater then 255 bytes");
                 }
-	            out.writeByte(key.byteValue());
+	            out.writeByte(entry.getKey());
 	            out.writeByte(size);
 	            out.write(bufTemp, 0, size);
-	        }
+        	}
 	        return buf.toByteArray();
 	    } catch (IOException e) {
 			logger.log(Level.SEVERE, "Unexpected IOException", e);
