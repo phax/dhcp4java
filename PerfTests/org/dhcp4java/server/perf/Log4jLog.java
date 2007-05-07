@@ -18,13 +18,11 @@
  */
 package org.dhcp4java.server.perf;
 
-import java.sql.Date;
-
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.Loader;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.dhcp4java.DHCPConstants;
 import org.dhcpcluster.backend.hsql.StoredProcedures;
-import org.dhcpcluster.struct.DHCPLease;
 
 /**
  * 
@@ -38,11 +36,10 @@ public class Log4jLog {
 
 	private static void bench(int len) {
 		long now = System.currentTimeMillis();
-		Date date = new Date(now);
 		
 		for (int i=0; i<len; i++) {
 			now++;
-			StoredProcedures.logLease(now, date, date, date, DHCPLease.Status.fromInt(1), DHCPLease.Status.fromInt(2), "foo", "bar", null);
+			StoredProcedures.logLeaseAllocation(DHCPConstants.DHCPACK, 3232235536L, 86400L, "001122334455", "foo");
 		}
 	}
 	

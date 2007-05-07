@@ -167,7 +167,7 @@ public class AddressRangeTest {
 	@Test
 	public void testIsSorted() {
 		AddressRange ar = new AddressRange(adr1, adr3);
-		AddressRange ar2 = new AddressRange(adr1, adr3);
+		//AddressRange ar2 = new AddressRange(adr1, adr3);
 		AddressRange ar3 = new AddressRange(adr1, adr2);
 		AddressRange ar4 = new AddressRange(adr2, adr3);
 		

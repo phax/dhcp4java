@@ -19,12 +19,11 @@
 package org.dhcpcluster.backend.hsql;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.helpers.ISO8601DateFormat;
+import org.dhcp4java.DHCPConstants;
 import org.dhcp4java.InetCidr;
 import org.dhcp4java.Util;
 import org.dhcpcluster.SystemTime;
@@ -379,6 +378,9 @@ public class StoredProcedures {
 		
 		try {
 			res = dhcpDiscover1(conn, poolId, macHex, iccQuota, icc, offerTime);
+			if (res > 0L) {
+				logLeaseAllocation(DHCPConstants.DHCPOFFER, res, offerTime, macHex, icc);
+			}
 			// TODO add logging
 			return res;
 		} catch (SQLException e) {
@@ -405,6 +407,11 @@ public class StoredProcedures {
 		
 		try {
 			res = dhcpRequest1(conn, poolId, requestedIp, leaseTime, margin, macHex, optimisticAllocation);
+			if (res >= 0) {
+				logLeaseAllocation(DHCPConstants.DHCPACK, requestedIp, leaseTime, macHex, null);
+			} else {
+				logLeaseAllocation(DHCPConstants.DHCPNAK, requestedIp, leaseTime, macHex, null);
+			}
 			// TODO add logging
 			return res;
 		} catch (SQLException e) {
@@ -458,43 +465,44 @@ public class StoredProcedures {
 		return InetCidr.fromLong(cidr).toString();
 	}
 	
-	
-	public static void logLeaseAllocation(String op, long ip, String mac, String icc) {
-		
-	}
 	/**
+	 * Log allocation of lease.
 	 * 
-	 * @param ip
-	 * @param creation
-	 * @param update
-	 * @param expiration
-	 * @param status
-	 * @param prevStatus
-	 * @param mac
-	 * @param uid
-	 * @param icc
+	 * <P>Default location is in the './archive/dhcp-archive*' files. This is customizable via log4j.xml file.
+	 * 
+	 * @param op operation code returned to client, can be: DHCPOFFER, DHCPACK, DHCPNAK
+	 * @param ip ip address proposed to or asked by the client
+	 * @param leaseTime lease reservation time in seconds
+	 * @param mac mac address of the client
+	 * @param icc icc identifier of the client, or <tt>null</tt>
 	 */
-	public static void logLease(long ip, Date creation, Date update, Date expiration, DHCPLease.Status status, DHCPLease.Status prevStatus, String mac,
-									String uid, String icc) {
+	public static void logLeaseAllocation(byte op, long ip, long leaseTime, String mac, String icc) {
 		StringBuffer sb = new StringBuffer(127);
-		sb.append(Util.long2InetAddress(ip).getHostAddress());
+		switch (op) {
+			case DHCPConstants.DHCPOFFER:
+				sb.append("OFFER;");
+				break;
+			case DHCPConstants.DHCPACK:
+				sb.append("ACK;");
+				break;
+			case DHCPConstants.DHCPNAK:
+				sb.append("NAK;");
+				break;
+			default:
+				sb.append(op);
+				sb.append(';');
+		}
+		sb.append(longAddressToString(ip));
 		sb.append(';');
-		dateFormatter.format(creation, sb, null);
+		//dateFormatter.format(expireDate, sb, null);
+		sb.append(leaseTime);
 		sb.append(';');
-		dateFormatter.format(update, sb, null);
-		sb.append(';');
-		dateFormatter.format(expiration, sb, null);
-		sb.append(';');
-		sb.append(status.toString()).append(';');
-		sb.append(prevStatus.toString()).append(';');
-		sb.append(mac).append(';');
-		sb.append((uid!=null)? uid: "").append(';');
-		sb.append((icc!=null)? icc: "");
+		sb.append((mac!=null) ? mac : "").append(';');
+		sb.append((icc!=null) ? icc : "");
 		archiveLog.info(sb);
 	}
 
-	private static final ISO8601DateFormat dateFormatter = new ISO8601DateFormat();
 	private static final org.apache.log4j.Logger archiveLog = org.apache.log4j.Logger.getLogger("archive.dhcp");
-
+	
 	private static final String	SELECT_LEASE_MAC = queries.get("SELECT_LEASE_MAC");
 }

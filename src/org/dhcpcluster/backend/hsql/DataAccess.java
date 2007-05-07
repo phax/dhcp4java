@@ -404,8 +404,6 @@ public class DataAccess {
 	private static final String	SELECT_LEASE_ACTIVE_ICC = queries.get("SELECT_LEASE_ACTIVE_ICC");
 	private static final String	SELECT_T_POOL_RANGES_FROM_SET_ID = queries.get("SELECT_T_POOL_RANGES_FROM_SET_ID");
 
-	private static final String	INSERT_T_LEASE_ARCHIVE = queries.get("INSERT_T_LEASE_ARCHIVE");
-
 	private static final String	CALL_DHCP_DISCOVER = queries.get("CALL_DHCP_DISCOVER");
 	private static final String	CALL_DHCP_REQUEST = queries.get("CALL_DHCP_REQUEST");
 
