@@ -369,11 +369,7 @@ public class StoredProcedureTest {
 
 	@AfterClass
 	public static void stopServer() {
-		try {
-			DataAccess.shutdown(conn);
-		} catch (SQLException e) {
-			// exception is normal here, broken connection 
-		}
+		node.stop();
 	}
 	
 	// TODO add ICC quotas tests on dhcpDiscover

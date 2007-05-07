@@ -59,7 +59,7 @@ public class StoredProcedures {
 	 * 			-4: ICC quota reached, cannot allocate a new lease for this ICC
 	 * @throws SQLException
 	 */
-	public static long dhcpDiscover(Connection conn, long poolId, String macHex, int iccQuota, String icc,
+	public static long dhcpDiscover1(Connection conn, long poolId, String macHex, int iccQuota, String icc,
 											long offerTime) throws SQLException {
 		assert(conn != null);
 		if ((macHex == null) || (macHex.length() < 2)) {
@@ -235,7 +235,7 @@ public class StoredProcedures {
 	 * @return status of the request, positive is ok, 0 is must be ignored, negative must be an NAK<br>  
 	 * @throws SQLException
 	 */
-	public static int dhcpRequest(Connection conn, long poolId, long requestedIp, int leaseTime, int margin, String macHex,
+	public static int dhcpRequest1(Connection conn, long poolId, long requestedIp, int leaseTime, int margin, String macHex,
 									boolean optimisticAllocation) throws SQLException {
 		assert(conn != null);
 		if ((macHex == null) || (macHex.length() < 2)) {
@@ -361,7 +361,59 @@ public class StoredProcedures {
 			conn.setAutoCommit(autocommitSave);
 		}
 	}
+
+	/**
+	 * 
+	 * @param conn
+	 * @param poolId
+	 * @param macHex
+	 * @param iccQuota
+	 * @param icc
+	 * @param offerTime
+	 * @return
+	 * @throws SQLException
+	 */
+	public static long dhcpDiscover(Connection conn, long poolId, String macHex, int iccQuota, String icc,
+			long offerTime) throws SQLException {
+		long res;
+		
+		try {
+			res = dhcpDiscover1(conn, poolId, macHex, iccQuota, icc, offerTime);
+			// TODO add logging
+			return res;
+		} catch (SQLException e) {
+			// log
+			throw e;		// re-throw
+		}
+	}
 	
+	/**
+	 * 
+	 * @param conn
+	 * @param poolId
+	 * @param requestedIp
+	 * @param leaseTime
+	 * @param margin
+	 * @param macHex
+	 * @param optimisticAllocation
+	 * @return
+	 * @throws SQLException
+	 */
+	public static int dhcpRequest(Connection conn, long poolId, long requestedIp, int leaseTime, int margin, String macHex,
+			boolean optimisticAllocation) throws SQLException {
+		int res;
+		
+		try {
+			res = dhcpRequest1(conn, poolId, requestedIp, leaseTime, margin, macHex, optimisticAllocation);
+			// TODO add logging
+			return res;
+		} catch (SQLException e) {
+			// log
+			throw e;
+		}
+	}
+
+
 	public static int gcLeaseRange(Connection conn, long firstAdr, long lastAdr) throws SQLException {
 		// TODO
 		assert(conn != null);
@@ -385,6 +437,8 @@ public class StoredProcedures {
 	}
 	
 	/**
+	 *
+	 * <p>Note: used as stored procedure.
 	 * 
 	 * @param ip
 	 * @return
@@ -395,6 +449,8 @@ public class StoredProcedures {
 	
 	/**
 	 * 
+	 * <p>Note: used as stored procedure.
+	 * 
 	 * @param cidr
 	 * @return
 	 */
@@ -402,7 +458,22 @@ public class StoredProcedures {
 		return InetCidr.fromLong(cidr).toString();
 	}
 	
-
+	
+	public static void logLeaseAllocation(String op, long ip, String mac, String icc) {
+		
+	}
+	/**
+	 * 
+	 * @param ip
+	 * @param creation
+	 * @param update
+	 * @param expiration
+	 * @param status
+	 * @param prevStatus
+	 * @param mac
+	 * @param uid
+	 * @param icc
+	 */
 	public static void logLease(long ip, Date creation, Date update, Date expiration, DHCPLease.Status status, DHCPLease.Status prevStatus, String mac,
 									String uid, String icc) {
 		StringBuffer sb = new StringBuffer(127);

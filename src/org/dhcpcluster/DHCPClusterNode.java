@@ -170,6 +170,11 @@ public class DHCPClusterNode implements Serializable, Runnable {
 		internalServer.run();
 		// TODO ready to run
 	}
+	
+	public void stop() {
+		internalServer.stopServer();
+		stopBackend();
+	}
 
 
 
@@ -268,6 +273,13 @@ public class DHCPClusterNode implements Serializable, Runnable {
 		}
 	}
 	
+	private void stopBackend() {
+		if (backend != null) {
+			backend.shutdown();
+			backend = null;
+		}
+	}
+	
 
 	private class ClusterShutdownHook extends Thread {
 
@@ -284,7 +296,10 @@ public class DHCPClusterNode implements Serializable, Runnable {
 			logger.info("Shutdown: Entering Shutdown sequence.");
 			logger.info("Shtudown: 1. Stopping server");
 			// TODO
-			backend.shutdown();
+			if (backend != null) {
+				backend.shutdown();
+				backend = null;
+			}
 			logger.info("Shtudown: 2. Closing backend");
 
 		}
