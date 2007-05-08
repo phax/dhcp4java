@@ -24,16 +24,16 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 import java.util.Random;
 
 import org.dhcp4java.DHCPConstants;
 import org.dhcp4java.DHCPPacket;
-import org.dhcp4java.DHCPServerInitException;
 import org.dhcpcluster.DHCPClusterNode;
+import org.dhcpcluster.SystemTime;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -49,14 +49,25 @@ public class EndToEndTest {
        return new JUnit4TestAdapter(EndToEndTest.class);
     }
 	
-	private static DatagramSocket socket = null;
+	private static DatagramSocket socketDirect = null;
+	private static DatagramSocket socketRelay = null;
 	private static InetAddress serverAddr;
 	private static int serverPort;
+
+	private static long originOfTime;
 
 	private static DHCPClusterNode node = null;
 	
 	@BeforeClass
-	public static void prepareSocket() throws SocketException, UnknownHostException, DHCPServerInitException {
+	public static void prepareSocket() throws Exception {
+
+		// change time reference
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = (Date)formatter.parse("01/01/2007");
+        originOfTime = date.getTime();
+		SystemTime.setForcedTime(originOfTime);
+		SystemTime.setForcedMode(true);
+		
 		Properties props = new Properties();
 		
 		props.setProperty("config.reader", "org.dhcpcluster.config.xml.XmlConfigReader");
@@ -73,15 +84,21 @@ public class EndToEndTest {
 		
 		serverAddr = InetAddress.getByName("127.0.0.1");
 		serverPort = 6767;
-        socket = new DatagramSocket(DHCPConstants.BOOTP_REPLY_PORT);
-        socket.setSoTimeout(1000);		// 1 sec
+        socketDirect = new DatagramSocket(DHCPConstants.BOOTP_REPLY_PORT);
+        socketDirect.setSoTimeout(1000);		// 1 sec
+        socketRelay = new DatagramSocket(DHCPConstants.BOOTP_REQUEST_PORT);
+        socketRelay.setSoTimeout(1000);		// 1 sec
 	}
 	
 	@AfterClass
 	public static void closeSocket() {
-		if (socket != null) {
-			socket.close();
-			socket = null;
+		if (socketDirect != null) {
+			socketDirect.close();
+			socketDirect = null;
+		}
+		if (socketRelay != null) {
+			socketRelay.close();
+			socketRelay = null;
 		}
 		node.stop();
 	}
@@ -91,7 +108,14 @@ public class EndToEndTest {
         DatagramPacket pac = new DatagramPacket(new byte[1500], 1500);
         try {
         	while (true) {
-                socket.receive(pac);
+                socketDirect.receive(pac);
+        	}
+        } catch (SocketTimeoutException e) {
+        	// normal exit
+        }
+        try {
+        	while (true) {
+                socketRelay.receive(pac);
         	}
         } catch (SocketTimeoutException e) {
         	// normal exit
@@ -110,15 +134,15 @@ public class EndToEndTest {
         discover.setSecs((short) 0);
         discover.setFlags((short) 0);
         discover.setChaddrHex("001122334455");
-        discover.setGiaddr("10.11.12.13");
+        discover.setGiaddr("127.0.0.1");
         discover.setDHCPMessageType(DHCPConstants.DHCPDISCOVER);
         discover.setOptionAsString(DHO_VENDOR_CLASS_IDENTIFIER, "MSFT5.0");
         byte[] discoverBytes = discover.serialize();
         DatagramPacket discoverPacket = new DatagramPacket(discoverBytes, discoverBytes.length, serverAddr, serverPort);
         DatagramPacket responsePacket = new DatagramPacket(new byte[1500], 1500);
         
-        socket.send(discoverPacket);
-        socket.receive(responsePacket);
+        socketRelay.send(discoverPacket);
+        socketRelay.receive(responsePacket);
         DHCPPacket response = DHCPPacket.getPacket(responsePacket);
         assertEquals(BOOTREPLY, response.getOp());
 	}
