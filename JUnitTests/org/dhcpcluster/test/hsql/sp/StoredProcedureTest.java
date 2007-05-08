@@ -16,7 +16,7 @@
  *	License along with this library; if not, write to the Free Software
  *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.dhcpcluster.test.hsql;
+package org.dhcpcluster.test.hsql.sp;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -62,12 +62,12 @@ public class StoredProcedureTest {
 		Properties props = new Properties();
 		
 		props.setProperty("config.reader", "org.dhcpcluster.config.xml.XmlConfigReader");
-		props.setProperty("config.xml.file", "./JUnitTests/org/dhcpcluster/test/hsql/conf/configtest.xml");
+		props.setProperty("config.xml.file", "./JUnitTests/org/dhcpcluster/test/hsql/sp/configtest.xml");
 		
 		props.setProperty("backend.hsql.address", "localhost");
 		props.setProperty("backend.hsql.dbnumber", "0");
 		props.setProperty("backend.hsql.dbname", "dhcpcluster");
-		props.setProperty("backend.hsql.dbpath", "./JUnitTests/org/dhcpcluster/test/hsql/db/dhcpcluster");
+		props.setProperty("backend.hsql.dbpath", "./JUnitTests/org/dhcpcluster/test/hsql/sp/dhcpcluster");
 
     	node = new DHCPClusterNode(props);
 		conn = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost/dhcpcluster", "sa", "");
