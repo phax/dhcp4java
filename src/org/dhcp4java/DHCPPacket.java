@@ -2245,6 +2245,21 @@ public class DHCPPacket implements Cloneable, Serializable {
     }
 
     /**
+     * Convert bytes to hex string.
+     * 
+     * @param buf
+     * @return hex string (lowercase) or "" if buf is <tt>null</tt>
+     */
+    static String bytes2Hex(byte[] buf) {
+    	if (buf == null) {
+    		return "";
+    	}
+    	StringBuilder sb = new StringBuilder(buf.length * 2);
+    	appendHex(sb, buf);
+    	return sb.toString();
+    }
+    
+    /**
      * Convert hes String to byte[]
      */
     static byte[] hex2Bytes(String s) {

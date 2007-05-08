@@ -19,6 +19,8 @@
 package org.dhcpcluster.backend;
 
 import java.net.InetAddress;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Properties;
 
 import org.dhcp4java.HardwareAddress;
@@ -26,6 +28,7 @@ import org.dhcpcluster.DHCPClusterNode;
 import org.dhcpcluster.config.ConfigException;
 import org.dhcpcluster.config.TopologyConfig;
 import org.dhcpcluster.struct.DHCPLease;
+import org.dhcpcluster.struct.Subnet;
 
 /**
  * 
@@ -36,7 +39,12 @@ public interface DHCPBackendIntf {
 	
 	public void init(DHCPClusterNode dhcpCoreServer, Properties configProperties) throws ConfigException;
 	
-	public DHCPLease discover(long networkId, HardwareAddress mac, InetAddress giaddr, int clientClass);
+	/*
+	 * 
+	public static long callDhcpDiscoverSP(Connection conn, long poolId, String macHex, int iccQuota, String icc,
+											long offerTime) throws SQLException {
+	 */
+	public long discover(Subnet subnet, HardwareAddress mac, int iccQuota, String icc, long offerTime);
 	
 	public void prepareBackend(TopologyConfig topology);
 	

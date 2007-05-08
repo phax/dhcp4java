@@ -26,9 +26,12 @@ import org.dhcp4java.DHCPPacket;
 import org.dhcp4java.DHCPResponseFactory;
 import org.dhcp4java.DHCPServlet;
 import org.dhcp4java.HardwareAddress;
+import org.dhcp4java.Util;
+import org.dhcpcluster.backend.hsql.DataAccess;
 import org.dhcpcluster.config.GlobalConfig;
 import org.dhcpcluster.config.TopologyConfig;
 import org.dhcpcluster.filter.RequestFilter;
+import org.dhcpcluster.struct.DHCPLease;
 import org.dhcpcluster.struct.Subnet;
 
 /**
@@ -89,8 +92,8 @@ public class MainServlet extends DHCPServlet {
 		}
 		
 		/* 3. filter by specific subnet parameters */
-		if (!subnet.isRequestAccepted(request)) {
-			if (!globalFilter.isRequestAccepted(request)) {
+		if (!globalFilter.isRequestAccepted(request)) {
+			if (!subnet.isRequestAccepted(request)) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Request rejected on node filter "+request);
 				}
@@ -104,7 +107,14 @@ public class MainServlet extends DHCPServlet {
 		InetAddress clientAddr = subnet.getStaticAddress(mac);
 		if (clientAddr == null) {
 			// now check if we can affect a dynamic address
-			// TODO
+			// TODO make a generic call instead of direct HSQL
+			long offeredAddr = clusterNode.getBackend().discover(subnet, mac, 0 /* iccQuota */, null /* icc */, subnet.getPolicy().getDefaultLease() /* TODO */);
+			if (offeredAddr > 0) {
+				clientAddr = Util.long2InetAddress(offeredAddr);
+			}
+		}
+		if (clientAddr == null) {
+			return null;			// no address allocated
 		}
 		
 		int clientLease = 0;

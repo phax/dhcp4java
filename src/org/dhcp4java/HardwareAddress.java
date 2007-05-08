@@ -30,7 +30,8 @@ import org.dhcpcluster.config.ConfigException;
  * @version 0.72
  */
 public class HardwareAddress implements Serializable {
-	private static final long serialVersionUID = 1L;
+
+	private static final long serialVersionUID = 2L;
 	
 	private final byte   hardwareType;
 	private final byte[] hardwareAddress;
@@ -50,6 +51,14 @@ public class HardwareAddress implements Serializable {
 	public HardwareAddress(byte hType, byte[] macAddr) {
 		this.hardwareType = hType;
 		this.hardwareAddress = macAddr;
+	}
+	
+	public HardwareAddress(String macHex) {
+		this(DHCPPacket.hex2Bytes(macHex));
+	}
+	
+	public HardwareAddress(byte hType, String macHex) {
+		this(hType, DHCPPacket.hex2Bytes(macHex));
 	}
 	
 	public byte getHardwareType() {
@@ -79,6 +88,11 @@ public class HardwareAddress implements Serializable {
         return ((this.hardwareType == hwAddr.hardwareType) &&
                  (Arrays.equals(this.hardwareAddress, hwAddr.hardwareAddress)));
     }
+    
+    public String getHardwareAddressHex() {
+    	return DHCPPacket.bytes2Hex(this.hardwareAddress);
+    }
+    
 	/**
 	 * Prints the hardware address in hex format, split by ":".
 	 */

@@ -34,6 +34,7 @@ import org.dhcpcluster.backend.LogOutputStream;
 import org.dhcpcluster.config.ConfigException;
 import org.dhcpcluster.config.TopologyConfig;
 import org.dhcpcluster.struct.DHCPLease;
+import org.dhcpcluster.struct.Subnet;
 import org.hsqldb.Server;
 
 import static org.apache.commons.dbutils.DbUtils.*;
@@ -94,9 +95,17 @@ public class HsqlBackendServer implements DHCPBackendIntf {
 	/* (non-Javadoc)
 	 * @see org.dhcpcluster.backend.DHCPBackendIntf#discover(long, org.dhcp4java.HardwareAddress, java.net.InetAddress, int)
 	 */
-	public DHCPLease discover(long networkId, HardwareAddress mac, InetAddress giaddr, int clientClass) {
-		// TODO Auto-generated method stub
-		return null;
+	public long discover(Subnet subnet, HardwareAddress mac, int iccQuota, String icc, long offerTime) {
+		String macHex = mac.getHardwareAddressHex();
+		long poolId = subnet.getCidr().toLong();
+		long res;
+		try {
+			res = DataAccess.callDhcpDiscoverSP(conn0, poolId, macHex, iccQuota, icc, offerTime);
+		} catch (SQLException e) {
+			logger.error("SQLException when calling dhcpDiscoverSP", e);
+			res = 0;
+		}
+		return res;
 	}
 
 	/* (non-Javadoc)
