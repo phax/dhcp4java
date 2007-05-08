@@ -1,0 +1,40 @@
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by FT (FT) -->
+<!--This is a test configuration, used by unit tests-->
+<dhcp-server xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="E:\workspace\dhcp4java\xml\config.xsd">
+	<front-end>
+		<listen port="6767" inet="127.0.0.1"/>
+		<threads nb="2" max="10" core="2" keepalive="10000"/>
+		<jdbc user="sa" url="jdbc:hsqldb:hsql://localhost/dhcpcluster" password=""/>
+	</front-end>
+	<global>
+		<server identifier="192.168.1.1"/>
+		<server-policy>
+			<lease-time lease_default="3600"/>
+		</server-policy>
+	</global>
+	<topology>
+		<subnet address="192.168.0.0" mask="255.255.252.0" comment="Free comment!">
+			<giaddrs>
+				<giaddr>10.11.12.13</giaddr>
+				<giaddr>10.11.13.15</giaddr>
+				<giaddr>127.0.0.1</giaddr>
+			</giaddrs>
+			<pools>
+				<range start="192.168.0.15" end="192.168.0.25"/>
+				<range start="192.168.0.50" end="192.168.0.90"/>
+				<range start="192.168.0.200" end="192.168.0.250"/>
+				<static address="192.168.0.3" ethernet="0:c0:c3:49:2b:57"/>
+				<static address="192.168.0.4" ethernet="01:c0:c3:49:2b:57"/>
+			</pools>
+			<policy>
+				<lease-time lease-max="7200"/>
+			</policy>
+		</subnet>
+		<subnet address="10.170.0.0" mask="255.255.0.0">
+			<pools>
+				<range start="10.170.1.10" end="10.170.1.15"/>
+				<range start="10.170.1.20" end="10.170.1.200"/>
+			</pools>
+		</subnet>
+	</topology>
+</dhcp-server>

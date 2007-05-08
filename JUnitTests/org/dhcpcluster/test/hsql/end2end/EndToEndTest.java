@@ -71,12 +71,12 @@ public class EndToEndTest {
 		Properties props = new Properties();
 		
 		props.setProperty("config.reader", "org.dhcpcluster.config.xml.XmlConfigReader");
-		props.setProperty("config.xml.file", "./JUnitTests/org/dhcpcluster/test/hsql/conf/configtest.xml");
+		props.setProperty("config.xml.file", "./JUnitTests/org/dhcpcluster/test/hsql/end2end/configtest.xml");
 		
 		props.setProperty("backend.hsql.address", "localhost");
 		props.setProperty("backend.hsql.dbnumber", "0");
 		props.setProperty("backend.hsql.dbname", "dhcpcluster");
-		props.setProperty("backend.hsql.dbpath", "./JUnitTests/org/dhcpcluster/test/hsql/db/dhcpcluster");
+		props.setProperty("backend.hsql.dbpath", "./JUnitTests/org/dhcpcluster/test/hsql/end2end/dhcpcluster");
 
     	node = new DHCPClusterNode(props);
     	Thread dispatchThread = new Thread(node);
