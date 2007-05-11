@@ -31,9 +31,7 @@ import org.junit.Test;
 import junit.framework.Assert;
 import junit.framework.JUnit4TestAdapter;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 public class InetCidrTest {
 

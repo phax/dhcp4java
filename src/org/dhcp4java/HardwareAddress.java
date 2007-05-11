@@ -137,30 +137,4 @@ public class HardwareAddress implements Serializable {
 		return new HardwareAddress(macBytes);		
 	}
 
-	/**
-	 * Parse the MAC address in hex format, split by ':'.
-	 * 
-	 * <p>E.g. <tt>0:c0:c3:49:2b:57</tt>.
-	 * @param macStr
-	 * @return bytes representation of the HardwareAddress
-	 * @throws ConfigException
-	 */
-	public static final byte[] parseHardwareAddress(String macStr) {
-		if (macStr == null) {
-			throw new NullPointerException("macStr is null");
-		}
-		String[] macAdrItems = macStr.split(":");
-		if (macAdrItems.length != 6) {
-			throw new IllegalArgumentException("macStr["+macStr+"] has not 6 items");
-		}
-		byte[] macBytes = new byte[6];
-		for (int i=0; i<6; i++) {
-			int val = Integer.parseInt(macAdrItems[i], 16);
-			if ((val < -128) || (val > 255)) {
-				throw new IllegalArgumentException("Value is out of range:"+macAdrItems[i]);
-			}
-			macBytes[i] = (byte) val;
-		}
-		return macBytes;
-	}
 }
