@@ -101,7 +101,7 @@
     <target name="sources" depends="-init">
 		<zip	destfile="${dist}/${jar.filename}-${version}.src.zip"
 				basedir="."
-				excludes="_dist/**, bin/**, .*, .*/**">
+				includes="src/**">
 		</zip>
     </target>
 
