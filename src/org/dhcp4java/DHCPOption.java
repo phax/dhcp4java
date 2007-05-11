@@ -325,6 +325,13 @@ public class DHCPOption implements Serializable {
     }
 
     // TODO
+    /**
+     * Returns a DHCP Option as Integer format, but is usable for any numerical type: int, short or byte.
+     * 
+     * <p>There is no check on the option
+     * 
+     * @return the option value <tt>null</tt> if option is not present, or wrong number of bytes.
+     */
     public Integer getValueAsNum() throws IllegalArgumentException {
     	if (value == null) {
     		return null;
@@ -1193,6 +1200,19 @@ public class DHCPOption implements Serializable {
     	return null;
     }
     
+    /**
+     * Parse an option from a pure string representation.
+     * 
+     * <P>The expected class is passed as a parameter, and can be provided by the 
+     * <tt>string2Class()</tt> method from a string representation of the class.
+     * 
+     * <P>TODO examples
+     * 
+     * @param code DHCP option code
+     * @param format expected Java Class after conversion
+     * @param value string representation of the value
+     * @return the DHCPOption object
+     */
     public static DHCPOption parseNewOption(byte code, Class format, String value) {
     	if ((format == null) || (value == null)) {
     		throw new NullPointerException();

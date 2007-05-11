@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import org.dhcp4java.DHCPBadPacketException;
 import org.dhcp4java.DHCPOption;
 import org.dhcp4java.DHCPPacket;
+import org.dhcp4java.HardwareAddress;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -130,6 +131,7 @@ public class DHCPPacketTest {
     	
     	assertNull(pac.getAddress());
     	assertEquals(0, pac.getPort());
+
     }
     
     @Test
@@ -310,6 +312,22 @@ public class DHCPPacketTest {
     	pac0.setFileRaw(new byte[129]);
     }
     
+    @Test
+    public void testGetHardwareAddress() {
+        HardwareAddress ha = new HardwareAddress(HTYPE_ETHER, "001122334455");
+        assertEquals(ha, refPacketFromSratch.getHardwareAddress());
+        DHCPPacket pac2 = refPacketFromSratch.clone();
+        pac2.setHlen((byte)17);
+        HardwareAddress ha2 = new HardwareAddress(HTYPE_ETHER, "00112233445566778899AABBCCDDEEFF");
+        assertEquals(ha2, pac2.getHardwareAddress());
+    }
+    @Test
+    public void testGetOptionAsNum() {
+    	assertEquals(Integer.valueOf(86400), refPacketFromSratch.getOptionAsNum(DHO_DHCP_LEASE_TIME));
+    	assertNull(refPacketFromSratch.getOptionAsNum(DHO_USER_CLASS));
+    	assertNull(refPacketFromSratch.getOptionAsNum(DHO_STATIC_ROUTES));
+    	assertEquals(Integer.valueOf(167772414), refPacketFromSratch.getOptionAsNum(DHO_ROUTERS));
+    }
 
     @Test
     public void testEqualsTrivial() {
@@ -610,6 +628,21 @@ public class DHCPPacketTest {
     @Test (expected=IllegalArgumentException.class)
     public void testGetHostAddressIPv6() throws Exception {
     	DHCPPacket.getHostAddress(InetAddress.getByName("1080:0:0:0:8:800:200C:417A"));
+    }
+    
+    // Hashcode
+    @Test
+    public void testHashCode() throws Exception {
+    	DHCPPacket pac1 = new DHCPPacket();
+    	DHCPPacket pac2 = new DHCPPacket();
+    	pac2.setYiaddr("10.0.0.1");
+    	assertTrue(pac1.hashCode() != 0);
+    	assertTrue(pac2.hashCode() != 0);
+    	assertTrue(pac1.hashCode() != pac2.hashCode());
+    	
+    	DHCPPacket pac3 = pac1.clone();
+    	assertTrue(pac1.equals(pac3));
+    	assertEquals(pac1.hashCode(), pac3.hashCode());
     }
 
     private static final String REF_PACKET =

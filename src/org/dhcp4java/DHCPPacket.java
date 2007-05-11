@@ -489,18 +489,18 @@ public class DHCPPacket implements Cloneable, Serializable {
 		h += this.xid;
 		h += this.secs;
 		h ^= this.flags;
-		h ^= this.ciaddr.hashCode();
-		h ^= this.yiaddr.hashCode();
-		h ^= this.siaddr.hashCode();
-		h ^= this.giaddr.hashCode();
-		h ^= this.chaddr.hashCode();
-		h ^= this.sname.hashCode();
-		h ^= this.file.hashCode();
+		h ^= Arrays.hashCode(this.ciaddr);
+		h ^= Arrays.hashCode(this.yiaddr);
+		h ^= Arrays.hashCode(this.siaddr);
+		h ^= Arrays.hashCode(this.giaddr);
+		h ^= Arrays.hashCode(this.chaddr);
+		h ^= Arrays.hashCode(this.sname);
+		h ^= Arrays.hashCode(this.file);
 		h ^= this.options.hashCode();
 		h += this.isDhcp ? 1 : 0;
-		h += this.truncated ? 1 : 0;
-		h ^= this.padding.hashCode();
-		h ^= this.address.hashCode();
+//		h += this.truncated ? 1 : 0;
+		h ^= Arrays.hashCode(this.padding);
+		h ^= (this.address != null) ? this.address.hashCode() : 0;
 		h += this.port;
 		return h;
 	}
@@ -1636,11 +1636,17 @@ public class DHCPPacket implements Cloneable, Serializable {
         return this.truncated;
     }
 
-    // TODO
-    public int getOptionAsNum(byte code) throws IllegalArgumentException {
+    /**
+     * Wrapper function for getValueAsNum() in DHCPOption. Returns a numerical option: int, short or byte.
+     * 
+     * @param code DHCP option code
+     * @return Integer object or <tt>null</tt>
+     */
+    public Integer getOptionAsNum(byte code) {
     	DHCPOption opt = this.getOption(code);
     	return (opt != null) ? opt.getValueAsNum() : null; 
     }
+    
     /**
      * Returns a DHCP Option as Byte format.
      *

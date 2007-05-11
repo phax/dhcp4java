@@ -19,6 +19,7 @@
 package org.dhcp4java.test;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -338,7 +339,6 @@ public class DHCPOptionTest {
 		shorts[2] = (short) -1;
 		assertEquals(DHO_PATH_MTU_PLATEAU_TABLE, opt.getCode());
 		assertTrue(Arrays.equals(opt.getValue(), HexUtils.hexToBytes("05DC0000FFFF")));
-
 		assertTrue(Arrays.equals(shorts, opt.getValueAsShorts()));
 	}
 //	@Test (expected=IllegalArgumentException.class)
@@ -364,6 +364,23 @@ public class DHCPOptionTest {
 	public void testGetValueAsShortsBadSize5() {
 		DHCPOption opt = new DHCPOption(DHO_PATH_MTU_PLATEAU_TABLE, new byte[5]);
 		opt.getValueAsShorts();
+	}
+	
+	@Test
+	public void testNewOptionAsShorts() {
+		short[] shorts = new short[3];
+		shorts[0] = (short) 1500;
+		shorts[1] = (short) 0;
+		shorts[2] = (short) -1;
+		DHCPOption opt = DHCPOption.newOptionAsShorts(DHO_PATH_MTU_PLATEAU_TABLE, shorts);
+		DHCPOption opt2 = new DHCPOption(DHO_PATH_MTU_PLATEAU_TABLE, HexUtils.hexToBytes("05DC0000FFFF"));
+		assertEquals(opt2, opt);
+		assertTrue(Arrays.equals(opt.getValue(), HexUtils.hexToBytes("05DC0000FFFF")));
+		assertTrue(Arrays.equals(shorts, opt.getValueAsShorts()));
+	}
+	@Test (expected=IllegalArgumentException.class)
+	public void testNewOptionAsShortsIllegal() {
+		DHCPOption.newOptionAsShorts(DHO_DHCP_LEASE_TIME, null);
 	}
 	
 	
@@ -399,6 +416,22 @@ public class DHCPOptionTest {
 	public void testGetValueAsIntBadSize5() {
 		DHCPOption opt = new DHCPOption(DHO_DHCP_LEASE_TIME, new byte[5]);
 		opt.getValueAsInt();
+	}
+	
+	// Num
+	@Test
+	public void testNewOptionAsIntGetValueAsNum() {
+		DHCPOption opt;
+		opt = DHCPOption.newOptionAsInt(DHO_DHCP_LEASE_TIME, 0x01FE02FC);
+		assertEquals(Integer.valueOf(0x01FE02FC), opt.getValueAsNum());
+		opt = DHCPOption.newOptionAsShort(DHO_INTERFACE_MTU, (short)1500);
+		assertEquals(Integer.valueOf(1500), opt.getValueAsNum());
+		opt = DHCPOption.newOptionAsByte(DHO_IP_FORWARDING, (byte)1);
+		assertEquals(Integer.valueOf(1), opt.getValueAsNum());
+		opt = DHCPOption.newOptionAsString(DHO_TFTP_SERVER, "foobar");
+		assertNull(opt.getValueAsNum());
+		opt = DHCPOption.newOptionAsString(DHO_TFTP_SERVER, null);
+		assertNull(opt.getValueAsNum());
 	}
 	
 	// InetAddress
@@ -692,5 +725,96 @@ public class DHCPOptionTest {
 		assertNull(DHCPOption.string2Class("foobar"));
 		assertNull(DHCPOption.string2Class(""));
 		assertNull(DHCPOption.string2Class(null));
+	}
+	
+	@Test
+	public void testParseNewOption() throws Exception {
+		DHCPOption opt;
+		
+		opt = DHCPOption.parseNewOption(DHO_DHCP_LEASE_TIME, int.class, "33424124");
+		assertEquals(DHO_DHCP_LEASE_TIME, opt.getCode());
+		assertEquals(0x01FE02FC, opt.getValueAsInt());
+		opt = DHCPOption.parseNewOption(DHO_INTERFACE_MTU, short.class, "1500");
+		assertEquals(DHO_INTERFACE_MTU, opt.getCode());
+		assertEquals((short)1500, opt.getValueAsShort());
+		opt = DHCPOption.parseNewOption(DHO_IP_FORWARDING, byte.class, "1");
+		assertEquals(DHO_IP_FORWARDING, opt.getCode());
+		assertEquals((byte)1, opt.getValueAsByte());
+		opt = DHCPOption.parseNewOption(DHO_TFTP_SERVER, String.class, "foobar");
+		assertEquals(DHO_TFTP_SERVER, opt.getCode());
+		assertEquals("foobar", opt.getValueAsString());
+
+		short[] shorts = new short[3];
+		shorts[0] = (short) 1500;
+		shorts[1] = (short) 0;
+		shorts[2] = (short) -1;
+		opt = DHCPOption.parseNewOption(DHO_PATH_MTU_PLATEAU_TABLE, short[].class, "1500 0 -1");
+		assertEquals(DHO_PATH_MTU_PLATEAU_TABLE, opt.getCode());
+		assertTrue(Arrays.equals(opt.getValue(), HexUtils.hexToBytes("05DC0000FFFF")));
+		assertTrue(Arrays.equals(shorts, opt.getValueAsShorts()));
+		
+		opt = DHCPOption.parseNewOption(DHO_DHCP_PARAMETER_REQUEST_LIST, byte[].class, "16 32 64");
+		byte[] bytes = HexUtils.hexToBytes("102040");
+		assertEquals(DHO_DHCP_PARAMETER_REQUEST_LIST, opt.getCode());
+		assertTrue(Arrays.equals(bytes, opt.getValue()));
+
+		opt = DHCPOption.parseNewOption(DHO_WWW_SERVER, byte[].class, "0.0.0.0 252.10.224.3 255.255.255.255");
+		assertEquals(DHO_WWW_SERVER, opt.getCode());
+		assertTrue(Arrays.equals(HexUtils.hexToBytes("00000000FC0AE003FFFFFFFF"), opt.getValue()));
+
+		opt = DHCPOption.parseNewOption(DHO_WWW_SERVER, InetAddress[].class, "0.0.0.0 252.10.224.3 255.255.255.255");
+		InetAddress[] iadrs = new InetAddress[3];
+		iadrs[0] = InetAddress.getByName("0.0.0.0");
+		iadrs[1] = InetAddress.getByName("252.10.224.3");
+		iadrs[2] = InetAddress.getByName("255.255.255.255");
+		assertEquals(DHO_WWW_SERVER, opt.getCode());
+		assertTrue(Arrays.equals(iadrs, opt.getValueAsInetAddrs()));
+		
+		opt = DHCPOption.parseNewOption(DHO_WWW_SERVER, InetAddress.class, "252.10.224.3");
+		assertEquals(DHO_WWW_SERVER, opt.getCode());
+		assertTrue(Arrays.equals(HexUtils.hexToBytes("FC0AE003"), opt.getValue()));
+		
+		assertNull(DHCPOption.parseNewOption(DHO_WWW_SERVER, InetAddress.class, "www.foobar.com"));
+		assertNull(DHCPOption.parseNewOption(DHO_WWW_SERVER, InetAddress[].class, "10.0.0.1 www.foobar.com"));
+		
+		assertNull(DHCPOption.parseNewOption((byte) 150, Object.class, ""));
+		
+		/*
+		 * 
+		DHCPOption opt = new DHCPOption(DHO_PATH_MTU_PLATEAU_TABLE, HexUtils.hexToBytes("05DC0000FFFF"));
+		short[] shorts = new short[3];
+		shorts[0] = (short) 1500;
+		shorts[1] = (short) 0;
+		shorts[2] = (short) -1;
+		assertEquals(DHO_PATH_MTU_PLATEAU_TABLE, opt.getCode());
+		assertTrue(Arrays.equals(opt.getValue(), HexUtils.hexToBytes("05DC0000FFFF")));
+		assertTrue(Arrays.equals(shorts, opt.getValueAsShorts()));
+		 */
+		
+		/*
+		opt = DHCPOption.newOptionAsInt(DHO_DHCP_LEASE_TIME, "33424124");
+		assertEquals()
+		assertEquals(Integer.valueOf(0x01FE02FC), opt.getValueAsNum());
+		opt = DHCPOption.newOptionAsShort(DHO_INTERFACE_MTU, (short)1500);
+		assertEquals(Integer.valueOf(1500), opt.getValueAsNum());
+		opt = DHCPOption.newOptionAsByte(DHO_IP_FORWARDING, (byte)1);
+		assertEquals(Integer.valueOf(1), opt.getValueAsNum());
+		opt = DHCPOption.newOptionAsString(DHO_TFTP_SERVER, "foobar");
+		assertNull(opt.getValueAsNum());
+		opt = DHCPOption.newOptionAsString(DHO_TFTP_SERVER, null);
+		assertNull(opt.getValueAsNum());
+		*/
+	}
+	@Test (expected=NullPointerException.class)
+	public void testParseNewOptionNull1() {
+		DHCPOption.parseNewOption((byte) 10, int.class, null);
+	}
+	@Test (expected=NullPointerException.class)
+	public void testParseNewOptionNull2() {
+		DHCPOption.parseNewOption((byte) 10, null, "fobbar");
+	}
+	@Test (expected=IllegalArgumentException.class)
+	public void testParseNewOptionIllegal1() {
+		DHCPOption.parseNewOption(DHO_IP_FORWARDING, InetAddress.class, "252.10.224.3");
 	}
 }
