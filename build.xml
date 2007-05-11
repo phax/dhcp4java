@@ -69,7 +69,6 @@
 			</fileset>
 		</jar>
 		<delete dir="${build}"/>
-		<copy file="${dist}/${jar.filename}-${version}.jar" tofile="${jar.filename}-${version}.jar"/>
 	</target>
 
 	<!-- Creates the Javadoc api -->
