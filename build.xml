@@ -6,20 +6,13 @@
 
 	<property name="dist"				value="_dist" />
 	<property name="build"				value="${dist}/build" />
-	
+
 	<property name="src.java"			value="src"/>
-	<property name="src.jaxb"			value="xml"/>
-	<property name="src.jaxb.generated"	value="src-generated"/>
-	
+		
 	<property name="verbose"			value="false"/>
 	<property name="jar.filename"		value="dhcp4java" />
-	<property name="version"			value="0.72"/>
+	<property name="version"			value="0.73"/>
 	
-	<path id="lib.redist">
-		<fileset dir="lib">
-			<include name="*.jar"/>
-		</fileset>
-	</path>
 
 	
 	<!-- init -->
@@ -32,15 +25,14 @@
 	</target>
 
 	<!-- Compile classes -->
-	<target name="compile" description="Compiles the project classes" depends="-init,jaxb">
+	<target name="compile" description="Compiles the project classes" depends="-init">
 		<javac	destdir="${build}"
-				srcdir="${src.java};${src.jaxb.generated}"
+				srcdir="${src.java}"
 				target="1.5"
 				deprecation="on"
 				debug="on">
 			<classpath>
 				<pathelement location="${build}" />
-				<path refid="lib.redist"/>
 			</classpath>
 		</javac>
 	</target>
@@ -50,30 +42,9 @@
 <!--	<property name="classes.dir"		value="${root.dir}/bin" />-->
 	<property name="javadoc.dir"		value="${dist}/javadoc" />
 	<property name="javadoc-api.dir"		value="${dist}/javadoc-api" />
-	<property name="javadoc-server.dir"		value="${dist}/javadoc-server" />
 <!--	<property name="lib.dir"			value="${root.dir}/lib/" />-->
 
 	
-    <!-- - - - - - - - - - - - - - - - - - 
-          target: jaxb                      
-         - - - - - - - - - - - - - - - - - -->
-    <target name="jaxb" depends="-init">
-<!--    	<delete>
-    		<fileset dir="${src.jaxb.generated}" includes="*.java"/>
-    	</delete>-->
-        <!-- TODO -->
-    </target>
-
-
-
-	<target name="dist" depends="compile" description="generate the distribution" >
-		<!-- Create the distribution directory -->
-		<mkdir dir="${dist}/lib"/>
-
-		<!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-		<jar jarfile="${dist}/lib/MyProject-${DSTAMP}.jar" basedir="${build}"/>
-	</target>
-
 	<!-- Delete the generated directories -->
 	<target name="clean" description="Removes all the generated files or directories">
 		<delete dir="${dist}"/>
@@ -97,11 +68,6 @@
 				<include name="**/*"/>
 			</fileset>
 		</jar>
-		<jar destfile="${dist}/${jar.filename}-api-${version}.jar">
-			<fileset dir="${build}">
-				<include name="**/dhcp4java/**/*"/>
-			</fileset>
-		</jar>
 		<delete dir="${build}"/>
 		<copy file="${dist}/${jar.filename}-${version}.jar" tofile="${jar.filename}-${version}.jar"/>
 	</target>
@@ -120,37 +86,14 @@
 					>
 			<classpath>
 				<path location="${dist}/${jar.filename}-${version}.jar"/>
-				<path refid="lib.redist"/>
 			</classpath>
 		</javadoc>
-		<zip	destfile="${dist}/${jar.filename}-api-${version}.javadoc.zip">
+		<zip	destfile="${dist}/${jar.filename}-${version}.javadoc.zip">
 			<zipfileset dir="${javadoc-api.dir}" prefix="javadoc-api"/>
 		</zip>
 		<delete dir="${javadoc-api.dir}"/>
 	</target>
 
-	<!-- Creates the Javadoc api -->
-	<target name="javadoc-server" description="Create the javadoc-server">
-		<javadoc	destdir="${javadoc-server.dir}"
-					access="protected"
-					author="true"
-					sourcepath="${src.java}"
-					splitindex="true"
-					use="true"
-					version="true"
-					source="1.5"
-					packagenames="org.*"
-					>
-			<classpath>
-				<path location="${dist}/${jar.filename}-${version}.jar"/>
-				<path refid="lib.redist"/>
-			</classpath>
-		</javadoc>
-		<zip	destfile="${dist}/${jar.filename}-server-${version}.javadoc.zip">
-			<zipfileset dir="${javadoc-server.dir}" prefix="javadoc-server"/>
-		</zip>
-		<delete dir="${javadoc-server.dir}"/>
-	</target>
 	
     <!-- - - - - - - - - - - - - - - - - - 
           target: sources                      
@@ -163,26 +106,10 @@
     </target>
 
 	
-    <!-- - - - - - - - - - - - - - - - - - 
-          target: tgz                      
-         - - - - - - - - - - - - - - - - - -->
-    <target name="tgz">
-		<tar destfile="${dist}/${jar.filename}-${version}.bin.tgz" compression="gzip">
-			<tarfileset file="${dist}/${jar.filename}-${version}.jar" />
-			<tarfileset dir="conf" prefix="conf"/>
-			<tarfileset dir="backenddb" prefix="backenddb"/>
-			<tarfileset dir="lib" prefix="lib"/>
-			<tarfileset dir="launch" prefix="launch"/>
-			<tarfileset dir="launch" prefix="launch" mode="755">
-				<include name="wrapper"/>
-				<include name="dhcpcluster.sh"/>
-			</tarfileset>
-		</tar>
-    </target>
 
 	<!-- Creates the Live Autonome JAR (DEV) -->
 	<target name="make"
             description="Creates the WAR file for Live Autonome"
-            depends="jar,javadoc-api,javadoc-server,sources,tgz"/>
+            depends="jar,javadoc-api,sources"/>
 
 </project>
