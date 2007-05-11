@@ -21,8 +21,6 @@ package org.dhcp4java;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import org.dhcpcluster.config.ConfigException;
-
 /**
  * Class is immutable.
  * 
@@ -147,19 +145,19 @@ public class HardwareAddress implements Serializable {
 	 * @return bytes representation of the HardwareAddress
 	 * @throws ConfigException
 	 */
-	public static final byte[] parseHardwareAddress(String macStr) throws ConfigException {
+	public static final byte[] parseHardwareAddress(String macStr) {
 		if (macStr == null) {
 			throw new NullPointerException("macStr is null");
 		}
 		String[] macAdrItems = macStr.split(":");
 		if (macAdrItems.length != 6) {
-			throw new ConfigException("macStr["+macStr+"] has not 6 items");
+			throw new IllegalArgumentException("macStr["+macStr+"] has not 6 items");
 		}
 		byte[] macBytes = new byte[6];
 		for (int i=0; i<6; i++) {
 			int val = Integer.parseInt(macAdrItems[i], 16);
 			if ((val < -128) || (val > 255)) {
-				throw new ConfigException("Value is out of range:"+macAdrItems[i]);
+				throw new IllegalArgumentException("Value is out of range:"+macAdrItems[i]);
 			}
 			macBytes[i] = (byte) val;
 		}
