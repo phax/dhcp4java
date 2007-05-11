@@ -1,0 +1,12 @@
+#djUnit Plugin Settings
+#Mon May 07 14:22:34 CEST 2007
+CoverageIncludedPatterns=
+VirtualMockIgnoreLibrary=false
+CoverageExcludedPatterns=org.dhcp4java.test.*;
+UseMarker=true
+UseVirtualMock=false
+UseCoverage=true
+BytecodeLibrary=ASM
+VirtualMockNotIgnorePatterns=
+UseNoverify=false
+CoverageWorkingDirectory=
