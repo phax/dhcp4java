@@ -1,4 +1,0 @@
-- add logging in stored procedures
-- stored procedures: add logging
-- rename "cluster" to "node" in main
-- use jdbc parameters in front-end
