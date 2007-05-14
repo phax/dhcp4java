@@ -30,7 +30,7 @@ import org.dhcp4java.DHCPPacket;
  * A simple DHCP sniffer.
  *
  * @author Stephan Hadinger
- * @version 0.72
+ * @version 0.73
  */
 public class DHCPSniffer {
     private DHCPSniffer() {

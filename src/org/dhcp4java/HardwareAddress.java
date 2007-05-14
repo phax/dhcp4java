@@ -25,7 +25,7 @@ import java.util.Arrays;
  * Class is immutable.
  * 
  * @author Stephan Hadinger
- * @version 0.72
+ * @version 0.73
  */
 public class HardwareAddress implements Serializable {
 
