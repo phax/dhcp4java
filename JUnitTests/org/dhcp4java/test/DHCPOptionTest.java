@@ -773,36 +773,10 @@ public class DHCPOptionTest {
 		assertEquals(DHO_WWW_SERVER, opt.getCode());
 		assertTrue(Arrays.equals(HexUtils.hexToBytes("FC0AE003"), opt.getValue()));
 		
-		assertNull(DHCPOption.parseNewOption(DHO_WWW_SERVER, InetAddress.class, "www.foobar.com"));
-		assertNull(DHCPOption.parseNewOption(DHO_WWW_SERVER, InetAddress[].class, "10.0.0.1 www.foobar.com"));
+		assertNull(DHCPOption.parseNewOption(DHO_WWW_SERVER, InetAddress.class, "www.foo.bar"));
+		assertNull(DHCPOption.parseNewOption(DHO_WWW_SERVER, InetAddress[].class, "10.0.0.1 www.foo.bar"));
 		
 		assertNull(DHCPOption.parseNewOption((byte) 150, Object.class, ""));
-		
-		/*
-		 * 
-		DHCPOption opt = new DHCPOption(DHO_PATH_MTU_PLATEAU_TABLE, HexUtils.hexToBytes("05DC0000FFFF"));
-		short[] shorts = new short[3];
-		shorts[0] = (short) 1500;
-		shorts[1] = (short) 0;
-		shorts[2] = (short) -1;
-		assertEquals(DHO_PATH_MTU_PLATEAU_TABLE, opt.getCode());
-		assertTrue(Arrays.equals(opt.getValue(), HexUtils.hexToBytes("05DC0000FFFF")));
-		assertTrue(Arrays.equals(shorts, opt.getValueAsShorts()));
-		 */
-		
-		/*
-		opt = DHCPOption.newOptionAsInt(DHO_DHCP_LEASE_TIME, "33424124");
-		assertEquals()
-		assertEquals(Integer.valueOf(0x01FE02FC), opt.getValueAsNum());
-		opt = DHCPOption.newOptionAsShort(DHO_INTERFACE_MTU, (short)1500);
-		assertEquals(Integer.valueOf(1500), opt.getValueAsNum());
-		opt = DHCPOption.newOptionAsByte(DHO_IP_FORWARDING, (byte)1);
-		assertEquals(Integer.valueOf(1), opt.getValueAsNum());
-		opt = DHCPOption.newOptionAsString(DHO_TFTP_SERVER, "foobar");
-		assertNull(opt.getValueAsNum());
-		opt = DHCPOption.newOptionAsString(DHO_TFTP_SERVER, null);
-		assertNull(opt.getValueAsNum());
-		*/
 	}
 	@Test (expected=NullPointerException.class)
 	public void testParseNewOptionNull1() {
