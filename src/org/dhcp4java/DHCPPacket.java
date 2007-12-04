@@ -672,7 +672,15 @@ public class DHCPPacket implements Cloneable, Serializable {
      * @throws DHCPBadPacketException the datagram would be malformed (too small, too big...)
      */
     public byte[] serialize() {
-    	return serialize(_BOOTP_ABSOLUTE_MIN_LEN, _DHCP_DEFAULT_MAX_LEN);
+    	int minLen = _BOOTP_ABSOLUTE_MIN_LEN;
+    	
+        if (this.isDhcp) {
+        	// most other DHCP software seems to ensure that the BOOTP 'vend'
+        	// field is padded to at least 64 bytes
+        	minLen += _BOOTP_VEND_SIZE;
+        }
+    	
+    	return serialize(minLen, _DHCP_DEFAULT_MAX_LEN);
     }
 
     /**

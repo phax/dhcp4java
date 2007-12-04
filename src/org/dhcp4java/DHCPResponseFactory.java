@@ -308,7 +308,7 @@ public final class DHCPResponseFactory {
     	case DHCPACK:
         	if (INADDR_ANY.equals(giaddr)) {
         		if (INADDR_ANY.equals(ciaddr)) {	// broadcast to LAN
-            		sockAdr = new InetSocketAddress(request.getGiaddr(), 68);
+            		sockAdr = new InetSocketAddress(INADDR_BROADCAST, 68);
         		} else {
         			sockAdr = new InetSocketAddress(ciaddr, 68);
         		}
@@ -318,7 +318,7 @@ public final class DHCPResponseFactory {
     		break;
     	case DHCPNAK:
         	if (INADDR_ANY.equals(giaddr)) {	// always broadcast
-        		sockAdr = new InetSocketAddress(INADDR_ANY, 68);
+        		sockAdr = new InetSocketAddress(INADDR_BROADCAST, 68);
         	} else {							// unicast to relay
         		sockAdr = new InetSocketAddress(giaddr, 67);
         	}

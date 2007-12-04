@@ -102,6 +102,8 @@ public class HardwareAddress implements Serializable {
 			sb.append(this.hardwareType).append("/");
 		}
 		for (int i=0; i<hardwareAddress.length; i++) {
+			if ((hardwareAddress[i]  & 0xff) < 0x10)
+				sb.append("0");
 			sb.append(Integer.toString(hardwareAddress[i]  & 0xff, 16));
             if (i<hardwareAddress.length-1) {
             	sb.append(":");

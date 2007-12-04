@@ -63,9 +63,9 @@ public class HardwareAddressTest {
 	
 	@Test
 	public void testToString() {
-		assertEquals("0:11:22:33:44:55", ha.toString());
+		assertEquals("00:11:22:33:44:55", ha.toString());
 		HardwareAddress ha2 = new HardwareAddress(DHCPConstants.HTYPE_FDDI, "0011045508");
-		assertEquals("8/0:11:4:55:8", ha2.toString());
+		assertEquals("8/00:11:04:55:08", ha2.toString());
 	}
 	
 	@Test

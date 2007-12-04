@@ -186,7 +186,7 @@ public class DHCPPacketTest {
     	byte[] buf;
     	DHCPPacket pac = new DHCPPacket();
     	buf = pac.serialize();
-    	assertEquals(241, buf.length);
+    	assertEquals(300, buf.length);
     	
     	pac.setOptionRaw(DHO_HOST_NAME, new byte[255]);
     	buf = pac.serialize();

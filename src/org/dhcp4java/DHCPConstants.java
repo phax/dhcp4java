@@ -264,6 +264,7 @@ public final class DHCPConstants {
     static final int _BOOTP_ABSOLUTE_MIN_LEN = 236;
     static final int _DHCP_MAX_MTU           = 1500;
     static final int _DHCP_UDP_OVERHEAD      = 14 + 20 + 8;
+    static final int _BOOTP_VEND_SIZE        = 64;
     
     // Magic cookie
     static final int _MAGIC_COOKIE = 0x63825363;

@@ -104,13 +104,13 @@ public class DHCPResponseFactoryTest {
     	// RFC 2131 compliance
     	// sorry we ignore the broadcast bit
     	// fully broadcast by client
-    	getDefaultSocketAddressTester(INADDR_ANY, INADDR_ANY, DHCPOFFER, INADDR_ANY, 68);
-    	getDefaultSocketAddressTester(INADDR_ANY, INADDR_ANY, DHCPACK, INADDR_ANY, 68);
-    	getDefaultSocketAddressTester(INADDR_ANY, INADDR_ANY, DHCPNAK, INADDR_ANY, 68);
+    	getDefaultSocketAddressTester(INADDR_ANY, INADDR_ANY, DHCPOFFER, INADDR_BROADCAST, 68);
+    	getDefaultSocketAddressTester(INADDR_ANY, INADDR_ANY, DHCPACK, INADDR_BROADCAST, 68);
+    	getDefaultSocketAddressTester(INADDR_ANY, INADDR_ANY, DHCPNAK, INADDR_BROADCAST, 68);
     	// unicast from client
     	getDefaultSocketAddressTester(adr, INADDR_ANY, DHCPOFFER, adr, 68);
     	getDefaultSocketAddressTester(adr, INADDR_ANY, DHCPACK, adr, 68);
-    	getDefaultSocketAddressTester(adr, INADDR_ANY, DHCPNAK, INADDR_ANY, 68);
+    	getDefaultSocketAddressTester(adr, INADDR_ANY, DHCPNAK, INADDR_BROADCAST, 68);
     	// when though a relay
     	getDefaultSocketAddressTester(INADDR_ANY, adr, DHCPOFFER, adr, 67);
     	getDefaultSocketAddressTester(INADDR_ANY, adr, DHCPACK, adr, 67);
