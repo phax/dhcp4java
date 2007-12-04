@@ -30,7 +30,7 @@ import org.dhcp4java.DHCPServlet;
  * A simple DHCP sniffer based on DHCP servlets.
  *
  * @author Stephan Hadinger
- * @version 0.73
+ * @version 0.99
  */
 public class DHCPSnifferServlet extends DHCPServlet {
 

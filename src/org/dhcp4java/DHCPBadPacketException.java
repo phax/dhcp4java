@@ -28,7 +28,7 @@ package org.dhcp4java;
  * so it doesn't need to be explicitly caught.
  * 
  * @author Stephan Hadinger
- * @version 0.73
+ * @version 0.99
  */
 public class DHCPBadPacketException extends IllegalArgumentException {
 	private static final long serialVersionUID = 1L;

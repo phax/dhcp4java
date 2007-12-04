@@ -30,7 +30,7 @@ import java.util.Map;
  * Class holding all DHCP constants.
  * 
  * @author Stephan Hadinger
- * @version 0.73
+ * @version 0.99
  */
 public final class DHCPConstants {
 
