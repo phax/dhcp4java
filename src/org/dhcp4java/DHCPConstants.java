@@ -131,8 +131,8 @@ public final class DHCPConstants {
     public static final byte DHO_DHCP_CLIENT_IDENTIFIER       =  61;
     public static final byte DHO_NWIP_DOMAIN_NAME             =  62; // rfc 2242
     public static final byte DHO_NWIP_SUBOPTIONS              =  63; // rfc 2242
-    public static final byte DHO_NIS_DOMAIN                   =  64;
-    public static final byte DHO_NIS_SERVER                   =  65;
+    public static final byte DHO_NISPLUS_DOMAIN               =  64;
+    public static final byte DHO_NISPLUS_SERVER               =  65;
     public static final byte DHO_TFTP_SERVER                  =  66;
     public static final byte DHO_BOOTFILE                     =  67;
     public static final byte DHO_MOBILE_IP_HOME_AGENT         =  68;
