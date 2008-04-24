@@ -85,15 +85,15 @@ public class DHCPConstantsTest {
 	public void testGetDhoNamesReverseMap() {
 		Map<String, Byte> map = DHCPConstants.getDhoNamesReverseMap();
 		assertNotNull(map);
-		assertEquals(DHCPConstants.DHO_SUBNET_MASK, map.get("DHO_SUBNET_MASK"));
-		assertEquals(DHCPConstants.DHO_DHCP_LEASE_TIME, map.get("DHO_DHCP_LEASE_TIME"));
+		assertEquals(DHCPConstants.DHO_SUBNET_MASK, (byte)map.get("DHO_SUBNET_MASK"));
+		assertEquals(DHCPConstants.DHO_DHCP_LEASE_TIME, (byte)map.get("DHO_DHCP_LEASE_TIME"));
 		assertNull(map.get(""));
 	}
 	
 	@Test
 	public void testGetDhoNamesReverse() {
-		assertEquals(DHCPConstants.DHO_SUBNET_MASK, DHCPConstants.getDhoNamesReverse("DHO_SUBNET_MASK"));
-		assertEquals(DHCPConstants.DHO_DHCP_LEASE_TIME, DHCPConstants.getDhoNamesReverse("DHO_DHCP_LEASE_TIME"));
+		assertEquals(DHCPConstants.DHO_SUBNET_MASK, (byte)DHCPConstants.getDhoNamesReverse("DHO_SUBNET_MASK"));
+		assertEquals(DHCPConstants.DHO_DHCP_LEASE_TIME, (byte)DHCPConstants.getDhoNamesReverse("DHO_DHCP_LEASE_TIME"));
 		assertNull(DHCPConstants.getDhoNamesReverse(""));
 	}
 	

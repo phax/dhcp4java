@@ -87,7 +87,7 @@ public class DHCPResponseFactoryTest {
     	assertEquals("001122334455", resp.getChaddrAsHex());
     	assertEquals("", resp.getSname());
     	assertEquals("", resp.getFile());
-    	assertEquals(DHCPOFFER, resp.getDHCPMessageType());
+    	assertEquals(DHCPOFFER, (byte)resp.getDHCPMessageType());
     	assertEquals(new Integer(86400), resp.getOptionAsInteger(DHO_DHCP_LEASE_TIME));
     	assertEquals(2, resp.getOptionsArray().length);	// no other options
     	assertEquals(InetAddress.getByName("11.12.156.1"), resp.getAddress());
