@@ -93,6 +93,74 @@ public class DHCPResponseFactoryTest {
     	assertEquals(InetAddress.getByName("11.12.156.1"), resp.getAddress());
     	assertEquals(67, resp.getPort());
     }
+    @Test
+    public void testMakeDHCPAck() throws Exception {
+    	DHCPPacket req = new DHCPPacket();
+    	req.setDHCPMessageType(DHCPREQUEST);
+    	InetAddress offeredAddress = InetAddress.getByName("10.254.0.1");
+    	DHCPOption[] opts = null;
+    	DHCPPacket resp;
+    	
+    	req.setXid(0x21345678);
+    	req.setFlags((short)0X8000);
+    	req.setGiaddr("11.12.156.1");
+    	req.setChaddrHex("001122334455");
+    	resp = makeDHCPAck(req, offeredAddress, 86400, null, null, opts);
+
+    	assertEquals("", resp.getComment());
+    	assertEquals(BOOTREPLY, resp.getOp());
+    	assertEquals((byte)6, resp.getHlen());
+    	assertEquals((byte)0, resp.getHops());
+    	assertEquals(0x21345678, resp.getXid());
+    	assertEquals((short)0, resp.getSecs());
+    	assertEquals((short)0x8000, resp.getFlags());
+    	assertEquals(InetAddress.getByName("0.0.0.0"), resp.getCiaddr());
+    	assertEquals(offeredAddress, resp.getYiaddr());
+    	assertEquals(InetAddress.getByName("0.0.0.0"), resp.getSiaddr());
+    	assertEquals(InetAddress.getByName("11.12.156.1"), resp.getGiaddr());
+    	assertEquals("001122334455", resp.getChaddrAsHex());
+    	assertEquals("", resp.getSname());
+    	assertEquals("", resp.getFile());
+    	assertEquals(DHCPACK, (byte)resp.getDHCPMessageType());
+    	assertEquals(new Integer(86400), resp.getOptionAsInteger(DHO_DHCP_LEASE_TIME));
+    	assertEquals(2, resp.getOptionsArray().length);	// no other options
+    	assertEquals(InetAddress.getByName("11.12.156.1"), resp.getAddress());
+    	assertEquals(67, resp.getPort());
+    }
+    @Test
+    public void testMakeDHCPAckForInform() throws Exception {
+    	DHCPPacket req = new DHCPPacket();
+    	req.setDHCPMessageType(DHCPINFORM);
+    	InetAddress offeredAddress = InetAddress.getByName("10.254.0.1");
+    	DHCPOption[] opts = null;
+    	DHCPPacket resp;
+    	
+    	req.setXid(0x21345678);
+    	req.setFlags((short)0X8000);
+    	req.setGiaddr("11.12.156.1");
+    	req.setChaddrHex("001122334455");
+    	resp = makeDHCPAck(req, offeredAddress, 86400, null, null, opts);
+
+    	assertEquals("", resp.getComment());
+    	assertEquals(BOOTREPLY, resp.getOp());
+    	assertEquals((byte)6, resp.getHlen());
+    	assertEquals((byte)0, resp.getHops());
+    	assertEquals(0x21345678, resp.getXid());
+    	assertEquals((short)0, resp.getSecs());
+    	assertEquals((short)0x8000, resp.getFlags());
+    	assertEquals(InetAddress.getByName("0.0.0.0"), resp.getCiaddr());
+    	assertEquals(INADDR_ANY, resp.getYiaddr());
+    	assertEquals(InetAddress.getByName("0.0.0.0"), resp.getSiaddr());
+    	assertEquals(InetAddress.getByName("11.12.156.1"), resp.getGiaddr());
+    	assertEquals("001122334455", resp.getChaddrAsHex());
+    	assertEquals("", resp.getSname());
+    	assertEquals("", resp.getFile());
+    	assertEquals(DHCPACK, (byte)resp.getDHCPMessageType());
+    	assertEquals(null, resp.getOptionAsInteger(DHO_DHCP_LEASE_TIME));
+    	assertEquals(1, resp.getOptionsArray().length);	// no other options
+    	assertEquals(InetAddress.getByName("11.12.156.1"), resp.getAddress());
+    	assertEquals(67, resp.getPort());
+    }
     
     // ==============================================================
     // testing getDefaultSocketAddress

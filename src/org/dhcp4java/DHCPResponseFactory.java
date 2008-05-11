@@ -179,7 +179,9 @@ public final class DHCPResponseFactory {
 		// Secs is left to 0
 		resp.setFlags(request.getFlags());
 		resp.setCiaddrRaw(request.getCiaddrRaw());
-		resp.setYiaddr(offeredAddress);
+		if (requestMessageType != DHCPINFORM) {
+			resp.setYiaddr(offeredAddress);
+		}
 		// Siaddr ?
 		resp.setGiaddrRaw(request.getGiaddrRaw());
 		resp.setChaddr(request.getChaddr());
