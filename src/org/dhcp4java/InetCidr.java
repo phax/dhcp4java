@@ -29,7 +29,8 @@ import java.util.Map;
 import org.dhcp4java.Util;
 
 /**
- * @author yshi7355
+ * @author Stephan Hadinger
+ * @version 1.00
  *
  */
 public class InetCidr implements Serializable, Comparable<InetCidr> {

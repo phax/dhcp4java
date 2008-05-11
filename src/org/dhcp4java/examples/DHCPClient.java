@@ -29,7 +29,7 @@ import static org.dhcp4java.DHCPConstants.*;
  * Example of DHCP Client (under construction).
  *
  * @author Stephan Hadinger
- * @version 0.99
+ * @version 1.00
  */
 public class DHCPClient {
     private static byte[] macAddress = {

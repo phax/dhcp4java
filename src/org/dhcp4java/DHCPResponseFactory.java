@@ -32,6 +32,7 @@ import java.util.logging.Logger;
  * as-is.
  * 
  * @author Stephan Hadinger
+ * @version 1.00
  *
  */
 public final class DHCPResponseFactory {

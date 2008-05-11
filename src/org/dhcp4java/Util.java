@@ -23,7 +23,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /**
- *
+ * @author Stephan Hadinger
+ * @version 1.00
  */
 public final class Util {
 

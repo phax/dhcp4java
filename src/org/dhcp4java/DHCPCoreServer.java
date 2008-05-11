@@ -65,7 +65,7 @@ import java.util.logging.Logger;
  * </pre>
  *
  * @author Stephan Hadinger
- * @version 0.51
+ * @version 1.00
  */
 public class DHCPCoreServer implements Runnable {
 
