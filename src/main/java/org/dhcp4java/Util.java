@@ -26,70 +26,90 @@ import java.net.UnknownHostException;
  * @author Stephan Hadinger
  * @version 1.00
  */
-public final class Util {
+public final class Util
+{
+  private Util ()
+  {}
 
-    // Suppresses default constructor, ensuring non-instantiability.
-	private Util() {
-		throw new UnsupportedOperationException();
-	}
+  /**
+   * Converts 32 bits int to IPv4 <tt>InetAddress</tt>.
+   *
+   * @param val
+   *        int representation of IPv4 address
+   * @return the address object
+   */
+  public static final InetAddress int2InetAddress (final int val)
+  {
+    final byte [] value = { (byte) ((val & 0xFF000000) >>> 24),
+                            (byte) ((val & 0X00FF0000) >>> 16),
+                            (byte) ((val & 0x0000FF00) >>> 8),
+                            (byte) ((val & 0x000000FF)) };
+    try
+    {
+      return InetAddress.getByAddress (value);
+    }
+    catch (final UnknownHostException e)
+    {
+      return null;
+    }
+  }
 
-    /**
-     * Converts 32 bits int to IPv4 <tt>InetAddress</tt>.
-     * 
-     * @param val int representation of IPv4 address
-     * @return the address object
-     */
-    public static final InetAddress int2InetAddress(int val) {
-        byte[] value = { (byte) ((val & 0xFF000000) >>> 24),
-                         (byte) ((val & 0X00FF0000) >>> 16),
-                         (byte) ((val & 0x0000FF00) >>>  8),
-                         (byte) ((val & 0x000000FF)) };
-        try {
-            return InetAddress.getByAddress(value);
-        } catch (UnknownHostException e) {
-            return null;
-        }
+  /**
+   * Converts 32 bits int packaged into a 64bits long to IPv4
+   * <tt>InetAddress</tt>.
+   *
+   * @param val
+   *        int representation of IPv4 address
+   * @return the address object
+   */
+  public static final InetAddress long2InetAddress (final long val)
+  {
+    if ((val < 0) || (val > 0xFFFFFFFFL))
+    {
+      // TODO exception ???
     }
-    /**
-     * Converts 32 bits int packaged into a 64bits long to IPv4 <tt>InetAddress</tt>.
-     * 
-     * @param val int representation of IPv4 address
-     * @return the address object
-     */
-    public static final InetAddress long2InetAddress(long val) {
-    	if ((val < 0) || (val > 0xFFFFFFFFL)) {
-    		// TODO exception ???
-    	}
-    	return int2InetAddress((int) val);
-    }
-    /**
-     * Converts IPv4 <tt>InetAddress</tt> to 32 bits int.
-     * 
-     * @param addr IPv4 address object
-     * @return 32 bits int
-     * @throws NullPointerException <tt>addr</tt> is <tt>null</tt>.
-     * @throws IllegalArgumentException the address is not IPv4 (Inet4Address).
-     */
-    public static final int inetAddress2Int(InetAddress addr) {
-        if (!(addr instanceof Inet4Address)) {
-            throw new IllegalArgumentException("Only IPv4 supported");
-        }
+    return int2InetAddress ((int) val);
+  }
 
-        byte[] addrBytes = addr.getAddress();
-        return  ((addrBytes[0] & 0xFF) << 24) |
-        		((addrBytes[1] & 0xFF) << 16) |
-        		((addrBytes[2] & 0xFF) <<  8) |
-        		((addrBytes[3] & 0xFF));
+  /**
+   * Converts IPv4 <tt>InetAddress</tt> to 32 bits int.
+   *
+   * @param addr
+   *        IPv4 address object
+   * @return 32 bits int
+   * @throws NullPointerException
+   *         <tt>addr</tt> is <tt>null</tt>.
+   * @throws IllegalArgumentException
+   *         the address is not IPv4 (Inet4Address).
+   */
+  public static final int inetAddress2Int (final InetAddress addr)
+  {
+    if (!(addr instanceof Inet4Address))
+    {
+      throw new IllegalArgumentException ("Only IPv4 supported");
     }
-    /**
-     * Converts IPv4 <tt>InetAddress</tt> to 32 bits int, packages into a 64 bits <tt>long</tt>.
-     * 
-     * @param addr IPv4 address object
-     * @return 32 bits int
-     * @throws NullPointerException <tt>addr</tt> is <tt>null</tt>.
-     * @throws IllegalArgumentException the address is not IPv4 (Inet4Address).
-     */
-    public static final long inetAddress2Long(InetAddress addr) {
-    	return (inetAddress2Int(addr) & 0xFFFFFFFFL);
-    }
+
+    final byte [] addrBytes = addr.getAddress ();
+    return ((addrBytes[0] & 0xFF) << 24) |
+           ((addrBytes[1] & 0xFF) << 16) |
+           ((addrBytes[2] & 0xFF) << 8) |
+           ((addrBytes[3] & 0xFF));
+  }
+
+  /**
+   * Converts IPv4 <tt>InetAddress</tt> to 32 bits int, packages into a 64 bits
+   * <tt>long</tt>.
+   *
+   * @param addr
+   *        IPv4 address object
+   * @return 32 bits int
+   * @throws NullPointerException
+   *         <tt>addr</tt> is <tt>null</tt>.
+   * @throws IllegalArgumentException
+   *         the address is not IPv4 (Inet4Address).
+   */
+  public static final long inetAddress2Long (final InetAddress addr)
+  {
+    return inetAddress2Int (addr) & 0xFFFFFFFFL;
+  }
 }

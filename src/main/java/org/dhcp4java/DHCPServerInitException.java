@@ -24,36 +24,41 @@ package org.dhcp4java;
  * @author Stephan Hadinger
  * @version 1.00
  */
-public class DHCPServerInitException extends Exception {
-	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * 
-	 *
-	 */
-	public DHCPServerInitException() {
-		super();
-	}
-	
-    /**
-     * @param message
-     */
-    public DHCPServerInitException(String message) {
-        super(message);
-    }
+public class DHCPServerInitException extends Exception
+{
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * @param cause
-     */
-    public DHCPServerInitException(Throwable cause) {
-        super(cause);
-    }
+  /**
+   * 
+   *
+   */
+  public DHCPServerInitException ()
+  {
+    super ();
+  }
 
-    /**
-     * @param message
-     * @param cause
-     */
-    public DHCPServerInitException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  /**
+   * @param message
+   */
+  public DHCPServerInitException (String message)
+  {
+    super (message);
+  }
+
+  /**
+   * @param cause
+   */
+  public DHCPServerInitException (Throwable cause)
+  {
+    super (cause);
+  }
+
+  /**
+   * @param message
+   * @param cause
+   */
+  public DHCPServerInitException (String message, Throwable cause)
+  {
+    super (message, cause);
+  }
 }

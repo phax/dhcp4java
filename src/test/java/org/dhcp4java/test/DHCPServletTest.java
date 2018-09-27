@@ -39,146 +39,167 @@ import org.dhcp4java.DHCPServlet;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class DHCPServletTest {
-		private static DHCPServletTestServlet servlet = null;
-		
-    @BeforeClass
-    public static void initServlet() {
-    	servlet = new DHCPServletTestServlet();
-    	servlet.init(null);		// not much to test here
-    }
-    
-    @Test
-    public void testServiceDatagram() {
-    	assertNull(servlet.serviceDatagram(null));
-    	
-    	DHCPPacket pac = new DHCPPacket();
-    	pac.setDhcp(false);		// BOOTP
-    	assertNull(servicePacket(pac));		// reject BOOTP
-    	
-    	pac = new DHCPPacket();
-    	assertNull(servicePacket(pac));		// reject if DHCP_MESSAGE_TYPE is empty
-    	
-    	pac = new DHCPPacket();
-    	pac.setOp(BOOTREPLY);
-    	pac.setDHCPMessageType(DHCPDISCOVER);
-    	assertNull(servicePacket(pac));		// reject if BOOTREPLY
-    	
-    	pac = new DHCPPacket();
-    	pac.setOp((byte)-1);
-    	pac.setDHCPMessageType(DHCPDISCOVER);
-    	assertNull(servicePacket(pac));		// reject if bad Op
-    	
-    	assertNull(servlet.getServer());
-    	servlet.setServer(null);
-    }
-    // test all messages
-    @Test
-    public void testDoXXX() {
-    	messageTypeTester(DHCPDISCOVER);
-    	messageTypeTester(DHCPREQUEST);
-    	messageTypeTester(DHCPINFORM);
-    	messageTypeTester(DHCPDECLINE);
-    	messageTypeTester(DHCPRELEASE);
-    }
-    
-    @Test
-    public void testInvalidMessageType() {
-    	DHCPPacket pac = new DHCPPacket();
-    	pac.setDHCPMessageType((byte)-2);
-    	pac.setOp(BOOTREQUEST);
-    	servlet.lastMessageType = -1;
-    	assertNull(servicePacket(pac));
-    	assertEquals((byte)-1, servlet.lastMessageType);
-    }
-    
-    private static final DatagramPacket servicePacket(DHCPPacket pac) throws DHCPBadPacketException {
-    	byte[] buf = pac.serialize();
-    	DatagramPacket udp = new DatagramPacket(buf, buf.length);
-    	return servlet.serviceDatagram(udp);
-    }
-    private static final void messageTypeTester(byte messageType) {
-    	DHCPPacket pac = new DHCPPacket();
-    	pac.setDHCPMessageType(messageType);
-    	pac.setOp(BOOTREQUEST);
-    	servlet.lastMessageType = -1;
-    	assertNull(servicePacket(pac));
-    	assertEquals(messageType, servlet.lastMessageType);
-    }
-    // test response addresses
-    @Test
-    public void testResponseAddresses() throws Exception {
-    	DHCPServletTestServletWithGoodResponse servlet2 = new DHCPServletTestServletWithGoodResponse();
-    	DHCPPacket pac = new DHCPPacket();
-    	pac.setDHCPMessageType(DHCPDISCOVER);
-    	pac.setOp(BOOTREQUEST);
-    	servlet2.postProcessPassed = false;
-    	byte[] buf = pac.serialize();
-    	DatagramPacket udp = new DatagramPacket(buf, buf.length);
-    	
-    	servlet2.addressToReturn = null;
-    	servlet2.portToReturn = 0;
-    	assertNull(servlet2.serviceDatagram(udp));		// reject is address returned is null
-    	
-    	servlet2.postProcessPassed = false;
-    	servlet2.addressToReturn = InetAddress.getByName("10.11.12.13");
-    	servlet2.portToReturn = 67;
-    	assertNotNull(servlet2.serviceDatagram(udp));
-    	assertTrue(servlet2.postProcessPassed);
-    }
+public class DHCPServletTest
+{
+  private static DHCPServletTestServlet servlet = null;
+
+  @BeforeClass
+  public static void initServlet ()
+  {
+    servlet = new DHCPServletTestServlet ();
+    servlet.init (null); // not much to test here
+  }
+
+  @Test
+  public void testServiceDatagram ()
+  {
+    assertNull (servlet.serviceDatagram (null));
+
+    DHCPPacket pac = new DHCPPacket ();
+    pac.setDhcp (false); // BOOTP
+    assertNull (servicePacket (pac)); // reject BOOTP
+
+    pac = new DHCPPacket ();
+    assertNull (servicePacket (pac)); // reject if DHCP_MESSAGE_TYPE is empty
+
+    pac = new DHCPPacket ();
+    pac.setOp (BOOTREPLY);
+    pac.setDHCPMessageType (DHCPDISCOVER);
+    assertNull (servicePacket (pac)); // reject if BOOTREPLY
+
+    pac = new DHCPPacket ();
+    pac.setOp ((byte) -1);
+    pac.setDHCPMessageType (DHCPDISCOVER);
+    assertNull (servicePacket (pac)); // reject if bad Op
+
+    assertNull (servlet.getServer ());
+    servlet.setServer (null);
+  }
+
+  // test all messages
+  @Test
+  public void testDoXXX ()
+  {
+    messageTypeTester (DHCPDISCOVER);
+    messageTypeTester (DHCPREQUEST);
+    messageTypeTester (DHCPINFORM);
+    messageTypeTester (DHCPDECLINE);
+    messageTypeTester (DHCPRELEASE);
+  }
+
+  @Test
+  public void testInvalidMessageType ()
+  {
+    DHCPPacket pac = new DHCPPacket ();
+    pac.setDHCPMessageType ((byte) -2);
+    pac.setOp (BOOTREQUEST);
+    servlet.lastMessageType = -1;
+    assertNull (servicePacket (pac));
+    assertEquals ((byte) -1, servlet.lastMessageType);
+  }
+
+  private static final DatagramPacket servicePacket (DHCPPacket pac) throws DHCPBadPacketException
+  {
+    byte [] buf = pac.serialize ();
+    DatagramPacket udp = new DatagramPacket (buf, buf.length);
+    return servlet.serviceDatagram (udp);
+  }
+
+  private static final void messageTypeTester (byte messageType)
+  {
+    DHCPPacket pac = new DHCPPacket ();
+    pac.setDHCPMessageType (messageType);
+    pac.setOp (BOOTREQUEST);
+    servlet.lastMessageType = -1;
+    assertNull (servicePacket (pac));
+    assertEquals (messageType, servlet.lastMessageType);
+  }
+
+  // test response addresses
+  @Test
+  public void testResponseAddresses () throws Exception
+  {
+    DHCPServletTestServletWithGoodResponse servlet2 = new DHCPServletTestServletWithGoodResponse ();
+    DHCPPacket pac = new DHCPPacket ();
+    pac.setDHCPMessageType (DHCPDISCOVER);
+    pac.setOp (BOOTREQUEST);
+    servlet2.postProcessPassed = false;
+    byte [] buf = pac.serialize ();
+    DatagramPacket udp = new DatagramPacket (buf, buf.length);
+
+    servlet2.addressToReturn = null;
+    servlet2.portToReturn = 0;
+    assertNull (servlet2.serviceDatagram (udp)); // reject is address returned
+                                                 // is null
+
+    servlet2.postProcessPassed = false;
+    servlet2.addressToReturn = InetAddress.getByName ("10.11.12.13");
+    servlet2.portToReturn = 67;
+    assertNotNull (servlet2.serviceDatagram (udp));
+    assertTrue (servlet2.postProcessPassed);
+  }
 }
 
-class DHCPServletTestServlet extends DHCPServlet {
-	public byte lastMessageType = -1;
-	
-	@Override
-    protected DHCPPacket doDiscover(DHCPPacket request) {
-    	lastMessageType = DHCPDISCOVER;
-    	return super.doDiscover(request);
-    }
+class DHCPServletTestServlet extends DHCPServlet
+{
+  public byte lastMessageType = -1;
 
-	@Override
-    protected DHCPPacket doRequest(DHCPPacket request) {
-    	lastMessageType = DHCPREQUEST;
-    	return super.doRequest(request);
-    }
+  @Override
+  protected DHCPPacket doDiscover (DHCPPacket request)
+  {
+    lastMessageType = DHCPDISCOVER;
+    return super.doDiscover (request);
+  }
 
-	@Override
-    protected DHCPPacket doInform(DHCPPacket request) {
-    	lastMessageType = DHCPINFORM;
-    	return super.doInform(request);
-    }
+  @Override
+  protected DHCPPacket doRequest (DHCPPacket request)
+  {
+    lastMessageType = DHCPREQUEST;
+    return super.doRequest (request);
+  }
 
-	@Override
-    protected DHCPPacket doDecline(DHCPPacket request) {
-    	lastMessageType = DHCPDECLINE;
-    	return super.doDecline(request);
-    }
+  @Override
+  protected DHCPPacket doInform (DHCPPacket request)
+  {
+    lastMessageType = DHCPINFORM;
+    return super.doInform (request);
+  }
 
-	@Override
-    protected DHCPPacket doRelease(DHCPPacket request) {
-    	lastMessageType = DHCPRELEASE;
-    	return super.doRelease(request);
-    }
+  @Override
+  protected DHCPPacket doDecline (DHCPPacket request)
+  {
+    lastMessageType = DHCPDECLINE;
+    return super.doDecline (request);
+  }
+
+  @Override
+  protected DHCPPacket doRelease (DHCPPacket request)
+  {
+    lastMessageType = DHCPRELEASE;
+    return super.doRelease (request);
+  }
 }
 
-class DHCPServletTestServletWithGoodResponse extends DHCPServlet {
+class DHCPServletTestServletWithGoodResponse extends DHCPServlet
+{
 
-	public boolean postProcessPassed = false;
-	public InetAddress addressToReturn = null;
-	public int portToReturn = 0;
-	
-	@Override
-    protected DHCPPacket doDiscover(DHCPPacket request) {
-		DHCPPacket response = new DHCPPacket();
-		response.setAddress(addressToReturn);
-		response.setPort(portToReturn);
-		return response;
-    }
+  public boolean postProcessPassed = false;
+  public InetAddress addressToReturn = null;
+  public int portToReturn = 0;
 
-	@Override
-	protected void postProcess(DatagramPacket requestDatagram, DatagramPacket responseDatagram) {
-		super.postProcess(requestDatagram, responseDatagram);
-		postProcessPassed = true;
-	}
+  @Override
+  protected DHCPPacket doDiscover (DHCPPacket request)
+  {
+    DHCPPacket response = new DHCPPacket ();
+    response.setAddress (addressToReturn);
+    response.setPort (portToReturn);
+    return response;
+  }
+
+  @Override
+  protected void postProcess (DatagramPacket requestDatagram, DatagramPacket responseDatagram)
+  {
+    super.postProcess (requestDatagram, responseDatagram);
+    postProcessPassed = true;
+  }
 }

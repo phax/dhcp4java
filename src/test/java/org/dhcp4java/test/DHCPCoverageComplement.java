@@ -21,16 +21,17 @@ package org.dhcp4java.test;
 import org.junit.Test;
 
 /**
- * These are complementary test (not essential ones) designed to increase the test
- * coverage.
+ * These are complementary test (not essential ones) designed to increase the
+ * test coverage.
  * 
  * @author Stephan Hadinger
- *
  */
-public class DHCPCoverageComplement {
-	@Test
-	public void testVoid() {
-		// TODO waiting for a real test
-	}
+public class DHCPCoverageComplement
+{
+  @Test
+  public void testVoid ()
+  {
+    // TODO waiting for a real test
+  }
 
 }
