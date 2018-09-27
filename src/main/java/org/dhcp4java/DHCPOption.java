@@ -28,7 +28,6 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,7 +38,7 @@ import java.util.logging.Logger;
 
 /**
  * Class for manipulating DHCP options (used internally).
- * 
+ *
  * @author Stephan Hadinger
  * @version 1.00 Immutable object.
  */
@@ -51,13 +50,13 @@ public class DHCPOption implements Serializable
   /**
    * The code of the option. 0 is reserved for padding, -1 for end of options.
    */
-  private final byte code;
+  private final byte m_nCode;
 
   /**
    * Raw bytes value of the option. Some methods are provided for higher level
    * of data structures, depending on the <tt>code</tt>.
    */
-  private final byte [] value;
+  private final byte [] m_aValue;
 
   /**
    * Used to mark an option as having a mirroring behaviour. This means that
@@ -68,7 +67,7 @@ public class DHCPOption implements Serializable
    * This is only meant to be used by servers through the
    * <tt>getMirrorValue</tt> method.
    */
-  private final boolean mirror;
+  private final boolean m_bMirror;
 
   /**
    * Constructor for <tt>DHCPOption</tt>.
@@ -81,13 +80,13 @@ public class DHCPOption implements Serializable
    * <p>
    * This constructor adds a parameter to mark the option as "mirror". See
    * comments above.
-   * 
+   *
    * @param code
    *        DHCP option code
    * @param value
    *        DHCP option value as a byte array.
    */
-  public DHCPOption (byte code, byte [] value, boolean mirror)
+  public DHCPOption (final byte code, final byte [] value, final boolean mirror)
   {
     if (code == DHO_PAD)
     {
@@ -98,9 +97,9 @@ public class DHCPOption implements Serializable
       throw new IllegalArgumentException ("code=-1 is not allowed (reserved for End Of Options)");
     }
 
-    this.code = code;
-    this.value = value != null ? value.clone () : null;
-    this.mirror = mirror;
+    this.m_nCode = code;
+    this.m_aValue = value != null ? value.clone () : null;
+    this.m_bMirror = mirror;
   }
 
   /**
@@ -111,25 +110,25 @@ public class DHCPOption implements Serializable
    * <p>
    * If value is <tt>null</tt> it is considered as an empty option. If you add
    * an empty option to a DHCPPacket, it removes the option from the packet.
-   * 
+   *
    * @param code
    *        DHCP option code
    * @param value
    *        DHCP option value as a byte array.
    */
-  public DHCPOption (byte code, byte [] value)
+  public DHCPOption (final byte code, final byte [] value)
   {
     this (code, value, false);
   }
 
   /**
    * Return the <tt>code</tt> field (byte).
-   * 
+   *
    * @return code field
    */
   public byte getCode ()
   {
-    return this.code;
+    return this.m_nCode;
   }
 
   /**
@@ -137,7 +136,7 @@ public class DHCPOption implements Serializable
    * <tt>code</tt> and same <tt>value</tt>.
    */
   @Override
-  public boolean equals (Object o)
+  public boolean equals (final Object o)
   {
     if (o == this)
     {
@@ -147,20 +146,22 @@ public class DHCPOption implements Serializable
     {
       return false;
     }
-    DHCPOption opt = (DHCPOption) o;
-    return ((opt.code == this.code) && (opt.mirror == this.mirror) && Arrays.equals (opt.value, this.value));
+    final DHCPOption opt = (DHCPOption) o;
+    return ((opt.m_nCode == this.m_nCode) &&
+            (opt.m_bMirror == this.m_bMirror) &&
+            Arrays.equals (opt.m_aValue, this.m_aValue));
 
   }
 
   /**
    * Returns hashcode.
-   * 
+   *
    * @see java.lang.Object#hashCode()
    */
   @Override
   public int hashCode ()
   {
-    return this.code ^ Arrays.hashCode (this.value) ^ (this.mirror ? 0x80000000 : 0);
+    return this.m_nCode ^ Arrays.hashCode (this.m_aValue) ^ (this.m_bMirror ? 0x80000000 : 0);
   }
 
   /**
@@ -168,7 +169,7 @@ public class DHCPOption implements Serializable
    */
   public byte [] getValue ()
   {
-    return ((this.value == null) ? null : this.value.clone ());
+    return ((this.m_aValue == null) ? null : this.m_aValue.clone ());
   }
 
   /**
@@ -177,7 +178,7 @@ public class DHCPOption implements Serializable
    */
   public byte [] getValueFast ()
   {
-    return this.value;
+    return this.m_aValue;
   }
 
   /**
@@ -185,24 +186,24 @@ public class DHCPOption implements Serializable
    * the option value in the client request.
    * <p>
    * To be used only in servers.
-   * 
+   *
    * @return is the option marked is mirror?
    */
   public boolean isMirror ()
   {
-    return this.mirror;
+    return this.m_bMirror;
   }
 
-  public static final boolean isOptionAsByte (byte code)
+  public static final boolean isOptionAsByte (final byte code)
   {
-    return OptionFormat.BYTE.equals (_DHO_FORMATS.get (code));
+    return OptionFormat.BYTE.equals (_DHO_FORMATS.get (Byte.valueOf (code)));
   }
 
   /**
    * Creates a DHCP Option as Byte format.
    * <p>
    * This method is only allowed for the following option codes:
-   * 
+   *
    * <pre>
   * DHO_IP_FORWARDING(19)
   * DHO_NON_LOCAL_SOURCE_ROUTING(20)
@@ -220,7 +221,7 @@ public class DHCPOption implements Serializable
   * DHO_DHCP_MESSAGE_TYPE(53)
   * DHO_AUTO_CONFIGURE(116)
    * </pre>
-   * 
+   *
    * @param code
    *        the option code.
    * @param val
@@ -228,7 +229,7 @@ public class DHCPOption implements Serializable
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    */
-  public static DHCPOption newOptionAsByte (byte code, byte val)
+  public static DHCPOption newOptionAsByte (final byte code, final byte val)
   {
     if (!isOptionAsByte (code))
     {
@@ -240,7 +241,7 @@ public class DHCPOption implements Serializable
   /**
    * Returns a DHCP Option as Byte format. This method is only allowed for the
    * following option codes:
-   * 
+   *
    * <pre>
   * DHO_IP_FORWARDING(19)
   * DHO_NON_LOCAL_SOURCE_ROUTING(20)
@@ -258,7 +259,7 @@ public class DHCPOption implements Serializable
   * DHO_DHCP_MESSAGE_TYPE(53)
   * DHO_AUTO_CONFIGURE(116)
    * </pre>
-   * 
+   *
    * @return the option value, <tt>null</tt> if option is not present.
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
@@ -267,38 +268,42 @@ public class DHCPOption implements Serializable
    */
   public byte getValueAsByte () throws IllegalArgumentException
   {
-    if (!isOptionAsByte (code))
+    if (!isOptionAsByte (m_nCode))
     {
-      throw new IllegalArgumentException ("DHCP option type (" + this.code + ") is not byte");
+      throw new IllegalArgumentException ("DHCP option type (" + this.m_nCode + ") is not byte");
     }
-    if (this.value == null)
+    if (this.m_aValue == null)
     {
       throw new IllegalStateException ("value is null");
     }
-    if (this.value.length != 1)
+    if (this.m_aValue.length != 1)
     {
-      throw new DHCPBadPacketException ("option " + this.code + " is wrong size:" + this.value.length + " should be 1");
+      throw new DHCPBadPacketException ("option " +
+                                        this.m_nCode +
+                                        " is wrong size:" +
+                                        this.m_aValue.length +
+                                        " should be 1");
     }
-    return this.value[0];
+    return this.m_aValue[0];
   }
 
-  public static final boolean isOptionAsShort (byte code)
+  public static final boolean isOptionAsShort (final byte code)
   {
-    return OptionFormat.SHORT.equals (_DHO_FORMATS.get (code));
+    return OptionFormat.SHORT.equals (_DHO_FORMATS.get (Byte.valueOf (code)));
   }
 
   /**
    * Returns a DHCP Option as Short format.
    * <p>
    * This method is only allowed for the following option codes:
-   * 
+   *
    * <pre>
   * DHO_BOOT_SIZE(13)
   * DHO_MAX_DGRAM_REASSEMBLY(22)
   * DHO_INTERFACE_MTU(26)
   * DHO_DHCP_MAX_MESSAGE_SIZE(57)
    * </pre>
-   * 
+   *
    * @return the option value, <tt>null</tt> if option is not present.
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
@@ -307,32 +312,36 @@ public class DHCPOption implements Serializable
    */
   public short getValueAsShort () throws IllegalArgumentException
   {
-    if (!isOptionAsShort (code))
+    if (!isOptionAsShort (m_nCode))
     {
-      throw new IllegalArgumentException ("DHCP option type (" + this.code + ") is not short");
+      throw new IllegalArgumentException ("DHCP option type (" + this.m_nCode + ") is not short");
     }
-    if (this.value == null)
+    if (this.m_aValue == null)
     {
       throw new IllegalStateException ("value is null");
     }
-    if (this.value.length != 2)
+    if (this.m_aValue.length != 2)
     {
-      throw new DHCPBadPacketException ("option " + this.code + " is wrong size:" + this.value.length + " should be 2");
+      throw new DHCPBadPacketException ("option " +
+                                        this.m_nCode +
+                                        " is wrong size:" +
+                                        this.m_aValue.length +
+                                        " should be 2");
     }
 
-    return (short) ((this.value[0] & 0xff) << 8 | (this.value[1] & 0xFF));
+    return (short) ((this.m_aValue[0] & 0xff) << 8 | (this.m_aValue[1] & 0xFF));
   }
 
-  public static final boolean isOptionAsInt (byte code)
+  public static final boolean isOptionAsInt (final byte code)
   {
-    return OptionFormat.INT.equals (_DHO_FORMATS.get (code));
+    return OptionFormat.INT.equals (_DHO_FORMATS.get (Byte.valueOf (code)));
   }
 
   /**
    * Returns a DHCP Option as Integer format.
    * <p>
    * This method is only allowed for the following option codes:
-   * 
+   *
    * <pre>
   * DHO_TIME_OFFSET(2)
   * DHO_PATH_MTU_AGING_TIMEOUT(24)
@@ -342,7 +351,7 @@ public class DHCPOption implements Serializable
   * DHO_DHCP_RENEWAL_TIME(58)
   * DHO_DHCP_REBINDING_TIME(59)
    * </pre>
-   * 
+   *
    * @return the option value, <tt>null</tt> if option is not present.
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
@@ -351,22 +360,26 @@ public class DHCPOption implements Serializable
    */
   public int getValueAsInt () throws IllegalArgumentException
   {
-    if (!isOptionAsInt (code))
+    if (!isOptionAsInt (m_nCode))
     {
-      throw new IllegalArgumentException ("DHCP option type (" + this.code + ") is not int");
+      throw new IllegalArgumentException ("DHCP option type (" + this.m_nCode + ") is not int");
     }
-    if (this.value == null)
+    if (this.m_aValue == null)
     {
       throw new IllegalStateException ("value is null");
     }
-    if (this.value.length != 4)
+    if (this.m_aValue.length != 4)
     {
-      throw new DHCPBadPacketException ("option " + this.code + " is wrong size:" + this.value.length + " should be 4");
+      throw new DHCPBadPacketException ("option " +
+                                        this.m_nCode +
+                                        " is wrong size:" +
+                                        this.m_aValue.length +
+                                        " should be 4");
     }
-    return ((this.value[0] & 0xFF) << 24 |
-            (this.value[1] & 0xFF) << 16 |
-            (this.value[2] & 0xFF) << 8 |
-            (this.value[3] & 0xFF));
+    return ((this.m_aValue[0] & 0xFF) << 24 |
+            (this.m_aValue[1] & 0xFF) << 16 |
+            (this.m_aValue[2] & 0xFF) << 8 |
+            (this.m_aValue[3] & 0xFF));
   }
 
   // TODO
@@ -375,49 +388,46 @@ public class DHCPOption implements Serializable
    * type: int, short or byte.
    * <p>
    * There is no check on the option
-   * 
+   *
    * @return the option value <tt>null</tt> if option is not present, or wrong
    *         number of bytes.
    */
   public Integer getValueAsNum ()
   {
-    if (value == null)
+    if (m_aValue == null)
     {
       return null;
     }
-    if (value.length == 1)
-    { // byte
-      return value[0] & 0xFF;
+    if (m_aValue.length == 1)
+    {
+      // byte
+      return Integer.valueOf (m_aValue[0] & 0xFF);
     }
-    else
-      if (value.length == 2)
-      { // short
-        return ((value[0] & 0xff) << 8 | (value[1] & 0xFF));
-      }
-      else
-        if (value.length == 4)
-        {
-          return ((this.value[0] & 0xFF) << 24 |
-                  (this.value[1] & 0xFF) << 16 |
-                  (this.value[2] & 0xFF) << 8 |
-                  (this.value[3] & 0xFF));
-        }
-        else
-        {
-          return null;
-        }
+    if (m_aValue.length == 2)
+    {
+      // short
+      return Integer.valueOf (((m_aValue[0] & 0xff) << 8 | (m_aValue[1] & 0xFF)));
+    }
+    if (m_aValue.length == 4)
+    {
+      return Integer.valueOf ((this.m_aValue[0] & 0xFF) << 24 |
+                              (this.m_aValue[1] & 0xFF) << 16 |
+                              (this.m_aValue[2] & 0xFF) << 8 |
+                              (this.m_aValue[3] & 0xFF));
+    }
+    return null;
   }
 
-  public static final boolean isOptionAsInetAddr (byte code)
+  public static final boolean isOptionAsInetAddr (final byte code)
   {
-    return OptionFormat.INET.equals (_DHO_FORMATS.get (code));
+    return OptionFormat.INET.equals (_DHO_FORMATS.get (Byte.valueOf (code)));
   }
 
   /**
    * Returns a DHCP Option as InetAddress format.
    * <p>
    * This method is only allowed for the following option codes:
-   * 
+   *
    * <pre>
   * DHO_SUBNET_MASK(1)
   * DHO_SWAP_SERVER(16)
@@ -427,7 +437,7 @@ public class DHCPOption implements Serializable
   * DHO_DHCP_SERVER_IDENTIFIER(54)
   * DHO_SUBNET_SELECTION(118)
    * </pre>
-   * 
+   *
    * @return the option value, <tt>null</tt> if option is not present.
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
@@ -436,39 +446,43 @@ public class DHCPOption implements Serializable
    */
   public InetAddress getValueAsInetAddr () throws IllegalArgumentException
   {
-    if (!isOptionAsInetAddr (code))
+    if (!isOptionAsInetAddr (m_nCode))
     {
-      throw new IllegalArgumentException ("DHCP option type (" + this.code + ") is not InetAddr");
+      throw new IllegalArgumentException ("DHCP option type (" + this.m_nCode + ") is not InetAddr");
     }
-    if (this.value == null)
+    if (this.m_aValue == null)
     {
       throw new IllegalStateException ("value is null");
     }
-    if (this.value.length != 4)
+    if (this.m_aValue.length != 4)
     {
-      throw new DHCPBadPacketException ("option " + this.code + " is wrong size:" + this.value.length + " should be 4");
+      throw new DHCPBadPacketException ("option " +
+                                        this.m_nCode +
+                                        " is wrong size:" +
+                                        this.m_aValue.length +
+                                        " should be 4");
     }
     try
     {
-      return InetAddress.getByAddress (this.value);
+      return InetAddress.getByAddress (this.m_aValue);
     }
-    catch (UnknownHostException e)
+    catch (final UnknownHostException e)
     {
       logger.log (Level.SEVERE, "Unexpected UnknownHostException", e);
       return null; // normally impossible
     }
   }
 
-  public static final boolean isOptionAsString (byte code)
+  public static final boolean isOptionAsString (final byte code)
   {
-    return OptionFormat.STRING.equals (_DHO_FORMATS.get (code));
+    return OptionFormat.STRING.equals (_DHO_FORMATS.get (Byte.valueOf (code)));
   }
 
   /**
    * Returns a DHCP Option as String format.
    * <p>
    * This method is only allowed for the following option codes:
-   * 
+   *
    * <pre>
   * DHO_HOST_NAME(12)
   * DHO_MERIT_DUMP(14)
@@ -486,39 +500,39 @@ public class DHCPOption implements Serializable
   * DHO_NDS_TREE_NAME(86)
   * DHO_USER_AUTHENTICATION_PROTOCOL(98)
    * </pre>
-   * 
+   *
    * @return the option value, <tt>null</tt> if option is not present.
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    */
   public String getValueAsString () throws IllegalArgumentException
   {
-    if (!isOptionAsString (code))
+    if (!isOptionAsString (m_nCode))
     {
-      throw new IllegalArgumentException ("DHCP option type (" + this.code + ") is not String");
+      throw new IllegalArgumentException ("DHCP option type (" + this.m_nCode + ") is not String");
     }
-    if (this.value == null)
+    if (this.m_aValue == null)
     {
       throw new IllegalStateException ("value is null");
     }
-    return DHCPPacket.bytesToString (this.value);
+    return DHCPPacket.bytesToString (this.m_aValue);
   }
 
-  public static final boolean isOptionAsShorts (byte code)
+  public static final boolean isOptionAsShorts (final byte code)
   {
-    return OptionFormat.SHORTS.equals (_DHO_FORMATS.get (code));
+    return OptionFormat.SHORTS.equals (_DHO_FORMATS.get (Byte.valueOf (code)));
   }
 
   /**
    * Returns a DHCP Option as Short array format.
    * <p>
    * This method is only allowed for the following option codes:
-   * 
+   *
    * <pre>
   * DHO_PATH_MTU_PLATEAU_TABLE(25)
   * DHO_NAME_SERVICE_SEARCH(117)
    * </pre>
-   * 
+   *
    * @return the option value array, <tt>null</tt> if option is not present.
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
@@ -527,41 +541,42 @@ public class DHCPOption implements Serializable
    */
   public short [] getValueAsShorts () throws IllegalArgumentException
   {
-    if (!isOptionAsShorts (code))
+    if (!isOptionAsShorts (m_nCode))
     {
-      throw new IllegalArgumentException ("DHCP option type (" + this.code + ") is not short[]");
+      throw new IllegalArgumentException ("DHCP option type (" + this.m_nCode + ") is not short[]");
     }
-    if (this.value == null)
+    if (this.m_aValue == null)
     {
       throw new IllegalStateException ("value is null");
     }
-    if ((this.value.length % 2) != 0) // multiple of 2
+    if ((this.m_aValue.length % 2) != 0)
     {
+      // multiple of 2
       throw new DHCPBadPacketException ("option " +
-                                        this.code +
+                                        this.m_nCode +
                                         " is wrong size:" +
-                                        this.value.length +
+                                        this.m_aValue.length +
                                         " should be 2*X");
     }
 
-    short [] shorts = new short [this.value.length / 2];
-    for (int i = 0, a = 0; a < this.value.length; i++, a += 2)
+    final short [] shorts = new short [this.m_aValue.length / 2];
+    for (int i = 0, a = 0; a < this.m_aValue.length; i++, a += 2)
     {
-      shorts[i] = (short) (((this.value[a] & 0xFF) << 8) | (this.value[a + 1] & 0xFF));
+      shorts[i] = (short) (((this.m_aValue[a] & 0xFF) << 8) | (this.m_aValue[a + 1] & 0xFF));
     }
     return shorts;
   }
 
-  public static final boolean isOptionAsInetAddrs (byte code)
+  public static final boolean isOptionAsInetAddrs (final byte code)
   {
-    return OptionFormat.INETS.equals (_DHO_FORMATS.get (code));
+    return OptionFormat.INETS.equals (_DHO_FORMATS.get (Byte.valueOf (code)));
   }
 
   /**
    * Returns a DHCP Option as InetAddress array format.
    * <p>
    * This method is only allowed for the following option codes:
-   * 
+   *
    * <pre>
   * DHO_ROUTERS(3)
   * DHO_TIME_SERVERS(4)
@@ -591,7 +606,7 @@ public class DHCPOption implements Serializable
   * DHO_STDA_SERVER(76)
   * DHO_NDS_SERVERS(85)
    * </pre>
-   * 
+   *
    * @return the option value array, <tt>null</tt> if option is not present.
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
@@ -600,71 +615,71 @@ public class DHCPOption implements Serializable
    */
   public InetAddress [] getValueAsInetAddrs () throws IllegalArgumentException
   {
-    if (!isOptionAsInetAddrs (code))
+    if (!isOptionAsInetAddrs (m_nCode))
     {
-      throw new IllegalArgumentException ("DHCP option type (" + this.code + ") is not InetAddr[]");
+      throw new IllegalArgumentException ("DHCP option type (" + this.m_nCode + ") is not InetAddr[]");
     }
-    if (this.value == null)
+    if (this.m_aValue == null)
     {
       throw new IllegalStateException ("value is null");
     }
-    if ((this.value.length % 4) != 0) // multiple of 4
+    if ((this.m_aValue.length % 4) != 0) // multiple of 4
     {
       throw new DHCPBadPacketException ("option " +
-                                        this.code +
+                                        this.m_nCode +
                                         " is wrong size:" +
-                                        this.value.length +
+                                        this.m_aValue.length +
                                         " should be 4*X");
     }
     try
     {
-      byte [] addr = new byte [4];
-      InetAddress [] addrs = new InetAddress [this.value.length / 4];
-      for (int i = 0, a = 0; a < this.value.length; i++, a += 4)
+      final byte [] addr = new byte [4];
+      final InetAddress [] addrs = new InetAddress [this.m_aValue.length / 4];
+      for (int i = 0, a = 0; a < this.m_aValue.length; i++, a += 4)
       {
-        addr[0] = this.value[a];
-        addr[1] = this.value[a + 1];
-        addr[2] = this.value[a + 2];
-        addr[3] = this.value[a + 3];
+        addr[0] = this.m_aValue[a];
+        addr[1] = this.m_aValue[a + 1];
+        addr[2] = this.m_aValue[a + 2];
+        addr[3] = this.m_aValue[a + 3];
         addrs[i] = InetAddress.getByAddress (addr);
       }
       return addrs;
     }
-    catch (UnknownHostException e)
+    catch (final UnknownHostException e)
     {
       logger.log (Level.SEVERE, "Unexpected UnknownHostException", e);
       return null; // normally impossible
     }
   }
 
-  public static final boolean isOptionAsBytes (byte code)
+  public static final boolean isOptionAsBytes (final byte code)
   {
-    return OptionFormat.BYTES.equals (_DHO_FORMATS.get (code));
+    return OptionFormat.BYTES.equals (_DHO_FORMATS.get (Byte.valueOf (code)));
   }
 
   /**
    * Returns a DHCP Option as Byte array format.
    * <p>
    * This method is only allowed for the following option codes:
-   * 
+   *
    * <pre>
    * DHO_DHCP_PARAMETER_REQUEST_LIST (55)
    * </pre>
    * <p>
    * Note: this mehtod is similar to getOptionRaw, only with option type
    * checking.
-   * 
+   *
    * @return the option value array, <tt>null</tt> if option is not present.
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    */
   public byte [] getValueAsBytes () throws IllegalArgumentException
   {
-    if (!isOptionAsBytes (code))
+    if (!isOptionAsBytes (m_nCode))
     {
-      throw new IllegalArgumentException ("DHCP option type (" + this.code + ") is not bytes");
+      throw new IllegalArgumentException ("DHCP option type (" + this.m_nCode + ") is not bytes");
     }
-    if (this.value == null)
+    if (this.m_aValue == null)
     {
       throw new IllegalStateException ("value is null");
     }
@@ -675,14 +690,14 @@ public class DHCPOption implements Serializable
    * Creates a DHCP Option as Short format.
    * <p>
    * This method is only allowed for the following option codes:
-   * 
+   *
    * <pre>
   * DHO_BOOT_SIZE(13)
   * DHO_MAX_DGRAM_REASSEMBLY(22)
   * DHO_INTERFACE_MTU(26)
   * DHO_DHCP_MAX_MESSAGE_SIZE(57)
    * </pre>
-   * 
+   *
    * @param code
    *        the option code.
    * @param val
@@ -690,7 +705,7 @@ public class DHCPOption implements Serializable
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    */
-  public static DHCPOption newOptionAsShort (byte code, short val)
+  public static DHCPOption newOptionAsShort (final byte code, final short val)
   {
     if (!isOptionAsShort (code))
     {
@@ -703,12 +718,12 @@ public class DHCPOption implements Serializable
    * Creates a DHCP Options as Short[] format.
    * <p>
    * This method is only allowed for the following option codes:
-   * 
+   *
    * <pre>
   * DHO_PATH_MTU_PLATEAU_TABLE(25)
   * DHO_NAME_SERVICE_SEARCH(117)
    * </pre>
-   * 
+   *
    * @param code
    *        the option code.
    * @param arr
@@ -716,7 +731,7 @@ public class DHCPOption implements Serializable
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    */
-  public static DHCPOption newOptionAsShorts (byte code, short [] arr)
+  public static DHCPOption newOptionAsShorts (final byte code, final short [] arr)
   {
     if (!isOptionAsShorts (code))
     {
@@ -728,7 +743,7 @@ public class DHCPOption implements Serializable
       buf = new byte [arr.length * 2];
       for (int i = 0; i < arr.length; i++)
       {
-        short val = arr[i];
+        final short val = arr[i];
         buf[i * 2] = (byte) ((val & 0xFF00) >>> 8);
         buf[i * 2 + 1] = (byte) (val & 0XFF);
       }
@@ -740,7 +755,7 @@ public class DHCPOption implements Serializable
    * Creates a DHCP Option as Integer format.
    * <p>
    * This method is only allowed for the following option codes:
-   * 
+   *
    * <pre>
   * DHO_TIME_OFFSET(2)
   * DHO_PATH_MTU_AGING_TIMEOUT(24)
@@ -750,7 +765,7 @@ public class DHCPOption implements Serializable
   * DHO_DHCP_RENEWAL_TIME(58)
   * DHO_DHCP_REBINDING_TIME(59)
    * </pre>
-   * 
+   *
    * @param code
    *        the option code.
    * @param val
@@ -758,7 +773,7 @@ public class DHCPOption implements Serializable
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    */
-  public static DHCPOption newOptionAsInt (byte code, int val)
+  public static DHCPOption newOptionAsInt (final byte code, final int val)
   {
     if (!isOptionAsInt (code))
     {
@@ -771,7 +786,7 @@ public class DHCPOption implements Serializable
    * Sets a DHCP Option as InetAddress format.
    * <p>
    * This method is only allowed for the following option codes:
-   * 
+   *
    * <pre>
   * DHO_SUBNET_MASK(1)
   * DHO_SWAP_SERVER(16)
@@ -781,9 +796,9 @@ public class DHCPOption implements Serializable
   * DHO_DHCP_SERVER_IDENTIFIER(54)
   * DHO_SUBNET_SELECTION(118)
    * </pre>
-   * 
+   *
    * and also as a simplified version for setOptionAsInetAddresses
-   * 
+   *
    * <pre>
   * DHO_ROUTERS(3)
   * DHO_TIME_SERVERS(4)
@@ -813,7 +828,7 @@ public class DHCPOption implements Serializable
   * DHO_STDA_SERVER(76)
   * DHO_NDS_SERVERS(85)
    * </pre>
-   * 
+   *
    * @param code
    *        the option code.
    * @param val
@@ -821,7 +836,7 @@ public class DHCPOption implements Serializable
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    */
-  public static DHCPOption newOptionAsInetAddress (byte code, InetAddress val)
+  public static DHCPOption newOptionAsInetAddress (final byte code, final InetAddress val)
   {
     if ((!isOptionAsInetAddr (code)) && (!isOptionAsInetAddrs (code)))
     {
@@ -834,7 +849,7 @@ public class DHCPOption implements Serializable
    * Creates a DHCP Option as InetAddress array format.
    * <p>
    * This method is only allowed for the following option codes:
-   * 
+   *
    * <pre>
   * DHO_ROUTERS(3)
   * DHO_TIME_SERVERS(4)
@@ -864,7 +879,7 @@ public class DHCPOption implements Serializable
   * DHO_STDA_SERVER(76)
   * DHO_NDS_SERVERS(85)
    * </pre>
-   * 
+   *
    * @param code
    *        the option code.
    * @param val
@@ -872,7 +887,7 @@ public class DHCPOption implements Serializable
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    */
-  public static DHCPOption newOptionAsInetAddresses (byte code, InetAddress [] val)
+  public static DHCPOption newOptionAsInetAddresses (final byte code, final InetAddress [] val)
   {
     if (!isOptionAsInetAddrs (code))
     {
@@ -885,7 +900,7 @@ public class DHCPOption implements Serializable
    * Creates a DHCP Option as String format.
    * <p>
    * This method is only allowed for the following option codes:
-   * 
+   *
    * <pre>
   * DHO_HOST_NAME(12)
   * DHO_MERIT_DUMP(14)
@@ -903,7 +918,7 @@ public class DHCPOption implements Serializable
   * DHO_NDS_TREE_NAME(86)
   * DHO_USER_AUTHENTICATION_PROTOCOL(98)
    * </pre>
-   * 
+   *
    * @param code
    *        the option code.
    * @param val
@@ -911,7 +926,7 @@ public class DHCPOption implements Serializable
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    */
-  public static DHCPOption newOptionAsString (byte code, String val)
+  public static DHCPOption newOptionAsString (final byte code, final String val)
   {
     if (!isOptionAsString (code))
     {
@@ -924,28 +939,23 @@ public class DHCPOption implements Serializable
    * Get the option value based on the context, i.e. the client's request.
    * <p>
    * This should be the only method used with this class to get relevant values.
-   * 
+   *
    * @param request
    *        the client's DHCP requets
    * @return the value of the specific option in the client request
    * @throws NullPointerException
    *         if <tt>request</tt> is <tt>null</tt>.
    */
-  public DHCPOption applyOption (DHCPPacket request)
+  public DHCPOption applyOption (final DHCPPacket request)
   {
     if (request == null)
-    {
       throw new NullPointerException ("request is null");
-    }
-    if (this.mirror)
+    if (this.m_bMirror)
     {
-      DHCPOption res = request.getOption (this.getCode ());
+      final DHCPOption res = request.getOption (this.getCode ());
       return (res != null ? res : this); // return res or this
     }
-    else
-    {
-      return this;
-    }
+    return this;
   }
 
   /**
@@ -959,29 +969,29 @@ public class DHCPOption implements Serializable
    *        the string builder the string representation of this object should
    *        be appended.
    */
-  public void append (StringBuilder buffer)
+  public void append (final StringBuilder buffer)
   {
     // check for readable option name
-    if (_DHO_NAMES.containsKey (this.code))
+    if (_DHO_NAMES.containsKey (Byte.valueOf (this.m_nCode)))
     {
-      buffer.append (_DHO_NAMES.get (this.code));
+      buffer.append (_DHO_NAMES.get (Byte.valueOf (this.m_nCode)));
     }
-    buffer.append ('(').append (unsignedByte (this.code)).append (")=");
+    buffer.append ('(').append (unsignedByte (this.m_nCode)).append (")=");
 
-    if (this.mirror)
+    if (this.m_bMirror)
     {
       buffer.append ("<mirror>");
     }
 
     // check for value printing
-    if (this.value == null)
+    if (this.m_aValue == null)
     {
       buffer.append ("<null>");
     }
     else
-      if (this.code == DHO_DHCP_MESSAGE_TYPE)
+      if (this.m_nCode == DHO_DHCP_MESSAGE_TYPE)
       {
-        Byte cmd = this.getValueAsByte ();
+        final Byte cmd = Byte.valueOf (this.getValueAsByte ());
         if (_DHCP_CODES.containsKey (cmd))
         {
           buffer.append (_DHCP_CODES.get (cmd));
@@ -992,28 +1002,28 @@ public class DHCPOption implements Serializable
         }
       }
       else
-        if (this.code == DHO_USER_CLASS)
+        if (this.m_nCode == DHO_USER_CLASS)
         {
-          buffer.append (userClassToString (this.value));
+          buffer.append (userClassToString (this.m_aValue));
         }
         else
-          if (this.code == DHO_DHCP_AGENT_OPTIONS)
+          if (this.m_nCode == DHO_DHCP_AGENT_OPTIONS)
           {
-            buffer.append (agentOptionsToString (this.value));
+            buffer.append (agentOptionsToString (this.m_aValue));
           }
           else
-            if (_DHO_FORMATS.containsKey (this.code))
+            if (_DHO_FORMATS.containsKey (Byte.valueOf (this.m_nCode)))
             {
               // formatted output
               try
               { // catch malformed values
-                switch (_DHO_FORMATS.get (this.code))
+                switch (_DHO_FORMATS.get (Byte.valueOf (this.m_nCode)))
                 {
                   case INET:
                     DHCPPacket.appendHostAddress (buffer, this.getValueAsInetAddr ());
                     break;
                   case INETS:
-                    for (InetAddress addr : this.getValueAsInetAddrs ())
+                    for (final InetAddress addr : this.getValueAsInetAddrs ())
                     {
                       DHCPPacket.appendHostAddress (buffer, addr);
                       buffer.append (' ');
@@ -1026,7 +1036,7 @@ public class DHCPOption implements Serializable
                     buffer.append (this.getValueAsShort ());
                     break;
                   case SHORTS:
-                    for (short aShort : this.getValueAsShorts ())
+                    for (final short aShort : this.getValueAsShorts ())
                     {
                       buffer.append (aShort).append (' ');
                     }
@@ -1038,9 +1048,9 @@ public class DHCPOption implements Serializable
                     buffer.append ('"').append (this.getValueAsString ()).append ('"');
                     break;
                   case BYTES:
-                    if (this.value != null)
+                    if (this.m_aValue != null)
                     {
-                      for (byte aValue : this.value)
+                      for (final byte aValue : this.m_aValue)
                       {
                         buffer.append (unsignedByte (aValue)).append (' ');
                       }
@@ -1048,22 +1058,22 @@ public class DHCPOption implements Serializable
                     break;
                   default:
                     buffer.append ("0x");
-                    DHCPPacket.appendHex (buffer, this.value);
+                    DHCPPacket.appendHex (buffer, this.m_aValue);
                     break;
                 }
               }
-              catch (IllegalArgumentException e)
+              catch (final IllegalArgumentException e)
               {
                 // fallback to bytes
                 buffer.append ("0x");
-                DHCPPacket.appendHex (buffer, this.value);
+                DHCPPacket.appendHex (buffer, this.m_aValue);
               }
             }
             else
             {
               // unformatted raw output
               buffer.append ("0x");
-              DHCPPacket.appendHex (buffer, this.value);
+              DHCPPacket.appendHex (buffer, this.m_aValue);
             }
   }
 
@@ -1072,13 +1082,13 @@ public class DHCPOption implements Serializable
    * <p>
    * This multi-line string details: the static, options and padding parts of
    * the object. This is useful for debugging, but not efficient.
-   * 
+   *
    * @return a string representation of the object.
    */
   @Override
   public String toString ()
   {
-    StringBuilder s = new StringBuilder ();
+    final StringBuilder s = new StringBuilder ();
 
     this.append (s);
     return s.toString ();
@@ -1087,7 +1097,7 @@ public class DHCPOption implements Serializable
   /**
    * Convert unsigned byte to int
    */
-  private static int unsignedByte (byte b)
+  private static int unsignedByte (final byte b)
   {
     return (b & 0xFF);
   }
@@ -1096,28 +1106,28 @@ public class DHCPOption implements Serializable
    * Type converters.
    **************************************************************************/
 
-  public static byte [] byte2Bytes (byte val)
+  public static byte [] byte2Bytes (final byte val)
   {
-    byte [] raw = { val };
+    final byte [] raw = { val };
     return raw;
   }
 
-  public static byte [] short2Bytes (short val)
+  public static byte [] short2Bytes (final short val)
   {
-    byte [] raw = { (byte) ((val & 0xFF00) >>> 8), (byte) (val & 0XFF) };
+    final byte [] raw = { (byte) ((val & 0xFF00) >>> 8), (byte) (val & 0XFF) };
     return raw;
   }
 
-  public static byte [] int2Bytes (int val)
+  public static byte [] int2Bytes (final int val)
   {
-    byte [] raw = { (byte) ((val & 0xFF000000) >>> 24),
-                    (byte) ((val & 0X00FF0000) >>> 16),
-                    (byte) ((val & 0x0000FF00) >>> 8),
-                    (byte) ((val & 0x000000FF)) };
+    final byte [] raw = { (byte) ((val & 0xFF000000) >>> 24),
+                          (byte) ((val & 0X00FF0000) >>> 16),
+                          (byte) ((val & 0x0000FF00) >>> 8),
+                          (byte) ((val & 0x000000FF)) };
     return raw;
   }
 
-  public static byte [] inetAddress2Bytes (InetAddress val)
+  public static byte [] inetAddress2Bytes (final InetAddress val)
   {
     if (val == null)
     {
@@ -1130,17 +1140,17 @@ public class DHCPOption implements Serializable
     return val.getAddress ();
   }
 
-  public static byte [] inetAddresses2Bytes (InetAddress [] val)
+  public static byte [] inetAddresses2Bytes (final InetAddress [] val)
   {
     if (val == null)
     {
       return null;
     }
 
-    byte [] buf = new byte [val.length * 4];
+    final byte [] buf = new byte [val.length * 4];
     for (int i = 0; i < val.length; i++)
     {
-      InetAddress addr = val[i];
+      final InetAddress addr = val[i];
       if (!(addr instanceof Inet4Address))
       {
         throw new IllegalArgumentException ("Adress must be of subclass Inet4Address");
@@ -1152,24 +1162,24 @@ public class DHCPOption implements Serializable
 
   /**
    * Convert DHO_USER_CLASS (77) option to a List.
-   * 
+   *
    * @param buf
    *        option value of type User Class.
    * @return List of String values.
    */
-  public static List <String> userClassToList (byte [] buf)
+  public static List <String> userClassToList (final byte [] buf)
   {
     if (buf == null)
     {
       return null;
     }
 
-    LinkedList <String> list = new LinkedList <> ();
+    final LinkedList <String> list = new LinkedList <> ();
     int i = 0;
     while (i < buf.length)
     {
       int size = unsignedByte (buf[i++]);
-      int instock = buf.length - i;
+      final int instock = buf.length - i;
       if (size > instock)
       {
         size = instock;
@@ -1182,29 +1192,25 @@ public class DHCPOption implements Serializable
 
   /**
    * Converts DHO_USER_CLASS (77) option to a printable string
-   * 
+   *
    * @param buf
    *        option value of type User Class.
    * @return printable string.
    */
-  public static String userClassToString (byte [] buf)
+  public static String userClassToString (final byte [] buf)
   {
     if (buf == null)
     {
       return null;
     }
 
-    List <String> list = userClassToList (buf);
-    Iterator <String> it = list.iterator ();
-    StringBuffer s = new StringBuffer ();
-
-    while (it.hasNext ())
+    final StringBuilder s = new StringBuilder ();
+    final List <String> list = userClassToList (buf);
+    for (final String sStr : list)
     {
-      s.append ('"').append ((String) it.next ()).append ('"');
-      if (it.hasNext ())
-      {
+      if (s.length () > 0)
         s.append (',');
-      }
+      s.append ('"').append (sStr).append ('"');
     }
     return s.toString ();
   }
@@ -1219,21 +1225,21 @@ public class DHCPOption implements Serializable
    * @throws IllegalArgumentException
    *         if List contains anything else than String
    */
-  public static byte [] stringListToUserClass (List <String> list)
+  public static byte [] stringListToUserClass (final List <String> list)
   {
     if (list == null)
     {
       return null;
     }
 
-    ByteArrayOutputStream buf = new ByteArrayOutputStream (32);
-    DataOutputStream out = new DataOutputStream (buf);
+    final ByteArrayOutputStream buf = new ByteArrayOutputStream (32);
+    final DataOutputStream out = new DataOutputStream (buf);
 
     try
     {
-      for (String s : list)
+      for (final String s : list)
       {
-        byte [] bytes = DHCPPacket.stringToBytes (s);
+        final byte [] bytes = DHCPPacket.stringToBytes (s);
         int size = bytes.length;
 
         if (size > 255)
@@ -1245,7 +1251,7 @@ public class DHCPOption implements Serializable
       }
       return buf.toByteArray ();
     }
-    catch (IOException e)
+    catch (final IOException e)
     {
       logger.log (Level.SEVERE, "Unexpected IOException", e);
       return buf.toByteArray ();
@@ -1254,23 +1260,23 @@ public class DHCPOption implements Serializable
 
   /**
    * Converts DHO_DHCP_AGENT_OPTIONS (82) option type to a printable string
-   * 
+   *
    * @param buf
    *        option value of type Agent Option.
    * @return printable string.
    */
-  public static String agentOptionsToString (byte [] buf)
+  public static String agentOptionsToString (final byte [] buf)
   {
     if (buf == null)
     {
       return null;
     }
 
-    Map <Byte, String> map = agentOptionsToMap (buf);
-    StringBuffer s = new StringBuffer ();
-    for (Entry <Byte, String> entry : map.entrySet ())
+    final Map <Byte, String> map = agentOptionsToMap (buf);
+    final StringBuffer s = new StringBuffer ();
+    for (final Entry <Byte, String> entry : map.entrySet ())
     {
-      s.append ('{').append (unsignedByte (entry.getKey ())).append ("}\"");
+      s.append ('{').append (unsignedByte (entry.getKey ().byteValue ())).append ("}\"");
       s.append (entry.getValue ()).append ('\"');
       s.append (',');
     }
@@ -1287,39 +1293,39 @@ public class DHCPOption implements Serializable
    * <p>
    * LinkedHashMap are preferred as they preserve insertion order. Regular
    * HashMap order is randon.
-   * 
+   *
    * @param map
    *        Map<Byte,String> couples
    * @return byte[] buffer to use with <tt>setOptionRaw</tt>
    * @throws IllegalArgumentException
    *         if List contains anything else than String
    */
-  public static byte [] agentOptionToRaw (Map <Byte, String> map)
+  public static byte [] agentOptionToRaw (final Map <Byte, String> map)
   {
     if (map == null)
     {
       return null;
     }
-    ByteArrayOutputStream buf = new ByteArrayOutputStream (64);
-    DataOutputStream out = new DataOutputStream (buf);
+    final ByteArrayOutputStream buf = new ByteArrayOutputStream (64);
+    final DataOutputStream out = new DataOutputStream (buf);
     try
     {
-      for (Entry <Byte, String> entry : map.entrySet ())
+      for (final Entry <Byte, String> entry : map.entrySet ())
       {
-        byte [] bufTemp = DHCPPacket.stringToBytes (entry.getValue ());
-        int size = bufTemp.length;
+        final byte [] bufTemp = DHCPPacket.stringToBytes (entry.getValue ());
+        final int size = bufTemp.length;
         assert (size >= 0);
         if (size > 255)
         {
           throw new IllegalArgumentException ("Value size is greater then 255 bytes");
         }
-        out.writeByte (entry.getKey ());
+        out.writeByte (entry.getKey ().byteValue ());
         out.writeByte (size);
         out.write (bufTemp, 0, size);
       }
       return buf.toByteArray ();
     }
-    catch (IOException e)
+    catch (final IOException e)
     {
       logger.log (Level.SEVERE, "Unexpected IOException", e);
       return buf.toByteArray ();
@@ -1331,19 +1337,19 @@ public class DHCPOption implements Serializable
    * <p>
    * Order of parameters is preserved (use avc <tt>LinkedHashmap</tt<).
    * Keys are of type <tt>Byte</tt>, values are of type <tt>String</tt>.
-   * 
+   *
    * @param buf
    *        byte[] buffer returned by </tt>getOptionRaw</tt>
    * @return the LinkedHashmap of values, <tt>null</tt> if buf is <tt>null</tt>
    */
-  public static final Map <Byte, String> agentOptionsToMap (byte [] buf)
+  public static final Map <Byte, String> agentOptionsToMap (final byte [] buf)
   {
     if (buf == null)
     {
       return null;
     }
 
-    Map <Byte, String> map = new LinkedHashMap <> ();
+    final Map <Byte, String> map = new LinkedHashMap <> ();
     int i = 0;
 
     while (i < buf.length)
@@ -1352,9 +1358,9 @@ public class DHCPOption implements Serializable
       {
         break; // not enough data left
       }
-      Byte key = buf[i++];
+      final Byte key = Byte.valueOf (buf[i++]);
       int size = unsignedByte (buf[i++]);
-      int instock = buf.length - i;
+      final int instock = buf.length - i;
 
       if (size > instock)
       {
@@ -1383,14 +1389,14 @@ public class DHCPOption implements Serializable
    * <p>
    * Please use <tt>getSimpleName()</tt> method of <tt>Class</tt> object for the
    * String representation.
-   * 
+   *
    * @param code
    *        the DHCP option code
    * @return the Class object representing accepted types
    */
-  public static Class <?> getOptionFormat (byte code)
+  public static Class <?> getOptionFormat (final byte code)
   {
-    OptionFormat format = _DHO_FORMATS.get (code);
+    final OptionFormat format = _DHO_FORMATS.get (Byte.valueOf (code));
     if (format == null)
     {
       return null;
@@ -1432,12 +1438,12 @@ public class DHCPOption implements Serializable
    * <li>byte[], bytes</li>
    * <li>String, string</li>
    * </ul>
-   * 
+   *
    * @param className
    *        name of the data format (see above)
    * @return <tt>Class</tt> or <tt>null</tt> if not supported
    */
-  public static Class <?> string2Class (String className)
+  public static Class <?> string2Class (final String className)
   {
     if ("InetAddress".equals (className))
       return InetAddress.class;
@@ -1475,21 +1481,22 @@ public class DHCPOption implements Serializable
    * <tt>string2Class()</tt> method from a string representation of the class.
    * <P>
    * TODO examples
-   * 
+   *
    * @param code
    *        DHCP option code
    * @param format
    *        expected Java Class after conversion
-   * @param value
+   * @param m_aValue
    *        string representation of the value
    * @return the DHCPOption object
    */
-  public static DHCPOption parseNewOption (byte code, Class <?> format, String value)
+  public static DHCPOption parseNewOption (final byte code, final Class <?> format, final String sValue)
   {
-    if ((format == null) || (value == null))
+    if (format == null || sValue == null)
     {
       throw new NullPointerException ();
     }
+    String value = sValue;
 
     if (short.class.equals (format))
     { // short
@@ -1498,8 +1505,8 @@ public class DHCPOption implements Serializable
     else
       if (short [].class.equals (format))
       { // short[]
-        String [] listVal = value.split (" ");
-        short [] listShort = new short [listVal.length];
+        final String [] listVal = value.split (" ");
+        final short [] listShort = new short [listVal.length];
         for (int i = 0; i < listVal.length; i++)
         {
           listShort[i] = (short) Integer.parseInt (listVal[i]);
@@ -1527,8 +1534,8 @@ public class DHCPOption implements Serializable
               if (byte [].class.equals (format))
               { // byte[]
                 value = value.replace (".", " ");
-                String [] listVal = value.split (" ");
-                byte [] listBytes = new byte [listVal.length];
+                final String [] listVal = value.split (" ");
+                final byte [] listBytes = new byte [listVal.length];
                 for (int i = 0; i < listVal.length; i++)
                 {
                   listBytes[i] = (byte) Integer.parseInt (listVal[i]);
@@ -1542,7 +1549,7 @@ public class DHCPOption implements Serializable
                   {
                     return newOptionAsInetAddress (code, InetAddress.getByName (value));
                   }
-                  catch (UnknownHostException e)
+                  catch (final UnknownHostException e)
                   {
                     logger.log (Level.SEVERE, "Invalid address:" + value, e);
                     return null;
@@ -1551,8 +1558,8 @@ public class DHCPOption implements Serializable
                 else
                   if (InetAddress [].class.equals (format))
                   { // InetAddress[]
-                    String [] listVal = value.split (" ");
-                    InetAddress [] listInet = new InetAddress [listVal.length];
+                    final String [] listVal = value.split (" ");
+                    final InetAddress [] listInet = new InetAddress [listVal.length];
                     try
                     {
                       for (int i = 0; i < listVal.length; i++)
@@ -1560,7 +1567,7 @@ public class DHCPOption implements Serializable
                         listInet[i] = InetAddress.getByName (listVal[i]);
                       }
                     }
-                    catch (UnknownHostException e)
+                    catch (final UnknownHostException e)
                     {
                       logger.log (Level.SEVERE, "Invalid address", e);
                       return null;
@@ -1593,169 +1600,169 @@ public class DHCPOption implements Serializable
   //
   // list of formats by options
   //
-  private static final Object [] _OPTION_FORMATS = { DHO_SUBNET_MASK,
+  private static final Object [] _OPTION_FORMATS = { Byte.valueOf (DHO_SUBNET_MASK),
                                                      OptionFormat.INET,
-                                                     DHO_TIME_OFFSET,
+                                                     Byte.valueOf (DHO_TIME_OFFSET),
                                                      OptionFormat.INT,
-                                                     DHO_ROUTERS,
+                                                     Byte.valueOf (DHO_ROUTERS),
                                                      OptionFormat.INETS,
-                                                     DHO_TIME_SERVERS,
+                                                     Byte.valueOf (DHO_TIME_SERVERS),
                                                      OptionFormat.INETS,
-                                                     DHO_NAME_SERVERS,
+                                                     Byte.valueOf (DHO_NAME_SERVERS),
                                                      OptionFormat.INETS,
-                                                     DHO_DOMAIN_NAME_SERVERS,
+                                                     Byte.valueOf (DHO_DOMAIN_NAME_SERVERS),
                                                      OptionFormat.INETS,
-                                                     DHO_LOG_SERVERS,
+                                                     Byte.valueOf (DHO_LOG_SERVERS),
                                                      OptionFormat.INETS,
-                                                     DHO_COOKIE_SERVERS,
+                                                     Byte.valueOf (DHO_COOKIE_SERVERS),
                                                      OptionFormat.INETS,
-                                                     DHO_LPR_SERVERS,
+                                                     Byte.valueOf (DHO_LPR_SERVERS),
                                                      OptionFormat.INETS,
-                                                     DHO_IMPRESS_SERVERS,
+                                                     Byte.valueOf (DHO_IMPRESS_SERVERS),
                                                      OptionFormat.INETS,
-                                                     DHO_RESOURCE_LOCATION_SERVERS,
+                                                     Byte.valueOf (DHO_RESOURCE_LOCATION_SERVERS),
                                                      OptionFormat.INETS,
-                                                     DHO_HOST_NAME,
+                                                     Byte.valueOf (DHO_HOST_NAME),
                                                      OptionFormat.STRING,
-                                                     DHO_BOOT_SIZE,
+                                                     Byte.valueOf (DHO_BOOT_SIZE),
                                                      OptionFormat.SHORT,
-                                                     DHO_MERIT_DUMP,
+                                                     Byte.valueOf (DHO_MERIT_DUMP),
                                                      OptionFormat.STRING,
-                                                     DHO_DOMAIN_NAME,
+                                                     Byte.valueOf (DHO_DOMAIN_NAME),
                                                      OptionFormat.STRING,
-                                                     DHO_SWAP_SERVER,
+                                                     Byte.valueOf (DHO_SWAP_SERVER),
                                                      OptionFormat.INET,
-                                                     DHO_ROOT_PATH,
+                                                     Byte.valueOf (DHO_ROOT_PATH),
                                                      OptionFormat.STRING,
-                                                     DHO_EXTENSIONS_PATH,
+                                                     Byte.valueOf (DHO_EXTENSIONS_PATH),
                                                      OptionFormat.STRING,
-                                                     DHO_IP_FORWARDING,
+                                                     Byte.valueOf (DHO_IP_FORWARDING),
                                                      OptionFormat.BYTE,
-                                                     DHO_NON_LOCAL_SOURCE_ROUTING,
+                                                     Byte.valueOf (DHO_NON_LOCAL_SOURCE_ROUTING),
                                                      OptionFormat.BYTE,
-                                                     DHO_POLICY_FILTER,
+                                                     Byte.valueOf (DHO_POLICY_FILTER),
                                                      OptionFormat.INETS,
-                                                     DHO_MAX_DGRAM_REASSEMBLY,
+                                                     Byte.valueOf (DHO_MAX_DGRAM_REASSEMBLY),
                                                      OptionFormat.SHORT,
-                                                     DHO_DEFAULT_IP_TTL,
+                                                     Byte.valueOf (DHO_DEFAULT_IP_TTL),
                                                      OptionFormat.BYTE,
-                                                     DHO_PATH_MTU_AGING_TIMEOUT,
+                                                     Byte.valueOf (DHO_PATH_MTU_AGING_TIMEOUT),
                                                      OptionFormat.INT,
-                                                     DHO_PATH_MTU_PLATEAU_TABLE,
+                                                     Byte.valueOf (DHO_PATH_MTU_PLATEAU_TABLE),
                                                      OptionFormat.SHORTS,
-                                                     DHO_INTERFACE_MTU,
+                                                     Byte.valueOf (DHO_INTERFACE_MTU),
                                                      OptionFormat.SHORT,
-                                                     DHO_ALL_SUBNETS_LOCAL,
+                                                     Byte.valueOf (DHO_ALL_SUBNETS_LOCAL),
                                                      OptionFormat.BYTE,
-                                                     DHO_BROADCAST_ADDRESS,
+                                                     Byte.valueOf (DHO_BROADCAST_ADDRESS),
                                                      OptionFormat.INET,
-                                                     DHO_PERFORM_MASK_DISCOVERY,
+                                                     Byte.valueOf (DHO_PERFORM_MASK_DISCOVERY),
                                                      OptionFormat.BYTE,
-                                                     DHO_MASK_SUPPLIER,
+                                                     Byte.valueOf (DHO_MASK_SUPPLIER),
                                                      OptionFormat.BYTE,
-                                                     DHO_ROUTER_DISCOVERY,
+                                                     Byte.valueOf (DHO_ROUTER_DISCOVERY),
                                                      OptionFormat.BYTE,
-                                                     DHO_ROUTER_SOLICITATION_ADDRESS,
+                                                     Byte.valueOf (DHO_ROUTER_SOLICITATION_ADDRESS),
                                                      OptionFormat.INET,
-                                                     DHO_STATIC_ROUTES,
+                                                     Byte.valueOf (DHO_STATIC_ROUTES),
                                                      OptionFormat.INETS,
-                                                     DHO_TRAILER_ENCAPSULATION,
+                                                     Byte.valueOf (DHO_TRAILER_ENCAPSULATION),
                                                      OptionFormat.BYTE,
-                                                     DHO_ARP_CACHE_TIMEOUT,
+                                                     Byte.valueOf (DHO_ARP_CACHE_TIMEOUT),
                                                      OptionFormat.INT,
-                                                     DHO_IEEE802_3_ENCAPSULATION,
+                                                     Byte.valueOf (DHO_IEEE802_3_ENCAPSULATION),
                                                      OptionFormat.BYTE,
-                                                     DHO_DEFAULT_TCP_TTL,
+                                                     Byte.valueOf (DHO_DEFAULT_TCP_TTL),
                                                      OptionFormat.BYTE,
-                                                     DHO_TCP_KEEPALIVE_INTERVAL,
+                                                     Byte.valueOf (DHO_TCP_KEEPALIVE_INTERVAL),
                                                      OptionFormat.INT,
-                                                     DHO_TCP_KEEPALIVE_GARBAGE,
+                                                     Byte.valueOf (DHO_TCP_KEEPALIVE_GARBAGE),
                                                      OptionFormat.BYTE,
-                                                     DHO_NIS_SERVERS,
+                                                     Byte.valueOf (DHO_NIS_SERVERS),
                                                      OptionFormat.INETS,
-                                                     DHO_NTP_SERVERS,
+                                                     Byte.valueOf (DHO_NTP_SERVERS),
                                                      OptionFormat.INETS,
-                                                     DHO_NETBIOS_NAME_SERVERS,
+                                                     Byte.valueOf (DHO_NETBIOS_NAME_SERVERS),
                                                      OptionFormat.INETS,
-                                                     DHO_NETBIOS_DD_SERVER,
+                                                     Byte.valueOf (DHO_NETBIOS_DD_SERVER),
                                                      OptionFormat.INETS,
-                                                     DHO_NETBIOS_NODE_TYPE,
+                                                     Byte.valueOf (DHO_NETBIOS_NODE_TYPE),
                                                      OptionFormat.BYTE,
-                                                     DHO_NETBIOS_SCOPE,
+                                                     Byte.valueOf (DHO_NETBIOS_SCOPE),
                                                      OptionFormat.STRING,
-                                                     DHO_FONT_SERVERS,
+                                                     Byte.valueOf (DHO_FONT_SERVERS),
                                                      OptionFormat.INETS,
-                                                     DHO_X_DISPLAY_MANAGER,
+                                                     Byte.valueOf (DHO_X_DISPLAY_MANAGER),
                                                      OptionFormat.INETS,
-                                                     DHO_DHCP_REQUESTED_ADDRESS,
+                                                     Byte.valueOf (DHO_DHCP_REQUESTED_ADDRESS),
                                                      OptionFormat.INET,
-                                                     DHO_DHCP_LEASE_TIME,
+                                                     Byte.valueOf (DHO_DHCP_LEASE_TIME),
                                                      OptionFormat.INT,
-                                                     DHO_DHCP_OPTION_OVERLOAD,
+                                                     Byte.valueOf (DHO_DHCP_OPTION_OVERLOAD),
                                                      OptionFormat.BYTE,
-                                                     DHO_DHCP_MESSAGE_TYPE,
+                                                     Byte.valueOf (DHO_DHCP_MESSAGE_TYPE),
                                                      OptionFormat.BYTE,
-                                                     DHO_DHCP_SERVER_IDENTIFIER,
+                                                     Byte.valueOf (DHO_DHCP_SERVER_IDENTIFIER),
                                                      OptionFormat.INET,
-                                                     DHO_DHCP_PARAMETER_REQUEST_LIST,
+                                                     Byte.valueOf (DHO_DHCP_PARAMETER_REQUEST_LIST),
                                                      OptionFormat.BYTES,
-                                                     DHO_DHCP_MESSAGE,
+                                                     Byte.valueOf (DHO_DHCP_MESSAGE),
                                                      OptionFormat.STRING,
-                                                     DHO_DHCP_MAX_MESSAGE_SIZE,
+                                                     Byte.valueOf (DHO_DHCP_MAX_MESSAGE_SIZE),
                                                      OptionFormat.SHORT,
-                                                     DHO_DHCP_RENEWAL_TIME,
+                                                     Byte.valueOf (DHO_DHCP_RENEWAL_TIME),
                                                      OptionFormat.INT,
-                                                     DHO_DHCP_REBINDING_TIME,
+                                                     Byte.valueOf (DHO_DHCP_REBINDING_TIME),
                                                      OptionFormat.INT,
-                                                     DHO_VENDOR_CLASS_IDENTIFIER,
+                                                     Byte.valueOf (DHO_VENDOR_CLASS_IDENTIFIER),
                                                      OptionFormat.STRING,
-                                                     DHO_NWIP_DOMAIN_NAME,
+                                                     Byte.valueOf (DHO_NWIP_DOMAIN_NAME),
                                                      OptionFormat.STRING,
-                                                     DHO_NISPLUS_DOMAIN,
+                                                     Byte.valueOf (DHO_NISPLUS_DOMAIN),
                                                      OptionFormat.STRING,
-                                                     DHO_NISPLUS_SERVER,
+                                                     Byte.valueOf (DHO_NISPLUS_SERVER),
                                                      OptionFormat.STRING,
-                                                     DHO_TFTP_SERVER,
+                                                     Byte.valueOf (DHO_TFTP_SERVER),
                                                      OptionFormat.STRING,
-                                                     DHO_BOOTFILE,
+                                                     Byte.valueOf (DHO_BOOTFILE),
                                                      OptionFormat.STRING,
-                                                     DHO_MOBILE_IP_HOME_AGENT,
+                                                     Byte.valueOf (DHO_MOBILE_IP_HOME_AGENT),
                                                      OptionFormat.INETS,
-                                                     DHO_SMTP_SERVER,
+                                                     Byte.valueOf (DHO_SMTP_SERVER),
                                                      OptionFormat.INETS,
-                                                     DHO_POP3_SERVER,
+                                                     Byte.valueOf (DHO_POP3_SERVER),
                                                      OptionFormat.INETS,
-                                                     DHO_NNTP_SERVER,
+                                                     Byte.valueOf (DHO_NNTP_SERVER),
                                                      OptionFormat.INETS,
-                                                     DHO_WWW_SERVER,
+                                                     Byte.valueOf (DHO_WWW_SERVER),
                                                      OptionFormat.INETS,
-                                                     DHO_FINGER_SERVER,
+                                                     Byte.valueOf (DHO_FINGER_SERVER),
                                                      OptionFormat.INETS,
-                                                     DHO_IRC_SERVER,
+                                                     Byte.valueOf (DHO_IRC_SERVER),
                                                      OptionFormat.INETS,
-                                                     DHO_STREETTALK_SERVER,
+                                                     Byte.valueOf (DHO_STREETTALK_SERVER),
                                                      OptionFormat.INETS,
-                                                     DHO_STDA_SERVER,
+                                                     Byte.valueOf (DHO_STDA_SERVER),
                                                      OptionFormat.INETS,
-                                                     DHO_NDS_SERVERS,
+                                                     Byte.valueOf (DHO_NDS_SERVERS),
                                                      OptionFormat.INETS,
-                                                     DHO_NDS_TREE_NAME,
+                                                     Byte.valueOf (DHO_NDS_TREE_NAME),
                                                      OptionFormat.STRING,
-                                                     DHO_NDS_CONTEXT,
+                                                     Byte.valueOf (DHO_NDS_CONTEXT),
                                                      OptionFormat.STRING,
-                                                     DHO_CLIENT_LAST_TRANSACTION_TIME,
+                                                     Byte.valueOf (DHO_CLIENT_LAST_TRANSACTION_TIME),
                                                      OptionFormat.INT,
-                                                     DHO_ASSOCIATED_IP,
+                                                     Byte.valueOf (DHO_ASSOCIATED_IP),
                                                      OptionFormat.INETS,
-                                                     DHO_USER_AUTHENTICATION_PROTOCOL,
+                                                     Byte.valueOf (DHO_USER_AUTHENTICATION_PROTOCOL),
                                                      OptionFormat.STRING,
-                                                     DHO_AUTO_CONFIGURE,
+                                                     Byte.valueOf (DHO_AUTO_CONFIGURE),
                                                      OptionFormat.BYTE,
-                                                     DHO_NAME_SERVICE_SEARCH,
+                                                     Byte.valueOf (DHO_NAME_SERVICE_SEARCH),
                                                      OptionFormat.SHORTS,
-                                                     DHO_SUBNET_SELECTION,
+                                                     Byte.valueOf (DHO_SUBNET_SELECTION),
                                                      OptionFormat.INET,
-                                                     DHO_DOMAIN_SEARCH,
+                                                     Byte.valueOf (DHO_DOMAIN_SEARCH),
                                                      OptionFormat.STRING,
 
   };
@@ -1775,7 +1782,7 @@ public class DHCPOption implements Serializable
 
   // ========================================================================
   // main: print DHCP options for Javadoc
-  public static void main (String [] args)
+  public static void main (final String [] args)
   {
     String all = "";
     String inet1 = "";
@@ -1787,9 +1794,9 @@ public class DHCPOption implements Serializable
     String bytes = "";
     String string1 = "";
 
-    for (Byte codeByte : _DHO_NAMES.keySet ())
+    for (final Byte codeByte : _DHO_NAMES.keySet ())
     {
-      byte code = codeByte.byteValue ();
+      final byte code = codeByte.byteValue ();
       String s = "";
       if (code != DHO_PAD && code != DHO_END)
       {

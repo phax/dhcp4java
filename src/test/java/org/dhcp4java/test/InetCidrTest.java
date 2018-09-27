@@ -38,7 +38,7 @@ public class InetCidrTest
   @Test
   public void testConstructor () throws Exception
   {
-    InetCidr cidr = new InetCidr (InetAddress.getByName ("224.17.252.127"), 24);
+    final InetCidr cidr = new InetCidr (InetAddress.getByName ("224.17.252.127"), 24);
     assertEquals (InetAddress.getByName ("224.17.252.0"), cidr.getAddr ());
     assertEquals (24, cidr.getMask ());
 
@@ -71,8 +71,8 @@ public class InetCidrTest
   @Test
   public void testConstructor2 () throws Exception
   {
-    InetCidr cidr0 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 24);
-    InetCidr cidr1 = new InetCidr (InetAddress.getByName ("10.11.12.0"), InetAddress.getByName ("255.255.255.0"));
+    final InetCidr cidr0 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 24);
+    final InetCidr cidr1 = new InetCidr (InetAddress.getByName ("10.11.12.0"), InetAddress.getByName ("255.255.255.0"));
     assertEquals (cidr0, cidr1);
   }
 
@@ -97,24 +97,24 @@ public class InetCidrTest
   @Test
   public void testAddrmask2CidrGood ()
   {
-    InetAddress ip = Util.int2InetAddress (0x12345678);
-    InetCidr cidr1 = new InetCidr (ip, 30);
-    InetCidr cidr2 = new InetCidr (ip, Util.int2InetAddress (0xFFFFFFFC));
+    final InetAddress ip = Util.int2InetAddress (0x12345678);
+    final InetCidr cidr1 = new InetCidr (ip, 30);
+    final InetCidr cidr2 = new InetCidr (ip, Util.int2InetAddress (0xFFFFFFFC));
     assertEquals (cidr1, cidr2);
   }
 
   @Test
   public void testToString () throws Exception
   {
-    InetCidr cidr = new InetCidr (InetAddress.getByName ("16.17.18.19"), 20);
+    final InetCidr cidr = new InetCidr (InetAddress.getByName ("16.17.18.19"), 20);
     assertEquals ("16.17.16.0/20", cidr.toString ());
   }
 
   @Test
   public void testHashCode () throws Exception
   {
-    int hash1 = (new InetCidr (InetAddress.getByName ("224.17.252.127"), 24)).hashCode ();
-    int hash2 = (new InetCidr (InetAddress.getByName ("224.17.252.127"), 20)).hashCode ();
+    final int hash1 = (new InetCidr (InetAddress.getByName ("224.17.252.127"), 24)).hashCode ();
+    final int hash2 = (new InetCidr (InetAddress.getByName ("224.17.252.127"), 20)).hashCode ();
     assertTrue (hash1 != 0);
     assertTrue (hash2 != 0);
     assertTrue (hash1 != hash2);
@@ -123,14 +123,14 @@ public class InetCidrTest
   @Test
   public void testEquals () throws Exception
   {
-    InetCidr cidr1 = new InetCidr (InetAddress.getByName ("224.17.252.127"), 24);
-    InetCidr cidr2 = new InetCidr (InetAddress.getByName ("224.17.252.0"), 24);
+    final InetCidr cidr1 = new InetCidr (InetAddress.getByName ("224.17.252.127"), 24);
+    final InetCidr cidr2 = new InetCidr (InetAddress.getByName ("224.17.252.0"), 24);
 
     assertTrue (cidr1.equals (cidr1));
     assertTrue (cidr1.equals (cidr2));
     assertTrue (cidr2.equals (cidr1));
     assertFalse (cidr1.equals (null));
-    assertFalse (cidr1.equals (Integer.valueOf (1)));
+    assertFalse (cidr1.equals ("bla"));
     assertFalse (cidr1.equals (new InetCidr (InetAddress.getByName ("224.17.252.0"), 25)));
     assertFalse (cidr1.equals (new InetCidr (InetAddress.getByName ("225.17.252.0"), 24)));
   }
@@ -150,7 +150,7 @@ public class InetCidrTest
   @Test (expected = IllegalArgumentException.class)
   public void testAddrmask2CidrBadMask ()
   {
-    InetAddress ip = Util.int2InetAddress (0x12345678);
+    final InetAddress ip = Util.int2InetAddress (0x12345678);
     new InetCidr (ip, ip); // exception should be raised here
   }
 
@@ -159,12 +159,12 @@ public class InetCidrTest
   {
     int ip = 0xFFFFFFFF;
     int mask = 32;
-    InetCidr [] addrs = InetCidr.addr2Cidr (Util.int2InetAddress (ip));
+    final InetCidr [] addrs = InetCidr.addr2Cidr (Util.int2InetAddress (ip));
 
     assertEquals (32, addrs.length);
     for (int i = 0; i < 32; i++)
     {
-      InetCidr refValue = new InetCidr (Util.int2InetAddress (ip), mask);
+      final InetCidr refValue = new InetCidr (Util.int2InetAddress (ip), mask);
       assertEquals (addrs[i], refValue);
       assertEquals (addrs[i].getAddr (), Util.int2InetAddress (ip));
       assertEquals (addrs[i].getMask (), mask);
@@ -188,14 +188,14 @@ public class InetCidrTest
   @Test
   public void testToLong () throws UnknownHostException
   {
-    InetCidr cidr = new InetCidr (InetAddress.getByName ("10.11.12.0"), 24);
+    final InetCidr cidr = new InetCidr (InetAddress.getByName ("10.11.12.0"), 24);
     assertEquals (0x180A0B0C00L, cidr.toLong ());
   }
 
   @Test
   public void testFromLong () throws UnknownHostException
   {
-    InetCidr cidr = new InetCidr (InetAddress.getByName ("10.11.12.0"), 24);
+    final InetCidr cidr = new InetCidr (InetAddress.getByName ("10.11.12.0"), 24);
     assertEquals (cidr, InetCidr.fromLong (0x180A0B0C00L));
     assertEquals (cidr, InetCidr.fromLong (0x180A0B0CFFL));
   }
@@ -209,14 +209,14 @@ public class InetCidrTest
   @Test
   public void testCompareTo () throws UnknownHostException
   {
-    InetCidr cidr0 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 24);
-    InetCidr cidr1 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 24);
-    InetCidr cidr2 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 23);
-    InetCidr cidr3 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 25);
-    InetCidr cidr4 = new InetCidr (InetAddress.getByName ("10.11.11.0"), 24);
-    InetCidr cidr5 = new InetCidr (InetAddress.getByName ("10.11.13.0"), 24);
-    InetCidr cidr6 = new InetCidr (InetAddress.getByName ("11.11.12.0"), 24);
-    InetCidr cidr7 = new InetCidr (InetAddress.getByName ("129.11.12.0"), 24);
+    final InetCidr cidr0 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 24);
+    final InetCidr cidr1 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 24);
+    final InetCidr cidr2 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 23);
+    final InetCidr cidr3 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 25);
+    final InetCidr cidr4 = new InetCidr (InetAddress.getByName ("10.11.11.0"), 24);
+    final InetCidr cidr5 = new InetCidr (InetAddress.getByName ("10.11.13.0"), 24);
+    final InetCidr cidr6 = new InetCidr (InetAddress.getByName ("11.11.12.0"), 24);
+    final InetCidr cidr7 = new InetCidr (InetAddress.getByName ("129.11.12.0"), 24);
 
     assertEquals (0, cidr0.compareTo (cidr0));
     assertEquals (0, cidr0.compareTo (cidr1));
@@ -231,40 +231,40 @@ public class InetCidrTest
   @Test
   public void testIsInetCidrListSorted () throws Exception
   {
-    InetCidr cidr1 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 24);
+    final InetCidr cidr1 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 24);
     // InetCidr cidr2 = new InetCidr(InetAddress.getByName("10.11.12.0"), 23);
-    InetCidr cidr3 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 25);
+    final InetCidr cidr3 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 25);
     // InetCidr cidr4 = new InetCidr(InetAddress.getByName("10.11.11.0"), 24);
-    InetCidr cidr5 = new InetCidr (InetAddress.getByName ("10.11.13.0"), 24);
+    final InetCidr cidr5 = new InetCidr (InetAddress.getByName ("10.11.13.0"), 24);
     // InetCidr cidr6 = new InetCidr(InetAddress.getByName("11.11.12.0"), 24);
-    InetCidr cidr7 = new InetCidr (InetAddress.getByName ("129.11.12.0"), 24);
+    final InetCidr cidr7 = new InetCidr (InetAddress.getByName ("129.11.12.0"), 24);
 
-    assertEquals (true, InetCidr.isSorted (null));
+    assertTrue (InetCidr.isSorted (null));
     List <InetCidr> list1 = new ArrayList <> ();
     list1.add (cidr1);
     list1.add (cidr3);
     list1.add (cidr5);
     list1.add (cidr7);
-    assertEquals (true, InetCidr.isSorted (list1));
+    assertTrue (InetCidr.isSorted (list1));
     list1 = new ArrayList <> ();
     list1.add (cidr1);
     list1.add (cidr5);
     list1.add (cidr3);
     list1.add (cidr7);
-    assertEquals (false, InetCidr.isSorted (list1));
+    assertFalse (InetCidr.isSorted (list1));
     list1 = new ArrayList <> ();
     list1.add (cidr1);
     list1.add (cidr3);
     list1.add (cidr3);
     list1.add (cidr5);
     list1.add (cidr7);
-    assertEquals (false, InetCidr.isSorted (list1));
+    assertFalse (InetCidr.isSorted (list1));
   }
 
   @Test (expected = NullPointerException.class)
   public void testIsInetCidrListSortedNullElement () throws Exception
   {
-    List <InetCidr> list1 = new ArrayList <> ();
+    final List <InetCidr> list1 = new ArrayList <> ();
     list1.add (null);
     InetCidr.isSorted (list1);
   }
@@ -272,21 +272,21 @@ public class InetCidrTest
   @Test (expected = NullPointerException.class)
   public void testCompareToNull () throws UnknownHostException
   {
-    InetCidr cidr1 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 24);
+    final InetCidr cidr1 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 24);
     cidr1.compareTo (null);
   }
 
   @Test
   public void testHasNoOverlap () throws UnknownHostException
   {
-    InetCidr cidr1 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 24);
-    InetCidr cidr2 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 23);
-    InetCidr cidr3 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 25);
+    final InetCidr cidr1 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 24);
+    final InetCidr cidr2 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 23);
+    final InetCidr cidr3 = new InetCidr (InetAddress.getByName ("10.11.12.0"), 25);
     // InetCidr cidr4 = new InetCidr(InetAddress.getByName("10.11.11.0"), 24);
-    InetCidr cidr5 = new InetCidr (InetAddress.getByName ("10.11.13.0"), 24);
-    InetCidr cidr6 = new InetCidr (InetAddress.getByName ("11.11.12.0"), 24);
-    InetCidr cidr7 = new InetCidr (InetAddress.getByName ("129.11.12.0"), 24);
-    List <InetCidr> list = new ArrayList <> ();
+    final InetCidr cidr5 = new InetCidr (InetAddress.getByName ("10.11.13.0"), 24);
+    final InetCidr cidr6 = new InetCidr (InetAddress.getByName ("11.11.12.0"), 24);
+    final InetCidr cidr7 = new InetCidr (InetAddress.getByName ("129.11.12.0"), 24);
+    final List <InetCidr> list = new ArrayList <> ();
     list.add (cidr1);
     list.add (cidr5);
     list.add (cidr6);
@@ -301,7 +301,7 @@ public class InetCidrTest
       InetCidr.checkNoOverlap (list);
       Assert.fail ();
     }
-    catch (IllegalStateException e)
+    catch (final IllegalStateException e)
     {
       // good
     }
@@ -313,7 +313,7 @@ public class InetCidrTest
       InetCidr.checkNoOverlap (list);
       Assert.fail ();
     }
-    catch (IllegalStateException e)
+    catch (final IllegalStateException e)
     {
       // good
     }
@@ -323,7 +323,7 @@ public class InetCidrTest
   @Test (expected = NullPointerException.class)
   public void testHasNoOverlapNullElement ()
   {
-    List <InetCidr> list = new ArrayList <> ();
+    final List <InetCidr> list = new ArrayList <> ();
     list.add (null);
     InetCidr.checkNoOverlap (list);
   }

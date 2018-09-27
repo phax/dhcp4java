@@ -74,7 +74,7 @@ public class DHCPOptionTest
   @Test
   public void testConstructor ()
   {
-    DHCPOption opt = new DHCPOption (DHO_DHCP_MESSAGE, buf0);
+    final DHCPOption opt = new DHCPOption (DHO_DHCP_MESSAGE, buf0);
 
     assertEquals (opt.getCode (), DHO_DHCP_MESSAGE);
     assertFalse (opt.isMirror ());
@@ -85,7 +85,7 @@ public class DHCPOptionTest
   @Test
   public void testConstructorNull ()
   {
-    DHCPOption opt = new DHCPOption (DHO_DHCP_MESSAGE, null);
+    final DHCPOption opt = new DHCPOption (DHO_DHCP_MESSAGE, null);
 
     assertEquals (opt.getCode (), DHO_DHCP_MESSAGE);
     assertFalse (opt.isMirror ());
@@ -95,38 +95,38 @@ public class DHCPOptionTest
   @Test
   public void testEquals ()
   {
-    DHCPOption opt1 = new DHCPOption (DHO_BOOTFILE, buf0);
-    DHCPOption opt2 = new DHCPOption (DHO_BOOTFILE, buf0.clone ());
+    final DHCPOption opt1 = new DHCPOption (DHO_BOOTFILE, buf0);
+    final DHCPOption opt2 = new DHCPOption (DHO_BOOTFILE, buf0.clone ());
 
     assertTrue (opt1.equals (opt1));
     assertTrue (opt1.equals (opt2));
     assertTrue (opt2.equals (opt1));
     assertFalse (opt1.equals (null));
-    assertFalse (opt1.equals (Integer.valueOf (1)));
+    assertFalse (opt1.equals ("bla"));
     assertFalse (opt1.equals (new DHCPOption (DHO_BOOTFILE, null)));
   }
 
   @Test
   public void testEqualsNull ()
   {
-    DHCPOption opt1 = new DHCPOption (DHO_BOOTFILE, null);
-    DHCPOption opt2 = new DHCPOption (DHO_BOOTFILE, null);
+    final DHCPOption opt1 = new DHCPOption (DHO_BOOTFILE, null);
+    final DHCPOption opt2 = new DHCPOption (DHO_BOOTFILE, null);
 
     assertTrue (opt1.equals (opt1));
     assertTrue (opt1.equals (opt2));
     assertTrue (opt2.equals (opt1));
     assertFalse (opt1.equals (null));
-    assertFalse (opt1.equals (Integer.valueOf (1)));
+    assertFalse (opt1.equals ("bla"));
     assertFalse (opt1.equals (new DHCPOption (DHO_BOOTFILE, buf0)));
   }
 
   @Test
   public void testEqualsMirror ()
   {
-    DHCPOption opt1 = new DHCPOption (DHO_BOOTFILE, null);
-    DHCPOption opt2 = new DHCPOption (DHO_BOOTFILE, null, false);
-    DHCPOption opt3 = new DHCPOption (DHO_BOOTFILE, null, true);
-    DHCPOption opt4 = new DHCPOption (DHO_BOOTFILE, null, true);
+    final DHCPOption opt1 = new DHCPOption (DHO_BOOTFILE, null);
+    final DHCPOption opt2 = new DHCPOption (DHO_BOOTFILE, null, false);
+    final DHCPOption opt3 = new DHCPOption (DHO_BOOTFILE, null, true);
+    final DHCPOption opt4 = new DHCPOption (DHO_BOOTFILE, null, true);
 
     assertTrue (opt1.equals (opt1));
     assertTrue (opt1.equals (opt2));
@@ -143,8 +143,8 @@ public class DHCPOptionTest
   @Test
   public void testHashCode ()
   {
-    DHCPOption opt1 = new DHCPOption (DHO_BOOTFILE, buf0);
-    DHCPOption opt2 = new DHCPOption (DHO_DHCP_MESSAGE, buf0);
+    final DHCPOption opt1 = new DHCPOption (DHO_BOOTFILE, buf0);
+    final DHCPOption opt2 = new DHCPOption (DHO_DHCP_MESSAGE, buf0);
     assertTrue (opt1.hashCode () != 0);
     assertTrue (opt1.hashCode () != opt2.hashCode ());
   }
@@ -152,7 +152,7 @@ public class DHCPOptionTest
   @Test
   public void testToString ()
   {
-    DHCPOption opt1 = new DHCPOption (DHO_BOOTFILE, buf0);
+    final DHCPOption opt1 = new DHCPOption (DHO_BOOTFILE, buf0);
     assertEquals (opt1.toString (), "DHO_BOOTFILE(67)=\"foobar\"");
   }
 
@@ -168,11 +168,11 @@ public class DHCPOptionTest
   public void testUserClassToX ()
   {
     assertNull (DHCPOption.userClassToString (null));
-    byte [] userClassBuf1 = "\03foo\06foobar".getBytes (StandardCharsets.ISO_8859_1);
+    final byte [] userClassBuf1 = "\03foo\06foobar".getBytes (StandardCharsets.ISO_8859_1);
     assertEquals (DHCPOption.userClassToString (userClassBuf1), "\"foo\",\"foobar\"");
-    byte [] userClassBuf2 = "\03foo".getBytes (StandardCharsets.ISO_8859_1);
+    final byte [] userClassBuf2 = "\03foo".getBytes (StandardCharsets.ISO_8859_1);
     assertEquals (DHCPOption.userClassToString (userClassBuf2), "\"foo\"");
-    byte [] userClassBuf3 = "\07foo".getBytes (StandardCharsets.ISO_8859_1);
+    final byte [] userClassBuf3 = "\07foo".getBytes (StandardCharsets.ISO_8859_1);
     assertEquals (DHCPOption.userClassToString (userClassBuf3), "\"foo\"");
     assertEquals (DHCPOption.userClassToString (new byte [0]), "");
     assertEquals (DHCPOption.userClassToString (new byte [1]), "\"\"");
@@ -188,7 +188,7 @@ public class DHCPOptionTest
   public void testStringListToUserClass ()
   {
     assertNull (DHCPOption.stringListToUserClass (null));
-    LinkedList <String> list = new LinkedList <> ();
+    final LinkedList <String> list = new LinkedList <> ();
     list.add ("foo");
     list.add ("foobar");
     assertTrue (Arrays.equals ("\03foo\06foobar".getBytes (StandardCharsets.ISO_8859_1),
@@ -202,7 +202,7 @@ public class DHCPOptionTest
   public void testByte2Bytes ()
   {
     assertTrue (Arrays.equals (DHCPOption.byte2Bytes ((byte) 0), new byte [1]));
-    byte [] buf1 = { (byte) 0xff };
+    final byte [] buf1 = { (byte) 0xff };
     assertTrue (Arrays.equals (DHCPOption.byte2Bytes ((byte) -1), buf1));
   }
 
@@ -210,9 +210,9 @@ public class DHCPOptionTest
   public void testShort2Bytes ()
   {
     assertTrue (Arrays.equals (DHCPOption.short2Bytes ((short) 0), new byte [2]));
-    byte [] buf1 = { (byte) 0xff, (byte) 0xff };
+    final byte [] buf1 = { (byte) 0xff, (byte) 0xff };
     assertTrue (Arrays.equals (DHCPOption.short2Bytes ((short) -1), buf1));
-    byte [] buf2 = { (byte) 0x11, (byte) 0x22 };
+    final byte [] buf2 = { (byte) 0x11, (byte) 0x22 };
     assertTrue (Arrays.equals (DHCPOption.short2Bytes ((short) 0x1122), buf2));
   }
 
@@ -220,9 +220,9 @@ public class DHCPOptionTest
   public void testIntBytes ()
   {
     assertTrue (Arrays.equals (DHCPOption.int2Bytes (0), new byte [4]));
-    byte [] buf1 = { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff };
+    final byte [] buf1 = { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff };
     assertTrue (Arrays.equals (DHCPOption.int2Bytes (-1), buf1));
-    byte [] buf2 = { (byte) 0x11, (byte) 0x22, (byte) 0x33, (byte) 0x44 };
+    final byte [] buf2 = { (byte) 0x11, (byte) 0x22, (byte) 0x33, (byte) 0x44 };
     assertTrue (Arrays.equals (DHCPOption.int2Bytes (0x11223344), buf2));
   }
 
@@ -230,8 +230,8 @@ public class DHCPOptionTest
   public void testInetAddress2Bytes () throws Exception
   {
     assertNull (DHCPOption.inetAddress2Bytes (null));
-    byte [] buf = { (byte) 10, (byte) 11, (byte) 12, (byte) 13 };
-    InetAddress adr = InetAddress.getByName ("10.11.12.13");
+    final byte [] buf = { (byte) 10, (byte) 11, (byte) 12, (byte) 13 };
+    final InetAddress adr = InetAddress.getByName ("10.11.12.13");
     assertTrue (Arrays.equals (DHCPOption.inetAddress2Bytes (adr), buf));
   }
 
@@ -247,8 +247,8 @@ public class DHCPOptionTest
     assertNull (DHCPOption.inetAddresses2Bytes (null));
     assertTrue (Arrays.equals (DHCPOption.inetAddresses2Bytes (new InetAddress [0]), new byte [0]));
 
-    byte [] buf = HexUtils.hexToBytes ("10111213FFFFFFFF0000000011223344");
-    InetAddress [] iadrs = new InetAddress [4];
+    final byte [] buf = HexUtils.hexToBytes ("10111213FFFFFFFF0000000011223344");
+    final InetAddress [] iadrs = new InetAddress [4];
     iadrs[0] = InetAddress.getByName ("16.17.18.19");
     iadrs[1] = InetAddress.getByName ("255.255.255.255");
     iadrs[2] = InetAddress.getByName ("0.0.0.0");
@@ -257,7 +257,7 @@ public class DHCPOptionTest
     assertTrue (Arrays.equals (DHCPOption.inetAddresses2Bytes (iadrs), buf));
 
     // maximum size allowed
-    InetAddress [] maxAdrs = new InetAddress [63];
+    final InetAddress [] maxAdrs = new InetAddress [63];
     Arrays.fill (maxAdrs, InetAddress.getByName ("16.17.18.19"));
     assertNotNull (DHCPOption.inetAddresses2Bytes (maxAdrs));
   }
@@ -265,7 +265,7 @@ public class DHCPOptionTest
   @Test (expected = IllegalArgumentException.class)
   public void testInetAddresses2BytesFailNonIpv4 () throws Exception
   {
-    InetAddress [] iadrs = new InetAddress [4];
+    final InetAddress [] iadrs = new InetAddress [4];
     iadrs[0] = InetAddress.getByName ("16.17.18.19");
     iadrs[1] = InetAddress.getByName ("1080:0:0:0:8:800:200C:417A");
     iadrs[2] = InetAddress.getByName ("0.0.0.0");
@@ -297,19 +297,19 @@ public class DHCPOptionTest
   public void testAgentOptionToRaw ()
   {
     assertNull (DHCPOption.agentOptionToRaw (null));
-    LinkedHashMap <Byte, String> map = new LinkedHashMap <> ();
-    map.put ((byte) 1, "foo");
-    map.put ((byte) 2, "bar");
-    byte [] buf = "\01\03foo\02\03bar".getBytes (StandardCharsets.ISO_8859_1);
+    final LinkedHashMap <Byte, String> map = new LinkedHashMap <> ();
+    map.put (Byte.valueOf ((byte) 1), "foo");
+    map.put (Byte.valueOf ((byte) 2), "bar");
+    final byte [] buf = "\01\03foo\02\03bar".getBytes (StandardCharsets.ISO_8859_1);
     assertArrayEquals (DHCPOption.agentOptionToRaw (map), buf);
   }
 
   @Test (expected = IllegalArgumentException.class)
   public void testAgentOptionToRawTooBig ()
   {
-    LinkedHashMap <Byte, String> map = new LinkedHashMap <> ();
-    map.put ((byte) -1, String.valueOf (new char [256]));
-    byte [] buf = new byte [257];
+    final LinkedHashMap <Byte, String> map = new LinkedHashMap <> ();
+    map.put (Byte.valueOf ((byte) -1), String.valueOf (new char [256]));
+    final byte [] buf = new byte [257];
     buf[0] = (byte) 255; // sub-option
     buf[1] = (byte) 255; // length
     assertArrayEquals (DHCPOption.agentOptionToRaw (map), buf);
@@ -321,7 +321,7 @@ public class DHCPOptionTest
   @Test
   public void testNewOptionAsByteGetValueAsByte ()
   {
-    DHCPOption opt = DHCPOption.newOptionAsByte (DHO_IP_FORWARDING, (byte) 1);
+    final DHCPOption opt = DHCPOption.newOptionAsByte (DHO_IP_FORWARDING, (byte) 1);
     assertEquals (opt.getCode (), DHO_IP_FORWARDING);
     assertTrue (Arrays.equals (opt.getValue (), HexUtils.hexToBytes ("01")));
 
@@ -337,21 +337,21 @@ public class DHCPOptionTest
   @Test (expected = IllegalArgumentException.class)
   public void testGetValueAsByteBad ()
   {
-    DHCPOption opt = new DHCPOption (DHO_DHCP_LEASE_TIME, new byte [0]);
+    final DHCPOption opt = new DHCPOption (DHO_DHCP_LEASE_TIME, new byte [0]);
     opt.getValueAsByte ();
   }
 
   @Test (expected = IllegalStateException.class)
   public void testGetValueAsByteIllegalState ()
   {
-    DHCPOption opt = new DHCPOption (DHO_IP_FORWARDING, null);
+    final DHCPOption opt = new DHCPOption (DHO_IP_FORWARDING, null);
     opt.getValueAsByte ();
   }
 
   @Test (expected = DHCPBadPacketException.class)
   public void testGetValueAsByteBadSize2 ()
   {
-    DHCPOption opt = new DHCPOption (DHO_IP_FORWARDING, new byte [2]);
+    final DHCPOption opt = new DHCPOption (DHO_IP_FORWARDING, new byte [2]);
     opt.getValueAsByte ();
   }
 
@@ -359,7 +359,7 @@ public class DHCPOptionTest
   @Test
   public void testNewOptionAsShortGetValueAsShort ()
   {
-    DHCPOption opt = DHCPOption.newOptionAsShort (DHO_INTERFACE_MTU, (short) 1500);
+    final DHCPOption opt = DHCPOption.newOptionAsShort (DHO_INTERFACE_MTU, (short) 1500);
     assertEquals (opt.getCode (), DHO_INTERFACE_MTU);
     assertTrue (Arrays.equals (opt.getValue (), HexUtils.hexToBytes ("05DC")));
 
@@ -375,28 +375,28 @@ public class DHCPOptionTest
   @Test (expected = IllegalArgumentException.class)
   public void testGetValueAsShortBad ()
   {
-    DHCPOption opt = new DHCPOption (DHO_DHCP_LEASE_TIME, new byte [0]);
+    final DHCPOption opt = new DHCPOption (DHO_DHCP_LEASE_TIME, new byte [0]);
     opt.getValueAsShort ();
   }
 
   @Test (expected = IllegalStateException.class)
   public void testGetValueAsShortIllegalState ()
   {
-    DHCPOption opt = new DHCPOption (DHO_INTERFACE_MTU, null);
+    final DHCPOption opt = new DHCPOption (DHO_INTERFACE_MTU, null);
     opt.getValueAsShort ();
   }
 
   @Test (expected = DHCPBadPacketException.class)
   public void testGetValueAsShortBadSize3 ()
   {
-    DHCPOption opt = new DHCPOption (DHO_INTERFACE_MTU, new byte [3]);
+    final DHCPOption opt = new DHCPOption (DHO_INTERFACE_MTU, new byte [3]);
     opt.getValueAsShort ();
   }
 
   @Test (expected = DHCPBadPacketException.class)
   public void testGetValueAsShortBadSize1 ()
   {
-    DHCPOption opt = new DHCPOption (DHO_INTERFACE_MTU, new byte [1]);
+    final DHCPOption opt = new DHCPOption (DHO_INTERFACE_MTU, new byte [1]);
     opt.getValueAsShort ();
   }
 
@@ -404,8 +404,8 @@ public class DHCPOptionTest
   @Test
   public void testGetValueAsShorts ()
   {
-    DHCPOption opt = new DHCPOption (DHO_PATH_MTU_PLATEAU_TABLE, HexUtils.hexToBytes ("05DC0000FFFF"));
-    short [] shorts = new short [3];
+    final DHCPOption opt = new DHCPOption (DHO_PATH_MTU_PLATEAU_TABLE, HexUtils.hexToBytes ("05DC0000FFFF"));
+    final short [] shorts = new short [3];
     shorts[0] = (short) 1500;
     shorts[1] = (short) 0;
     shorts[2] = (short) -1;
@@ -421,40 +421,40 @@ public class DHCPOptionTest
   @Test (expected = IllegalArgumentException.class)
   public void testGetValueAsShortsBad ()
   {
-    DHCPOption opt = new DHCPOption (DHO_DHCP_LEASE_TIME, new byte [0]);
+    final DHCPOption opt = new DHCPOption (DHO_DHCP_LEASE_TIME, new byte [0]);
     opt.getValueAsShorts ();
   }
 
   @Test (expected = IllegalStateException.class)
   public void testGetValueAsShortsIllegalState ()
   {
-    DHCPOption opt = new DHCPOption (DHO_PATH_MTU_PLATEAU_TABLE, null);
+    final DHCPOption opt = new DHCPOption (DHO_PATH_MTU_PLATEAU_TABLE, null);
     opt.getValueAsShorts ();
   }
 
   @Test (expected = DHCPBadPacketException.class)
   public void testGetValueAsShortsBadSize1 ()
   {
-    DHCPOption opt = new DHCPOption (DHO_PATH_MTU_PLATEAU_TABLE, new byte [1]);
+    final DHCPOption opt = new DHCPOption (DHO_PATH_MTU_PLATEAU_TABLE, new byte [1]);
     opt.getValueAsShorts ();
   }
 
   @Test (expected = DHCPBadPacketException.class)
   public void testGetValueAsShortsBadSize5 ()
   {
-    DHCPOption opt = new DHCPOption (DHO_PATH_MTU_PLATEAU_TABLE, new byte [5]);
+    final DHCPOption opt = new DHCPOption (DHO_PATH_MTU_PLATEAU_TABLE, new byte [5]);
     opt.getValueAsShorts ();
   }
 
   @Test
   public void testNewOptionAsShorts ()
   {
-    short [] shorts = new short [3];
+    final short [] shorts = new short [3];
     shorts[0] = (short) 1500;
     shorts[1] = (short) 0;
     shorts[2] = (short) -1;
-    DHCPOption opt = DHCPOption.newOptionAsShorts (DHO_PATH_MTU_PLATEAU_TABLE, shorts);
-    DHCPOption opt2 = new DHCPOption (DHO_PATH_MTU_PLATEAU_TABLE, HexUtils.hexToBytes ("05DC0000FFFF"));
+    final DHCPOption opt = DHCPOption.newOptionAsShorts (DHO_PATH_MTU_PLATEAU_TABLE, shorts);
+    final DHCPOption opt2 = new DHCPOption (DHO_PATH_MTU_PLATEAU_TABLE, HexUtils.hexToBytes ("05DC0000FFFF"));
     assertEquals (opt2, opt);
     assertTrue (Arrays.equals (opt.getValue (), HexUtils.hexToBytes ("05DC0000FFFF")));
     assertTrue (Arrays.equals (shorts, opt.getValueAsShorts ()));
@@ -470,7 +470,7 @@ public class DHCPOptionTest
   @Test
   public void testNewOptionAsIntGetValueAsInt ()
   {
-    DHCPOption opt = DHCPOption.newOptionAsInt (DHO_DHCP_LEASE_TIME, 0x01FE02FC);
+    final DHCPOption opt = DHCPOption.newOptionAsInt (DHO_DHCP_LEASE_TIME, 0x01FE02FC);
     assertEquals (opt.getCode (), DHO_DHCP_LEASE_TIME);
     assertTrue (Arrays.equals (opt.getValue (), HexUtils.hexToBytes ("01FE02FC")));
 
@@ -486,28 +486,28 @@ public class DHCPOptionTest
   @Test (expected = IllegalArgumentException.class)
   public void testGetValueAsIntBad ()
   {
-    DHCPOption opt = new DHCPOption (DHO_SUBNET_MASK, new byte [0]);
+    final DHCPOption opt = new DHCPOption (DHO_SUBNET_MASK, new byte [0]);
     opt.getValueAsInt ();
   }
 
   @Test (expected = IllegalStateException.class)
   public void testGetValueAsIntIllegalState ()
   {
-    DHCPOption opt = new DHCPOption (DHO_DHCP_LEASE_TIME, null);
+    final DHCPOption opt = new DHCPOption (DHO_DHCP_LEASE_TIME, null);
     opt.getValueAsInt ();
   }
 
   @Test (expected = DHCPBadPacketException.class)
   public void testGetValueAsIntBadSize3 ()
   {
-    DHCPOption opt = new DHCPOption (DHO_DHCP_LEASE_TIME, new byte [3]);
+    final DHCPOption opt = new DHCPOption (DHO_DHCP_LEASE_TIME, new byte [3]);
     opt.getValueAsInt ();
   }
 
   @Test (expected = DHCPBadPacketException.class)
   public void testGetValueAsIntBadSize5 ()
   {
-    DHCPOption opt = new DHCPOption (DHO_DHCP_LEASE_TIME, new byte [5]);
+    final DHCPOption opt = new DHCPOption (DHO_DHCP_LEASE_TIME, new byte [5]);
     opt.getValueAsInt ();
   }
 
@@ -532,7 +532,7 @@ public class DHCPOptionTest
   @Test
   public void testNewOptionAsInetAddressGetValueAsInetAddress () throws Exception
   {
-    DHCPOption opt = DHCPOption.newOptionAsInetAddress (DHO_SUBNET_MASK, InetAddress.getByName ("252.10.224.3"));
+    final DHCPOption opt = DHCPOption.newOptionAsInetAddress (DHO_SUBNET_MASK, InetAddress.getByName ("252.10.224.3"));
     assertEquals (opt.getCode (), DHO_SUBNET_MASK);
     assertTrue (Arrays.equals (opt.getValue (), HexUtils.hexToBytes ("FC0AE003")));
 
@@ -542,11 +542,11 @@ public class DHCPOptionTest
   @Test
   public void testNewOptionAsInetAddressGetValueAsInetAddressSingle () throws Exception
   {
-    DHCPOption opt = DHCPOption.newOptionAsInetAddress (DHO_WWW_SERVER, InetAddress.getByName ("252.10.224.3"));
+    final DHCPOption opt = DHCPOption.newOptionAsInetAddress (DHO_WWW_SERVER, InetAddress.getByName ("252.10.224.3"));
     assertEquals (opt.getCode (), DHO_WWW_SERVER);
     assertTrue (Arrays.equals (opt.getValue (), HexUtils.hexToBytes ("FC0AE003")));
 
-    InetAddress [] iadrs = opt.getValueAsInetAddrs ();
+    final InetAddress [] iadrs = opt.getValueAsInetAddrs ();
     assertNotNull (iadrs);
     assertEquals (1, iadrs.length);
     assertEquals (InetAddress.getByName ("252.10.224.3"), iadrs[0]);
@@ -561,28 +561,28 @@ public class DHCPOptionTest
   @Test (expected = IllegalArgumentException.class)
   public void testGetValueAsInetAddressBad ()
   {
-    DHCPOption opt = new DHCPOption (DHO_DHCP_LEASE_TIME, new byte [0]);
+    final DHCPOption opt = new DHCPOption (DHO_DHCP_LEASE_TIME, new byte [0]);
     opt.getValueAsInetAddr ();
   }
 
   @Test (expected = IllegalStateException.class)
   public void testGetValueAsInetAddressIllegalState ()
   {
-    DHCPOption opt = new DHCPOption (DHO_SUBNET_MASK, null);
+    final DHCPOption opt = new DHCPOption (DHO_SUBNET_MASK, null);
     opt.getValueAsInetAddr ();
   }
 
   @Test (expected = DHCPBadPacketException.class)
   public void testGetValueAsInetAddressBadSize3 ()
   {
-    DHCPOption opt = new DHCPOption (DHO_SUBNET_MASK, new byte [3]);
+    final DHCPOption opt = new DHCPOption (DHO_SUBNET_MASK, new byte [3]);
     opt.getValueAsInetAddr ();
   }
 
   @Test (expected = DHCPBadPacketException.class)
   public void testGetValueAsInetAddressBadSize5 ()
   {
-    DHCPOption opt = new DHCPOption (DHO_SUBNET_MASK, new byte [5]);
+    final DHCPOption opt = new DHCPOption (DHO_SUBNET_MASK, new byte [5]);
     opt.getValueAsInetAddr ();
   }
 
@@ -590,11 +590,11 @@ public class DHCPOptionTest
   @Test
   public void testNewOptionAsInetAddressesGetValueAsInetAddresses () throws Exception
   {
-    InetAddress [] iadrs = new InetAddress [3];
+    final InetAddress [] iadrs = new InetAddress [3];
     iadrs[0] = InetAddress.getByName ("0.0.0.0");
     iadrs[1] = InetAddress.getByName ("252.10.224.3");
     iadrs[2] = InetAddress.getByName ("255.255.255.255");
-    DHCPOption opt = DHCPOption.newOptionAsInetAddresses (DHO_WWW_SERVER, iadrs);
+    final DHCPOption opt = DHCPOption.newOptionAsInetAddresses (DHO_WWW_SERVER, iadrs);
     assertEquals (DHO_WWW_SERVER, opt.getCode ());
     assertTrue (Arrays.equals (HexUtils.hexToBytes ("00000000FC0AE003FFFFFFFF"), opt.getValue ()));
 
@@ -610,7 +610,7 @@ public class DHCPOptionTest
   @Test (expected = IllegalArgumentException.class)
   public void testNewOptionAsInetAddressesIPv6 () throws Exception
   {
-    InetAddress [] iadrs = new InetAddress [1];
+    final InetAddress [] iadrs = new InetAddress [1];
     iadrs[0] = InetAddress.getByName ("1080:0:0:0:8:800:200C:417A");
     DHCPOption.newOptionAsInetAddresses (DHO_WWW_SERVER, iadrs);
   }
@@ -618,7 +618,7 @@ public class DHCPOptionTest
   @Test (expected = IllegalArgumentException.class)
   public void testNewOptionAsInetAddressesBad () throws Exception
   {
-    InetAddress [] iadrs = new InetAddress [1];
+    final InetAddress [] iadrs = new InetAddress [1];
     iadrs[0] = InetAddress.getByName ("0.0.0.0");
     DHCPOption.newOptionAsInetAddresses (DHO_DHCP_LEASE_TIME, iadrs);
   }
@@ -626,28 +626,28 @@ public class DHCPOptionTest
   @Test (expected = IllegalArgumentException.class)
   public void testGetValueAsInetAddressesBad ()
   {
-    DHCPOption opt = new DHCPOption (DHO_DHCP_LEASE_TIME, new byte [0]);
+    final DHCPOption opt = new DHCPOption (DHO_DHCP_LEASE_TIME, new byte [0]);
     opt.getValueAsInetAddrs ();
   }
 
   @Test (expected = IllegalStateException.class)
   public void testGetValueAsInetAddressesIllegalState ()
   {
-    DHCPOption opt = new DHCPOption (DHO_WWW_SERVER, null);
+    final DHCPOption opt = new DHCPOption (DHO_WWW_SERVER, null);
     opt.getValueAsInetAddrs ();
   }
 
   @Test (expected = DHCPBadPacketException.class)
   public void testGetValueAsInetAddressesBadSize3 ()
   {
-    DHCPOption opt = new DHCPOption (DHO_WWW_SERVER, new byte [3]);
+    final DHCPOption opt = new DHCPOption (DHO_WWW_SERVER, new byte [3]);
     opt.getValueAsInetAddrs ();
   }
 
   @Test (expected = DHCPBadPacketException.class)
   public void testGetValueAsInetAddressesBadSize9 ()
   {
-    DHCPOption opt = new DHCPOption (DHO_WWW_SERVER, new byte [9]);
+    final DHCPOption opt = new DHCPOption (DHO_WWW_SERVER, new byte [9]);
     opt.getValueAsInetAddrs ();
   }
 
@@ -678,14 +678,14 @@ public class DHCPOptionTest
   @Test (expected = IllegalArgumentException.class)
   public void testGetValueAsStringBad ()
   {
-    DHCPOption opt = new DHCPOption (DHO_SUBNET_MASK, "foobar".getBytes (StandardCharsets.ISO_8859_1));
+    final DHCPOption opt = new DHCPOption (DHO_SUBNET_MASK, "foobar".getBytes (StandardCharsets.ISO_8859_1));
     opt.getValueAsString ();
   }
 
   @Test (expected = IllegalStateException.class)
   public void testGetValueAsStringIllegalState ()
   {
-    DHCPOption opt = new DHCPOption (DHO_TFTP_SERVER, null);
+    final DHCPOption opt = new DHCPOption (DHO_TFTP_SERVER, null);
     opt.getValueAsString ();
   }
 
@@ -693,7 +693,7 @@ public class DHCPOptionTest
   @Test
   public void testGetValueAsBytes ()
   {
-    byte [] bb = HexUtils.hexToBytes ("00010000FC0AE003FFFFFFFF");
+    final byte [] bb = HexUtils.hexToBytes ("00010000FC0AE003FFFFFFFF");
     DHCPOption opt = new DHCPOption (DHO_DHCP_PARAMETER_REQUEST_LIST, bb);
     assertEquals (DHO_DHCP_PARAMETER_REQUEST_LIST, opt.getCode ());
     assertTrue (Arrays.equals (HexUtils.hexToBytes ("00010000FC0AE003FFFFFFFF"), opt.getValue ()));
@@ -710,14 +710,14 @@ public class DHCPOptionTest
   @Test (expected = IllegalArgumentException.class)
   public void testGetValueAsBytesBad ()
   {
-    DHCPOption opt = new DHCPOption (DHO_SUBNET_MASK, new byte [1]);
+    final DHCPOption opt = new DHCPOption (DHO_SUBNET_MASK, new byte [1]);
     opt.getValueAsBytes ();
   }
 
   @Test (expected = IllegalStateException.class)
   public void testGetValueAsBytesIllegalState ()
   {
-    DHCPOption opt = new DHCPOption (DHO_DHCP_PARAMETER_REQUEST_LIST, null);
+    final DHCPOption opt = new DHCPOption (DHO_DHCP_PARAMETER_REQUEST_LIST, null);
     opt.getValueAsBytes ();
   }
 
@@ -798,7 +798,7 @@ public class DHCPOptionTest
     assertEquals ("DHO_SUBNET_MASK(1)=252.10.224.3", buf.toString ());
 
     buf = new StringBuilder ();
-    InetAddress [] iadrs = new InetAddress [3];
+    final InetAddress [] iadrs = new InetAddress [3];
     iadrs[0] = InetAddress.getByName ("0.0.0.0");
     iadrs[1] = InetAddress.getByName ("252.10.224.3");
     iadrs[2] = InetAddress.getByName ("255.255.255.255");
@@ -882,7 +882,7 @@ public class DHCPOptionTest
     assertEquals (DHO_TFTP_SERVER, opt.getCode ());
     assertEquals ("foobar", opt.getValueAsString ());
 
-    short [] shorts = new short [3];
+    final short [] shorts = new short [3];
     shorts[0] = (short) 1500;
     shorts[1] = (short) 0;
     shorts[2] = (short) -1;
@@ -892,7 +892,7 @@ public class DHCPOptionTest
     assertTrue (Arrays.equals (shorts, opt.getValueAsShorts ()));
 
     opt = DHCPOption.parseNewOption (DHO_DHCP_PARAMETER_REQUEST_LIST, byte [].class, "16 32 64");
-    byte [] bytes = HexUtils.hexToBytes ("102040");
+    final byte [] bytes = HexUtils.hexToBytes ("102040");
     assertEquals (DHO_DHCP_PARAMETER_REQUEST_LIST, opt.getCode ());
     assertTrue (Arrays.equals (bytes, opt.getValue ()));
 
@@ -901,7 +901,7 @@ public class DHCPOptionTest
     assertTrue (Arrays.equals (HexUtils.hexToBytes ("00000000FC0AE003FFFFFFFF"), opt.getValue ()));
 
     opt = DHCPOption.parseNewOption (DHO_WWW_SERVER, InetAddress [].class, "0.0.0.0 252.10.224.3 255.255.255.255");
-    InetAddress [] iadrs = new InetAddress [3];
+    final InetAddress [] iadrs = new InetAddress [3];
     iadrs[0] = InetAddress.getByName ("0.0.0.0");
     iadrs[1] = InetAddress.getByName ("252.10.224.3");
     iadrs[2] = InetAddress.getByName ("255.255.255.255");

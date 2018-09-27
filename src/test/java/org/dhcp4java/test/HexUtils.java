@@ -101,8 +101,9 @@ public class HexUtils
    * @throws IndexOutOfBoundsException
    *         on error
    */
-  public static void hexToBytes (String s, final byte [] out, final int off)
+  public static void hexToBytes (final String sStr, final byte [] out, final int off)
   {
+    String s = sStr;
     final int slen = s.length ();
     if ((slen % 2) != 0)
     {

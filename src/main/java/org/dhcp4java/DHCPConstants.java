@@ -28,7 +28,7 @@ import java.util.Map;
 
 /**
  * Class holding all DHCP constants.
- * 
+ *
  * @author Stephan Hadinger
  * @version 1.00
  */
@@ -174,7 +174,7 @@ public final class DHCPConstants
       final byte [] rawAddr = { (byte) 0, (byte) 0, (byte) 0, (byte) 0 };
       return InetAddress.getByAddress (rawAddr);
     }
-    catch (UnknownHostException e)
+    catch (final UnknownHostException e)
     {
       // bad luck
       throw new IllegalStateException ("Unable to generate INADDR_ANY");
@@ -188,7 +188,7 @@ public final class DHCPConstants
       final byte [] rawAddr = { (byte) -1, (byte) -1, (byte) -1, (byte) -1 };
       return InetAddress.getByAddress (rawAddr);
     }
-    catch (UnknownHostException e)
+    catch (final UnknownHostException e)
     {
       // bad luck
       throw new IllegalStateException ("Unable to generate INADDR_BROADCAST");
@@ -201,7 +201,7 @@ public final class DHCPConstants
    * Currently:<br>
    * 1=BOOTREQUEST<br>
    * 2=BOOTREPLY
-   * 
+   *
    * @return the map
    */
   public static final Map <Byte, String> getBootNamesMap ()
@@ -213,7 +213,7 @@ public final class DHCPConstants
    * Returns a map associating a HType and the user-readable name.
    * <p>
    * Ex: 1=HTYPE_ETHER
-   * 
+   *
    * @return the map
    */
   public static final Map <Byte, String> getHtypesMap ()
@@ -225,7 +225,7 @@ public final class DHCPConstants
    * Returns a map associating a DHCP code and the user-readable name.
    * <p>
    * ex: 1=DHCPDISCOVER
-   * 
+   *
    * @return the map
    */
   public static final Map <Byte, String> getDhcpCodesMap ()
@@ -237,7 +237,7 @@ public final class DHCPConstants
    * Returns a map associating a DHCP option code and the user-readable name.
    * <p>
    * ex: 1=DHO_SUBNET_MASK, 51=DHO_DHCP_LEASE_TIME,
-   * 
+   *
    * @return the map
    */
   public static final Map <Byte, String> getDhoNamesMap ()
@@ -250,7 +250,7 @@ public final class DHCPConstants
    * code.
    * <p>
    * ex: "DHO_SUBNET_MASK"=1, "DHO_DHCP_LEASE_TIME"=51
-   * 
+   *
    * @return the map
    */
   public static final Map <String, Byte> getDhoNamesReverseMap ()
@@ -260,32 +260,30 @@ public final class DHCPConstants
 
   /**
    * Converts a DHCP option name into the option code.
-   * 
+   *
    * @param name
    *        user-readable option name
    * @return the option code
    * @throws NullPointerException
    *         name is <tt>null</t>.
    */
-  public static final Byte getDhoNamesReverse (String name)
+  public static final Byte getDhoNamesReverse (final String name)
   {
     if (name == null)
-    {
       throw new NullPointerException ();
-    }
     return _DHO_NAMES_REV.get (name);
   }
 
   /**
    * Converts a DHCP code into a user-readable DHCP option name.
-   * 
+   *
    * @param code
    *        DHCP option code
    * @return user-readable DHCP option name
    */
-  public static final String getDhoName (byte code)
+  public static final String getDhoName (final byte code)
   {
-    return _DHO_NAMES.get (code);
+    return _DHO_NAMES.get (Byte.valueOf (code));
   }
 
   // sanity check values
@@ -314,22 +312,22 @@ public final class DHCPConstants
    */
   static
   {
-    Map <Byte, String> bootNames = new LinkedHashMap <> ();
-    Map <Byte, String> htypeNames = new LinkedHashMap <> ();
-    Map <Byte, String> dhcpCodes = new LinkedHashMap <> ();
-    Map <Byte, String> dhoNames = new LinkedHashMap <> ();
-    Map <String, Byte> dhoNamesRev = new LinkedHashMap <> ();
+    final Map <Byte, String> bootNames = new LinkedHashMap <> ();
+    final Map <Byte, String> htypeNames = new LinkedHashMap <> ();
+    final Map <Byte, String> dhcpCodes = new LinkedHashMap <> ();
+    final Map <Byte, String> dhoNames = new LinkedHashMap <> ();
+    final Map <String, Byte> dhoNamesRev = new LinkedHashMap <> ();
 
     // do some introspection to list constants
-    Field [] fields = DHCPConstants.class.getDeclaredFields ();
+    final Field [] fields = DHCPConstants.class.getDeclaredFields ();
 
     // parse internal fields
     try
     {
-      for (Field field : fields)
+      for (final Field field : fields)
       {
-        int mod = field.getModifiers ();
-        String name = field.getName ();
+        final int mod = field.getModifiers ();
+        final String name = field.getName ();
 
         // parse only "public final static byte"
         if (Modifier.isFinal (mod) &&
@@ -337,7 +335,7 @@ public final class DHCPConstants
             Modifier.isStatic (mod) &&
             field.getType ().equals (byte.class))
         {
-          byte code = field.getByte (null);
+          final Byte code = Byte.valueOf (field.getByte (null));
 
           if (name.startsWith ("BOOT"))
           {
@@ -362,7 +360,7 @@ public final class DHCPConstants
         }
       }
     }
-    catch (IllegalAccessException e)
+    catch (final IllegalAccessException e)
     {
       // we have a problem
       throw new IllegalStateException ("Fatal error while parsing internal fields");

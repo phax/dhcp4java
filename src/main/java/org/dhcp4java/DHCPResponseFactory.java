@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  * <p>
  * This simplifies DHCP Server development as basic behaviour is already usable
  * as-is.
- * 
+ *
  * @author Stephan Hadinger
  * @version 1.00
  */
@@ -65,18 +65,18 @@ public final class DHCPResponseFactory
    * <p>
    * Note: <tt>getDefaultSocketAddress</tt> is called internally to populate
    * address and port number to which response should be sent.
-   * 
+   *
    * @param request
    * @param offeredAddress
    * @param options
    * @return the newly created OFFER Packet
    */
-  public static final DHCPPacket makeDHCPOffer (DHCPPacket request,
-                                                InetAddress offeredAddress,
-                                                int leaseTime,
-                                                InetAddress serverIdentifier,
-                                                String message,
-                                                DHCPOption [] options)
+  public static final DHCPPacket makeDHCPOffer (final DHCPPacket request,
+                                                final InetAddress offeredAddress,
+                                                final int leaseTime,
+                                                final InetAddress serverIdentifier,
+                                                final String message,
+                                                final DHCPOption [] options)
   {
     // check request
     if (request == null)
@@ -87,12 +87,12 @@ public final class DHCPResponseFactory
     {
       throw new DHCPBadPacketException ("request is BOOTP");
     }
-    Byte requestMessageType = request.getDHCPMessageType ();
+    final Byte requestMessageType = request.getDHCPMessageType ();
     if (requestMessageType == null)
     {
       throw new DHCPBadPacketException ("request has no message type");
     }
-    if (requestMessageType != DHCPDISCOVER)
+    if (requestMessageType.byteValue () != DHCPDISCOVER)
     {
       throw new DHCPBadPacketException ("request is not DHCPDISCOVER");
     }
@@ -106,7 +106,7 @@ public final class DHCPResponseFactory
       throw new IllegalArgumentException ("offeredAddress must be IPv4");
     }
 
-    DHCPPacket resp = new DHCPPacket ();
+    final DHCPPacket resp = new DHCPPacket ();
 
     resp.setOp (BOOTREPLY);
     resp.setHtype (request.getHtype ());
@@ -134,7 +134,7 @@ public final class DHCPResponseFactory
 
     if (options != null)
     {
-      for (DHCPOption opt : options)
+      for (final DHCPOption opt : options)
       {
         resp.setOption (opt.applyOption (request));
       }
@@ -154,18 +154,18 @@ public final class DHCPResponseFactory
    * <p>
    * Note: <tt>getDefaultSocketAddress</tt> is called internally to populate
    * address and port number to which response should be sent.
-   * 
+   *
    * @param request
    * @param offeredAddress
    * @param options
    * @return the newly created ACK Packet
    */
-  public static final DHCPPacket makeDHCPAck (DHCPPacket request,
-                                              InetAddress offeredAddress,
-                                              int leaseTime,
-                                              InetAddress serverIdentifier,
-                                              String message,
-                                              DHCPOption [] options)
+  public static final DHCPPacket makeDHCPAck (final DHCPPacket request,
+                                              final InetAddress offeredAddress,
+                                              final int leaseTime,
+                                              final InetAddress serverIdentifier,
+                                              final String message,
+                                              final DHCPOption [] options)
   {
     // check request
     if (request == null)
@@ -176,12 +176,12 @@ public final class DHCPResponseFactory
     {
       throw new DHCPBadPacketException ("request is BOOTP");
     }
-    Byte requestMessageType = request.getDHCPMessageType ();
+    final Byte requestMessageType = request.getDHCPMessageType ();
     if (requestMessageType == null)
     {
       throw new DHCPBadPacketException ("request has no message type");
     }
-    if ((requestMessageType != DHCPREQUEST) && (requestMessageType != DHCPINFORM))
+    if (requestMessageType.byteValue () != DHCPREQUEST && requestMessageType.byteValue () != DHCPINFORM)
     {
       throw new DHCPBadPacketException ("request is not DHCPREQUEST/DHCPINFORM");
     }
@@ -195,7 +195,7 @@ public final class DHCPResponseFactory
       throw new IllegalArgumentException ("offeredAddress must be IPv4");
     }
 
-    DHCPPacket resp = new DHCPPacket ();
+    final DHCPPacket resp = new DHCPPacket ();
 
     resp.setOp (BOOTREPLY);
     resp.setHtype (request.getHtype ());
@@ -205,7 +205,7 @@ public final class DHCPResponseFactory
     // Secs is left to 0
     resp.setFlags (request.getFlags ());
     resp.setCiaddrRaw (request.getCiaddrRaw ());
-    if (requestMessageType != DHCPINFORM)
+    if (requestMessageType.byteValue () != DHCPINFORM)
     {
       resp.setYiaddr (offeredAddress);
     }
@@ -219,7 +219,7 @@ public final class DHCPResponseFactory
     resp.setDHCPMessageType (DHCPACK);
 
     // set standard options
-    if (requestMessageType == DHCPREQUEST)
+    if (requestMessageType.byteValue () == DHCPREQUEST)
     { // rfc 2131
       resp.setOptionAsInt (DHO_DHCP_LEASE_TIME, leaseTime);
     }
@@ -229,7 +229,7 @@ public final class DHCPResponseFactory
 
     if (options != null)
     {
-      for (DHCPOption opt : options)
+      for (final DHCPOption opt : options)
       {
         resp.setOption (opt.applyOption (request));
       }
@@ -249,13 +249,15 @@ public final class DHCPResponseFactory
    * <p>
    * Note: <tt>getDefaultSocketAddress</tt> is called internally to populate
    * address and port number to which response should be sent.
-   * 
+   *
    * @param request
    * @param serverIdentifier
    * @param message
    * @return the newly created NAK Packet
    */
-  public static final DHCPPacket makeDHCPNak (DHCPPacket request, InetAddress serverIdentifier, String message)
+  public static final DHCPPacket makeDHCPNak (final DHCPPacket request,
+                                              final InetAddress serverIdentifier,
+                                              final String message)
   {
     // check request
     if (request == null)
@@ -266,17 +268,17 @@ public final class DHCPResponseFactory
     {
       throw new DHCPBadPacketException ("request is BOOTP");
     }
-    Byte requestMessageType = request.getDHCPMessageType ();
+    final Byte requestMessageType = request.getDHCPMessageType ();
     if (requestMessageType == null)
     {
       throw new DHCPBadPacketException ("request has no message type");
     }
-    if (requestMessageType != DHCPREQUEST)
+    if (requestMessageType.byteValue () != DHCPREQUEST)
     {
       throw new DHCPBadPacketException ("request is not DHCPREQUEST");
     }
 
-    DHCPPacket resp = new DHCPPacket ();
+    final DHCPPacket resp = new DHCPPacket ();
 
     resp.setOp (BOOTREPLY);
     resp.setHtype (request.getHtype ());
@@ -320,11 +322,11 @@ public final class DHCPResponseFactory
    * giaddr/67.
    * <p>
    * Standard behaviour is to set the response packet as follows:
-   * 
+   *
    * <pre>
    * response.setAddrPort (getDefaultSocketAddress (request), response.getOp ());
    * </pre>
-   * 
+   *
    * @param request
    *        the client DHCP request
    * @param responseType
@@ -336,15 +338,15 @@ public final class DHCPResponseFactory
    * @throws IllegalArgumentException
    *         if responseType is not valid.
    */
-  public static InetSocketAddress getDefaultSocketAddress (DHCPPacket request, byte responseType)
+  public static InetSocketAddress getDefaultSocketAddress (final DHCPPacket request, final byte responseType)
   {
     if (request == null)
     {
       throw new IllegalArgumentException ("request is null");
     }
     InetSocketAddress sockAdr;
-    InetAddress giaddr = request.getGiaddr ();
-    InetAddress ciaddr = request.getCiaddr ();
+    final InetAddress giaddr = request.getGiaddr ();
+    final InetAddress ciaddr = request.getCiaddr ();
     // check whether there is a giaddr
 
     switch (responseType)

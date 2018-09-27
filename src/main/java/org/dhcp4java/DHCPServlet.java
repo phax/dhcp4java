@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  * For simple servers or test purpose, it as also a good idea to provide a
  * <tt>main()</tt> method so you can easily launch the server by running the
  * servlet.
- * 
+ *
  * @author Stephan Hadinger
  * @version 1.00
  */
@@ -50,7 +50,7 @@ public class DHCPServlet
   private static final Logger logger = Logger.getLogger (DHCPServlet.class.getName ().toLowerCase ());
 
   /** the server instance running this servlet */
-  protected DHCPCoreServer server = null;
+  protected DHCPCoreServer m_aServer = null;
 
   /**
    * Initialize servlet. Override this method to implement any initialization
@@ -61,12 +61,12 @@ public class DHCPServlet
    * it needs.
    * <p>
    * There is no default behaviour.
-   * 
+   *
    * @param props
    *        a Properties containing parameters, as passed to
    *        <tt>DHCPCoreServer</tt>
    */
-  public void init (Properties props)
+  public void init (final Properties props)
   {
     // read whatever parameters you need
   }
@@ -79,12 +79,12 @@ public class DHCPServlet
    * <tt>service()</tt> method is not called if the DHCP request is invalid
    * (i.e. could not be parsed). So overriding this method gives you control on
    * every datagram received, not only valid DHCP packets.
-   * 
+   *
    * @param requestDatagram
    *        the datagram received from the client
    * @return response the datagram to send back, or <tt>null</tt> if no answer
    */
-  public DatagramPacket serviceDatagram (DatagramPacket requestDatagram)
+  public DatagramPacket serviceDatagram (final DatagramPacket requestDatagram)
   {
     DatagramPacket responseDatagram;
 
@@ -96,7 +96,7 @@ public class DHCPServlet
     try
     {
       // parse DHCP request
-      DHCPPacket request = DHCPPacket.getPacket (requestDatagram);
+      final DHCPPacket request = DHCPPacket.getPacket (requestDatagram);
 
       if (request == null)
       {
@@ -109,7 +109,8 @@ public class DHCPServlet
       }
 
       // do the real work
-      DHCPPacket response = this.service (request); // call service function
+      final DHCPPacket response = this.service (request); // call service
+                                                          // function
       // done
       if (logger.isLoggable (Level.FINER))
       {
@@ -121,16 +122,16 @@ public class DHCPServlet
       }
 
       // check address/port
-      InetAddress address = response.getAddress ();
+      final InetAddress address = response.getAddress ();
       if (address == null)
       {
         logger.warning ("Address needed in response");
         return null;
       }
-      int port = response.getPort ();
+      final int port = response.getPort ();
 
       // we have something to send back
-      byte [] responseBuf = response.serialize ();
+      final byte [] responseBuf = response.serialize ();
 
       if (logger.isLoggable (Level.FINER))
       {
@@ -145,11 +146,11 @@ public class DHCPServlet
       this.postProcess (requestDatagram, responseDatagram);
       return responseDatagram;
     }
-    catch (DHCPBadPacketException e)
+    catch (final DHCPBadPacketException e)
     {
       logger.log (Level.INFO, "Invalid DHCP packet received", e);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       logger.log (Level.INFO, "Unexpected Exception", e);
     }
@@ -166,13 +167,13 @@ public class DHCPServlet
    * <p>
    * Default behaviour: ignore BOOTP packets, and dispatch to <tt>doXXX()</tt>
    * methods.
-   * 
+   *
    * @param request
    *        DHCP request from the client
    * @return response DHCP response to send back to client, <tt>null</tt> if no
    *         response
    */
-  protected DHCPPacket service (DHCPPacket request)
+  protected DHCPPacket service (final DHCPPacket request)
   {
     Byte dhcpMessageType;
 
@@ -197,7 +198,7 @@ public class DHCPServlet
 
     if (request.getOp () == BOOTREQUEST)
     {
-      switch (dhcpMessageType)
+      switch (dhcpMessageType.byteValue ())
       {
         case DHCPDISCOVER:
           return this.doDiscover (request);
@@ -231,12 +232,12 @@ public class DHCPServlet
 
   /**
    * Process DISCOVER request.
-   * 
+   *
    * @param request
    *        DHCP request received from client
    * @return DHCP response to send back, or <tt>null</tt> if no response.
    */
-  protected DHCPPacket doDiscover (DHCPPacket request)
+  protected DHCPPacket doDiscover (final DHCPPacket request)
   {
     logger.fine ("DISCOVER packet received");
     return null;
@@ -244,12 +245,12 @@ public class DHCPServlet
 
   /**
    * Process REQUEST request.
-   * 
+   *
    * @param request
    *        DHCP request received from client
    * @return DHCP response to send back, or <tt>null</tt> if no response.
    */
-  protected DHCPPacket doRequest (DHCPPacket request)
+  protected DHCPPacket doRequest (final DHCPPacket request)
   {
     logger.fine ("REQUEST packet received");
     return null;
@@ -257,12 +258,12 @@ public class DHCPServlet
 
   /**
    * Process INFORM request.
-   * 
+   *
    * @param request
    *        DHCP request received from client
    * @return DHCP response to send back, or <tt>null</tt> if no response.
    */
-  protected DHCPPacket doInform (DHCPPacket request)
+  protected DHCPPacket doInform (final DHCPPacket request)
   {
     logger.fine ("INFORM packet received");
     return null;
@@ -270,12 +271,12 @@ public class DHCPServlet
 
   /**
    * Process DECLINE request.
-   * 
+   *
    * @param request
    *        DHCP request received from client
    * @return DHCP response to send back, or <tt>null</tt> if no response.
    */
-  protected DHCPPacket doDecline (DHCPPacket request)
+  protected DHCPPacket doDecline (final DHCPPacket request)
   {
     logger.fine ("DECLINE packet received");
     return null;
@@ -283,12 +284,12 @@ public class DHCPServlet
 
   /**
    * Process RELEASE request.
-   * 
+   *
    * @param request
    *        DHCP request received from client
    * @return DHCP response to send back, or <tt>null</tt> if no response.
    */
-  protected DHCPPacket doRelease (DHCPPacket request)
+  protected DHCPPacket doRelease (final DHCPPacket request)
   {
     logger.fine ("RELEASE packet received");
     return null;
@@ -304,13 +305,13 @@ public class DHCPServlet
    * <p>
    * The only way to block the response from being sent is to raise an
    * exception.
-   * 
+   *
    * @param requestDatagram
    *        datagram received from client
    * @param responseDatagram
    *        datagram sent back to client
    */
-  protected void postProcess (DatagramPacket requestDatagram, DatagramPacket responseDatagram)
+  protected void postProcess (final DatagramPacket requestDatagram, final DatagramPacket responseDatagram)
   {
     // default is nop
   }
@@ -320,15 +321,15 @@ public class DHCPServlet
    */
   public DHCPCoreServer getServer ()
   {
-    return server;
+    return m_aServer;
   }
 
   /**
    * @param server
    *        The server to set.
    */
-  public void setServer (DHCPCoreServer server)
+  public void setServer (final DHCPCoreServer server)
   {
-    this.server = server;
+    this.m_aServer = server;
   }
 }

@@ -31,7 +31,7 @@ import org.junit.Test;
 
 /**
  * Test of DHCPConstants internals.
- * 
+ *
  * @author Stephan Hadinger
  */
 public class DHCPConstantsTest
@@ -46,56 +46,57 @@ public class DHCPConstantsTest
   @Test
   public void testGetBootNamesMap ()
   {
-    Map <Byte, String> map = DHCPConstants.getBootNamesMap ();
+    final Map <Byte, String> map = DHCPConstants.getBootNamesMap ();
     assertNotNull (map);
-    assertEquals ("BOOTREQUEST", map.get (DHCPConstants.BOOTREQUEST));
-    assertEquals ("BOOTREPLY", map.get (DHCPConstants.BOOTREPLY));
+    assertEquals ("BOOTREQUEST", map.get (Byte.valueOf (DHCPConstants.BOOTREQUEST)));
+    assertEquals ("BOOTREPLY", map.get (Byte.valueOf (DHCPConstants.BOOTREPLY)));
     assertNull (map.get (Byte.valueOf ((byte) 3)));
   }
 
   @Test
   public void testGetHtypesMap ()
   {
-    Map <Byte, String> map = DHCPConstants.getHtypesMap ();
+    final Map <Byte, String> map = DHCPConstants.getHtypesMap ();
     assertNotNull (map);
-    assertEquals ("HTYPE_ETHER", map.get (DHCPConstants.HTYPE_ETHER));
+    assertEquals ("HTYPE_ETHER", map.get (Byte.valueOf (DHCPConstants.HTYPE_ETHER)));
     assertNull (map.get (Byte.valueOf ((byte) 64)));
   }
 
   @Test
   public void testGetDhcpCodesMap ()
   {
-    Map <Byte, String> map = DHCPConstants.getDhcpCodesMap ();
+    final Map <Byte, String> map = DHCPConstants.getDhcpCodesMap ();
     assertNotNull (map);
-    assertEquals ("DHCPDISCOVER", map.get (DHCPConstants.DHCPDISCOVER));
+    assertEquals ("DHCPDISCOVER", map.get (Byte.valueOf (DHCPConstants.DHCPDISCOVER)));
     assertNull (map.get (Byte.valueOf ((byte) 127)));
   }
 
   @Test
   public void testGetDhoNamesMap ()
   {
-    Map <Byte, String> map = DHCPConstants.getDhoNamesMap ();
+    final Map <Byte, String> map = DHCPConstants.getDhoNamesMap ();
     assertNotNull (map);
-    assertEquals ("DHO_SUBNET_MASK", map.get (DHCPConstants.DHO_SUBNET_MASK));
-    assertEquals ("DHO_DHCP_LEASE_TIME", map.get (DHCPConstants.DHO_DHCP_LEASE_TIME));
+    assertEquals ("DHO_SUBNET_MASK", map.get (Byte.valueOf (DHCPConstants.DHO_SUBNET_MASK)));
+    assertEquals ("DHO_DHCP_LEASE_TIME", map.get (Byte.valueOf (DHCPConstants.DHO_DHCP_LEASE_TIME)));
     assertNull (map.get (Byte.valueOf ((byte) 145)));
   }
 
   @Test
   public void testGetDhoNamesReverseMap ()
   {
-    Map <String, Byte> map = DHCPConstants.getDhoNamesReverseMap ();
+    final Map <String, Byte> map = DHCPConstants.getDhoNamesReverseMap ();
     assertNotNull (map);
-    assertEquals (DHCPConstants.DHO_SUBNET_MASK, (byte) map.get ("DHO_SUBNET_MASK"));
-    assertEquals (DHCPConstants.DHO_DHCP_LEASE_TIME, (byte) map.get ("DHO_DHCP_LEASE_TIME"));
+    assertEquals (DHCPConstants.DHO_SUBNET_MASK, map.get ("DHO_SUBNET_MASK").byteValue ());
+    assertEquals (DHCPConstants.DHO_DHCP_LEASE_TIME, map.get ("DHO_DHCP_LEASE_TIME").byteValue ());
     assertNull (map.get (""));
   }
 
   @Test
   public void testGetDhoNamesReverse ()
   {
-    assertEquals (DHCPConstants.DHO_SUBNET_MASK, (byte) DHCPConstants.getDhoNamesReverse ("DHO_SUBNET_MASK"));
-    assertEquals (DHCPConstants.DHO_DHCP_LEASE_TIME, (byte) DHCPConstants.getDhoNamesReverse ("DHO_DHCP_LEASE_TIME"));
+    assertEquals (DHCPConstants.DHO_SUBNET_MASK, DHCPConstants.getDhoNamesReverse ("DHO_SUBNET_MASK").byteValue ());
+    assertEquals (DHCPConstants.DHO_DHCP_LEASE_TIME,
+                  DHCPConstants.getDhoNamesReverse ("DHO_DHCP_LEASE_TIME").byteValue ());
     assertNull (DHCPConstants.getDhoNamesReverse (""));
   }
 

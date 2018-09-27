@@ -72,10 +72,10 @@ public class DHCPResponseFactoryTest
   @Test
   public void testMakeDHCPOffer () throws Exception
   {
-    DHCPPacket req = new DHCPPacket ();
+    final DHCPPacket req = new DHCPPacket ();
     req.setDHCPMessageType (DHCPDISCOVER);
-    InetAddress offeredAddress = InetAddress.getByName ("10.254.0.1");
-    DHCPOption [] opts = null;
+    final InetAddress offeredAddress = InetAddress.getByName ("10.254.0.1");
+    final DHCPOption [] opts = null;
     DHCPPacket resp;
 
     req.setXid (0x21345678);
@@ -98,7 +98,7 @@ public class DHCPResponseFactoryTest
     assertEquals ("001122334455", resp.getChaddrAsHex ());
     assertEquals ("", resp.getSname ());
     assertEquals ("", resp.getFile ());
-    assertEquals (DHCPOFFER, (byte) resp.getDHCPMessageType ());
+    assertEquals (DHCPOFFER, resp.getDHCPMessageType ().byteValue ());
     assertEquals (Integer.valueOf (86400), resp.getOptionAsInteger (DHO_DHCP_LEASE_TIME));
     assertEquals (2, resp.getOptionsArray ().length); // no other options
     assertEquals (InetAddress.getByName ("11.12.156.1"), resp.getAddress ());
@@ -108,10 +108,10 @@ public class DHCPResponseFactoryTest
   @Test
   public void testMakeDHCPAck () throws Exception
   {
-    DHCPPacket req = new DHCPPacket ();
+    final DHCPPacket req = new DHCPPacket ();
     req.setDHCPMessageType (DHCPREQUEST);
-    InetAddress offeredAddress = InetAddress.getByName ("10.254.0.1");
-    DHCPOption [] opts = null;
+    final InetAddress offeredAddress = InetAddress.getByName ("10.254.0.1");
+    final DHCPOption [] opts = null;
     DHCPPacket resp;
 
     req.setXid (0x21345678);
@@ -134,7 +134,7 @@ public class DHCPResponseFactoryTest
     assertEquals ("001122334455", resp.getChaddrAsHex ());
     assertEquals ("", resp.getSname ());
     assertEquals ("", resp.getFile ());
-    assertEquals (DHCPACK, (byte) resp.getDHCPMessageType ());
+    assertEquals (DHCPACK, resp.getDHCPMessageType ().byteValue ());
     assertEquals (Integer.valueOf (86400), resp.getOptionAsInteger (DHO_DHCP_LEASE_TIME));
     assertEquals (2, resp.getOptionsArray ().length); // no other options
     assertEquals (InetAddress.getByName ("11.12.156.1"), resp.getAddress ());
@@ -144,10 +144,10 @@ public class DHCPResponseFactoryTest
   @Test
   public void testMakeDHCPAckForInform () throws Exception
   {
-    DHCPPacket req = new DHCPPacket ();
+    final DHCPPacket req = new DHCPPacket ();
     req.setDHCPMessageType (DHCPINFORM);
-    InetAddress offeredAddress = InetAddress.getByName ("10.254.0.1");
-    DHCPOption [] opts = null;
+    final InetAddress offeredAddress = InetAddress.getByName ("10.254.0.1");
+    final DHCPOption [] opts = null;
     DHCPPacket resp;
 
     req.setXid (0x21345678);
@@ -170,7 +170,7 @@ public class DHCPResponseFactoryTest
     assertEquals ("001122334455", resp.getChaddrAsHex ());
     assertEquals ("", resp.getSname ());
     assertEquals ("", resp.getFile ());
-    assertEquals (DHCPACK, (byte) resp.getDHCPMessageType ());
+    assertEquals (DHCPACK, resp.getDHCPMessageType ().byteValue ());
     assertEquals (null, resp.getOptionAsInteger (DHO_DHCP_LEASE_TIME));
     assertEquals (1, resp.getOptionsArray ().length); // no other options
     assertEquals (InetAddress.getByName ("11.12.156.1"), resp.getAddress ());
@@ -184,7 +184,7 @@ public class DHCPResponseFactoryTest
   @Test
   public void testGetDefaultSocketAddress () throws Exception
   {
-    InetAddress adr = InetAddress.getByName ("252.10.0.200");
+    final InetAddress adr = InetAddress.getByName ("252.10.0.200");
     // RFC 2131 compliance
     // sorry we ignore the broadcast bit
     // fully broadcast by client
@@ -213,13 +213,13 @@ public class DHCPResponseFactoryTest
     getDefaultSocketAddressTester (INADDR_ANY, INADDR_ANY, (byte) -10, INADDR_ANY, 68);
   }
 
-  private static final void getDefaultSocketAddressTester (InetAddress ciaddr,
-                                                           InetAddress giaddr,
-                                                           byte responseType,
-                                                           InetAddress expectedAddress,
-                                                           int expectedPort) throws Exception
+  private static final void getDefaultSocketAddressTester (final InetAddress ciaddr,
+                                                           final InetAddress giaddr,
+                                                           final byte responseType,
+                                                           final InetAddress expectedAddress,
+                                                           final int expectedPort) throws Exception
   {
-    DHCPPacket pac = new DHCPPacket ();
+    final DHCPPacket pac = new DHCPPacket ();
     InetSocketAddress sockAdr;
     pac.setCiaddr (ciaddr);
     pac.setGiaddr (giaddr);

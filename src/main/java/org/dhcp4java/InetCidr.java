@@ -32,8 +32,8 @@ import java.util.Map;
  */
 public class InetCidr implements Serializable, Comparable <InetCidr>
 {
-  private final int addr;
-  private final int mask;
+  private final int m_aAddr;
+  private final int m_nMask;
 
   /**
    * Constructor for InetCidr.
@@ -65,8 +65,8 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
     }
 
     // apply mask to address
-    this.addr = Util.inetAddress2Int (addr) & (int) gCidrMask[mask];
-    this.mask = mask;
+    this.m_aAddr = Util.inetAddress2Int (addr) & (int) gCidrMask[mask];
+    this.m_nMask = mask;
   }
 
   /**
@@ -98,14 +98,14 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
     {
       throw new IllegalArgumentException ("netmask: " + netMask + " is not a valid mask");
     }
-    this.addr = Util.inetAddress2Int (addr) & (int) gCidrMask[intMask];
-    this.mask = intMask;
+    this.m_aAddr = Util.inetAddress2Int (addr) & (int) gCidrMask[intMask.intValue ()];
+    this.m_nMask = intMask.intValue ();
   }
 
   @Override
   public String toString ()
   {
-    return Util.int2InetAddress (addr).getHostAddress () + '/' + this.mask;
+    return Util.int2InetAddress (m_aAddr).getHostAddress () + '/' + this.m_nMask;
   }
 
   /**
@@ -113,7 +113,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
    */
   public InetAddress getAddr ()
   {
-    return Util.int2InetAddress (addr);
+    return Util.int2InetAddress (m_aAddr);
   }
 
   /**
@@ -121,7 +121,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
    */
   public long getAddrLong ()
   {
-    return addr & 0xFFFFFFFFL;
+    return m_aAddr & 0xFFFFFFFFL;
   }
 
   /**
@@ -129,7 +129,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
    */
   public int getMask ()
   {
-    return this.mask;
+    return this.m_nMask;
   }
 
   /**
@@ -141,7 +141,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
    */
   public final long toLong ()
   {
-    return (addr & 0xFFFFFFFFL) + (((long) mask) << 32);
+    return (m_aAddr & 0xFFFFFFFFL) + (((long) m_nMask) << 32);
   }
 
   /**
@@ -165,7 +165,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
   @Override
   public int hashCode ()
   {
-    return this.addr ^ this.mask;
+    return this.m_aAddr ^ this.m_nMask;
   }
 
   @Override
@@ -177,7 +177,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
     }
     final InetCidr cidr = (InetCidr) obj;
 
-    return ((this.addr == cidr.addr) && (this.mask == cidr.mask));
+    return ((this.m_aAddr == cidr.m_aAddr) && (this.m_nMask == cidr.m_nMask));
   }
 
   /**
@@ -225,15 +225,15 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
     }
     if (equals (o))
       return 0;
-    if (int2UnsignedLong (this.addr) < int2UnsignedLong (o.addr))
+    if (int2UnsignedLong (this.m_aAddr) < int2UnsignedLong (o.m_aAddr))
       return -1;
-    if (int2UnsignedLong (this.addr) > int2UnsignedLong (o.addr))
+    if (int2UnsignedLong (this.m_aAddr) > int2UnsignedLong (o.m_aAddr))
       return 1;
 
     // addr are identical, now comparing mask
-    if (this.mask < o.mask)
+    if (this.m_nMask < o.m_nMask)
       return -1;
-    if (this.mask > o.mask)
+    if (this.m_nMask > o.m_nMask)
       return 1;
 
     // should not happen
@@ -363,7 +363,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
         final InetAddress mask = InetAddress.getByName (CIDR_MASKS[i]);
 
         gCidrMask[i + 1] = Util.inetAddress2Long (mask);
-        gCidr.put (mask, i + 1);
+        gCidr.put (mask, Integer.valueOf (i + 1));
       }
     }
     catch (final UnknownHostException e)
