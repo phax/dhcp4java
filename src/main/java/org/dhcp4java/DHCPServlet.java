@@ -113,7 +113,7 @@ public class DHCPServlet
 
       // do the real work
       // call service function
-      final DHCPPacket response = this.service (request);
+      final DHCPPacket response = service (request);
       // done
       if (s_aLogger.isDebugEnabled ())
       {
@@ -146,7 +146,7 @@ public class DHCPServlet
       {
         s_aLogger.debug ("Sending back to" + aAddress.getHostAddress () + '(' + nPort + ')');
       }
-      this.postProcess (requestDatagram, aResponseDatagram);
+      postProcess (requestDatagram, aResponseDatagram);
       return aResponseDatagram;
     }
     catch (final DHCPBadPacketException e)
@@ -204,15 +204,15 @@ public class DHCPServlet
       switch (dhcpMessageType.byteValue ())
       {
         case DHCPDISCOVER:
-          return this.doDiscover (request);
+          return doDiscover (request);
         case DHCPREQUEST:
-          return this.doRequest (request);
+          return doRequest (request);
         case DHCPINFORM:
-          return this.doInform (request);
+          return doInform (request);
         case DHCPDECLINE:
-          return this.doDecline (request);
+          return doDecline (request);
         case DHCPRELEASE:
-          return this.doRelease (request);
+          return doRelease (request);
 
         default:
           s_aLogger.info ("Unsupported message type " + dhcpMessageType);
@@ -333,6 +333,6 @@ public class DHCPServlet
    */
   public void setServer (final DHCPCoreServer server)
   {
-    this.m_aServer = server;
+    m_aServer = server;
   }
 }

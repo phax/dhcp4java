@@ -400,20 +400,20 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public DHCPPacket ()
   {
-    this.m_sComment = "";
-    this.m_nOp = BOOTREPLY;
-    this.m_nHtype = HTYPE_ETHER;
-    this.m_nHlen = 6;
-    this.m_aCiaddr = new byte [4];
-    this.m_aYiaddr = new byte [4];
-    this.m_aSiaddr = new byte [4];
-    this.m_aGiaddr = new byte [4];
-    this.m_aChaddr = new byte [16];
-    this.m_aSname = new byte [64];
-    this.m_aFile = new byte [128];
-    this.m_aPadding = new byte [0];
-    this.m_bIsDhcp = true;
-    this.m_aOptions = new LinkedHashMap <> ();
+    m_sComment = "";
+    m_nOp = BOOTREPLY;
+    m_nHtype = HTYPE_ETHER;
+    m_nHlen = 6;
+    m_aCiaddr = new byte [4];
+    m_aYiaddr = new byte [4];
+    m_aSiaddr = new byte [4];
+    m_aGiaddr = new byte [4];
+    m_aChaddr = new byte [16];
+    m_aSname = new byte [64];
+    m_aFile = new byte [128];
+    m_aPadding = new byte [0];
+    m_bIsDhcp = true;
+    m_aOptions = new LinkedHashMap <> ();
   }
 
   /**
@@ -491,16 +491,16 @@ public class DHCPPacket implements Cloneable, Serializable
       final DHCPPacket p = (DHCPPacket) super.clone ();
 
       // specifically cloning arrays to avoid side-effects
-      p.m_aCiaddr = this.m_aCiaddr.clone ();
-      p.m_aYiaddr = this.m_aYiaddr.clone ();
-      p.m_aSiaddr = this.m_aSiaddr.clone ();
-      p.m_aGiaddr = this.m_aGiaddr.clone ();
-      p.m_aChaddr = this.m_aChaddr.clone ();
-      p.m_aSname = this.m_aSname.clone ();
-      p.m_aFile = this.m_aFile.clone ();
-      // p.options = this.options.clone();
-      p.m_aOptions = new LinkedHashMap <> (this.m_aOptions);
-      p.m_aPadding = this.m_aPadding.clone ();
+      p.m_aCiaddr = m_aCiaddr.clone ();
+      p.m_aYiaddr = m_aYiaddr.clone ();
+      p.m_aSiaddr = m_aSiaddr.clone ();
+      p.m_aGiaddr = m_aGiaddr.clone ();
+      p.m_aChaddr = m_aChaddr.clone ();
+      p.m_aSname = m_aSname.clone ();
+      p.m_aFile = m_aFile.clone ();
+      // p.options = options.clone();
+      p.m_aOptions = new LinkedHashMap <> (m_aOptions);
+      p.m_aPadding = m_aPadding.clone ();
 
       p.m_bTruncated = false; // freshly new object, it is not considered as
       // corrupt
@@ -534,31 +534,27 @@ public class DHCPPacket implements Cloneable, Serializable
     }
 
     final DHCPPacket p = (DHCPPacket) o;
-    boolean b;
-
-    b = (this.m_sComment.equals (p.m_sComment));
-    b &= (this.m_nOp == p.m_nOp);
-    b &= (this.m_nHtype == p.m_nHtype);
-    b &= (this.m_nHlen == p.m_nHlen);
-    b &= (this.m_nHops == p.m_nHops);
-    b &= (this.m_nXid == p.m_nXid);
-    b &= (this.m_nSecs == p.m_nSecs);
-    b &= (this.m_nFlags == p.m_nFlags);
-    b &= (Arrays.equals (this.m_aCiaddr, p.m_aCiaddr));
-    b &= (Arrays.equals (this.m_aYiaddr, p.m_aYiaddr));
-    b &= (Arrays.equals (this.m_aSiaddr, p.m_aSiaddr));
-    b &= (Arrays.equals (this.m_aGiaddr, p.m_aGiaddr));
-    b &= (Arrays.equals (this.m_aChaddr, p.m_aChaddr));
-    b &= (Arrays.equals (this.m_aSname, p.m_aSname));
-    b &= (Arrays.equals (this.m_aFile, p.m_aFile));
-    b &= (this.m_aOptions.equals (p.m_aOptions));
-    b &= (this.m_bIsDhcp == p.m_bIsDhcp);
     // we deliberately ignore "truncated" since it is reset when cloning
-    b &= (Arrays.equals (this.m_aPadding, p.m_aPadding));
-    b &= (_equalsStatic (this.m_aAddress, p.m_aAddress));
-    b &= (this.m_nPort == p.m_nPort);
-
-    return b;
+    return m_sComment.equals (p.m_sComment) &&
+           m_nOp == p.m_nOp &&
+           m_nHtype == p.m_nHtype &&
+           m_nHlen == p.m_nHlen &&
+           m_nHops == p.m_nHops &&
+           m_nXid == p.m_nXid &&
+           m_nSecs == p.m_nSecs &&
+           m_nFlags == p.m_nFlags &&
+           Arrays.equals (m_aCiaddr, p.m_aCiaddr) &&
+           Arrays.equals (m_aYiaddr, p.m_aYiaddr) &&
+           Arrays.equals (m_aSiaddr, p.m_aSiaddr) &&
+           Arrays.equals (m_aGiaddr, p.m_aGiaddr) &&
+           Arrays.equals (m_aChaddr, p.m_aChaddr) &&
+           Arrays.equals (m_aSname, p.m_aSname) &&
+           Arrays.equals (m_aFile, p.m_aFile) &&
+           m_aOptions.equals (p.m_aOptions) &&
+           m_bIsDhcp == p.m_bIsDhcp &&
+           Arrays.equals (m_aPadding, p.m_aPadding) &&
+           _equalsStatic (m_aAddress, p.m_aAddress) &&
+           m_nPort == p.m_nPort;
   }
 
   /**
@@ -568,27 +564,27 @@ public class DHCPPacket implements Cloneable, Serializable
   public int hashCode ()
   {
     int h = -1;
-    h ^= this.m_sComment.hashCode ();
-    h += this.m_nOp;
-    h += this.m_nHtype;
-    h += this.m_nHlen;
-    h += this.m_nHops;
-    h += this.m_nXid;
-    h += this.m_nSecs;
-    h ^= this.m_nFlags;
-    h ^= Arrays.hashCode (this.m_aCiaddr);
-    h ^= Arrays.hashCode (this.m_aYiaddr);
-    h ^= Arrays.hashCode (this.m_aSiaddr);
-    h ^= Arrays.hashCode (this.m_aGiaddr);
-    h ^= Arrays.hashCode (this.m_aChaddr);
-    h ^= Arrays.hashCode (this.m_aSname);
-    h ^= Arrays.hashCode (this.m_aFile);
-    h ^= this.m_aOptions.hashCode ();
-    h += this.m_bIsDhcp ? 1 : 0;
-    // h += this.truncated ? 1 : 0;
-    h ^= Arrays.hashCode (this.m_aPadding);
-    h ^= (this.m_aAddress != null) ? this.m_aAddress.hashCode () : 0;
-    h += this.m_nPort;
+    h ^= m_sComment.hashCode ();
+    h += m_nOp;
+    h += m_nHtype;
+    h += m_nHlen;
+    h += m_nHops;
+    h += m_nXid;
+    h += m_nSecs;
+    h ^= m_nFlags;
+    h ^= Arrays.hashCode (m_aCiaddr);
+    h ^= Arrays.hashCode (m_aYiaddr);
+    h ^= Arrays.hashCode (m_aSiaddr);
+    h ^= Arrays.hashCode (m_aGiaddr);
+    h ^= Arrays.hashCode (m_aChaddr);
+    h ^= Arrays.hashCode (m_aSname);
+    h ^= Arrays.hashCode (m_aFile);
+    h ^= m_aOptions.hashCode ();
+    h += m_bIsDhcp ? 1 : 0;
+    // h += truncated ? 1 : 0;
+    h ^= Arrays.hashCode (m_aPadding);
+    h ^= (m_aAddress != null) ? m_aAddress.hashCode () : 0;
+    h += m_nPort;
     return h;
   }
 
@@ -602,26 +598,26 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   private void _assertInvariants ()
   {
-    assert (this.m_sComment != null);
-    assert (this.m_aCiaddr != null);
-    assert (this.m_aCiaddr.length == 4);
-    assert (this.m_aYiaddr != null);
-    assert (this.m_aYiaddr.length == 4);
-    assert (this.m_aSiaddr != null);
-    assert (this.m_aSiaddr.length == 4);
-    assert (this.m_aGiaddr != null);
-    assert (this.m_aGiaddr.length == 4);
+    assert (m_sComment != null);
+    assert (m_aCiaddr != null);
+    assert (m_aCiaddr.length == 4);
+    assert (m_aYiaddr != null);
+    assert (m_aYiaddr.length == 4);
+    assert (m_aSiaddr != null);
+    assert (m_aSiaddr.length == 4);
+    assert (m_aGiaddr != null);
+    assert (m_aGiaddr.length == 4);
     // strings
-    assert (this.m_aChaddr != null);
-    assert (this.m_aChaddr.length == 16);
-    assert (this.m_aSname != null);
-    assert (this.m_aSname.length == 64);
-    assert (this.m_aFile != null);
-    assert (this.m_aFile.length == 128);
-    assert (this.m_aPadding != null); // length is free for padding
+    assert (m_aChaddr != null);
+    assert (m_aChaddr.length == 16);
+    assert (m_aSname != null);
+    assert (m_aSname.length == 64);
+    assert (m_aFile != null);
+    assert (m_aFile.length == 128);
+    assert (m_aPadding != null); // length is free for padding
     // options
-    assert (this.m_aOptions != null);
-    for (final Map.Entry <Byte, DHCPOption> mapEntry : this.m_aOptions.entrySet ())
+    assert (m_aOptions != null);
+    for (final Map.Entry <Byte, DHCPOption> mapEntry : m_aOptions.entrySet ())
     {
       final Byte key = mapEntry.getKey ();
       final DHCPOption opt = mapEntry.getValue ();
@@ -700,8 +696,8 @@ public class DHCPPacket implements Cloneable, Serializable
     }
 
     // copy address and port
-    this.m_aAddress = address0; // no need to clone, InetAddress is immutable
-    this.m_nPort = port0;
+    m_aAddress = address0; // no need to clone, InetAddress is immutable
+    m_nPort = port0;
 
     try
     {
@@ -710,31 +706,31 @@ public class DHCPPacket implements Cloneable, Serializable
       final DataInputStream inStream = new DataInputStream (inBStream);
 
       // parse static part of packet
-      this.m_nOp = inStream.readByte ();
-      this.m_nHtype = inStream.readByte ();
-      this.m_nHlen = inStream.readByte ();
-      this.m_nHops = inStream.readByte ();
-      this.m_nXid = inStream.readInt ();
-      this.m_nSecs = inStream.readShort ();
-      this.m_nFlags = inStream.readShort ();
-      inStream.readFully (this.m_aCiaddr, 0, 4);
-      inStream.readFully (this.m_aYiaddr, 0, 4);
-      inStream.readFully (this.m_aSiaddr, 0, 4);
-      inStream.readFully (this.m_aGiaddr, 0, 4);
-      inStream.readFully (this.m_aChaddr, 0, 16);
-      inStream.readFully (this.m_aSname, 0, 64);
-      inStream.readFully (this.m_aFile, 0, 128);
+      m_nOp = inStream.readByte ();
+      m_nHtype = inStream.readByte ();
+      m_nHlen = inStream.readByte ();
+      m_nHops = inStream.readByte ();
+      m_nXid = inStream.readInt ();
+      m_nSecs = inStream.readShort ();
+      m_nFlags = inStream.readShort ();
+      inStream.readFully (m_aCiaddr, 0, 4);
+      inStream.readFully (m_aYiaddr, 0, 4);
+      inStream.readFully (m_aSiaddr, 0, 4);
+      inStream.readFully (m_aGiaddr, 0, 4);
+      inStream.readFully (m_aChaddr, 0, 16);
+      inStream.readFully (m_aSname, 0, 64);
+      inStream.readFully (m_aFile, 0, 128);
 
       // check for DHCP MAGIC_COOKIE
-      this.m_bIsDhcp = true;
+      m_bIsDhcp = true;
       inBStream.mark (4); // read ahead 4 bytes
       if (inStream.readInt () != _MAGIC_COOKIE)
       {
-        this.m_bIsDhcp = false;
+        m_bIsDhcp = false;
         inBStream.reset (); // re-read the 4 bytes
       }
 
-      if (this.m_bIsDhcp)
+      if (m_bIsDhcp)
       { // is it a full DHCP packet or a simple BOOTP?
         // DHCP Packet: parsing options
         int type = 0;
@@ -768,21 +764,21 @@ public class DHCPPacket implements Cloneable, Serializable
           final byte [] unit_opt = new byte [len];
           inBStream.read (unit_opt);
 
-          this.setOption (new DHCPOption ((byte) type, unit_opt)); // store
-                                                                   // option
+          setOption (new DHCPOption ((byte) type, unit_opt)); // store
+                                                              // option
         }
-        this.m_bTruncated = (type != DHO_END); // truncated options?
-        if (strict && this.m_bTruncated)
+        m_bTruncated = (type != DHO_END); // truncated options?
+        if (strict && m_bTruncated)
         {
           throw new DHCPBadPacketException ("Packet seams to be truncated");
         }
       }
 
       // put the remaining in padding
-      this.m_aPadding = new byte [inBStream.available ()];
-      inBStream.read (this.m_aPadding);
+      m_aPadding = new byte [inBStream.available ()];
+      inBStream.read (m_aPadding);
       // final verifications (if assertions are activated)
-      this._assertInvariants ();
+      _assertInvariants ();
 
       return this;
     }
@@ -807,7 +803,7 @@ public class DHCPPacket implements Cloneable, Serializable
   {
     int minLen = _BOOTP_ABSOLUTE_MIN_LEN;
 
-    if (this.m_bIsDhcp)
+    if (m_bIsDhcp)
     {
       // most other DHCP software seems to ensure that the BOOTP 'vend'
       // field is padded to at least 64 bytes
@@ -830,7 +826,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public byte [] serialize (final int minSize, final int maxSize)
   {
-    this._assertInvariants ();
+    _assertInvariants ();
     // prepare output buffer, pre-sized to maximum buffer length
     // default buffer is half the maximum size of possible packet
     // (this seams reasonable for most uses, worst case only doubles the buffer
@@ -839,28 +835,28 @@ public class DHCPPacket implements Cloneable, Serializable
     final DataOutputStream outStream = new DataOutputStream (outBStream);
     try
     {
-      outStream.writeByte (this.m_nOp);
-      outStream.writeByte (this.m_nHtype);
-      outStream.writeByte (this.m_nHlen);
-      outStream.writeByte (this.m_nHops);
-      outStream.writeInt (this.m_nXid);
-      outStream.writeShort (this.m_nSecs);
-      outStream.writeShort (this.m_nFlags);
-      outStream.write (this.m_aCiaddr, 0, 4);
-      outStream.write (this.m_aYiaddr, 0, 4);
-      outStream.write (this.m_aSiaddr, 0, 4);
-      outStream.write (this.m_aGiaddr, 0, 4);
-      outStream.write (this.m_aChaddr, 0, 16);
-      outStream.write (this.m_aSname, 0, 64);
-      outStream.write (this.m_aFile, 0, 128);
+      outStream.writeByte (m_nOp);
+      outStream.writeByte (m_nHtype);
+      outStream.writeByte (m_nHlen);
+      outStream.writeByte (m_nHops);
+      outStream.writeInt (m_nXid);
+      outStream.writeShort (m_nSecs);
+      outStream.writeShort (m_nFlags);
+      outStream.write (m_aCiaddr, 0, 4);
+      outStream.write (m_aYiaddr, 0, 4);
+      outStream.write (m_aSiaddr, 0, 4);
+      outStream.write (m_aGiaddr, 0, 4);
+      outStream.write (m_aChaddr, 0, 16);
+      outStream.write (m_aSname, 0, 64);
+      outStream.write (m_aFile, 0, 128);
 
-      if (this.m_bIsDhcp)
+      if (m_bIsDhcp)
       {
         // DHCP and not BOOTP -> magic cookie required
         outStream.writeInt (_MAGIC_COOKIE);
 
         // parse output options in creation order (LinkedHashMap)
-        for (final DHCPOption opt : this.getOptionsCollection ())
+        for (final DHCPOption opt : getOptionsCollection ())
         {
           assert (opt != null);
           assert (opt.getCode () != DHO_PAD);
@@ -881,7 +877,7 @@ public class DHCPPacket implements Cloneable, Serializable
       }
 
       // write padding
-      outStream.write (this.m_aPadding);
+      outStream.write (m_aPadding);
 
       // add padding if the packet is too small
       final int min_padding = minSize - outBStream.size ();
@@ -932,62 +928,62 @@ public class DHCPPacket implements Cloneable, Serializable
 
     try
     {
-      buffer.append (this.m_bIsDhcp ? "DHCP Packet" : "BOOTP Packet")
+      buffer.append (m_bIsDhcp ? "DHCP Packet" : "BOOTP Packet")
             .append ("\ncomment=")
-            .append (this.m_sComment)
+            .append (m_sComment)
             .append ("\naddress=")
-            .append (this.m_aAddress != null ? this.m_aAddress.getHostAddress () : "")
+            .append (m_aAddress != null ? m_aAddress.getHostAddress () : "")
             .append ('(')
-            .append (this.m_nPort)
+            .append (m_nPort)
             .append (')')
             .append ("\nop=");
 
-      final String bootName = _BOOT_NAMES.get (Byte.valueOf (this.m_nOp));
+      final String bootName = _BOOT_NAMES.get (Byte.valueOf (m_nOp));
       if (bootName != null)
       {
-        buffer.append (bootName).append ('(').append (this.m_nOp).append (')');
+        buffer.append (bootName).append ('(').append (m_nOp).append (')');
       }
       else
       {
-        buffer.append (this.m_nOp);
+        buffer.append (m_nOp);
       }
 
       buffer.append ("\nhtype=");
 
-      final String htypeName = _HTYPE_NAMES.get (Byte.valueOf (this.m_nHtype));
+      final String htypeName = _HTYPE_NAMES.get (Byte.valueOf (m_nHtype));
       if (htypeName != null)
       {
-        buffer.append (htypeName).append ('(').append (this.m_nHtype).append (')');
+        buffer.append (htypeName).append ('(').append (m_nHtype).append (')');
       }
       else
       {
-        buffer.append (this.m_nHtype);
+        buffer.append (m_nHtype);
       }
 
-      buffer.append ("\nhlen=").append (this.m_nHlen).append ("\nhops=").append (this.m_nHops).append ("\nxid=0x");
-      _appendHex (buffer, this.m_nXid);
+      buffer.append ("\nhlen=").append (m_nHlen).append ("\nhops=").append (m_nHops).append ("\nxid=0x");
+      _appendHex (buffer, m_nXid);
       buffer.append ("\nsecs=")
-            .append (this.m_nSecs)
+            .append (m_nSecs)
             .append ("\nflags=0x")
-            .append (Integer.toHexString (this.m_nFlags))
+            .append (Integer.toHexString (m_nFlags))
             .append ("\nciaddr=");
-      appendHostAddress (buffer, InetAddress.getByAddress (this.m_aCiaddr));
+      appendHostAddress (buffer, InetAddress.getByAddress (m_aCiaddr));
       buffer.append ("\nyiaddr=");
-      appendHostAddress (buffer, InetAddress.getByAddress (this.m_aYiaddr));
+      appendHostAddress (buffer, InetAddress.getByAddress (m_aYiaddr));
       buffer.append ("\nsiaddr=");
-      appendHostAddress (buffer, InetAddress.getByAddress (this.m_aSiaddr));
+      appendHostAddress (buffer, InetAddress.getByAddress (m_aSiaddr));
       buffer.append ("\ngiaddr=");
-      appendHostAddress (buffer, InetAddress.getByAddress (this.m_aGiaddr));
+      appendHostAddress (buffer, InetAddress.getByAddress (m_aGiaddr));
       buffer.append ("\nchaddr=0x");
-      this._appendChaddrAsHex (buffer);
-      buffer.append ("\nsname=").append (this.getSname ()).append ("\nfile=").append (this.getFile ());
+      _appendChaddrAsHex (buffer);
+      buffer.append ("\nsname=").append (getSname ()).append ("\nfile=").append (getFile ());
 
-      if (this.m_bIsDhcp)
+      if (m_bIsDhcp)
       {
         buffer.append ("\nOptions follows:");
 
         // parse options in creation order (LinkedHashMap)
-        for (final DHCPOption opt : this.getOptionsCollection ())
+        for (final DHCPOption opt : getOptionsCollection ())
         {
           buffer.append ('\n');
           opt.append (buffer);
@@ -995,8 +991,8 @@ public class DHCPPacket implements Cloneable, Serializable
       }
 
       // padding
-      buffer.append ("\npadding[").append (this.m_aPadding.length).append ("]=");
-      appendHex (buffer, this.m_aPadding);
+      buffer.append ("\npadding[").append (m_aPadding.length).append ("]=");
+      appendHex (buffer, m_aPadding);
     }
     catch (final Exception e)
     {
@@ -1020,7 +1016,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public String getComment ()
   {
-    return this.m_sComment;
+    return m_sComment;
   }
 
   /**
@@ -1035,7 +1031,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setComment (final String comment)
   {
-    this.m_sComment = comment;
+    m_sComment = comment;
   }
 
   /**
@@ -1048,7 +1044,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public byte [] getChaddr ()
   {
-    return this.m_aChaddr.clone ();
+    return m_aChaddr.clone ();
   }
 
   /**
@@ -1063,7 +1059,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   private StringBuilder _appendChaddrAsHex (final StringBuilder buffer)
   {
-    appendHex (buffer, this.m_aChaddr, 0, this.m_nHlen & 0xFF);
+    appendHex (buffer, m_aChaddr, 0, m_nHlen & 0xFF);
     return buffer;
   }
 
@@ -1075,14 +1071,14 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public HardwareAddress getHardwareAddress ()
   {
-    int len = this.m_nHlen & 0xff;
+    int len = m_nHlen & 0xff;
     if (len > 16)
     {
       len = 16;
     }
     final byte [] buf = new byte [len];
-    System.arraycopy (this.m_aChaddr, 0, buf, 0, len);
-    return new HardwareAddress (this.m_nHtype, buf);
+    System.arraycopy (m_aChaddr, 0, buf, 0, len);
+    return new HardwareAddress (m_nHtype, buf);
   }
 
   /**
@@ -1095,7 +1091,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public String getChaddrAsHex ()
   {
-    return this._appendChaddrAsHex (new StringBuilder (this.m_nHlen & 0xFF)).toString ();
+    return _appendChaddrAsHex (new StringBuilder (m_nHlen & 0xFF)).toString ();
   }
 
   /**
@@ -1115,19 +1111,16 @@ public class DHCPPacket implements Cloneable, Serializable
   {
     if (chaddr != null)
     {
-      if (chaddr.length > this.m_aChaddr.length)
+      if (chaddr.length > m_aChaddr.length)
       {
-        throw new IllegalArgumentException ("chaddr is too long: " +
-                                            chaddr.length +
-                                            ", max is: " +
-                                            this.m_aChaddr.length);
+        throw new IllegalArgumentException ("chaddr is too long: " + chaddr.length + ", max is: " + m_aChaddr.length);
       }
-      Arrays.fill (this.m_aChaddr, (byte) 0);
-      System.arraycopy (chaddr, 0, this.m_aChaddr, 0, chaddr.length);
+      Arrays.fill (m_aChaddr, (byte) 0);
+      System.arraycopy (chaddr, 0, m_aChaddr, 0, chaddr.length);
     }
     else
     {
-      Arrays.fill (this.m_aChaddr, (byte) 0);
+      Arrays.fill (m_aChaddr, (byte) 0);
     }
   }
 
@@ -1139,7 +1132,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setChaddrHex (final String hex)
   {
-    this.setChaddr (hex2Bytes (hex));
+    setChaddr (hex2Bytes (hex));
   }
 
   /**
@@ -1151,7 +1144,7 @@ public class DHCPPacket implements Cloneable, Serializable
   {
     try
     {
-      return InetAddress.getByAddress (this.getCiaddrRaw ());
+      return InetAddress.getByAddress (getCiaddrRaw ());
     }
     catch (final UnknownHostException e)
     {
@@ -1169,7 +1162,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public byte [] getCiaddrRaw ()
   {
-    return this.m_aCiaddr.clone ();
+    return m_aCiaddr.clone ();
   }
 
   /**
@@ -1187,7 +1180,7 @@ public class DHCPPacket implements Cloneable, Serializable
     {
       throw new IllegalArgumentException ("Inet4Address required");
     }
-    this.setCiaddrRaw (ciaddr.getAddress ());
+    setCiaddrRaw (ciaddr.getAddress ());
   }
 
   /**
@@ -1200,7 +1193,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setCiaddr (final String ciaddr) throws UnknownHostException
   {
-    this.setCiaddr (InetAddress.getByName (ciaddr));
+    setCiaddr (InetAddress.getByName (ciaddr));
   }
 
   /**
@@ -1222,7 +1215,7 @@ public class DHCPPacket implements Cloneable, Serializable
     {
       throw new IllegalArgumentException ("4-byte array required");
     }
-    System.arraycopy (ciaddr, 0, this.m_aCiaddr, 0, 4);
+    System.arraycopy (ciaddr, 0, m_aCiaddr, 0, 4);
   }
 
   /**
@@ -1236,7 +1229,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public byte [] getFileRaw ()
   {
-    return this.m_aFile.clone ();
+    return m_aFile.clone ();
   }
 
   /**
@@ -1246,7 +1239,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public String getFile ()
   {
-    return bytesToString (this.getFileRaw ());
+    return bytesToString (getFileRaw ());
   }
 
   /**
@@ -1265,7 +1258,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setFile (final String file)
   {
-    this.setFileRaw (stringToBytes (file));
+    setFileRaw (stringToBytes (file));
   }
 
   /**
@@ -1287,16 +1280,16 @@ public class DHCPPacket implements Cloneable, Serializable
   {
     if (file != null)
     {
-      if (file.length > this.m_aFile.length)
+      if (file.length > m_aFile.length)
       {
-        throw new IllegalArgumentException ("File is too long:" + file.length + " max is:" + this.m_aFile.length);
+        throw new IllegalArgumentException ("File is too long:" + file.length + " max is:" + m_aFile.length);
       }
-      Arrays.fill (this.m_aFile, (byte) 0);
-      System.arraycopy (file, 0, this.m_aFile, 0, file.length);
+      Arrays.fill (m_aFile, (byte) 0);
+      System.arraycopy (file, 0, m_aFile, 0, file.length);
     }
     else
     {
-      Arrays.fill (this.m_aFile, (byte) 0);
+      Arrays.fill (m_aFile, (byte) 0);
     }
   }
 
@@ -1307,7 +1300,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public short getFlags ()
   {
-    return this.m_nFlags;
+    return m_nFlags;
   }
 
   /**
@@ -1318,7 +1311,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setFlags (final short flags)
   {
-    this.m_nFlags = flags;
+    m_nFlags = flags;
   }
 
   /**
@@ -1330,7 +1323,7 @@ public class DHCPPacket implements Cloneable, Serializable
   {
     try
     {
-      return InetAddress.getByAddress (this.getGiaddrRaw ());
+      return InetAddress.getByAddress (getGiaddrRaw ());
     }
     catch (final UnknownHostException e)
     {
@@ -1348,7 +1341,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public byte [] getGiaddrRaw ()
   {
-    return this.m_aGiaddr.clone ();
+    return m_aGiaddr.clone ();
   }
 
   /**
@@ -1366,7 +1359,7 @@ public class DHCPPacket implements Cloneable, Serializable
     {
       throw new IllegalArgumentException ("Inet4Address required");
     }
-    this.setGiaddrRaw (giaddr.getAddress ());
+    setGiaddrRaw (giaddr.getAddress ());
   }
 
   /**
@@ -1379,7 +1372,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setGiaddr (final String giaddr) throws UnknownHostException
   {
-    this.setGiaddr (InetAddress.getByName (giaddr));
+    setGiaddr (InetAddress.getByName (giaddr));
   }
 
   /**
@@ -1401,7 +1394,7 @@ public class DHCPPacket implements Cloneable, Serializable
     {
       throw new IllegalArgumentException ("4-byte array required");
     }
-    System.arraycopy (giaddr, 0, this.m_aGiaddr, 0, 4);
+    System.arraycopy (giaddr, 0, m_aGiaddr, 0, 4);
   }
 
   /**
@@ -1413,7 +1406,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public byte getHlen ()
   {
-    return this.m_nHlen;
+    return m_nHlen;
   }
 
   /**
@@ -1428,7 +1421,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setHlen (final byte hlen)
   {
-    this.m_nHlen = hlen;
+    m_nHlen = hlen;
   }
 
   /**
@@ -1438,7 +1431,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public byte getHops ()
   {
-    return this.m_nHops;
+    return m_nHops;
   }
 
   /**
@@ -1449,7 +1442,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setHops (final byte hops)
   {
-    this.m_nHops = hops;
+    m_nHops = hops;
   }
 
   /**
@@ -1469,7 +1462,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public byte getHtype ()
   {
-    return this.m_nHtype;
+    return m_nHtype;
   }
 
   /**
@@ -1490,7 +1483,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setHtype (final byte htype)
   {
-    this.m_nHtype = htype;
+    m_nHtype = htype;
   }
 
   /**
@@ -1505,7 +1498,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public boolean isDhcp ()
   {
-    return this.m_bIsDhcp;
+    return m_bIsDhcp;
   }
 
   /**
@@ -1525,7 +1518,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setDhcp (final boolean isDhcp)
   {
-    this.m_bIsDhcp = isDhcp;
+    m_bIsDhcp = isDhcp;
   }
 
   /**
@@ -1542,7 +1535,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public byte getOp ()
   {
-    return this.m_nOp;
+    return m_nOp;
   }
 
   /**
@@ -1562,7 +1555,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setOp (final byte op)
   {
-    this.m_nOp = op;
+    m_nOp = op;
   }
 
   /**
@@ -1575,7 +1568,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public byte [] getPadding ()
   {
-    return this.m_aPadding.clone ();
+    return m_aPadding.clone ();
   }
 
   /**
@@ -1594,7 +1587,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setPadding (final byte [] padding)
   {
-    this.m_aPadding = ((padding == null) ? new byte [0] : padding.clone ());
+    m_aPadding = ((padding == null) ? new byte [0] : padding.clone ());
   }
 
   /**
@@ -1616,7 +1609,7 @@ public class DHCPPacket implements Cloneable, Serializable
     {
       throw new IllegalArgumentException ("length is > " + _DHCP_MAX_MTU);
     }
-    this.setPadding (new byte [length]);
+    setPadding (new byte [length]);
   }
 
   /**
@@ -1626,7 +1619,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public short getSecs ()
   {
-    return this.m_nSecs;
+    return m_nSecs;
   }
 
   /**
@@ -1637,7 +1630,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setSecs (final short secs)
   {
-    this.m_nSecs = secs;
+    m_nSecs = secs;
   }
 
   /**
@@ -1649,7 +1642,7 @@ public class DHCPPacket implements Cloneable, Serializable
   {
     try
     {
-      return InetAddress.getByAddress (this.getSiaddrRaw ());
+      return InetAddress.getByAddress (getSiaddrRaw ());
     }
     catch (final UnknownHostException e)
     {
@@ -1667,7 +1660,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public byte [] getSiaddrRaw ()
   {
-    return this.m_aSiaddr.clone ();
+    return m_aSiaddr.clone ();
   }
 
   /**
@@ -1685,7 +1678,7 @@ public class DHCPPacket implements Cloneable, Serializable
     {
       throw new IllegalArgumentException ("Inet4Address required");
     }
-    this.setSiaddrRaw (siaddr.getAddress ());
+    setSiaddrRaw (siaddr.getAddress ());
   }
 
   /**
@@ -1698,7 +1691,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setSiaddr (final String siaddr) throws UnknownHostException
   {
-    this.setSiaddr (InetAddress.getByName (siaddr));
+    setSiaddr (InetAddress.getByName (siaddr));
   }
 
   /**
@@ -1720,7 +1713,7 @@ public class DHCPPacket implements Cloneable, Serializable
     {
       throw new IllegalArgumentException ("4-byte array required");
     }
-    System.arraycopy (siaddr, 0, this.m_aSiaddr, 0, 4);
+    System.arraycopy (siaddr, 0, m_aSiaddr, 0, 4);
   }
 
   /**
@@ -1734,7 +1727,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public byte [] getSnameRaw ()
   {
-    return this.m_aSname.clone ();
+    return m_aSname.clone ();
   }
 
   /**
@@ -1744,7 +1737,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public String getSname ()
   {
-    return bytesToString (this.getSnameRaw ());
+    return bytesToString (getSnameRaw ());
   }
 
   /**
@@ -1763,7 +1756,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setSname (final String sname)
   {
-    this.setSnameRaw (stringToBytes (sname));
+    setSnameRaw (stringToBytes (sname));
   }
 
   /**
@@ -1785,16 +1778,16 @@ public class DHCPPacket implements Cloneable, Serializable
   {
     if (sname != null)
     {
-      if (sname.length > this.m_aSname.length)
+      if (sname.length > m_aSname.length)
       {
-        throw new IllegalArgumentException ("Sname is too long:" + sname.length + " max is:" + this.m_aSname.length);
+        throw new IllegalArgumentException ("Sname is too long:" + sname.length + " max is:" + m_aSname.length);
       }
-      Arrays.fill (this.m_aSname, (byte) 0);
-      System.arraycopy (sname, 0, this.m_aSname, 0, sname.length);
+      Arrays.fill (m_aSname, (byte) 0);
+      System.arraycopy (sname, 0, m_aSname, 0, sname.length);
     }
     else
     {
-      Arrays.fill (this.m_aSname, (byte) 0);
+      Arrays.fill (m_aSname, (byte) 0);
     }
   }
 
@@ -1805,7 +1798,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public int getXid ()
   {
-    return this.m_nXid;
+    return m_nXid;
   }
 
   /**
@@ -1819,7 +1812,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setXid (final int xid)
   {
-    this.m_nXid = xid;
+    m_nXid = xid;
   }
 
   /**
@@ -1831,7 +1824,7 @@ public class DHCPPacket implements Cloneable, Serializable
   {
     try
     {
-      return InetAddress.getByAddress (this.getYiaddrRaw ());
+      return InetAddress.getByAddress (getYiaddrRaw ());
     }
     catch (final UnknownHostException e)
     {
@@ -1849,7 +1842,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public byte [] getYiaddrRaw ()
   {
-    return this.m_aYiaddr.clone ();
+    return m_aYiaddr.clone ();
   }
 
   /**
@@ -1867,7 +1860,7 @@ public class DHCPPacket implements Cloneable, Serializable
     {
       throw new IllegalArgumentException ("Inet4Address required");
     }
-    this.setYiaddrRaw (yiaddr.getAddress ());
+    setYiaddrRaw (yiaddr.getAddress ());
   }
 
   /**
@@ -1880,7 +1873,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setYiaddr (final String yiaddr) throws UnknownHostException
   {
-    this.setYiaddr (InetAddress.getByName (yiaddr));
+    setYiaddr (InetAddress.getByName (yiaddr));
   }
 
   /**
@@ -1902,7 +1895,7 @@ public class DHCPPacket implements Cloneable, Serializable
     {
       throw new IllegalArgumentException ("4-byte array required");
     }
-    System.arraycopy (yiaddr, 0, this.m_aYiaddr, 0, 4);
+    System.arraycopy (yiaddr, 0, m_aYiaddr, 0, 4);
   }
 
   /**
@@ -1915,7 +1908,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public Byte getDHCPMessageType ()
   {
-    return this.getOptionAsByte (DHO_DHCP_MESSAGE_TYPE);
+    return getOptionAsByte (DHO_DHCP_MESSAGE_TYPE);
   }
 
   /**
@@ -1929,7 +1922,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setDHCPMessageType (final byte optionType)
   {
-    this.setOptionAsByte (DHO_DHCP_MESSAGE_TYPE, optionType);
+    setOptionAsByte (DHO_DHCP_MESSAGE_TYPE, optionType);
   }
 
   /**
@@ -1946,7 +1939,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public boolean isTruncated ()
   {
-    return this.m_bTruncated;
+    return m_bTruncated;
   }
 
   /**
@@ -1959,7 +1952,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public Integer getOptionAsNum (final byte code)
   {
-    final DHCPOption opt = this.getOption (code);
+    final DHCPOption opt = getOption (code);
     return (opt != null) ? opt.getValueAsNum () : null;
   }
 
@@ -1995,7 +1988,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public Byte getOptionAsByte (final byte code) throws IllegalArgumentException
   {
-    final DHCPOption opt = this.getOption (code);
+    final DHCPOption opt = getOption (code);
     return opt == null ? null : Byte.valueOf (opt.getValueAsByte ());
   }
 
@@ -2021,7 +2014,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public Short getOptionAsShort (final byte code) throws IllegalArgumentException
   {
-    final DHCPOption opt = this.getOption (code);
+    final DHCPOption opt = getOption (code);
     return opt == null ? null : Short.valueOf (opt.getValueAsShort ());
   }
 
@@ -2050,7 +2043,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public Integer getOptionAsInteger (final byte code) throws IllegalArgumentException
   {
-    final DHCPOption opt = this.getOption (code);
+    final DHCPOption opt = getOption (code);
     return opt == null ? null : Integer.valueOf (opt.getValueAsInt ());
   }
 
@@ -2079,7 +2072,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public InetAddress getOptionAsInetAddr (final byte code) throws IllegalArgumentException
   {
-    final DHCPOption opt = this.getOption (code);
+    final DHCPOption opt = getOption (code);
     return (opt == null) ? null : opt.getValueAsInetAddr ();
   }
 
@@ -2114,7 +2107,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public String getOptionAsString (final byte code) throws IllegalArgumentException
   {
-    final DHCPOption opt = this.getOption (code);
+    final DHCPOption opt = getOption (code);
     return (opt == null) ? null : opt.getValueAsString ();
   }
 
@@ -2138,7 +2131,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public short [] getOptionAsShorts (final byte code) throws IllegalArgumentException
   {
-    final DHCPOption opt = this.getOption (code);
+    final DHCPOption opt = getOption (code);
     return (opt == null) ? null : opt.getValueAsShorts ();
   }
 
@@ -2187,7 +2180,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public InetAddress [] getOptionAsInetAddrs (final byte code) throws IllegalArgumentException
   {
-    final DHCPOption opt = this.getOption (code);
+    final DHCPOption opt = getOption (code);
     return (opt == null) ? null : opt.getValueAsInetAddrs ();
   }
 
@@ -2211,7 +2204,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public byte [] getOptionAsBytes (final byte code) throws IllegalArgumentException
   {
-    final DHCPOption opt = this.getOption (code);
+    final DHCPOption opt = getOption (code);
     return (opt == null) ? null : opt.getValueAsBytes ();
   }
 
@@ -2229,7 +2222,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setOptionAsByte (final byte code, final byte val)
   {
-    this.setOption (DHCPOption.newOptionAsByte (code, val));
+    setOption (DHCPOption.newOptionAsByte (code, val));
   }
 
   /**
@@ -2246,7 +2239,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setOptionAsShort (final byte code, final short val)
   {
-    this.setOption (DHCPOption.newOptionAsShort (code, val));
+    setOption (DHCPOption.newOptionAsShort (code, val));
   }
 
   /**
@@ -2263,7 +2256,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setOptionAsInt (final byte code, final int val)
   {
-    this.setOption (DHCPOption.newOptionAsInt (code, val));
+    setOption (DHCPOption.newOptionAsInt (code, val));
   }
 
   /**
@@ -2280,7 +2273,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setOptionAsInetAddress (final byte code, final InetAddress val)
   {
-    this.setOption (DHCPOption.newOptionAsInetAddress (code, val));
+    setOption (DHCPOption.newOptionAsInetAddress (code, val));
   }
 
   /**
@@ -2299,7 +2292,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setOptionAsInetAddress (final byte code, final String val) throws UnknownHostException
   {
-    this.setOption (DHCPOption.newOptionAsInetAddress (code, InetAddress.getByName (val)));
+    setOption (DHCPOption.newOptionAsInetAddress (code, InetAddress.getByName (val)));
   }
 
   /**
@@ -2316,7 +2309,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setOptionAsInetAddresses (final byte code, final InetAddress [] val)
   {
-    this.setOption (DHCPOption.newOptionAsInetAddresses (code, val));
+    setOption (DHCPOption.newOptionAsInetAddresses (code, val));
   }
 
   /**
@@ -2333,7 +2326,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setOptionAsString (final byte code, final String val)
   {
-    this.setOption (DHCPOption.newOptionAsString (code, val));
+    setOption (DHCPOption.newOptionAsString (code, val));
   }
 
   /**
@@ -2349,7 +2342,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public byte [] getOptionRaw (final byte code)
   {
-    final DHCPOption opt = this.getOption (code);
+    final DHCPOption opt = getOption (code);
     return ((opt == null) ? null : opt.getValueFast ());
   }
 
@@ -2366,7 +2359,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public DHCPOption getOption (final byte code)
   {
-    final DHCPOption opt = this.m_aOptions.get (Byte.valueOf (code));
+    final DHCPOption opt = m_aOptions.get (Byte.valueOf (code));
     // Sanity checks
     if (opt == null)
     {
@@ -2386,7 +2379,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public boolean containsOption (final byte code)
   {
-    return this.m_aOptions.containsKey (Byte.valueOf (code));
+    return m_aOptions.containsKey (Byte.valueOf (code));
   }
 
   /**
@@ -2398,7 +2391,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public Collection <DHCPOption> getOptionsCollection ()
   {
-    return Collections.unmodifiableCollection (this.m_aOptions.values ());
+    return Collections.unmodifiableCollection (m_aOptions.values ());
   }
 
   /**
@@ -2408,7 +2401,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public DHCPOption [] getOptionsArray ()
   {
-    return this.m_aOptions.values ().toArray (new DHCPOption [this.m_aOptions.size ()]);
+    return m_aOptions.values ().toArray (new DHCPOption [m_aOptions.size ()]);
   }
 
   /**
@@ -2429,12 +2422,12 @@ public class DHCPPacket implements Cloneable, Serializable
   {
     if (buf == null)
     { // clear parameter
-      this.removeOption (code);
+      removeOption (code);
     }
     else
     {
-      this.setOption (new DHCPOption (code, buf)); // exception here if code=0
-                                                   // or code=-1
+      setOption (new DHCPOption (code, buf)); // exception here if code=0
+                                              // or code=-1
     }
   }
 
@@ -2458,11 +2451,11 @@ public class DHCPPacket implements Cloneable, Serializable
     {
       if (opt.getValueFast () == null)
       {
-        this.removeOption (opt.getCode ());
+        removeOption (opt.getCode ());
       }
       else
       {
-        this.m_aOptions.put (Byte.valueOf (opt.getCode ()), opt);
+        m_aOptions.put (Byte.valueOf (opt.getCode ()), opt);
       }
     }
   }
@@ -2480,7 +2473,7 @@ public class DHCPPacket implements Cloneable, Serializable
     {
       for (final DHCPOption opt : opts)
       {
-        this.setOption (opt);
+        setOption (opt);
       }
     }
   }
@@ -2498,7 +2491,7 @@ public class DHCPPacket implements Cloneable, Serializable
     {
       for (final DHCPOption opt : opts)
       {
-        this.setOption (opt);
+        setOption (opt);
       }
     }
   }
@@ -2511,7 +2504,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void removeOption (final byte opt)
   {
-    this.m_aOptions.remove (Byte.valueOf (opt));
+    m_aOptions.remove (Byte.valueOf (opt));
   }
 
   /**
@@ -2519,7 +2512,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void removeAllOptions ()
   {
-    this.m_aOptions.clear ();
+    m_aOptions.clear ();
   }
 
   /**
@@ -2532,7 +2525,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public InetAddress getAddress ()
   {
-    return this.m_aAddress;
+    return m_aAddress;
   }
 
   /**
@@ -2547,7 +2540,7 @@ public class DHCPPacket implements Cloneable, Serializable
   {
     if (address == null)
     {
-      this.m_aAddress = null;
+      m_aAddress = null;
     }
     else
       if (!(address instanceof Inet4Address))
@@ -2556,7 +2549,7 @@ public class DHCPPacket implements Cloneable, Serializable
       }
       else
       {
-        this.m_aAddress = address;
+        m_aAddress = address;
       }
   }
 
@@ -2569,7 +2562,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public int getPort ()
   {
-    return this.m_nPort;
+    return m_nPort;
   }
 
   /**
@@ -2581,7 +2574,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setPort (final int port)
   {
-    this.m_nPort = port;
+    m_nPort = port;
   }
 
   /**

@@ -100,9 +100,9 @@ public class DHCPOption implements Serializable
       throw new IllegalArgumentException ("code=-1 is not allowed (reserved for End Of Options)");
     }
 
-    this.m_nCode = code;
-    this.m_aValue = value != null ? value.clone () : null;
-    this.m_bMirror = mirror;
+    m_nCode = code;
+    m_aValue = value != null ? value.clone () : null;
+    m_bMirror = mirror;
   }
 
   /**
@@ -131,7 +131,7 @@ public class DHCPOption implements Serializable
    */
   public byte getCode ()
   {
-    return this.m_nCode;
+    return m_nCode;
   }
 
   /**
@@ -142,18 +142,12 @@ public class DHCPOption implements Serializable
   public boolean equals (final Object o)
   {
     if (o == this)
-    {
       return true;
-    }
-    if (!(o instanceof DHCPOption))
-    {
+    if (o == null || !(o instanceof DHCPOption))
       return false;
-    }
-    final DHCPOption opt = (DHCPOption) o;
-    return ((opt.m_nCode == this.m_nCode) &&
-            (opt.m_bMirror == this.m_bMirror) &&
-            Arrays.equals (opt.m_aValue, this.m_aValue));
 
+    final DHCPOption rhs = (DHCPOption) o;
+    return rhs.m_nCode == m_nCode && rhs.m_bMirror == m_bMirror && Arrays.equals (rhs.m_aValue, m_aValue);
   }
 
   /**
@@ -164,7 +158,7 @@ public class DHCPOption implements Serializable
   @Override
   public int hashCode ()
   {
-    return this.m_nCode ^ Arrays.hashCode (this.m_aValue) ^ (this.m_bMirror ? 0x80000000 : 0);
+    return m_nCode ^ Arrays.hashCode (m_aValue) ^ (m_bMirror ? 0x80000000 : 0);
   }
 
   /**
@@ -172,7 +166,7 @@ public class DHCPOption implements Serializable
    */
   public byte [] getValue ()
   {
-    return ((this.m_aValue == null) ? null : this.m_aValue.clone ());
+    return ((m_aValue == null) ? null : m_aValue.clone ());
   }
 
   /**
@@ -181,7 +175,7 @@ public class DHCPOption implements Serializable
    */
   public byte [] getValueFast ()
   {
-    return this.m_aValue;
+    return m_aValue;
   }
 
   /**
@@ -194,7 +188,7 @@ public class DHCPOption implements Serializable
    */
   public boolean isMirror ()
   {
-    return this.m_bMirror;
+    return m_bMirror;
   }
 
   public static final boolean isOptionAsByte (final byte code)
@@ -274,21 +268,17 @@ public class DHCPOption implements Serializable
   {
     if (!isOptionAsByte (m_nCode))
     {
-      throw new IllegalArgumentException ("DHCP option type (" + this.m_nCode + ") is not byte");
+      throw new IllegalArgumentException ("DHCP option type (" + m_nCode + ") is not byte");
     }
-    if (this.m_aValue == null)
+    if (m_aValue == null)
     {
       throw new IllegalStateException ("value is null");
     }
-    if (this.m_aValue.length != 1)
+    if (m_aValue.length != 1)
     {
-      throw new DHCPBadPacketException ("option " +
-                                        this.m_nCode +
-                                        " is wrong size:" +
-                                        this.m_aValue.length +
-                                        " should be 1");
+      throw new DHCPBadPacketException ("option " + m_nCode + " is wrong size:" + m_aValue.length + " should be 1");
     }
-    return this.m_aValue[0];
+    return m_aValue[0];
   }
 
   public static final boolean isOptionAsShort (final byte code)
@@ -318,22 +308,18 @@ public class DHCPOption implements Serializable
   {
     if (!isOptionAsShort (m_nCode))
     {
-      throw new IllegalArgumentException ("DHCP option type (" + this.m_nCode + ") is not short");
+      throw new IllegalArgumentException ("DHCP option type (" + m_nCode + ") is not short");
     }
-    if (this.m_aValue == null)
+    if (m_aValue == null)
     {
       throw new IllegalStateException ("value is null");
     }
-    if (this.m_aValue.length != 2)
+    if (m_aValue.length != 2)
     {
-      throw new DHCPBadPacketException ("option " +
-                                        this.m_nCode +
-                                        " is wrong size:" +
-                                        this.m_aValue.length +
-                                        " should be 2");
+      throw new DHCPBadPacketException ("option " + m_nCode + " is wrong size:" + m_aValue.length + " should be 2");
     }
 
-    return (short) ((this.m_aValue[0] & 0xff) << 8 | (this.m_aValue[1] & 0xFF));
+    return (short) ((m_aValue[0] & 0xff) << 8 | (m_aValue[1] & 0xFF));
   }
 
   public static final boolean isOptionAsInt (final byte code)
@@ -366,24 +352,17 @@ public class DHCPOption implements Serializable
   {
     if (!isOptionAsInt (m_nCode))
     {
-      throw new IllegalArgumentException ("DHCP option type (" + this.m_nCode + ") is not int");
+      throw new IllegalArgumentException ("DHCP option type (" + m_nCode + ") is not int");
     }
-    if (this.m_aValue == null)
+    if (m_aValue == null)
     {
       throw new IllegalStateException ("value is null");
     }
-    if (this.m_aValue.length != 4)
+    if (m_aValue.length != 4)
     {
-      throw new DHCPBadPacketException ("option " +
-                                        this.m_nCode +
-                                        " is wrong size:" +
-                                        this.m_aValue.length +
-                                        " should be 4");
+      throw new DHCPBadPacketException ("option " + m_nCode + " is wrong size:" + m_aValue.length + " should be 4");
     }
-    return ((this.m_aValue[0] & 0xFF) << 24 |
-            (this.m_aValue[1] & 0xFF) << 16 |
-            (this.m_aValue[2] & 0xFF) << 8 |
-            (this.m_aValue[3] & 0xFF));
+    return ((m_aValue[0] & 0xFF) << 24 | (m_aValue[1] & 0xFF) << 16 | (m_aValue[2] & 0xFF) << 8 | (m_aValue[3] & 0xFF));
   }
 
   // TODO
@@ -414,10 +393,10 @@ public class DHCPOption implements Serializable
     }
     if (m_aValue.length == 4)
     {
-      return Integer.valueOf ((this.m_aValue[0] & 0xFF) << 24 |
-                              (this.m_aValue[1] & 0xFF) << 16 |
-                              (this.m_aValue[2] & 0xFF) << 8 |
-                              (this.m_aValue[3] & 0xFF));
+      return Integer.valueOf ((m_aValue[0] & 0xFF) << 24 |
+                              (m_aValue[1] & 0xFF) << 16 |
+                              (m_aValue[2] & 0xFF) << 8 |
+                              (m_aValue[3] & 0xFF));
     }
     return null;
   }
@@ -452,23 +431,19 @@ public class DHCPOption implements Serializable
   {
     if (!isOptionAsInetAddr (m_nCode))
     {
-      throw new IllegalArgumentException ("DHCP option type (" + this.m_nCode + ") is not InetAddr");
+      throw new IllegalArgumentException ("DHCP option type (" + m_nCode + ") is not InetAddr");
     }
-    if (this.m_aValue == null)
+    if (m_aValue == null)
     {
       throw new IllegalStateException ("value is null");
     }
-    if (this.m_aValue.length != 4)
+    if (m_aValue.length != 4)
     {
-      throw new DHCPBadPacketException ("option " +
-                                        this.m_nCode +
-                                        " is wrong size:" +
-                                        this.m_aValue.length +
-                                        " should be 4");
+      throw new DHCPBadPacketException ("option " + m_nCode + " is wrong size:" + m_aValue.length + " should be 4");
     }
     try
     {
-      return InetAddress.getByAddress (this.m_aValue);
+      return InetAddress.getByAddress (m_aValue);
     }
     catch (final UnknownHostException e)
     {
@@ -513,13 +488,13 @@ public class DHCPOption implements Serializable
   {
     if (!isOptionAsString (m_nCode))
     {
-      throw new IllegalArgumentException ("DHCP option type (" + this.m_nCode + ") is not String");
+      throw new IllegalArgumentException ("DHCP option type (" + m_nCode + ") is not String");
     }
-    if (this.m_aValue == null)
+    if (m_aValue == null)
     {
       throw new IllegalStateException ("value is null");
     }
-    return DHCPPacket.bytesToString (this.m_aValue);
+    return DHCPPacket.bytesToString (m_aValue);
   }
 
   public static final boolean isOptionAsShorts (final byte code)
@@ -547,26 +522,22 @@ public class DHCPOption implements Serializable
   {
     if (!isOptionAsShorts (m_nCode))
     {
-      throw new IllegalArgumentException ("DHCP option type (" + this.m_nCode + ") is not short[]");
+      throw new IllegalArgumentException ("DHCP option type (" + m_nCode + ") is not short[]");
     }
-    if (this.m_aValue == null)
+    if (m_aValue == null)
     {
       throw new IllegalStateException ("value is null");
     }
-    if ((this.m_aValue.length % 2) != 0)
+    if ((m_aValue.length % 2) != 0)
     {
       // multiple of 2
-      throw new DHCPBadPacketException ("option " +
-                                        this.m_nCode +
-                                        " is wrong size:" +
-                                        this.m_aValue.length +
-                                        " should be 2*X");
+      throw new DHCPBadPacketException ("option " + m_nCode + " is wrong size:" + m_aValue.length + " should be 2*X");
     }
 
-    final short [] shorts = new short [this.m_aValue.length / 2];
-    for (int i = 0, a = 0; a < this.m_aValue.length; i++, a += 2)
+    final short [] shorts = new short [m_aValue.length / 2];
+    for (int i = 0, a = 0; a < m_aValue.length; i++, a += 2)
     {
-      shorts[i] = (short) (((this.m_aValue[a] & 0xFF) << 8) | (this.m_aValue[a + 1] & 0xFF));
+      shorts[i] = (short) (((m_aValue[a] & 0xFF) << 8) | (m_aValue[a + 1] & 0xFF));
     }
     return shorts;
   }
@@ -621,30 +592,26 @@ public class DHCPOption implements Serializable
   {
     if (!isOptionAsInetAddrs (m_nCode))
     {
-      throw new IllegalArgumentException ("DHCP option type (" + this.m_nCode + ") is not InetAddr[]");
+      throw new IllegalArgumentException ("DHCP option type (" + m_nCode + ") is not InetAddr[]");
     }
-    if (this.m_aValue == null)
+    if (m_aValue == null)
     {
       throw new IllegalStateException ("value is null");
     }
-    if ((this.m_aValue.length % 4) != 0) // multiple of 4
+    if ((m_aValue.length % 4) != 0) // multiple of 4
     {
-      throw new DHCPBadPacketException ("option " +
-                                        this.m_nCode +
-                                        " is wrong size:" +
-                                        this.m_aValue.length +
-                                        " should be 4*X");
+      throw new DHCPBadPacketException ("option " + m_nCode + " is wrong size:" + m_aValue.length + " should be 4*X");
     }
     try
     {
       final byte [] addr = new byte [4];
-      final InetAddress [] addrs = new InetAddress [this.m_aValue.length / 4];
-      for (int i = 0, a = 0; a < this.m_aValue.length; i++, a += 4)
+      final InetAddress [] addrs = new InetAddress [m_aValue.length / 4];
+      for (int i = 0, a = 0; a < m_aValue.length; i++, a += 4)
       {
-        addr[0] = this.m_aValue[a];
-        addr[1] = this.m_aValue[a + 1];
-        addr[2] = this.m_aValue[a + 2];
-        addr[3] = this.m_aValue[a + 3];
+        addr[0] = m_aValue[a];
+        addr[1] = m_aValue[a + 1];
+        addr[2] = m_aValue[a + 2];
+        addr[3] = m_aValue[a + 3];
         addrs[i] = InetAddress.getByAddress (addr);
       }
       return addrs;
@@ -681,13 +648,13 @@ public class DHCPOption implements Serializable
   {
     if (!isOptionAsBytes (m_nCode))
     {
-      throw new IllegalArgumentException ("DHCP option type (" + this.m_nCode + ") is not bytes");
+      throw new IllegalArgumentException ("DHCP option type (" + m_nCode + ") is not bytes");
     }
-    if (this.m_aValue == null)
+    if (m_aValue == null)
     {
       throw new IllegalStateException ("value is null");
     }
-    return this.getValue ();
+    return getValue ();
   }
 
   /**
@@ -960,9 +927,9 @@ public class DHCPOption implements Serializable
   {
     if (request == null)
       throw new NullPointerException ("request is null");
-    if (this.m_bMirror)
+    if (m_bMirror)
     {
-      final DHCPOption res = request.getOption (this.getCode ());
+      final DHCPOption res = request.getOption (getCode ());
       return res != null ? res : this;
     }
     return this;
@@ -982,26 +949,26 @@ public class DHCPOption implements Serializable
   public void append (final StringBuilder buffer)
   {
     // check for readable option name
-    if (_DHO_NAMES.containsKey (Byte.valueOf (this.m_nCode)))
+    if (_DHO_NAMES.containsKey (Byte.valueOf (m_nCode)))
     {
-      buffer.append (_DHO_NAMES.get (Byte.valueOf (this.m_nCode)));
+      buffer.append (_DHO_NAMES.get (Byte.valueOf (m_nCode)));
     }
-    buffer.append ('(').append (unsignedByte (this.m_nCode)).append (")=");
+    buffer.append ('(').append (unsignedByte (m_nCode)).append (")=");
 
-    if (this.m_bMirror)
+    if (m_bMirror)
     {
       buffer.append ("<mirror>");
     }
 
     // check for value printing
-    if (this.m_aValue == null)
+    if (m_aValue == null)
     {
       buffer.append ("<null>");
     }
     else
-      if (this.m_nCode == DHO_DHCP_MESSAGE_TYPE)
+      if (m_nCode == DHO_DHCP_MESSAGE_TYPE)
       {
-        final Byte cmd = Byte.valueOf (this.getValueAsByte ());
+        final Byte cmd = Byte.valueOf (getValueAsByte ());
         if (_DHCP_CODES.containsKey (cmd))
         {
           buffer.append (_DHCP_CODES.get (cmd));
@@ -1012,55 +979,55 @@ public class DHCPOption implements Serializable
         }
       }
       else
-        if (this.m_nCode == DHO_USER_CLASS)
+        if (m_nCode == DHO_USER_CLASS)
         {
-          buffer.append (userClassToString (this.m_aValue));
+          buffer.append (userClassToString (m_aValue));
         }
         else
-          if (this.m_nCode == DHO_DHCP_AGENT_OPTIONS)
+          if (m_nCode == DHO_DHCP_AGENT_OPTIONS)
           {
-            buffer.append (agentOptionsToString (this.m_aValue));
+            buffer.append (agentOptionsToString (m_aValue));
           }
           else
-            if (_DHO_FORMATS.containsKey (Byte.valueOf (this.m_nCode)))
+            if (_DHO_FORMATS.containsKey (Byte.valueOf (m_nCode)))
             {
               // formatted output
               try
               { // catch malformed values
-                switch (_DHO_FORMATS.get (Byte.valueOf (this.m_nCode)))
+                switch (_DHO_FORMATS.get (Byte.valueOf (m_nCode)))
                 {
                   case INET:
-                    DHCPPacket.appendHostAddress (buffer, this.getValueAsInetAddr ());
+                    DHCPPacket.appendHostAddress (buffer, getValueAsInetAddr ());
                     break;
                   case INETS:
-                    for (final InetAddress addr : this.getValueAsInetAddrs ())
+                    for (final InetAddress addr : getValueAsInetAddrs ())
                     {
                       DHCPPacket.appendHostAddress (buffer, addr);
                       buffer.append (' ');
                     }
                     break;
                   case INT:
-                    buffer.append (this.getValueAsInt ());
+                    buffer.append (getValueAsInt ());
                     break;
                   case SHORT:
-                    buffer.append (this.getValueAsShort ());
+                    buffer.append (getValueAsShort ());
                     break;
                   case SHORTS:
-                    for (final short aShort : this.getValueAsShorts ())
+                    for (final short aShort : getValueAsShorts ())
                     {
                       buffer.append (aShort).append (' ');
                     }
                     break;
                   case BYTE:
-                    buffer.append (this.getValueAsByte ());
+                    buffer.append (getValueAsByte ());
                     break;
                   case STRING:
-                    buffer.append ('"').append (this.getValueAsString ()).append ('"');
+                    buffer.append ('"').append (getValueAsString ()).append ('"');
                     break;
                   case BYTES:
-                    if (this.m_aValue != null)
+                    if (m_aValue != null)
                     {
-                      for (final byte aValue : this.m_aValue)
+                      for (final byte aValue : m_aValue)
                       {
                         buffer.append (unsignedByte (aValue)).append (' ');
                       }
@@ -1068,7 +1035,7 @@ public class DHCPOption implements Serializable
                     break;
                   default:
                     buffer.append ("0x");
-                    DHCPPacket.appendHex (buffer, this.m_aValue);
+                    DHCPPacket.appendHex (buffer, m_aValue);
                     break;
                 }
               }
@@ -1076,14 +1043,14 @@ public class DHCPOption implements Serializable
               {
                 // fallback to bytes
                 buffer.append ("0x");
-                DHCPPacket.appendHex (buffer, this.m_aValue);
+                DHCPPacket.appendHex (buffer, m_aValue);
               }
             }
             else
             {
               // unformatted raw output
               buffer.append ("0x");
-              DHCPPacket.appendHex (buffer, this.m_aValue);
+              DHCPPacket.appendHex (buffer, m_aValue);
             }
   }
 
@@ -1099,8 +1066,7 @@ public class DHCPOption implements Serializable
   public String toString ()
   {
     final StringBuilder s = new StringBuilder ();
-
-    this.append (s);
+    append (s);
     return s.toString ();
   }
 

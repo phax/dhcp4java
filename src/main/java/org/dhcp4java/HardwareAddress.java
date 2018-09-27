@@ -41,14 +41,13 @@ public class HardwareAddress implements Serializable
 
   public HardwareAddress (final byte [] macAddr)
   {
-    this.m_nHardwareType = HTYPE_ETHER;
-    this.m_aHardwareAddress = macAddr;
+    this (HTYPE_ETHER, macAddr);
   }
 
   public HardwareAddress (final byte hType, final byte [] macAddr)
   {
-    this.m_nHardwareType = hType;
-    this.m_aHardwareAddress = macAddr;
+    m_nHardwareType = hType;
+    m_aHardwareAddress = macAddr;
   }
 
   public HardwareAddress (final String macHex)
@@ -77,25 +76,25 @@ public class HardwareAddress implements Serializable
   @Override
   public int hashCode ()
   {
-    return this.m_nHardwareType ^ Arrays.hashCode (m_aHardwareAddress);
+    return m_nHardwareType ^ Arrays.hashCode (m_aHardwareAddress);
   }
 
   @Override
-  public boolean equals (final Object obj)
+  public boolean equals (final Object o)
   {
-    if ((obj == null) || (!(obj instanceof HardwareAddress)))
-    {
-      return false;
-    }
-    final HardwareAddress hwAddr = (HardwareAddress) obj;
+    if (o == this)
+      return true;
 
-    return ((this.m_nHardwareType == hwAddr.m_nHardwareType) &&
-            (Arrays.equals (this.m_aHardwareAddress, hwAddr.m_aHardwareAddress)));
+    if (o == null || !(o instanceof HardwareAddress))
+      return false;
+
+    final HardwareAddress rhs = (HardwareAddress) o;
+    return m_nHardwareType == rhs.m_nHardwareType && Arrays.equals (m_aHardwareAddress, rhs.m_aHardwareAddress);
   }
 
   public String getHardwareAddressHex ()
   {
-    return DHCPPacket.bytes2Hex (this.m_aHardwareAddress);
+    return DHCPPacket.bytes2Hex (m_aHardwareAddress);
   }
 
   /**
@@ -108,7 +107,7 @@ public class HardwareAddress implements Serializable
     if (m_nHardwareType != HTYPE_ETHER)
     {
       // append hType only if it is not standard ethernet
-      sb.append (this.m_nHardwareType).append ("/");
+      sb.append (m_nHardwareType).append ("/");
     }
     for (int i = 0; i < m_aHardwareAddress.length; i++)
     {

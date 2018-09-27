@@ -66,8 +66,8 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
     }
 
     // apply mask to address
-    this.m_nAddr = Util.inetAddress2Int (addr) & (int) gCidrMask[mask];
-    this.m_nMask = mask;
+    m_nAddr = Util.inetAddress2Int (addr) & (int) gCidrMask[mask];
+    m_nMask = mask;
   }
 
   /**
@@ -99,14 +99,14 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
     {
       throw new IllegalArgumentException ("netmask: " + netMask + " is not a valid mask");
     }
-    this.m_nAddr = Util.inetAddress2Int (addr) & (int) gCidrMask[intMask.intValue ()];
-    this.m_nMask = intMask.intValue ();
+    m_nAddr = Util.inetAddress2Int (addr) & (int) gCidrMask[intMask.intValue ()];
+    m_nMask = intMask.intValue ();
   }
 
   @Override
   public String toString ()
   {
-    return Util.int2InetAddress (m_nAddr).getHostAddress () + '/' + this.m_nMask;
+    return Util.int2InetAddress (m_nAddr).getHostAddress () + '/' + m_nMask;
   }
 
   /**
@@ -130,7 +130,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
    */
   public int getMask ()
   {
-    return this.m_nMask;
+    return m_nMask;
   }
 
   /**
@@ -167,7 +167,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
   @Override
   public int hashCode ()
   {
-    return this.m_nAddr ^ this.m_nMask;
+    return m_nAddr ^ m_nMask;
   }
 
   @Override
@@ -178,7 +178,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
       return false;
     }
     final InetCidr cidr = (InetCidr) obj;
-    return this.m_nAddr == cidr.m_nAddr && this.m_nMask == cidr.m_nMask;
+    return m_nAddr == cidr.m_nAddr && m_nMask == cidr.m_nMask;
   }
 
   /**
@@ -228,15 +228,15 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
     }
     if (equals (rhs))
       return 0;
-    if (_int2UnsignedLong (this.m_nAddr) < _int2UnsignedLong (rhs.m_nAddr))
+    if (_int2UnsignedLong (m_nAddr) < _int2UnsignedLong (rhs.m_nAddr))
       return -1;
-    if (_int2UnsignedLong (this.m_nAddr) > _int2UnsignedLong (rhs.m_nAddr))
+    if (_int2UnsignedLong (m_nAddr) > _int2UnsignedLong (rhs.m_nAddr))
       return 1;
 
     // addr are identical, now comparing mask
-    if (this.m_nMask < rhs.m_nMask)
+    if (m_nMask < rhs.m_nMask)
       return -1;
-    if (this.m_nMask > rhs.m_nMask)
+    if (m_nMask > rhs.m_nMask)
       return 1;
 
     // should not happen

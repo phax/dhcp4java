@@ -100,8 +100,8 @@ public class DHCPCoreServer implements Runnable
    */
   private DHCPCoreServer (final DHCPServlet servlet, final Properties userProps)
   {
-    this.m_aServlet = servlet;
-    this.m_aUserProps = userProps;
+    m_aServlet = servlet;
+    m_aUserProps = userProps;
   }
 
   /**
@@ -137,19 +137,19 @@ public class DHCPCoreServer implements Runnable
    */
   protected void init () throws DHCPServerInitException
   {
-    if (this.m_aServerSocket != null)
+    if (m_aServerSocket != null)
       throw new IllegalStateException ("Server already initialized");
 
     try
     {
       // default built-in minimal properties
-      this.m_aProperties = new Properties (DEF_PROPS);
+      m_aProperties = new Properties (DEF_PROPS);
 
       // try to load default configuration file
-      final InputStream propFileStream = this.getClass ().getResourceAsStream ("/DHCPd.properties");
+      final InputStream propFileStream = getClass ().getResourceAsStream ("/DHCPd.properties");
       if (propFileStream != null)
       {
-        this.m_aProperties.load (propFileStream);
+        m_aProperties.load (propFileStream);
       }
       else
       {
@@ -157,38 +157,39 @@ public class DHCPCoreServer implements Runnable
       }
 
       // now integrate provided properties
-      if (this.m_aUserProps != null)
+      if (m_aUserProps != null)
       {
-        this.m_aProperties.putAll (this.m_aUserProps);
+        m_aProperties.putAll (m_aUserProps);
       }
 
       // load socket address, this method may be overriden
-      m_aSockAddress = this.getInetSocketAddress (this.m_aProperties);
+      m_aSockAddress = getInetSocketAddress (m_aProperties);
       if (m_aSockAddress == null)
-      {
         throw new DHCPServerInitException ("Cannot find which SockAddress to open");
-      }
+
+      s_aLogger.info ("Listing at " + m_aSockAddress.getHostString () + ":" + m_aSockAddress.getPort ());
 
       // open socket for listening and sending
-      this.m_aServerSocket = new DatagramSocket (null);
-      this.m_aServerSocket.setBroadcast (true); // allow sending broadcast
-      this.m_aServerSocket.bind (m_aSockAddress);
+      m_aServerSocket = new DatagramSocket (null);
+      // allow sending broadcast
+      m_aServerSocket.setBroadcast (true);
+      m_aServerSocket.bind (m_aSockAddress);
 
       // initialize Thread Pool
-      final int numThreads = Integer.parseInt (this.m_aProperties.getProperty (SERVER_THREADS));
-      final int maxThreads = Integer.parseInt (this.m_aProperties.getProperty (SERVER_THREADS_MAX));
-      final int keepaliveThreads = Integer.parseInt (this.m_aProperties.getProperty (SERVER_THREADS_KEEPALIVE));
-      this.m_aThreadPool = new ThreadPoolExecutor (numThreads,
-                                                   maxThreads,
-                                                   keepaliveThreads,
-                                                   TimeUnit.MILLISECONDS,
-                                                   new ArrayBlockingQueue <Runnable> (BOUNDED_QUEUE_SIZE),
-                                                   new ServerThreadFactory ());
-      this.m_aThreadPool.prestartAllCoreThreads ();
+      final int nNumThreads = Integer.parseInt (m_aProperties.getProperty (SERVER_THREADS));
+      final int nMaxThreads = Integer.parseInt (m_aProperties.getProperty (SERVER_THREADS_MAX));
+      final int nKeepaliveThreads = Integer.parseInt (m_aProperties.getProperty (SERVER_THREADS_KEEPALIVE));
+      m_aThreadPool = new ThreadPoolExecutor (nNumThreads,
+                                              nMaxThreads,
+                                              nKeepaliveThreads,
+                                              TimeUnit.MILLISECONDS,
+                                              new ArrayBlockingQueue <> (BOUNDED_QUEUE_SIZE),
+                                              new ServerThreadFactory ());
+      m_aThreadPool.prestartAllCoreThreads ();
 
-      // now intialize the servlet
-      this.m_aServlet.setServer (this);
-      this.m_aServlet.init (this.m_aProperties);
+      // now initialize the servlet
+      m_aServlet.setServer (this);
+      m_aServlet.init (m_aProperties);
     }
     catch (final DHCPServerInitException e)
     {
@@ -196,16 +197,12 @@ public class DHCPCoreServer implements Runnable
     }
     catch (final Exception e)
     {
-      this.m_aServerSocket = null;
+      m_aServerSocket = null;
       s_aLogger.error ("Cannot open socket", e);
       throw new DHCPServerInitException ("Unable to init server", e);
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * @see java.lang.Runnable#run()
-   */
   protected void dispatch ()
   {
     try
@@ -215,7 +212,7 @@ public class DHCPCoreServer implements Runnable
         s_aLogger.debug ("Waiting for packet");
 
       // receive datagram
-      this.m_aServerSocket.receive (requestDatagram);
+      m_aServerSocket.receive (requestDatagram);
 
       if (s_aLogger.isDebugEnabled ())
       {
@@ -255,7 +252,7 @@ public class DHCPCoreServer implements Runnable
     try
     {
       // sending back
-      this.m_aServerSocket.send (responseDatagram);
+      m_aServerSocket.send (responseDatagram);
     }
     catch (final IOException e)
     {
@@ -326,14 +323,14 @@ public class DHCPCoreServer implements Runnable
    */
   public void run ()
   {
-    if (this.m_aServerSocket == null)
+    if (m_aServerSocket == null)
       throw new IllegalStateException ("Listening socket is not open - terminating");
 
-    while (!this.m_bStopped)
+    while (!m_bStopped)
     {
       try
       {
-        this.dispatch (); // do the stuff
+        dispatch (); // do the stuff
       }
       catch (final Exception e)
       {
@@ -347,8 +344,8 @@ public class DHCPCoreServer implements Runnable
    */
   public void stopServer ()
   {
-    this.m_bStopped = true;
-    this.m_aServerSocket.close (); // this generates an exception when trying to
+    m_bStopped = true;
+    m_aServerSocket.close (); // this generates an exception when trying to
     // receive
   }
 
@@ -381,12 +378,12 @@ public class DHCPCoreServer implements Runnable
 
     ServerThreadFactory ()
     {
-      this.m_sNamePrefix = "DHCPCoreServer-" + S_aPoolNumber.getAndIncrement () + "-thread-";
+      m_sNamePrefix = "DHCPCoreServer-" + S_aPoolNumber.getAndIncrement () + "-thread-";
     }
 
     public Thread newThread (final Runnable runnable)
     {
-      return new Thread (runnable, this.m_sNamePrefix + this.m_aThreadNumber.getAndIncrement ());
+      return new Thread (runnable, m_sNamePrefix + m_aThreadNumber.getAndIncrement ());
     }
   }
 
@@ -412,17 +409,18 @@ class DHCPServletDispatcher implements Runnable
 
   public DHCPServletDispatcher (final DHCPCoreServer server, final DHCPServlet servlet, final DatagramPacket req)
   {
-    this.m_aServer = server;
-    this.m_aDispatchServlet = servlet;
-    this.m_aDispatchPacket = req;
+    m_aServer = server;
+    m_aDispatchServlet = servlet;
+    m_aDispatchPacket = req;
   }
 
   public void run ()
   {
     try
     {
-      final DatagramPacket response = this.m_aDispatchServlet.serviceDatagram (this.m_aDispatchPacket);
-      this.m_aServer.sendResponse (response); // invoke callback method
+      final DatagramPacket response = m_aDispatchServlet.serviceDatagram (m_aDispatchPacket);
+      // invoke callback method
+      m_aServer.sendResponse (response);
     }
     catch (final Exception e)
     {
