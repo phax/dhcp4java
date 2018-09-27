@@ -1,0 +1,30 @@
+language: java
+
+env:
+  global:
+    - SONATYPE_USERNAME=ph@phloc.com
+    - secure: "MRTocLUyuxmTx0qWf+b1LS7JvV0HFvcGBaWPuQyUk/mZC8Nu7HtvTRrSJN1uCuj/GXqBDKuF5NtI2LpTft3hWnaeH
+5iLRUkWU7bYtfsMTv7m8JUQEeiWm2NNxLedL75SV12DAhYCDhc0IMH+OfwoaI8zRcVLsPiPDmk7vG2JYe0fvHjoktfsLn8fWmW0R
+KRC2Yuf9+rrL/ZKM3lZDKqYufausxh1a+MqSqY7oiDkiOZwIQ8WuzZlDDtSc4QgtxZF0x/2STBdaast4OTc202N/C7brUeJctRiz
+MzFicAe4WNssA9roRrynedE8JXn6JN2AXsW7vnvWzYVHutRxl5VnQj5xGuisZ257tViU10/TTd6nnGNySrGy3hrqP/55cP3zkDPM
+GY23UdsiTQBFO0/qtUJOAkwmLsBbw3H81346jOKiZwHWk8OIz0UZV7AP0K17kNq4aXYb+/JBWG/fNM0zn6EA0hcvFoRunB1RK3CE
+mz5EiMYIszKdzIfVEcIB6LoDKrZAJlDgsJoevWApjiJZzFh5wl1K4AbgND/kvII3i7Wwv2RrvAsg306udP7t0sY1uTFLGjpcHqum
+xoszK8590e6o4Zw8ZjtNHSPO8YtoAV/D6VKrngvdpC6XU8Pe8vDzu6wjFtx9mjz1kil8ofKvFE+9RaVihZ9WGBn7bhpcak="
+    
+jdk:
+  - oraclejdk8
+  
+install:
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -U -P jdeps
+
+script:
+  - mvn test -B -P coverage
+  
+cache:
+  directories:
+    - $HOME/.m2
+
+after_success:
+  - mvn deploy --settings travis-settings.xml -DskipTests=true -B -P travis-deploy
+  - bash <(curl -s https://codecov.io/bash)
+  
