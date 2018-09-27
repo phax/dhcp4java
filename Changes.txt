@@ -1,7 +1,0 @@
-Revision history for dhcp4java.
-
-*** 1.00  May 11 2008
-
-Minor changes:
-Corrected bug in makeDHCPAck that was not totally conformant to RFC2131 §4.3.5. (Thanks to Thiago Figueiredo)
-

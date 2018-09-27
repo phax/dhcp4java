@@ -1,5 +1,10 @@
 # dhcp4java
 
+# Revision history for dhcp4java.
+
+* v1.00 - 2008-05-11
+    * Corrected bug in makeDHCPAck that was not totally conformant to RFC2131 4.3.5. (Thanks to Thiago Figueiredo)
+
 # Frequently Asked Questions
 
 ## What is DHCP?
