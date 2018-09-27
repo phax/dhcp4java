@@ -29,8 +29,9 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A simple generic DHCP Server. The DHCP Server provided is based on a
@@ -69,7 +70,7 @@ import java.util.logging.Logger;
  */
 public class DHCPCoreServer implements Runnable
 {
-  private static final Logger logger = Logger.getLogger (DHCPCoreServer.class.getName ().toLowerCase ());
+  private static final Logger s_aLogger = LoggerFactory.getLogger (DHCPCoreServer.class);
   private static final int BOUNDED_QUEUE_SIZE = 20;
 
   /** default MTU for ethernet */
@@ -152,7 +153,7 @@ public class DHCPCoreServer implements Runnable
       }
       else
       {
-        logger.severe ("Could not load /DHCPd.properties");
+        s_aLogger.error ("Could not load /DHCPd.properties");
       }
 
       // now integrate provided properties
@@ -196,7 +197,7 @@ public class DHCPCoreServer implements Runnable
     catch (final Exception e)
     {
       this.m_aServerSocket = null;
-      logger.log (Level.SEVERE, "Cannot open socket", e);
+      s_aLogger.error ("Cannot open socket", e);
       throw new DHCPServerInitException ("Unable to init server", e);
     }
   }
@@ -210,18 +211,18 @@ public class DHCPCoreServer implements Runnable
     try
     {
       final DatagramPacket requestDatagram = new DatagramPacket (new byte [PACKET_SIZE], PACKET_SIZE);
-      logger.finer ("Waiting for packet");
+      s_aLogger.debug ("Waiting for packet");
 
       // receive datagram
       this.m_aServerSocket.receive (requestDatagram);
 
-      if (logger.isLoggable (Level.FINER))
+      if (s_aLogger.isDebugEnabled ())
       {
         final StringBuilder sbuf = new StringBuilder ("Received packet from ");
 
         DHCPPacket.appendHostAddress (sbuf, requestDatagram.getAddress ());
         sbuf.append ('(').append (requestDatagram.getPort ()).append (')');
-        logger.finer (sbuf.toString ());
+        s_aLogger.debug (sbuf.toString ());
       }
 
       // send work to thread pool
@@ -230,7 +231,7 @@ public class DHCPCoreServer implements Runnable
     }
     catch (final IOException e)
     {
-      logger.log (Level.FINE, "IOException", e);
+      s_aLogger.info ("IOException", e);
     }
   }
 
@@ -254,7 +255,7 @@ public class DHCPCoreServer implements Runnable
     }
     catch (final IOException e)
     {
-      logger.log (Level.SEVERE, "IOException", e);
+      s_aLogger.error ("IOException", e);
     }
   }
 
@@ -322,9 +323,8 @@ public class DHCPCoreServer implements Runnable
   public void run ()
   {
     if (this.m_aServerSocket == null)
-    {
       throw new IllegalStateException ("Listening socket is not open - terminating");
-    }
+
     while (!this.m_bStopped)
     {
       try
@@ -333,7 +333,7 @@ public class DHCPCoreServer implements Runnable
       }
       catch (final Exception e)
       {
-        logger.log (Level.WARNING, "Unexpected Exception", e);
+        s_aLogger.warn ("Unexpected Exception", e);
       }
     }
   }
@@ -400,7 +400,7 @@ public class DHCPCoreServer implements Runnable
  */
 class DHCPServletDispatcher implements Runnable
 {
-  private static final Logger logger = Logger.getLogger (DHCPServletDispatcher.class.getName ().toLowerCase ());
+  private static final Logger s_aLogger = LoggerFactory.getLogger (DHCPServletDispatcher.class);
 
   private final DHCPCoreServer m_aServer;
   private final DHCPServlet m_aDispatchServlet;
@@ -422,7 +422,7 @@ class DHCPServletDispatcher implements Runnable
     }
     catch (final Exception e)
     {
-      logger.log (Level.FINE, "Exception in dispatcher", e);
+      s_aLogger.info ("Exception in dispatcher", e);
     }
   }
 }

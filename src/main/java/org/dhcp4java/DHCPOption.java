@@ -33,8 +33,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class for manipulating DHCP options (used internally).
@@ -44,8 +45,7 @@ import java.util.logging.Logger;
  */
 public class DHCPOption implements Serializable
 {
-  private static final long serialVersionUID = 2L;
-  private static final Logger logger = Logger.getLogger (DHCPOption.class.getName ().toLowerCase ());
+  private static final Logger s_aLogger = LoggerFactory.getLogger (DHCPOption.class);
 
   /**
    * The code of the option. 0 is reserved for padding, -1 for end of options.
@@ -468,7 +468,7 @@ public class DHCPOption implements Serializable
     }
     catch (final UnknownHostException e)
     {
-      logger.log (Level.SEVERE, "Unexpected UnknownHostException", e);
+      s_aLogger.error ("Unexpected UnknownHostException", e);
       return null; // normally impossible
     }
   }
@@ -647,7 +647,7 @@ public class DHCPOption implements Serializable
     }
     catch (final UnknownHostException e)
     {
-      logger.log (Level.SEVERE, "Unexpected UnknownHostException", e);
+      s_aLogger.error ("Unexpected UnknownHostException", e);
       return null; // normally impossible
     }
   }
@@ -1253,7 +1253,7 @@ public class DHCPOption implements Serializable
     }
     catch (final IOException e)
     {
-      logger.log (Level.SEVERE, "Unexpected IOException", e);
+      s_aLogger.error ("Unexpected IOException", e);
       return buf.toByteArray ();
     }
   }
@@ -1327,7 +1327,7 @@ public class DHCPOption implements Serializable
     }
     catch (final IOException e)
     {
-      logger.log (Level.SEVERE, "Unexpected IOException", e);
+      s_aLogger.error ("Unexpected IOException", e);
       return buf.toByteArray ();
     }
   }
@@ -1551,7 +1551,7 @@ public class DHCPOption implements Serializable
                   }
                   catch (final UnknownHostException e)
                   {
-                    logger.log (Level.SEVERE, "Invalid address:" + value, e);
+                    s_aLogger.error ("Invalid address:" + value, e);
                     return null;
                   }
                 }
@@ -1569,7 +1569,7 @@ public class DHCPOption implements Serializable
                     }
                     catch (final UnknownHostException e)
                     {
-                      logger.log (Level.SEVERE, "Invalid address", e);
+                      s_aLogger.error ("Invalid address", e);
                       return null;
                     }
                     return newOptionAsInetAddresses (code, listInet);
@@ -1837,23 +1837,23 @@ public class DHCPOption implements Serializable
       }
     }
 
-    System.out.println ("---All codes---");
-    System.out.println (all);
-    System.out.println ("---INET---");
-    System.out.println (inet1);
-    System.out.println ("---INETS---");
-    System.out.println (inets);
-    System.out.println ("---INT---");
-    System.out.println (int1);
-    System.out.println ("---SHORT---");
-    System.out.println (short1);
-    System.out.println ("---SHORTS---");
-    System.out.println (shorts);
-    System.out.println ("---BYTE---");
-    System.out.println (byte1);
-    System.out.println ("---BYTES---");
-    System.out.println (bytes);
-    System.out.println ("---STRING---");
-    System.out.println (string1);
+    s_aLogger.info ("---All codes---");
+    s_aLogger.info (all);
+    s_aLogger.info ("---INET---");
+    s_aLogger.info (inet1);
+    s_aLogger.info ("---INETS---");
+    s_aLogger.info (inets);
+    s_aLogger.info ("---INT---");
+    s_aLogger.info (int1);
+    s_aLogger.info ("---SHORT---");
+    s_aLogger.info (short1);
+    s_aLogger.info ("---SHORTS---");
+    s_aLogger.info (shorts);
+    s_aLogger.info ("---BYTE---");
+    s_aLogger.info (byte1);
+    s_aLogger.info ("---BYTES---");
+    s_aLogger.info (bytes);
+    s_aLogger.info ("---STRING---");
+    s_aLogger.info (string1);
   }
 }

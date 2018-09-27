@@ -24,37 +24,27 @@ import static org.junit.Assert.assertNotNull;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPCoreServer;
 import org.dhcp4java.DHCPServerInitException;
 import org.dhcp4java.DHCPServlet;
 import org.junit.After;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class DHCPServerTest
 {
-
   private static final String SERVER_ADDR = "127.0.0.1";
   private static final int SERVER_PORT = 6767;
 
-  private DHCPCoreServer server0 = null;
-
-  @BeforeClass
-  public static void setLoggingAll ()
-  {
-    Logger.getLogger ("org.dhcp4java.dhcpserver").setLevel (Level.ALL);
-  }
+  private DHCPCoreServer m_aServer0;
 
   @After
   public void stopServer ()
   {
-    if (server0 != null)
+    if (m_aServer0 != null)
     {
-      server0.stopServer ();
-      server0 = null;
+      m_aServer0.stopServer ();
+      m_aServer0 = null;
     }
   }
 
@@ -67,12 +57,12 @@ public class DHCPServerTest
   @Test (expected = DHCPServerInitException.class)
   public void testInitServerPortAlreadyInUse () throws Exception
   {
-    Properties localProperties = new Properties ();
+    final Properties localProperties = new Properties ();
 
     localProperties.put (DHCPCoreServer.SERVER_ADDRESS, SERVER_ADDR + ':' + SERVER_PORT);
     localProperties.put (DHCPCoreServer.SERVER_THREADS, "1");
 
-    server0 = DHCPCoreServer.initServer (new DHCPServerTestServlet (), localProperties);
+    m_aServer0 = DHCPCoreServer.initServer (new DHCPServerTestServlet (), localProperties);
     DHCPCoreServer.initServer (new DHCPServerTestServlet (), localProperties);
 
   }
@@ -80,7 +70,7 @@ public class DHCPServerTest
   @Test
   public void testInitServerNullProps () throws Exception
   {
-    DHCPCoreServer server = DHCPCoreServer.initServer (new DHCPServerTestServlet (), null);
+    final DHCPCoreServer server = DHCPCoreServer.initServer (new DHCPServerTestServlet (), null);
     assertNotNull (server);
     server.stopServer ();
   }
@@ -88,12 +78,12 @@ public class DHCPServerTest
   @Test
   public void testInitServer () throws Exception
   {
-    Properties localProperties = new Properties ();
+    final Properties localProperties = new Properties ();
 
     localProperties.put (DHCPCoreServer.SERVER_ADDRESS, SERVER_ADDR + ':' + SERVER_PORT);
     localProperties.put (DHCPCoreServer.SERVER_THREADS, "1");
 
-    DHCPCoreServer server = DHCPCoreServer.initServer (new DHCPServerTestServlet (), localProperties);
+    final DHCPCoreServer server = DHCPCoreServer.initServer (new DHCPServerTestServlet (), localProperties);
     new Thread (server).start ();
     synchronized (this)
     {

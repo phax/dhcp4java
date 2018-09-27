@@ -47,8 +47,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The basic class for manipulating DHCP packets.
@@ -352,13 +353,12 @@ import java.util.logging.Logger;
  */
 public class DHCPPacket implements Cloneable, Serializable
 {
-  private static final Logger logger = Logger.getLogger (DHCPPacket.class.getName ().toLowerCase ());
 
-  // ----------------------------------------------------------------------
+  private static final Logger s_aLogger = LoggerFactory.getLogger (DHCPPacket.class);
+
   // user defined comment
   private String m_sComment; // Free user-defined comment
 
-  // ----------------------------------------------------------------------
   // static structure of the packet
   private byte m_nOp; // Op code
   private byte m_nHtype; // HW address Type
@@ -910,7 +910,7 @@ public class DHCPPacket implements Cloneable, Serializable
     catch (final IOException e)
     {
       // nomrally impossible with ByteArrayOutputStream
-      logger.log (Level.SEVERE, "Unexpected Exception", e);
+      s_aLogger.error ("Unexpected Exception", e);
       throw new DHCPBadPacketException ("IOException raised: " + e.toString ());
     }
   }
@@ -1155,7 +1155,7 @@ public class DHCPPacket implements Cloneable, Serializable
     }
     catch (final UnknownHostException e)
     {
-      logger.log (Level.SEVERE, "Unexpected UnknownHostException", e);
+      s_aLogger.error ("Unexpected UnknownHostException", e);
       return null; // normaly impossible
     }
   }
@@ -1334,7 +1334,7 @@ public class DHCPPacket implements Cloneable, Serializable
     }
     catch (final UnknownHostException e)
     {
-      logger.log (Level.SEVERE, "Unexpected UnknownHostException", e);
+      s_aLogger.error ("Unexpected UnknownHostException", e);
       return null; // normaly impossible
     }
   }
@@ -1653,7 +1653,7 @@ public class DHCPPacket implements Cloneable, Serializable
     }
     catch (final UnknownHostException e)
     {
-      logger.log (Level.SEVERE, "Unexpected UnknownHostException", e);
+      s_aLogger.error ("Unexpected UnknownHostException", e);
       return null; // normaly impossible
     }
   }
@@ -1833,7 +1833,7 @@ public class DHCPPacket implements Cloneable, Serializable
     }
     catch (final UnknownHostException e)
     {
-      logger.log (Level.SEVERE, "Unexpected UnknownHostException", e);
+      s_aLogger.error ("Unexpected UnknownHostException", e);
       return null; // normaly impossible
     }
   }

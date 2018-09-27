@@ -34,7 +34,6 @@ import static org.dhcp4java.DHCPConstants.INADDR_BROADCAST;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.logging.Logger;
 
 /**
  * This class provides some standard factories for DHCP responses.
@@ -47,15 +46,9 @@ import java.util.logging.Logger;
  */
 public final class DHCPResponseFactory
 {
-
   // Suppresses default constructor, ensuring non-instantiability.
   private DHCPResponseFactory ()
-  {
-    throw new UnsupportedOperationException ();
-  }
-
-  @SuppressWarnings ("unused")
-  private static final Logger logger = Logger.getLogger (DHCPResponseFactory.class.getName ().toLowerCase ());
+  {}
 
   /**
    * Create a populated DHCPOFFER response.

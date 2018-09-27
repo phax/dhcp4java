@@ -29,8 +29,9 @@ import static org.dhcp4java.DHCPConstants.DHCPREQUEST;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * General Interface for a "DHCP Servlet"
@@ -47,7 +48,7 @@ import java.util.logging.Logger;
  */
 public class DHCPServlet
 {
-  private static final Logger logger = Logger.getLogger (DHCPServlet.class.getName ().toLowerCase ());
+  private static final Logger s_aLogger = LoggerFactory.getLogger (DHCPServlet.class);
 
   /** the server instance running this servlet */
   protected DHCPCoreServer m_aServer = null;
@@ -103,18 +104,18 @@ public class DHCPServlet
         return null;
       } // nothing much we can do
 
-      if (logger.isLoggable (Level.FINER))
+      if (s_aLogger.isDebugEnabled ())
       {
-        logger.finer (request.toString ());
+        s_aLogger.debug (request.toString ());
       }
 
       // do the real work
-      final DHCPPacket response = this.service (request); // call service
-                                                          // function
+      // call service function
+      final DHCPPacket response = this.service (request);
       // done
-      if (logger.isLoggable (Level.FINER))
+      if (s_aLogger.isDebugEnabled ())
       {
-        logger.finer ("service() done");
+        s_aLogger.debug ("service() done");
       }
       if (response == null)
       {
@@ -125,7 +126,7 @@ public class DHCPServlet
       final InetAddress address = response.getAddress ();
       if (address == null)
       {
-        logger.warning ("Address needed in response");
+        s_aLogger.warn ("Address needed in response");
         return null;
       }
       final int port = response.getPort ();
@@ -133,26 +134,26 @@ public class DHCPServlet
       // we have something to send back
       final byte [] responseBuf = response.serialize ();
 
-      if (logger.isLoggable (Level.FINER))
+      if (s_aLogger.isDebugEnabled ())
       {
-        logger.finer ("Buffer is " + responseBuf.length + " bytes long");
+        s_aLogger.debug ("Buffer is " + responseBuf.length + " bytes long");
       }
 
       responseDatagram = new DatagramPacket (responseBuf, responseBuf.length, address, port);
-      if (logger.isLoggable (Level.FINER))
+      if (s_aLogger.isDebugEnabled ())
       {
-        logger.finer ("Sending back to" + address.getHostAddress () + '(' + port + ')');
+        s_aLogger.debug ("Sending back to" + address.getHostAddress () + '(' + port + ')');
       }
       this.postProcess (requestDatagram, responseDatagram);
       return responseDatagram;
     }
     catch (final DHCPBadPacketException e)
     {
-      logger.log (Level.INFO, "Invalid DHCP packet received", e);
+      s_aLogger.info ("Invalid DHCP packet received", e);
     }
     catch (final Exception e)
     {
-      logger.log (Level.INFO, "Unexpected Exception", e);
+      s_aLogger.info ("Unexpected Exception", e);
     }
 
     // general fallback, we do nothing
@@ -184,7 +185,7 @@ public class DHCPServlet
 
     if (!request.isDhcp ())
     {
-      logger.info ("BOOTP packet rejected");
+      s_aLogger.info ("BOOTP packet rejected");
       return null; // skipping old BOOTP
     }
 
@@ -192,7 +193,7 @@ public class DHCPServlet
 
     if (dhcpMessageType == null)
     {
-      logger.info ("no DHCP message type");
+      s_aLogger.info ("no DHCP message type");
       return null;
     }
 
@@ -212,7 +213,7 @@ public class DHCPServlet
           return this.doRelease (request);
 
         default:
-          logger.info ("Unsupported message type " + dhcpMessageType);
+          s_aLogger.info ("Unsupported message type " + dhcpMessageType);
           return null;
       }
     }
@@ -220,12 +221,12 @@ public class DHCPServlet
       if (request.getOp () == BOOTREPLY)
       {
         // receiving a BOOTREPLY from a client is not normal
-        logger.info ("BOOTREPLY received from client");
+        s_aLogger.info ("BOOTREPLY received from client");
         return null;
       }
       else
       {
-        logger.warning ("Unknown Op: " + request.getOp ());
+        s_aLogger.warn ("Unknown Op: " + request.getOp ());
         return null; // ignore
       }
   }
@@ -239,7 +240,7 @@ public class DHCPServlet
    */
   protected DHCPPacket doDiscover (final DHCPPacket request)
   {
-    logger.fine ("DISCOVER packet received");
+    s_aLogger.info ("DISCOVER packet received");
     return null;
   }
 
@@ -252,7 +253,7 @@ public class DHCPServlet
    */
   protected DHCPPacket doRequest (final DHCPPacket request)
   {
-    logger.fine ("REQUEST packet received");
+    s_aLogger.info ("REQUEST packet received");
     return null;
   }
 
@@ -265,7 +266,7 @@ public class DHCPServlet
    */
   protected DHCPPacket doInform (final DHCPPacket request)
   {
-    logger.fine ("INFORM packet received");
+    s_aLogger.info ("INFORM packet received");
     return null;
   }
 
@@ -278,7 +279,7 @@ public class DHCPServlet
    */
   protected DHCPPacket doDecline (final DHCPPacket request)
   {
-    logger.fine ("DECLINE packet received");
+    s_aLogger.info ("DECLINE packet received");
     return null;
   }
 
@@ -291,7 +292,7 @@ public class DHCPServlet
    */
   protected DHCPPacket doRelease (final DHCPPacket request)
   {
-    logger.fine ("RELEASE packet received");
+    s_aLogger.info ("RELEASE packet received");
     return null;
   }
 

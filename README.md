@@ -7,6 +7,7 @@ This is a fork of https://github.com/shadinger/dhcp4java from 2018-09-27
 * v1.0.1 - work in progress
     * Mavenized (com.helger:dhcp4java)
     * Requires Java 8
+    * Using SLF4J 1.7 for logging
 * v1.00 - 2008-05-11
     * Corrected bug in makeDHCPAck that was not totally conformant to RFC2131 4.3.5. (Thanks to Thiago Figueiredo)
 

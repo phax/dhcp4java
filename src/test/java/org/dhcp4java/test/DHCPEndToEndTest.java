@@ -24,8 +24,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.dhcp4java.DHCPCoreServer;
 import org.dhcp4java.DHCPPacket;
@@ -44,25 +42,19 @@ public class DHCPEndToEndTest
   private static final int SERVER_PORT = 6767;
   private static final int CLIENT_PORT = 6768;
 
-  private static DHCPCoreServer server = null;
-  private static DatagramSocket socket = null;
-
-  @BeforeClass
-  public static void setLoggingAll ()
-  {
-    Logger.getLogger ("org.dhcp4java").setLevel (Level.ALL);
-  }
+  private static DHCPCoreServer server;
+  private static DatagramSocket socket;
 
   /**
    * Start Server.
-   * 
+   *
    * @throws Exception
    *         on error
    */
   @BeforeClass
   public static void startServer () throws Exception
   {
-    Properties localProperties = new Properties ();
+    final Properties localProperties = new Properties ();
 
     localProperties.put (DHCPCoreServer.SERVER_ADDRESS, SERVER_ADDR + ':' + SERVER_PORT);
     localProperties.put (DHCPCoreServer.SERVER_THREADS, "1");
@@ -79,7 +71,7 @@ public class DHCPEndToEndTest
   {
     byte [] buf;
     DatagramPacket udp;
-    DHCPPacket pac = new DHCPPacket ();
+    final DHCPPacket pac = new DHCPPacket ();
     pac.setOp (BOOTREQUEST);
     buf = pac.serialize ();
     udp = new DatagramPacket (buf, buf.length);

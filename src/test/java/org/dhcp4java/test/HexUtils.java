@@ -35,13 +35,8 @@ import java.util.BitSet;
  */
 public class HexUtils
 {
-  // private static boolean logDEBUG
-  // =Logger.logger.shouldLog(Logger.DEBUG,HexUtil.class);
-
   private HexUtils ()
-  {
-    throw new UnsupportedOperationException ();
-  }
+  {}
 
   /**
    * Converts a byte array into a string of upper case hex chars.
