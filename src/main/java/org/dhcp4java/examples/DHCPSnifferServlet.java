@@ -52,13 +52,15 @@ public class DHCPSnifferServlet extends DHCPServlet
    * No args.
    *
    * @param args
+   *        cmdline args
    */
   public static void main (final String [] args)
   {
     try
     {
       final DHCPCoreServer server = DHCPCoreServer.initServer (new DHCPSnifferServlet (), null);
-      new Thread (server).start ();
+      final Thread t = new Thread (server);
+      t.start ();
     }
     catch (final DHCPServerInitException e)
     {

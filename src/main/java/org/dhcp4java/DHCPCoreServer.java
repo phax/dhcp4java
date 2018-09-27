@@ -42,11 +42,11 @@ import org.slf4j.LoggerFactory;
  * Configuration: the Server reads the following properties in
  * "/DHCPd.properties" at the root of the class path. You can however provide a
  * properties set when contructing the server. Default values are: <blockquote>
- * <tt>serverAddress=127.0.0.1:67</tt> <i>[address:port]</i> <br>
- * <tt>serverThreads=2</tt> <i>[number of concurrent threads for servlets]</i>
- * </blockquote>
+ * <code>serverAddress=127.0.0.1:67</code> <i>[address:port]</i> <br>
+ * <code>serverThreads=2</code> <i>[number of concurrent threads for
+ * servlets]</i> </blockquote>
  * <p>
- * Note: this class implements <tt>Runnable</tt> allowing it to be run in a
+ * Note: this class implements <code>Runnable</code> allowing it to be run in a
  * dedicated thread.
  * <p>
  * Example:
@@ -96,7 +96,7 @@ public class DHCPCoreServer implements Runnable
    * Constructor
    * <p>
    * Constructor shall not be called directly. New servers are created through
-   * <tt>initServer()</tt> factory.
+   * <code>initServer()</code> factory.
    */
   private DHCPCoreServer (final DHCPServlet servlet, final Properties userProps)
   {
@@ -107,15 +107,15 @@ public class DHCPCoreServer implements Runnable
   /**
    * Creates and initializes a new DHCP Server.
    * <p>
-   * It instanciates the object, then calls <tt>init()</tt> method.
+   * It instanciates the object, then calls <code>init()</code> method.
    *
    * @param servlet
-   *        the <tt>DHCPServlet</tt> instance processing incoming requests, must
-   *        not be <tt>null</tt>.
+   *        the <code>DHCPServlet</code> instance processing incoming requests,
+   *        must not be <code>null</code>.
    * @param userProps
    *        specific properties, overriding file and default properties, may be
-   *        <tt>null</tt>.
-   * @return the new <tt>DHCPCoreServer</tt> instance (never null).
+   *        <code>null</code>.
+   * @return the new <code>DHCPCoreServer</code> instance (never null).
    * @throws DHCPServerInitException
    *         unable to start the server.
    */
@@ -133,13 +133,14 @@ public class DHCPCoreServer implements Runnable
 
   /**
    * Initialize the server context from the Properties, and open socket.
+   *
+   * @throws DHCPServerInitException
+   *         on error
    */
   protected void init () throws DHCPServerInitException
   {
     if (this.m_aServerSocket != null)
-    {
       throw new IllegalStateException ("Server already initialized");
-    }
 
     try
     {
@@ -212,7 +213,8 @@ public class DHCPCoreServer implements Runnable
     try
     {
       final DatagramPacket requestDatagram = new DatagramPacket (new byte [PACKET_SIZE], PACKET_SIZE);
-      s_aLogger.debug ("Waiting for packet");
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("Waiting for packet");
 
       // receive datagram
       this.m_aServerSocket.receive (requestDatagram);
@@ -241,6 +243,9 @@ public class DHCPCoreServer implements Runnable
    * <p>
    * This is a callback method used by servlet dispatchers to send back
    * responses.
+   *
+   * @param responseDatagram
+   *        suff to send back
    */
   protected void sendResponse (final DatagramPacket responseDatagram)
   {
@@ -261,7 +266,7 @@ public class DHCPCoreServer implements Runnable
   }
 
   /**
-   * Returns the <tt>InetSocketAddress</tt> for the server (client-side).
+   * Returns the <code>InetSocketAddress</code> for the server (client-side).
    *
    * <pre>
    *
@@ -269,7 +274,7 @@ public class DHCPCoreServer implements Runnable
    *  serverPort (default 67)
    * </pre>
    * <p>
-   * This method can be overriden to specify an non default socket behaviour
+   * This method can be overridden to specify an non default socket behaviour
    *
    * @param props
    *        Properties loaded from /DHCPd.properties

@@ -35,14 +35,9 @@ import java.util.Map;
  */
 public final class DHCPConstants
 {
-
-  // Suppresses default constructor, ensuring non-instantiability.
   private DHCPConstants ()
-  {
-    throw new UnsupportedOperationException ();
-  }
+  {}
 
-  // ========================================================================
   // DHCP Constants
 
   /** DHCP BOOTP CODES **/
@@ -266,7 +261,7 @@ public final class DHCPConstants
    *        user-readable option name
    * @return the option code
    * @throws NullPointerException
-   *         name is <tt>null</t>.
+   *         name is <code>null</code>.
    */
   public static final Byte getDhoNamesReverse (final String name)
   {

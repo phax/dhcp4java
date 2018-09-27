@@ -33,7 +33,7 @@ import java.util.Map;
  */
 public class InetCidr implements Serializable, Comparable <InetCidr>
 {
-  private final int m_aAddr;
+  private final int m_nAddr;
   private final int m_nMask;
 
   /**
@@ -66,12 +66,12 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
     }
 
     // apply mask to address
-    this.m_aAddr = Util.inetAddress2Int (addr) & (int) gCidrMask[mask];
+    this.m_nAddr = Util.inetAddress2Int (addr) & (int) gCidrMask[mask];
     this.m_nMask = mask;
   }
 
   /**
-   * Constructs a <tt>InetCidr</tt> provided an ip address and an ip mask.
+   * Constructs a <code>InetCidr</code> provided an ip address and an ip mask.
    * <p>
    * If the mask is not valid, an exception is raised.
    *
@@ -80,9 +80,9 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
    * @param netMask
    *        the ip mask
    * @throws IllegalArgumentException
-   *         if <tt>addr</tt> or <tt>netMask</tt> is <tt>null</tt>.
+   *         if <code>addr</code> or <code>netMask</code> is <code>null</code>.
    * @throws IllegalArgumentException
-   *         if the <tt>netMask</tt> is not a valid one.
+   *         if the <code>netMask</code> is not a valid one.
    */
   public InetCidr (final InetAddress addr, final InetAddress netMask)
   {
@@ -99,14 +99,14 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
     {
       throw new IllegalArgumentException ("netmask: " + netMask + " is not a valid mask");
     }
-    this.m_aAddr = Util.inetAddress2Int (addr) & (int) gCidrMask[intMask.intValue ()];
+    this.m_nAddr = Util.inetAddress2Int (addr) & (int) gCidrMask[intMask.intValue ()];
     this.m_nMask = intMask.intValue ();
   }
 
   @Override
   public String toString ()
   {
-    return Util.int2InetAddress (m_aAddr).getHostAddress () + '/' + this.m_nMask;
+    return Util.int2InetAddress (m_nAddr).getHostAddress () + '/' + this.m_nMask;
   }
 
   /**
@@ -114,7 +114,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
    */
   public InetAddress getAddr ()
   {
-    return Util.int2InetAddress (m_aAddr);
+    return Util.int2InetAddress (m_nAddr);
   }
 
   /**
@@ -122,7 +122,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
    */
   public long getAddrLong ()
   {
-    return m_aAddr & 0xFFFFFFFFL;
+    return m_nAddr & 0xFFFFFFFFL;
   }
 
   /**
@@ -134,19 +134,20 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
   }
 
   /**
-   * Returns a <tt>long</tt> representation of Cidr.
+   * Returns a <code>long</code> representation of Cidr.
    * <P>
    * The high 32 bits contain the mask, the low 32 bits the network address.
    *
-   * @return the <tt>long</tt> representation of the Cidr
+   * @return the <code>long</code> representation of the Cidr
    */
   public final long toLong ()
   {
-    return (m_aAddr & 0xFFFFFFFFL) + (((long) m_nMask) << 32);
+    return (m_nAddr & 0xFFFFFFFFL) + (((long) m_nMask) << 32);
   }
 
   /**
-   * Creates a new <tt>InetCidr</tt> from its <tt>long</tt> representation.
+   * Creates a new <code>InetCidr</code> from its <code>long</code>
+   * representation.
    *
    * @param l
    *        the Cidr in its "long" format
@@ -166,7 +167,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
   @Override
   public int hashCode ()
   {
-    return this.m_aAddr ^ this.m_nMask;
+    return this.m_nAddr ^ this.m_nMask;
   }
 
   @Override
@@ -177,8 +178,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
       return false;
     }
     final InetCidr cidr = (InetCidr) obj;
-
-    return ((this.m_aAddr == cidr.m_aAddr) && (this.m_nMask == cidr.m_nMask));
+    return this.m_nAddr == cidr.m_nAddr && this.m_nMask == cidr.m_nMask;
   }
 
   /**
@@ -187,6 +187,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
    * The array is ordered from the most specific to the most general mask.
    *
    * @param addr
+   *        address
    * @return array of all cidr possible with this address
    */
   public static InetCidr [] addr2Cidr (final InetAddress addr)
@@ -214,27 +215,28 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
    * <p>
    * Note: this class has a natural ordering that is inconsistent with equals.
    *
-   * @param o
+   * @param rhs
+   *        object to compare to
    * @return a negative integer, zero, or a positive integer as this object is
    *         less than, equal to, or greater than the specified object.
    */
-  public int compareTo (final InetCidr o)
+  public int compareTo (final InetCidr rhs)
   {
-    if (o == null)
+    if (rhs == null)
     {
       throw new NullPointerException ();
     }
-    if (equals (o))
+    if (equals (rhs))
       return 0;
-    if (int2UnsignedLong (this.m_aAddr) < int2UnsignedLong (o.m_aAddr))
+    if (int2UnsignedLong (this.m_nAddr) < int2UnsignedLong (rhs.m_nAddr))
       return -1;
-    if (int2UnsignedLong (this.m_aAddr) > int2UnsignedLong (o.m_aAddr))
+    if (int2UnsignedLong (this.m_nAddr) > int2UnsignedLong (rhs.m_nAddr))
       return 1;
 
     // addr are identical, now comparing mask
-    if (this.m_nMask < o.m_nMask)
+    if (this.m_nMask < rhs.m_nMask)
       return -1;
-    if (this.m_nMask > o.m_nMask)
+    if (this.m_nMask > rhs.m_nMask)
       return 1;
 
     // should not happen
@@ -250,8 +252,8 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
    * Checks whether a list of InetCidr is strictly sorted (no 2 equal objects).
    *
    * @param list
-   *        list of potentially sorted <tt>InetCidr</tt>
-   * @return true if <tt>list</tt> is sorted or <tt>null</tt>
+   *        list of potentially sorted <code>InetCidr</code>
+   * @return true if <code>list</code> is sorted or <code>null</code>
    * @throws NullPointerException
    *         if one or more elements of the list are null
    */
@@ -289,7 +291,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
    * Pre-requisite: list must be already sorted.
    *
    * @param list
-   *        sorted list of <tt>InetCidr</tt>
+   *        sorted list of <code>InetCidr</code>
    * @throws NullPointerException
    *         if a list element is null
    * @throws IllegalStateException

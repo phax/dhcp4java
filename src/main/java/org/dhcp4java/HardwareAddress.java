@@ -70,8 +70,7 @@ public class HardwareAddress implements Serializable
   }
 
   /**
-   * <p>
-   * Object is cloned to avoid any side-effect.
+   * @return Object is cloned to avoid any side-effect.
    */
   public byte [] getHardwareAddress ()
   {
@@ -130,9 +129,10 @@ public class HardwareAddress implements Serializable
   /**
    * Parse the MAC address in hex format, split by ':'.
    * <p>
-   * E.g. <tt>0:c0:c3:49:2b:57</tt>.
+   * E.g. <code>0:c0:c3:49:2b:57</code>.
    *
    * @param macStr
+   *        MAC string
    * @return the newly created HardwareAddress object
    */
   public static HardwareAddress getHardwareAddressByString (final String macStr)

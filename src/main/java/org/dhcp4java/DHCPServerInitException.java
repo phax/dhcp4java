@@ -27,12 +27,6 @@ package org.dhcp4java;
  */
 public class DHCPServerInitException extends Exception
 {
-  private static final long serialVersionUID = 1L;
-
-  /**
-   *
-   *
-   */
   public DHCPServerInitException ()
   {
     super ();
@@ -40,6 +34,7 @@ public class DHCPServerInitException extends Exception
 
   /**
    * @param message
+   *        message
    */
   public DHCPServerInitException (final String message)
   {
@@ -48,6 +43,7 @@ public class DHCPServerInitException extends Exception
 
   /**
    * @param cause
+   *        Cause
    */
   public DHCPServerInitException (final Throwable cause)
   {
@@ -56,7 +52,9 @@ public class DHCPServerInitException extends Exception
 
   /**
    * @param message
+   *        message
    * @param cause
+   *        cause
    */
   public DHCPServerInitException (final String message, final Throwable cause)
   {

@@ -33,7 +33,7 @@ public final class Util
   {}
 
   /**
-   * Converts 32 bits int to IPv4 <tt>InetAddress</tt>.
+   * Converts 32 bits int to IPv4 <code>InetAddress</code>.
    *
    * @param val
    *        int representation of IPv4 address
@@ -57,7 +57,7 @@ public final class Util
 
   /**
    * Converts 32 bits int packaged into a 64bits long to IPv4
-   * <tt>InetAddress</tt>.
+   * <code>InetAddress</code>.
    *
    * @param val
    *        int representation of IPv4 address
@@ -73,13 +73,13 @@ public final class Util
   }
 
   /**
-   * Converts IPv4 <tt>InetAddress</tt> to 32 bits int.
+   * Converts IPv4 <code>InetAddress</code> to 32 bits int.
    *
    * @param addr
    *        IPv4 address object
    * @return 32 bits int
    * @throws NullPointerException
-   *         <tt>addr</tt> is <tt>null</tt>.
+   *         <code>addr</code> is <code>null</code>.
    * @throws IllegalArgumentException
    *         the address is not IPv4 (Inet4Address).
    */
@@ -98,14 +98,14 @@ public final class Util
   }
 
   /**
-   * Converts IPv4 <tt>InetAddress</tt> to 32 bits int, packages into a 64 bits
-   * <tt>long</tt>.
+   * Converts IPv4 <code>InetAddress</code> to 32 bits int, packages into a 64
+   * bits <code>long</code>.
    *
    * @param addr
    *        IPv4 address object
    * @return 32 bits int
    * @throws NullPointerException
-   *         <tt>addr</tt> is <tt>null</tt>.
+   *         <code>addr</code> is <code>null</code>.
    * @throws IllegalArgumentException
    *         the address is not IPv4 (Inet4Address).
    */

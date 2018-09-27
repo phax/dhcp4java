@@ -57,12 +57,21 @@ public final class DHCPResponseFactory
    * Reponse is populated according to the DHCP request received (must be
    * DHCPDISCOVER), the proposed client address and a set of pre-set options.
    * <p>
-   * Note: <tt>getDefaultSocketAddress</tt> is called internally to populate
+   * Note: <code>getDefaultSocketAddress</code> is called internally to populate
    * address and port number to which response should be sent.
    *
    * @param request
+   *        request
    * @param offeredAddress
+   *        offered address
+   * @param leaseTime
+   *        lease time
+   * @param serverIdentifier
+   *        Server identfier
+   * @param message
+   *        message
    * @param options
+   *        options
    * @return the newly created OFFER Packet
    */
   public static final DHCPPacket makeDHCPOffer (final DHCPPacket request,
@@ -143,15 +152,24 @@ public final class DHCPResponseFactory
   /**
    * Create a populated DHCPACK response.
    * <p>
-   * Reponse is populated according to the DHCP request received (must be
+   * Response is populated according to the DHCP request received (must be
    * DHCPREQUEST), the proposed client address and a set of pre-set options.
    * <p>
-   * Note: <tt>getDefaultSocketAddress</tt> is called internally to populate
+   * Note: <code>getDefaultSocketAddress</code> is called internally to populate
    * address and port number to which response should be sent.
    *
    * @param request
+   *        request
    * @param offeredAddress
+   *        offered address
+   * @param leaseTime
+   *        lease time
+   * @param serverIdentifier
+   *        server identfier
+   * @param message
+   *        message
    * @param options
+   *        options
    * @return the newly created ACK Packet
    */
   public static final DHCPPacket makeDHCPAck (final DHCPPacket request,
@@ -238,15 +256,18 @@ public final class DHCPResponseFactory
   /**
    * Create a populated DHCPNAK response.
    * <p>
-   * Reponse is populated according to the DHCP request received (must be
+   * Response is populated according to the DHCP request received (must be
    * DHCPREQUEST), the proposed client address and a set of pre-set options.
    * <p>
-   * Note: <tt>getDefaultSocketAddress</tt> is called internally to populate
+   * Note: <code>getDefaultSocketAddress</code> is called internally to populate
    * address and port number to which response should be sent.
    *
    * @param request
+   *        request
    * @param serverIdentifier
+   *        server identifier
    * @param message
+   *        message
    * @return the newly created NAK Packet
    */
   public static final DHCPPacket makeDHCPNak (final DHCPPacket request,
@@ -312,7 +333,7 @@ public final class DHCPResponseFactory
    * This is a method ready to use for *standard* behaviour for any RFC
    * compliant DHCP Server.
    * <p>
-   * If <tt>giaddr</tt> is null, it is the client's addres/68, otherwise
+   * If <code>giaddr</code> is null, it is the client's addres/68, otherwise
    * giaddr/67.
    * <p>
    * Standard behaviour is to set the response packet as follows:
@@ -328,7 +349,7 @@ public final class DHCPResponseFactory
    *        DHCPNAK)
    * @return the ip/port to send back the response
    * @throws IllegalArgumentException
-   *         if request is <tt>null</tt>.
+   *         if request is <code>null</code>.
    * @throws IllegalArgumentException
    *         if responseType is not valid.
    */

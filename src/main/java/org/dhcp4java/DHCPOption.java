@@ -55,7 +55,7 @@ public class DHCPOption implements Serializable
 
   /**
    * Raw bytes value of the option. Some methods are provided for higher level
-   * of data structures, depending on the <tt>code</tt>.
+   * of data structures, depending on the <code>code</code>.
    */
   private final byte [] m_aValue;
 
@@ -66,18 +66,18 @@ public class DHCPOption implements Serializable
    * request.
    * <p>
    * This is only meant to be used by servers through the
-   * <tt>getMirrorValue</tt> method.
+   * <code>getMirrorValue</code> method.
    */
   private final boolean m_bMirror;
 
   /**
-   * Constructor for <tt>DHCPOption</tt>.
+   * Constructor for <code>DHCPOption</code>.
    * <p>
    * Note: you must not prefix the value by a length-byte. The length prefix
    * will be added automatically by the API.
    * <p>
-   * If value is <tt>null</tt> it is considered as an empty option. If you add
-   * an empty option to a DHCPPacket, it removes the option from the packet.
+   * If value is <code>null</code> it is considered as an empty option. If you
+   * add an empty option to a DHCPPacket, it removes the option from the packet.
    * <p>
    * This constructor adds a parameter to mark the option as "mirror". See
    * comments above.
@@ -86,6 +86,8 @@ public class DHCPOption implements Serializable
    *        DHCP option code
    * @param value
    *        DHCP option value as a byte array.
+   * @param mirror
+   *        having a mirroring behaviour.
    */
   public DHCPOption (final byte code, final byte [] value, final boolean mirror)
   {
@@ -104,13 +106,13 @@ public class DHCPOption implements Serializable
   }
 
   /**
-   * Constructor for <tt>DHCPOption</tt>. This is the default constructor.
+   * Constructor for <code>DHCPOption</code>. This is the default constructor.
    * <p>
    * Note: you must not prefix the value by a length-byte. The length prefix
    * will be added automatically by the API.
    * <p>
-   * If value is <tt>null</tt> it is considered as an empty option. If you add
-   * an empty option to a DHCPPacket, it removes the option from the packet.
+   * If value is <code>null</code> it is considered as an empty option. If you
+   * add an empty option to a DHCPPacket, it removes the option from the packet.
    *
    * @param code
    *        DHCP option code
@@ -123,7 +125,7 @@ public class DHCPOption implements Serializable
   }
 
   /**
-   * Return the <tt>code</tt> field (byte).
+   * Return the <code>code</code> field (byte).
    *
    * @return code field
    */
@@ -133,8 +135,8 @@ public class DHCPOption implements Serializable
   }
 
   /**
-   * returns true if two <tt>DHCPOption</tt> objects are equal, i.e. have same
-   * <tt>code</tt> and same <tt>value</tt>.
+   * returns true if two <code>DHCPOption</code> objects are equal, i.e. have
+   * same <code>code</code> and same <code>value</code>.
    */
   @Override
   public boolean equals (final Object o)
@@ -174,8 +176,8 @@ public class DHCPOption implements Serializable
   }
 
   /**
-   * @return option value, never <tt>null</tt>. Minimal value is
-   *         <tt>byte[0]</tt>.
+   * @return option value, never <code>null</code>. Minimal value is
+   *         <code>byte[0]</code>.
    */
   public byte [] getValueFast ()
   {
@@ -262,7 +264,7 @@ public class DHCPOption implements Serializable
   * DHO_AUTO_CONFIGURE(116)
    * </pre>
    *
-   * @return the option value, <tt>null</tt> if option is not present.
+   * @return the option value, <code>null</code> if option is not present.
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    * @throws DHCPBadPacketException
@@ -306,7 +308,7 @@ public class DHCPOption implements Serializable
   * DHO_DHCP_MAX_MESSAGE_SIZE(57)
    * </pre>
    *
-   * @return the option value, <tt>null</tt> if option is not present.
+   * @return the option value, <code>null</code> if option is not present.
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    * @throws DHCPBadPacketException
@@ -354,7 +356,7 @@ public class DHCPOption implements Serializable
   * DHO_DHCP_REBINDING_TIME(59)
    * </pre>
    *
-   * @return the option value, <tt>null</tt> if option is not present.
+   * @return the option value, <code>null</code> if option is not present.
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    * @throws DHCPBadPacketException
@@ -391,8 +393,8 @@ public class DHCPOption implements Serializable
    * <p>
    * There is no check on the option
    *
-   * @return the option value <tt>null</tt> if option is not present, or wrong
-   *         number of bytes.
+   * @return the option value <code>null</code> if option is not present, or
+   *         wrong number of bytes.
    */
   public Integer getValueAsNum ()
   {
@@ -440,7 +442,7 @@ public class DHCPOption implements Serializable
   * DHO_SUBNET_SELECTION(118)
    * </pre>
    *
-   * @return the option value, <tt>null</tt> if option is not present.
+   * @return the option value, <code>null</code> if option is not present.
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    * @throws DHCPBadPacketException
@@ -503,7 +505,7 @@ public class DHCPOption implements Serializable
   * DHO_USER_AUTHENTICATION_PROTOCOL(98)
    * </pre>
    *
-   * @return the option value, <tt>null</tt> if option is not present.
+   * @return the option value, <code>null</code> if option is not present.
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    */
@@ -535,7 +537,7 @@ public class DHCPOption implements Serializable
   * DHO_NAME_SERVICE_SEARCH(117)
    * </pre>
    *
-   * @return the option value array, <tt>null</tt> if option is not present.
+   * @return the option value array, <code>null</code> if option is not present.
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    * @throws DHCPBadPacketException
@@ -609,7 +611,7 @@ public class DHCPOption implements Serializable
   * DHO_NDS_SERVERS(85)
    * </pre>
    *
-   * @return the option value array, <tt>null</tt> if option is not present.
+   * @return the option value array, <code>null</code> if option is not present.
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    * @throws DHCPBadPacketException
@@ -671,7 +673,7 @@ public class DHCPOption implements Serializable
    * Note: this mehtod is similar to getOptionRaw, only with option type
    * checking.
    *
-   * @return the option value array, <tt>null</tt> if option is not present.
+   * @return the option value array, <code>null</code> if option is not present.
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    */
@@ -704,6 +706,7 @@ public class DHCPOption implements Serializable
    *        the option code.
    * @param val
    *        the value
+   * @return New option. Never <code>null</code>
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    */
@@ -730,6 +733,7 @@ public class DHCPOption implements Serializable
    *        the option code.
    * @param arr
    *        the array of shorts
+   * @return New option. Never <code>null</code>
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    */
@@ -772,6 +776,7 @@ public class DHCPOption implements Serializable
    *        the option code.
    * @param val
    *        the value
+   * @return New option. Never <code>null</code>
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    */
@@ -835,6 +840,7 @@ public class DHCPOption implements Serializable
    *        the option code.
    * @param val
    *        the value
+   * @return New option. Never <code>null</code>
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    */
@@ -886,6 +892,7 @@ public class DHCPOption implements Serializable
    *        the option code.
    * @param val
    *        the value array
+   * @return New option. Never <code>null</code>
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    */
@@ -925,6 +932,7 @@ public class DHCPOption implements Serializable
    *        the option code.
    * @param val
    *        the value
+   * @return New option. Never <code>null</code>
    * @throws IllegalArgumentException
    *         the option code is not in the list above.
    */
@@ -946,7 +954,7 @@ public class DHCPOption implements Serializable
    *        the client's DHCP requets
    * @return the value of the specific option in the client request
    * @throws NullPointerException
-   *         if <tt>request</tt> is <tt>null</tt>.
+   *         if <code>request</code> is <code>null</code>.
    */
   public DHCPOption applyOption (final DHCPPacket request)
   {
@@ -955,7 +963,7 @@ public class DHCPOption implements Serializable
     if (this.m_bMirror)
     {
       final DHCPOption res = request.getOption (this.getCode ());
-      return (res != null ? res : this); // return res or this
+      return res != null ? res : this;
     }
     return this;
   }
@@ -1104,10 +1112,6 @@ public class DHCPOption implements Serializable
     return (b & 0xFF);
   }
 
-  /**************************************************************************
-   * Type converters.
-   **************************************************************************/
-
   public static byte [] byte2Bytes (final byte val)
   {
     final byte [] raw = { val };
@@ -1222,8 +1226,8 @@ public class DHCPOption implements Serializable
    *
    * @param list
    *        the list of strings
-   * @return byte[] buffer to use with <tt>setOptionRaw</tt>, <tt>null</tt> if
-   *         list is null
+   * @return byte[] buffer to use with <code>setOptionRaw</code>,
+   *         <code>null</code> if list is null
    * @throws IllegalArgumentException
    *         if List contains anything else than String
    */
@@ -1291,14 +1295,14 @@ public class DHCPOption implements Serializable
   }
 
   /**
-   * Converts Map<Byte,String> to DHO_DHCP_AGENT_OPTIONS (82) option.
+   * Converts Map&lt;Byte,String&gt; to DHO_DHCP_AGENT_OPTIONS (82) option.
    * <p>
    * LinkedHashMap are preferred as they preserve insertion order. Regular
-   * HashMap order is randon.
+   * HashMap order is random.
    *
    * @param map
-   *        Map<Byte,String> couples
-   * @return byte[] buffer to use with <tt>setOptionRaw</tt>
+   *        Map&lt;Byte,String&gt; couples
+   * @return byte[] buffer to use with <code>setOptionRaw</code>
    * @throws IllegalArgumentException
    *         if List contains anything else than String
    */
@@ -1337,12 +1341,13 @@ public class DHCPOption implements Serializable
   /**
    * Converts DHO_DHCP_AGENT_OPTIONS (82) option type to a LinkedMap.
    * <p>
-   * Order of parameters is preserved (use avc <tt>LinkedHashmap</tt<).
-   * Keys are of type <tt>Byte</tt>, values are of type <tt>String</tt>.
+   * Order of parameters is preserved (use avc <code>LinkedHashmap</code>). Keys
+   * are of type <code>Byte</code>, values are of type <code>String</code>.
    *
    * @param buf
-   *        byte[] buffer returned by </tt>getOptionRaw</tt>
-   * @return the LinkedHashmap of values, <tt>null</tt> if buf is <tt>null</tt>
+   *        byte[] buffer returned by <code>getOptionRaw</code>
+   * @return the LinkedHashmap of values, <code>null</code> if buf is
+   *         <code>null</code>
    */
   public static final Map <Byte, String> agentOptionsToMap (final byte [] buf)
   {
@@ -1377,20 +1382,20 @@ public class DHCPOption implements Serializable
   /**
    * Returns the type of the option based on the option code.
    * <p>
-   * The type is returned as a <tt>Class</tt> object:
+   * The type is returned as a <code>Class</code> object:
    * <ul>
-   * <li><tt>InetAddress.class</tt></li>
-   * <li><tt>InetAddress[].class</tt></li>
-   * <li><tt>int.class</tt></li>
-   * <li><tt>short.class</tt></li>
-   * <li><tt>short[].class</tt></li>
-   * <li><tt>byte.class</tt></li>
-   * <li><tt>byte[].class</tt></li>
-   * <li><tt>String.class</tt></li>
+   * <li><code>InetAddress.class</code></li>
+   * <li><code>InetAddress[].class</code></li>
+   * <li><code>int.class</code></li>
+   * <li><code>short.class</code></li>
+   * <li><code>short[].class</code></li>
+   * <li><code>byte.class</code></li>
+   * <li><code>byte[].class</code></li>
+   * <li><code>String.class</code></li>
    * </ul>
    * <p>
-   * Please use <tt>getSimpleName()</tt> method of <tt>Class</tt> object for the
-   * String representation.
+   * Please use <code>getSimpleName()</code> method of <code>Class</code> object
+   * for the String representation.
    *
    * @param code
    *        the DHCP option code
@@ -1443,7 +1448,7 @@ public class DHCPOption implements Serializable
    *
    * @param className
    *        name of the data format (see above)
-   * @return <tt>Class</tt> or <tt>null</tt> if not supported
+   * @return <code>Class</code> or <code>null</code> if not supported
    */
   public static Class <?> string2Class (final String className)
   {
@@ -1480,7 +1485,8 @@ public class DHCPOption implements Serializable
    * Parse an option from a pure string representation.
    * <P>
    * The expected class is passed as a parameter, and can be provided by the
-   * <tt>string2Class()</tt> method from a string representation of the class.
+   * <code>string2Class()</code> method from a string representation of the
+   * class.
    * <P>
    * TODO examples
    *
@@ -1488,7 +1494,7 @@ public class DHCPOption implements Serializable
    *        DHCP option code
    * @param format
    *        expected Java Class after conversion
-   * @param m_aValue
+   * @param sValue
    *        string representation of the value
    * @return the DHCPOption object
    */
