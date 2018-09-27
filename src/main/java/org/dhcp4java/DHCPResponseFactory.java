@@ -18,7 +18,18 @@
  */
 package org.dhcp4java;
 
-import static org.dhcp4java.DHCPConstants.*;
+import static org.dhcp4java.DHCPConstants.BOOTREPLY;
+import static org.dhcp4java.DHCPConstants.DHCPACK;
+import static org.dhcp4java.DHCPConstants.DHCPDISCOVER;
+import static org.dhcp4java.DHCPConstants.DHCPINFORM;
+import static org.dhcp4java.DHCPConstants.DHCPNAK;
+import static org.dhcp4java.DHCPConstants.DHCPOFFER;
+import static org.dhcp4java.DHCPConstants.DHCPREQUEST;
+import static org.dhcp4java.DHCPConstants.DHO_DHCP_LEASE_TIME;
+import static org.dhcp4java.DHCPConstants.DHO_DHCP_MESSAGE;
+import static org.dhcp4java.DHCPConstants.DHO_DHCP_SERVER_IDENTIFIER;
+import static org.dhcp4java.DHCPConstants.INADDR_ANY;
+import static org.dhcp4java.DHCPConstants.INADDR_BROADCAST;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;

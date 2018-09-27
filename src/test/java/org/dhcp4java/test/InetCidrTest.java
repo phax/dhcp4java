@@ -18,6 +18,10 @@
  */
 package org.dhcp4java.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -25,20 +29,11 @@ import java.util.List;
 
 import org.dhcp4java.InetCidr;
 import org.dhcp4java.Util;
+import org.junit.Assert;
 import org.junit.Test;
 
-
-import org.junit.Assert;
-import junit.framework.JUnit4TestAdapter;
-
-import static org.junit.Assert.*;
-
+@SuppressWarnings ("unused")
 public class InetCidrTest {
-
-	public static junit.framework.Test suite() {
-       return new JUnit4TestAdapter(InetCidrTest.class);
-    }
-	
 	@Test
 	public void testConstructor() throws Exception {
 		InetCidr cidr = new InetCidr(InetAddress.getByName("224.17.252.127"), 24);
@@ -59,7 +54,7 @@ public class InetCidrTest {
 	public void testConstructorBadArgMaskTooSmall() throws Exception {
 		new InetCidr(InetAddress.getByName("16.17.18.19"), 0);
 	}
-	@Test (expected=IllegalArgumentException.class)
+  @Test (expected=IllegalArgumentException.class)
 	public void testConstructorBadArgMaskTooBig() throws Exception {
 		new InetCidr(InetAddress.getByName("16.17.18.19"), 33);
 	}
@@ -115,7 +110,7 @@ public class InetCidrTest {
 		assertTrue(cidr1.equals(cidr2));
 		assertTrue(cidr2.equals(cidr1));
 		assertFalse(cidr1.equals(null));
-		assertFalse(cidr1.equals(new Integer(1)));
+		assertFalse(cidr1.equals(Integer.valueOf(1)));
 		assertFalse(cidr1.equals(new InetCidr(InetAddress.getByName("224.17.252.0"), 25)));
 		assertFalse(cidr1.equals(new InetCidr(InetAddress.getByName("225.17.252.0"), 24)));
 	}
@@ -208,19 +203,19 @@ public class InetCidrTest {
 		InetCidr cidr7 = new InetCidr(InetAddress.getByName("129.11.12.0"), 24);
 		
 		assertEquals(true, InetCidr.isSorted(null));
-		List<InetCidr> list1 = new ArrayList<InetCidr>();
+		List<InetCidr> list1 = new ArrayList<>();
 		list1.add(cidr1);
 		list1.add(cidr3);
 		list1.add(cidr5);
 		list1.add(cidr7);
 		assertEquals(true, InetCidr.isSorted(list1));
-		list1 = new ArrayList<InetCidr>();
+		list1 = new ArrayList<>();
 		list1.add(cidr1);
 		list1.add(cidr5);
 		list1.add(cidr3);
 		list1.add(cidr7);
 		assertEquals(false, InetCidr.isSorted(list1));
-		list1 = new ArrayList<InetCidr>();
+		list1 = new ArrayList<>();
 		list1.add(cidr1);
 		list1.add(cidr3);
 		list1.add(cidr3);
@@ -230,7 +225,7 @@ public class InetCidrTest {
 	}
 	@Test (expected=NullPointerException.class)
 	public void testIsInetCidrListSortedNullElement() throws Exception {
-		List<InetCidr> list1 = new ArrayList<InetCidr>();
+		List<InetCidr> list1 = new ArrayList<>();
 		list1.add(null);
 		InetCidr.isSorted(list1);
 	}
@@ -250,7 +245,7 @@ public class InetCidrTest {
 		InetCidr cidr5 = new InetCidr(InetAddress.getByName("10.11.13.0"), 24);
 		InetCidr cidr6 = new InetCidr(InetAddress.getByName("11.11.12.0"), 24);
 		InetCidr cidr7 = new InetCidr(InetAddress.getByName("129.11.12.0"), 24);
-		List<InetCidr> list = new ArrayList<InetCidr>();
+		List<InetCidr> list = new ArrayList<>();
 		list.add(cidr1);
 		list.add(cidr5);
 		list.add(cidr6);
@@ -279,7 +274,7 @@ public class InetCidrTest {
 	}
 	@Test (expected=NullPointerException.class)
 	public void testHasNoOverlapNullElement() {
-		List<InetCidr> list = new ArrayList<InetCidr>();
+		List<InetCidr> list = new ArrayList<>();
 		list.add(null);
 		InetCidr.checkNoOverlap(list);
 	}

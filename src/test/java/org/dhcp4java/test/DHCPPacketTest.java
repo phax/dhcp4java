@@ -18,29 +18,32 @@
  */
 package org.dhcp4java.test;
 
+import static org.dhcp4java.DHCPConstants.*;
+import static org.dhcp4java.test.HexUtils.hexToBytes;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 
 import org.dhcp4java.DHCPBadPacketException;
 import org.dhcp4java.DHCPOption;
 import org.dhcp4java.DHCPPacket;
 import org.dhcp4java.HardwareAddress;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-
-import org.junit.Assert;
-import junit.framework.JUnit4TestAdapter;
-
-import static org.dhcp4java.DHCPConstants.*;
-import static org.junit.Assert.*;
-import static org.dhcp4java.test.HexUtils.hexToBytes;
 
 /**
  */
@@ -49,10 +52,6 @@ public class DHCPPacketTest {
 	private static DHCPPacket refPacketFromHex;
 	private static DHCPPacket refPacketFromSratch;
 	private DHCPPacket pac0;
-	
-	public static junit.framework.Test suite() {
-       return new JUnit4TestAdapter(DHCPPacketTest.class);
-    }
 	
     /*
      * @see TestCase#setUp()
@@ -390,7 +389,7 @@ public class DHCPPacketTest {
     	assertEquals("10.0.0.254", packet.getOptionAsInetAddrs(DHO_STATIC_ROUTES)[1].getHostAddress());
     	assertEquals(1, packet.getOptionAsInetAddrs(DHO_WWW_SERVER).length);
     	assertEquals("10.0.0.6", packet.getOptionAsInetAddrs(DHO_WWW_SERVER)[0].getHostAddress());
-    	assertEquals(null, packet.getOptionAsInetAddrs(DHO_IRC_SERVER));
+    	assertArrayEquals(null, packet.getOptionAsInetAddrs(DHO_IRC_SERVER));
     	
     	assertFalse(packet.containsOption(DHO_BOOTFILE));
     	assertFalse(packet.containsOption(DHO_PAD));
@@ -530,7 +529,7 @@ public class DHCPPacketTest {
     }
     @Test
     public void testSetOptionsCollection() throws Exception {
-    	LinkedList<DHCPOption> list = new LinkedList<DHCPOption>();
+    	List<DHCPOption> list = new ArrayList<>();
     	list.add(DHCPOption.newOptionAsShort(DHO_INTERFACE_MTU, (short)1500));
     	list.add(DHCPOption.newOptionAsInt(DHO_DHCP_LEASE_TIME, 0x01FE02FC));
     	list.add(DHCPOption.newOptionAsInetAddress(DHO_SUBNET_MASK, InetAddress.getByName("252.10.224.3")));

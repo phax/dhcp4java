@@ -18,21 +18,14 @@
  */
 package org.dhcp4java.test;
 
+import static org.junit.Assert.assertEquals;
+
 import java.net.InetAddress;
 
 import org.dhcp4java.Util;
 import org.junit.Test;
 
-import junit.framework.JUnit4TestAdapter;
-
-import static org.junit.Assert.*;
-
 public class UtilTest {
-
-	public static junit.framework.Test suite() {
-       return new JUnit4TestAdapter(UtilTest.class);
-    }
-	
 	@Test
 	public void testInt2InetAddress() throws Exception {
 		InetAddress ip;

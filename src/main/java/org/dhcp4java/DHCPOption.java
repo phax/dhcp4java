@@ -93,7 +93,7 @@ public class DHCPOption implements Serializable {
         }
 
         this.code  = code;
-        this.value = (value != null) ? value.clone() : null;
+        this.value = value != null ? value.clone() : null;
         this.mirror = mirror;
     }
 
@@ -332,7 +332,7 @@ public class DHCPOption implements Serializable {
      * 
      * @return the option value <tt>null</tt> if option is not present, or wrong number of bytes.
      */
-    public Integer getValueAsNum() throws IllegalArgumentException {
+    public Integer getValueAsNum() {
     	if (value == null) {
     		return null;
     	}
@@ -962,7 +962,7 @@ public class DHCPOption implements Serializable {
             return null;
         }
         
-        LinkedList<String> list = new LinkedList<String>();
+        LinkedList<String> list = new LinkedList<>();
         int i=0;
         while (i<buf.length) {
             int size = unsignedByte(buf[i++]);
@@ -1100,7 +1100,7 @@ public class DHCPOption implements Serializable {
             return null;
         }
 
-        Map<Byte, String> map = new LinkedHashMap<Byte, String>();
+        Map<Byte, String> map = new LinkedHashMap<>();
         int               i   = 0;
 
         while (i < buf.length) {
@@ -1371,7 +1371,7 @@ public class DHCPOption implements Serializable {
             DHO_DOMAIN_SEARCH,					OptionFormat.STRING,
             
     };    
-    static final Map<Byte, OptionFormat> _DHO_FORMATS = new LinkedHashMap<Byte, OptionFormat>();
+    static final Map<Byte, OptionFormat> _DHO_FORMATS = new LinkedHashMap<>();
 
     /*
      * preload at startup Maps with constants

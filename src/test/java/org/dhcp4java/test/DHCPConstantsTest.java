@@ -18,16 +18,16 @@
  */
 package org.dhcp4java.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
 
 import org.dhcp4java.DHCPConstants;
 import org.junit.Test;
-
-import junit.framework.JUnit4TestAdapter;
-
-import static org.junit.Assert.*;
 
 /**
  * Test of DHCPConstants internals.
@@ -36,11 +36,6 @@ import static org.junit.Assert.*;
  *
  */
 public class DHCPConstantsTest {
-	
-	public static junit.framework.Test suite() {
-	       return new JUnit4TestAdapter(DHCPConstantsTest.class);
-	    }
-
 	@Test
 	public void testConstants() throws UnknownHostException {
 		assertEquals(InetAddress.getByName("0.0.0.0"), DHCPConstants.INADDR_ANY);

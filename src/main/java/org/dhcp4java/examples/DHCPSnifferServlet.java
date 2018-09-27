@@ -20,8 +20,8 @@ package org.dhcp4java.examples;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.dhcp4java.DHCPPacket;
 import org.dhcp4java.DHCPCoreServer;
+import org.dhcp4java.DHCPPacket;
 import org.dhcp4java.DHCPServerInitException;
 import org.dhcp4java.DHCPServlet;
 
@@ -38,8 +38,6 @@ public class DHCPSnifferServlet extends DHCPServlet {
     
     /**
      * Print received packet as INFO log, and do not respnd.
-     * 
-     * @see org.dhcp4java.DHCPServlet#service(org.dhcp4java.DHCPPacket)
      */
     @Override
     public DHCPPacket service(DHCPPacket request) {

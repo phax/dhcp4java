@@ -18,18 +18,11 @@
  */
 package org.dhcp4java.test;
 
-import junit.framework.JUnit4TestAdapter;
-
 import org.dhcp4java.DHCPServerInitException;
 import org.junit.Test;
 
 
 public class DHCPServerInitExceptionTest {
-
-	public static junit.framework.Test suite() {
-	       return new JUnit4TestAdapter(DHCPServerInitExceptionTest.class);
-	    }
-		
 	@Test (expected=DHCPServerInitException.class)
 	public void testDHCPServerInitExceptionVoid() throws DHCPServerInitException {
 		throw new DHCPServerInitException();

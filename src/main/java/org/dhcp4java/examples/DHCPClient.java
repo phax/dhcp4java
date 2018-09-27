@@ -18,12 +18,12 @@
  */
 package org.dhcp4java.examples;
 
+import static org.dhcp4java.DHCPConstants.BOOTREQUEST;
+import static org.dhcp4java.DHCPConstants.HTYPE_ETHER;
+
 import java.util.Random;
 
 import org.dhcp4java.DHCPPacket;
-
-
-import static org.dhcp4java.DHCPConstants.*;
 
 /**
  * Example of DHCP Client (under construction).

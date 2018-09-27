@@ -18,6 +18,8 @@
  */
 package org.dhcp4java.test;
 
+import static org.dhcp4java.DHCPConstants.BOOTREQUEST;
+
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -25,16 +27,12 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.dhcp4java.DHCPPacket;
 import org.dhcp4java.DHCPCoreServer;
+import org.dhcp4java.DHCPPacket;
 import org.dhcp4java.DHCPServlet;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import junit.framework.JUnit4TestAdapter;
-
-import static org.dhcp4java.DHCPConstants.*;
 
 /**
  * @author Stephan Hadinger
@@ -47,10 +45,6 @@ public class DHCPEndToEndTest {
     
     private static DHCPCoreServer server = null;
     private static DatagramSocket socket = null;
-    
-    public static junit.framework.Test suite() {
-        return new JUnit4TestAdapter(DHCPEndToEndTest.class);
-    }
 
     @BeforeClass
     public static void setLoggingAll() {

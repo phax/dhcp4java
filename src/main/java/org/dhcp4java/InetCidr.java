@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.dhcp4java.Util;
-
 /**
  * @author Stephan Hadinger
  * @version 1.00
@@ -252,8 +250,9 @@ public class InetCidr implements Serializable, Comparable<InetCidr> {
      * @throws IllegalStateException if overlapping cidr are detected
      */
     public static void checkNoOverlap(List<InetCidr> list) {
-    	if (list == null) { return; }
-    	assert(isSorted(list));
+    	if (list == null) 
+    	  return;
+    	if (false) assert isSorted(list);
     	InetCidr prev = null;
     	long pivotEnd = -1;
     	for (InetCidr cidr : list) {
@@ -303,7 +302,7 @@ public class InetCidr implements Serializable, Comparable<InetCidr> {
             "255.255.255.255"
     };
 
-    private static final Map<InetAddress, Integer>	gCidr     = new HashMap<InetAddress, Integer>(48);
+    private static final Map<InetAddress, Integer>	gCidr     = new HashMap<>(48);
     private static final long[]						gCidrMask = new long[33];
 
     static {

@@ -21,9 +21,6 @@ package org.dhcp4java.test;
 import org.dhcp4java.DHCPBadPacketException;
 import org.junit.Test;
 
-
-import junit.framework.JUnit4TestAdapter;
-
 /**
  * These are complementary test (not essential ones) designed to increase the test
  * coverage.
@@ -32,11 +29,6 @@ import junit.framework.JUnit4TestAdapter;
  *
  */
 public class DHCPBadPacketExceptionTest {
-	
-	public static junit.framework.Test suite() {
-	       return new JUnit4TestAdapter(DHCPBadPacketExceptionTest.class);
-	    }
-		
 	@Test (expected=DHCPBadPacketException.class)
 	public void testDHCPBadPacketExceptionVoid() {
 		throw new DHCPBadPacketException();

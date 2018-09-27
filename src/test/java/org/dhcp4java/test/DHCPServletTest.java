@@ -18,6 +18,18 @@
  */
 package org.dhcp4java.test;
 
+import static org.dhcp4java.DHCPConstants.BOOTREPLY;
+import static org.dhcp4java.DHCPConstants.BOOTREQUEST;
+import static org.dhcp4java.DHCPConstants.DHCPDECLINE;
+import static org.dhcp4java.DHCPConstants.DHCPDISCOVER;
+import static org.dhcp4java.DHCPConstants.DHCPINFORM;
+import static org.dhcp4java.DHCPConstants.DHCPRELEASE;
+import static org.dhcp4java.DHCPConstants.DHCPREQUEST;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 
@@ -27,19 +39,9 @@ import org.dhcp4java.DHCPServlet;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import junit.framework.JUnit4TestAdapter;
-
-import static org.junit.Assert.*;
-import static org.dhcp4java.DHCPConstants.*;
-
 public class DHCPServletTest {
-	
-	private static DHCPServletTestServlet servlet = null;
-	
-    public static junit.framework.Test suite() {
-        return new JUnit4TestAdapter(DHCPServletTest.class);
-    }
-    
+		private static DHCPServletTestServlet servlet = null;
+		
     @BeforeClass
     public static void initServlet() {
     	servlet = new DHCPServletTestServlet();

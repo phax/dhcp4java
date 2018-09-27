@@ -18,7 +18,31 @@
  */
 package org.dhcp4java.test;
 
+import static org.dhcp4java.DHCPConstants.DHCPOFFER;
+import static org.dhcp4java.DHCPConstants.DHO_BOOTFILE;
+import static org.dhcp4java.DHCPConstants.DHO_DHCP_AGENT_OPTIONS;
+import static org.dhcp4java.DHCPConstants.DHO_DHCP_LEASE_TIME;
+import static org.dhcp4java.DHCPConstants.DHO_DHCP_MESSAGE;
+import static org.dhcp4java.DHCPConstants.DHO_DHCP_MESSAGE_TYPE;
+import static org.dhcp4java.DHCPConstants.DHO_DHCP_PARAMETER_REQUEST_LIST;
+import static org.dhcp4java.DHCPConstants.DHO_END;
+import static org.dhcp4java.DHCPConstants.DHO_INTERFACE_MTU;
+import static org.dhcp4java.DHCPConstants.DHO_IP_FORWARDING;
+import static org.dhcp4java.DHCPConstants.DHO_PAD;
+import static org.dhcp4java.DHCPConstants.DHO_PATH_MTU_PLATEAU_TABLE;
+import static org.dhcp4java.DHCPConstants.DHO_SUBNET_MASK;
+import static org.dhcp4java.DHCPConstants.DHO_TFTP_SERVER;
+import static org.dhcp4java.DHCPConstants.DHO_USER_CLASS;
+import static org.dhcp4java.DHCPConstants.DHO_WWW_SERVER;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -28,19 +52,11 @@ import org.dhcp4java.DHCPConstants;
 import org.dhcp4java.DHCPOption;
 import org.junit.Test;
 
-import junit.framework.JUnit4TestAdapter;
-
-import static org.dhcp4java.DHCPConstants.*;
-import static junit.framework.Assert.*;
-
+@SuppressWarnings ("unused")
 public class DHCPOptionTest {
 	
 	private static final String testString = "foobar";
-	private static final byte[] buf0 = testString.getBytes();
-
-	public static junit.framework.Test suite() {
-	       return new JUnit4TestAdapter(DHCPOptionTest.class);
-	    }
+	private static final byte[] buf0 = testString.getBytes(StandardCharsets.ISO_8859_1);
 	
 	@Test (expected=IllegalArgumentException.class)
 	public void testConstructorFailPad(){
@@ -79,7 +95,7 @@ public class DHCPOptionTest {
 		assertTrue(opt1.equals(opt2));
 		assertTrue(opt2.equals(opt1));
 		assertFalse(opt1.equals(null));
-		assertFalse(opt1.equals(new Integer(1)));
+		assertFalse(opt1.equals(Integer.valueOf(1)));
 		assertFalse(opt1.equals(new DHCPOption(DHO_BOOTFILE, null)));
 	}
 	@Test
@@ -91,7 +107,7 @@ public class DHCPOptionTest {
 		assertTrue(opt1.equals(opt2));
 		assertTrue(opt2.equals(opt1));
 		assertFalse(opt1.equals(null));
-		assertFalse(opt1.equals(new Integer(1)));
+		assertFalse(opt1.equals(Integer.valueOf(1)));
 		assertFalse(opt1.equals(new DHCPOption(DHO_BOOTFILE, buf0)));
 	}
 	@Test
@@ -136,11 +152,11 @@ public class DHCPOptionTest {
 	@Test
 	public void testUserClassToX() {
 		assertNull(DHCPOption.userClassToString(null));
-		byte[] userClassBuf1 = "\03foo\06foobar".getBytes();
+		byte[] userClassBuf1 = "\03foo\06foobar".getBytes(StandardCharsets.ISO_8859_1);
 		assertEquals(DHCPOption.userClassToString(userClassBuf1), "\"foo\",\"foobar\"");
-		byte[] userClassBuf2 = "\03foo".getBytes();
+		byte[] userClassBuf2 = "\03foo".getBytes(StandardCharsets.ISO_8859_1);
 		assertEquals(DHCPOption.userClassToString(userClassBuf2), "\"foo\"");
-		byte[] userClassBuf3 = "\07foo".getBytes();
+		byte[] userClassBuf3 = "\07foo".getBytes(StandardCharsets.ISO_8859_1);
 		assertEquals(DHCPOption.userClassToString(userClassBuf3), "\"foo\"");
 		assertEquals(DHCPOption.userClassToString(new byte[0]), "");
 		assertEquals(DHCPOption.userClassToString(new byte[1]), "\"\"");
@@ -154,10 +170,10 @@ public class DHCPOptionTest {
 	@Test
 	public void testStringListToUserClass() {
 		assertNull(DHCPOption.stringListToUserClass(null));
-		LinkedList<String> list = new LinkedList<String>();
+		LinkedList<String> list = new LinkedList<>();
 		list.add("foo");
 		list.add("foobar");
-		assertTrue(Arrays.equals("\03foo\06foobar".getBytes(), DHCPOption.stringListToUserClass(list)));
+		assertTrue(Arrays.equals("\03foo\06foobar".getBytes(StandardCharsets.ISO_8859_1), DHCPOption.stringListToUserClass(list)));
 		
 	}
 	// ----------------------------------------------------------------------
@@ -230,13 +246,13 @@ public class DHCPOptionTest {
 	@Test
 	public void testAgentOptionsToString() {
 		assertNull(DHCPOption.agentOptionsToString(null));
-		byte[] buf = "\01\03foo\02\06barbaz\377\00".getBytes();
+		byte[] buf = "\01\03foo\02\06barbaz\377\00".getBytes(StandardCharsets.ISO_8859_1);
 		assertEquals(DHCPOption.agentOptionsToString(buf), "{1}\"foo\",{2}\"barbaz\",{255}\"\"");
-		buf = "\01\377foo".getBytes();
+		buf = "\01\377foo".getBytes(StandardCharsets.ISO_8859_1);
 		assertEquals(DHCPOption.agentOptionsToString(buf), "{1}\"foo\"");
-		buf = "\01\00".getBytes();
+		buf = "\01\00".getBytes(StandardCharsets.ISO_8859_1);
 		assertEquals(DHCPOption.agentOptionsToString(buf), "{1}\"\"");
-		buf = "\01".getBytes();
+		buf = "\01".getBytes(StandardCharsets.ISO_8859_1);
 		assertEquals(DHCPOption.agentOptionsToString(buf), "");
 		assertEquals(DHCPOption.agentOptionsToString(new byte[0]), "");
 		
@@ -248,20 +264,20 @@ public class DHCPOptionTest {
 	@Test
 	public void testAgentOptionToRaw() {
 		assertNull(DHCPOption.agentOptionToRaw(null));
-		LinkedHashMap<Byte, String> map = new LinkedHashMap<Byte, String>();
+		LinkedHashMap<Byte, String> map = new LinkedHashMap<>();
 		map.put((byte)1, "foo");
 		map.put((byte)2, "bar");
-		byte[] buf = "\01\03foo\02\03bar".getBytes();
-		assertTrue(Arrays.equals(DHCPOption.agentOptionToRaw(map), buf));
+		byte[] buf = "\01\03foo\02\03bar".getBytes(StandardCharsets.ISO_8859_1);
+		assertArrayEquals(DHCPOption.agentOptionToRaw(map), buf);
 	}
 	@Test (expected=IllegalArgumentException.class)
 	public void testAgentOptionToRawTooBig() {
-		LinkedHashMap<Byte, String> map = new LinkedHashMap<Byte, String>();
+		LinkedHashMap<Byte, String> map = new LinkedHashMap<>();
 		map.put((byte) -1, String.valueOf(new char[256]));
 		byte[] buf = new byte[257];
 		buf[0] = (byte) 255;	// sub-option
 		buf[1] = (byte) 255;	// length
-		assertTrue(Arrays.equals(DHCPOption.agentOptionToRaw(map), buf));
+		assertArrayEquals(DHCPOption.agentOptionToRaw(map), buf);
 	}
 	// ----------------------------------------------------------------------
 	// high level static constructors
@@ -534,7 +550,7 @@ public class DHCPOptionTest {
 	public void testNewOptionAsStringGetValueAsString() {
 		DHCPOption opt = DHCPOption.newOptionAsString(DHO_TFTP_SERVER, "foobar");
 		assertEquals(DHO_TFTP_SERVER, opt.getCode());
-		assertTrue(Arrays.equals("foobar".getBytes(), opt.getValue()));
+		assertTrue(Arrays.equals("foobar".getBytes(StandardCharsets.ISO_8859_1), opt.getValue()));
 		
 		assertEquals("foobar", opt.getValueAsString());
 		
@@ -551,7 +567,7 @@ public class DHCPOptionTest {
 	}
 	@Test (expected=IllegalArgumentException.class)
 	public void testGetValueAsStringBad() {
-		DHCPOption opt = new DHCPOption(DHO_SUBNET_MASK, "foobar".getBytes());
+		DHCPOption opt = new DHCPOption(DHO_SUBNET_MASK, "foobar".getBytes(StandardCharsets.ISO_8859_1));
 		opt.getValueAsString();
 	}
 	@Test (expected=IllegalStateException.class)
@@ -681,12 +697,12 @@ public class DHCPOptionTest {
 		assertEquals("DHO_DHCP_PARAMETER_REQUEST_LIST(55)=0 1 252 10 224 3 255 ", buf.toString());
 
 		buf = new StringBuilder();
-		opt = new DHCPOption(DHO_USER_CLASS, "\03foo\06foobar".getBytes());
+		opt = new DHCPOption(DHO_USER_CLASS, "\03foo\06foobar".getBytes(StandardCharsets.ISO_8859_1));
 		opt.append(buf);
 		assertEquals("DHO_USER_CLASS(77)=\"foo\",\"foobar\"", buf.toString());
 
 		buf = new StringBuilder();
-		opt = new DHCPOption(DHO_DHCP_AGENT_OPTIONS, "\01\03foo\02\06barbaz\377\00".getBytes());
+		opt = new DHCPOption(DHO_DHCP_AGENT_OPTIONS, "\01\03foo\02\06barbaz\377\00".getBytes(StandardCharsets.ISO_8859_1));
 		opt.append(buf);
 		assertEquals("DHO_DHCP_AGENT_OPTIONS(82)={1}\"foo\",{2}\"barbaz\",{255}\"\"", buf.toString());
 

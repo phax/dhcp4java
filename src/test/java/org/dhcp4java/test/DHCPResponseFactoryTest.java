@@ -18,14 +18,23 @@
  */
 package org.dhcp4java.test;
 
-import static org.dhcp4java.DHCPConstants.*;
-import static org.junit.Assert.*;
-import static org.dhcp4java.DHCPResponseFactory.*;
+import static org.dhcp4java.DHCPConstants.BOOTREPLY;
+import static org.dhcp4java.DHCPConstants.DHCPACK;
+import static org.dhcp4java.DHCPConstants.DHCPDISCOVER;
+import static org.dhcp4java.DHCPConstants.DHCPINFORM;
+import static org.dhcp4java.DHCPConstants.DHCPNAK;
+import static org.dhcp4java.DHCPConstants.DHCPOFFER;
+import static org.dhcp4java.DHCPConstants.DHCPREQUEST;
+import static org.dhcp4java.DHCPConstants.DHO_DHCP_LEASE_TIME;
+import static org.dhcp4java.DHCPConstants.INADDR_ANY;
+import static org.dhcp4java.DHCPConstants.INADDR_BROADCAST;
+import static org.dhcp4java.DHCPResponseFactory.makeDHCPAck;
+import static org.dhcp4java.DHCPResponseFactory.makeDHCPOffer;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-
-import junit.framework.JUnit4TestAdapter;
 
 import org.dhcp4java.DHCPOption;
 import org.dhcp4java.DHCPPacket;
@@ -33,10 +42,6 @@ import org.dhcp4java.DHCPResponseFactory;
 import org.junit.Test;
 
 public class DHCPResponseFactoryTest {
-
-    public static junit.framework.Test suite() {
-        return new JUnit4TestAdapter(DHCPResponseFactoryTest.class);
-    }
 	
     // ==============================================================
     // testing makeDHCPOffer
@@ -88,7 +93,7 @@ public class DHCPResponseFactoryTest {
     	assertEquals("", resp.getSname());
     	assertEquals("", resp.getFile());
     	assertEquals(DHCPOFFER, (byte)resp.getDHCPMessageType());
-    	assertEquals(new Integer(86400), resp.getOptionAsInteger(DHO_DHCP_LEASE_TIME));
+    	assertEquals(Integer.valueOf(86400), resp.getOptionAsInteger(DHO_DHCP_LEASE_TIME));
     	assertEquals(2, resp.getOptionsArray().length);	// no other options
     	assertEquals(InetAddress.getByName("11.12.156.1"), resp.getAddress());
     	assertEquals(67, resp.getPort());
@@ -122,7 +127,7 @@ public class DHCPResponseFactoryTest {
     	assertEquals("", resp.getSname());
     	assertEquals("", resp.getFile());
     	assertEquals(DHCPACK, (byte)resp.getDHCPMessageType());
-    	assertEquals(new Integer(86400), resp.getOptionAsInteger(DHO_DHCP_LEASE_TIME));
+    	assertEquals(Integer.valueOf(86400), resp.getOptionAsInteger(DHO_DHCP_LEASE_TIME));
     	assertEquals(2, resp.getOptionsArray().length);	// no other options
     	assertEquals(InetAddress.getByName("11.12.156.1"), resp.getAddress());
     	assertEquals(67, resp.getPort());

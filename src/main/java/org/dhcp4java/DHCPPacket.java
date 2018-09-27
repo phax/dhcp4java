@@ -18,6 +18,19 @@
  */
 package org.dhcp4java;
 
+import static org.dhcp4java.DHCPConstants.BOOTREPLY;
+import static org.dhcp4java.DHCPConstants.DHO_DHCP_MESSAGE_TYPE;
+import static org.dhcp4java.DHCPConstants.DHO_END;
+import static org.dhcp4java.DHCPConstants.DHO_PAD;
+import static org.dhcp4java.DHCPConstants.HTYPE_ETHER;
+import static org.dhcp4java.DHCPConstants._BOOTP_ABSOLUTE_MIN_LEN;
+import static org.dhcp4java.DHCPConstants._BOOTP_VEND_SIZE;
+import static org.dhcp4java.DHCPConstants._BOOT_NAMES;
+import static org.dhcp4java.DHCPConstants._DHCP_DEFAULT_MAX_LEN;
+import static org.dhcp4java.DHCPConstants._DHCP_MAX_MTU;
+import static org.dhcp4java.DHCPConstants._HTYPE_NAMES;
+import static org.dhcp4java.DHCPConstants._MAGIC_COOKIE;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -36,8 +49,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static org.dhcp4java.DHCPConstants.*;
 
 /**
  * The basic class for manipulating DHCP packets.
@@ -354,7 +365,7 @@ public class DHCPPacket implements Cloneable, Serializable {
         this.file    = new byte[128];
         this.padding = new byte[0];
         this.isDhcp  = true;
-        this.options = new LinkedHashMap<Byte, DHCPOption>();
+        this.options = new LinkedHashMap<>();
     }
 
     /**
@@ -365,7 +376,6 @@ public class DHCPPacket implements Cloneable, Serializable {
      * @return the newly create <tt>DHCPPacket</tt> instance
      * @throws DHCPBadPacketException the datagram is malformed and cannot be parsed properly.
      * @throws IllegalArgumentException datagram is <tt>null</tt>
-     * @throws IOException
      */
     public static DHCPPacket getPacket(DatagramPacket datagram) throws DHCPBadPacketException {
     	if (datagram == null) {
@@ -422,7 +432,7 @@ public class DHCPPacket implements Cloneable, Serializable {
             p.sname  = this.sname .clone();
             p.file   = this.file  .clone();
             //p.options = this.options.clone();
-            p.options = new LinkedHashMap<Byte, DHCPOption>(this.options);
+            p.options = new LinkedHashMap<>(this.options);
             p.padding = this.padding.clone();
 
             p.truncated = false;    // freshly new object, it is not considered as corrupt
@@ -1007,7 +1017,7 @@ public class DHCPPacket implements Cloneable, Serializable {
      * Sets the ciaddr field (Client IP Address).
      *
      * @param ciaddr The ciaddr to set.
-     * @throws UnknownHostException
+     * @throws UnknownHostException on error
      */
     public void setCiaddr(String ciaddr) throws UnknownHostException {
         this.setCiaddr(InetAddress.getByName(ciaddr));
@@ -1154,7 +1164,7 @@ public class DHCPPacket implements Cloneable, Serializable {
      * Sets the giaddr field (Relay agent IP address).
      *
      * @param giaddr The giaddr to set.
-     * @throws UnknownHostException
+     * @throws UnknownHostException on error
      */
     public void setGiaddr(String giaddr) throws UnknownHostException {
         this.setGiaddr(InetAddress.getByName(giaddr));

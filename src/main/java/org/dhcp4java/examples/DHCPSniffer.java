@@ -38,9 +38,7 @@ public class DHCPSniffer {
     }
 
     public static void main(String[] args) {
-        try {
-            DatagramSocket socket = new DatagramSocket(DHCPConstants.BOOTP_REQUEST_PORT);
-
+        try(final DatagramSocket socket = new DatagramSocket(DHCPConstants.BOOTP_REQUEST_PORT)) {
             while (true) {
                 DatagramPacket pac = new DatagramPacket(new byte[1500], 1500);
                 DHCPPacket     dhcp;

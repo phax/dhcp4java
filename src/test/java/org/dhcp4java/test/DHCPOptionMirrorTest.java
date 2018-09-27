@@ -18,6 +18,11 @@
  */
 package org.dhcp4java.test;
 
+import static org.dhcp4java.DHCPConstants.DHO_DHCP_LEASE_TIME;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 
 import org.dhcp4java.DHCPOption;
@@ -25,18 +30,9 @@ import org.dhcp4java.DHCPPacket;
 import org.junit.Before;
 import org.junit.Test;
 
-import junit.framework.JUnit4TestAdapter;
-import static org.junit.Assert.*;
-
-import static org.dhcp4java.DHCPConstants.*;
-
+@SuppressWarnings ("unused")
 public class DHCPOptionMirrorTest {
-
-    public static junit.framework.Test suite() {
-        return new JUnit4TestAdapter(DHCPOptionMirrorTest.class);
-    }
-    
-    private DHCPOption opt = null;
+    private DHCPOption opt ;
     
     @Test (expected=IllegalArgumentException.class)
     public void testConstructorPad() {

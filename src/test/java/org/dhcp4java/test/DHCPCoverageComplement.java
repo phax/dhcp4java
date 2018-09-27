@@ -20,8 +20,6 @@ package org.dhcp4java.test;
 
 import org.junit.Test;
 
-import junit.framework.JUnit4TestAdapter;
-
 /**
  * These are complementary test (not essential ones) designed to increase the test
  * coverage.
@@ -30,11 +28,6 @@ import junit.framework.JUnit4TestAdapter;
  *
  */
 public class DHCPCoverageComplement {
-	
-	public static junit.framework.Test suite() {
-	       return new JUnit4TestAdapter(DHCPCoverageComplement.class);
-	    }
-		
 	@Test
 	public void testVoid() {
 		// TODO waiting for a real test

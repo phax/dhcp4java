@@ -18,13 +18,19 @@
  */
 package org.dhcp4java;
 
+import static org.dhcp4java.DHCPConstants.BOOTREPLY;
+import static org.dhcp4java.DHCPConstants.BOOTREQUEST;
+import static org.dhcp4java.DHCPConstants.DHCPDECLINE;
+import static org.dhcp4java.DHCPConstants.DHCPDISCOVER;
+import static org.dhcp4java.DHCPConstants.DHCPINFORM;
+import static org.dhcp4java.DHCPConstants.DHCPRELEASE;
+import static org.dhcp4java.DHCPConstants.DHCPREQUEST;
+
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static org.dhcp4java.DHCPConstants.*;
 
 /**
  * General Interface for a "DHCP Servlet"

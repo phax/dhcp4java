@@ -18,22 +18,17 @@
  */
 package org.dhcp4java.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 
 import org.dhcp4java.DHCPConstants;
 import org.dhcp4java.HardwareAddress;
 import org.junit.Test;
 
-import junit.framework.JUnit4TestAdapter;
-
-import static junit.framework.Assert.*;
-
 public class HardwareAddressTest {
-
-	public static junit.framework.Test suite() {
-       return new JUnit4TestAdapter(HardwareAddressTest.class);
-    }
-	
 	private static HardwareAddress ha = new HardwareAddress(DHCPConstants.HTYPE_ETHER, "001122334455");
 	
 	@Test
