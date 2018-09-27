@@ -44,7 +44,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
    * @param addr
    *        IPv4 address
    * @param mask
-   *        mask lentgh (between 1 and 32)
+   *        mask length (between 1 and 32)
    * @throws NullPointerException
    *         if addr is null
    * @throws IllegalArgumentException
@@ -53,17 +53,11 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
   public InetCidr (final InetAddress addr, final int mask)
   {
     if (addr == null)
-    {
       throw new NullPointerException ("addr is null");
-    }
     if (!(addr instanceof Inet4Address))
-    {
       throw new IllegalArgumentException ("Only IPv4 addresses supported");
-    }
     if (mask < 1 || mask > 32)
-    {
       throw new IllegalArgumentException ("Bad mask:" + mask + " must be between 1 and 32");
-    }
 
     // apply mask to address
     m_nAddr = Util.inetAddress2Int (addr) & (int) gCidrMask[mask];
@@ -86,19 +80,15 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
    */
   public InetCidr (final InetAddress addr, final InetAddress netMask)
   {
-    if ((addr == null) || (netMask == null))
-    {
+    if (addr == null || netMask == null)
       throw new NullPointerException ();
-    }
     if (!(addr instanceof Inet4Address) || !(netMask instanceof Inet4Address))
-    {
       throw new IllegalArgumentException ("Only IPv4 addresses supported");
-    }
+
     final Integer intMask = gCidr.get (netMask);
     if (intMask == null)
-    {
       throw new IllegalArgumentException ("netmask: " + netMask + " is not a valid mask");
-    }
+
     m_nAddr = Util.inetAddress2Int (addr) & (int) gCidrMask[intMask.intValue ()];
     m_nMask = intMask.intValue ();
   }
@@ -156,9 +146,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
   public static final InetCidr fromLong (final long l)
   {
     if (l < 0)
-    {
       throw new IllegalArgumentException ("l must not be negative: " + l);
-    }
     final long ip = l & 0xFFFFFFFFL;
     final long mask = l >> 32L;
     return new InetCidr (Util.long2InetAddress (ip), (int) mask);
@@ -171,14 +159,14 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
   }
 
   @Override
-  public boolean equals (final Object obj)
+  public boolean equals (final Object o)
   {
-    if ((obj == null) || (!(obj instanceof InetCidr)))
-    {
+    if (o == this)
+      return true;
+    if (o == null || !(o instanceof InetCidr))
       return false;
-    }
-    final InetCidr cidr = (InetCidr) obj;
-    return m_nAddr == cidr.m_nAddr && m_nMask == cidr.m_nMask;
+    final InetCidr rhs = (InetCidr) o;
+    return m_nAddr == rhs.m_nAddr && m_nMask == rhs.m_nMask;
   }
 
   /**
@@ -193,16 +181,12 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
   public static InetCidr [] addr2Cidr (final InetAddress addr)
   {
     if (addr == null)
-    {
       throw new IllegalArgumentException ("addr must not be null");
-    }
     if (!(addr instanceof Inet4Address))
-    {
       throw new IllegalArgumentException ("Only IPv4 addresses supported");
-    }
+
     final int addrInt = Util.inetAddress2Int (addr);
     final InetCidr [] cidrs = new InetCidr [32];
-
     for (int i = cidrs.length; i >= 1; i--)
     {
       cidrs[32 - i] = new InetCidr (Util.int2InetAddress (addrInt & (int) gCidrMask[i]), i);
@@ -223,9 +207,8 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
   public int compareTo (final InetCidr rhs)
   {
     if (rhs == null)
-    {
       throw new NullPointerException ();
-    }
+
     if (equals (rhs))
       return 0;
     if (_int2UnsignedLong (m_nAddr) < _int2UnsignedLong (rhs.m_nAddr))
@@ -266,9 +249,8 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
     for (final InetCidr cidr : list)
     {
       if (cidr == null)
-      {
         throw new NullPointerException ();
-      }
+
       if (pivot == null)
       {
         pivot = cidr;
@@ -276,9 +258,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
       else
       {
         if (pivot.compareTo (cidr) >= 0)
-        {
           return false;
-        }
         pivot = cidr;
       }
     }
@@ -301,20 +281,21 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
   {
     if (list == null)
       return;
+
+    // Fails test if enabled
     if (false)
       assert isSorted (list);
+
     InetCidr prev = null;
     long pivotEnd = -1;
     for (final InetCidr cidr : list)
     {
       if (cidr == null)
-      {
         throw new NullPointerException ();
-      }
-      if ((prev != null) && (cidr.getAddrLong () <= pivotEnd))
-      {
+
+      if (prev != null && cidr.getAddrLong () <= pivotEnd)
         throw new IllegalStateException ("Overlapping cidr: " + prev + ", " + cidr);
-      }
+
       pivotEnd = cidr.getAddrLong () + (gCidrMask[cidr.getMask ()] ^ 0xFFFFFFFFL);
       prev = cidr;
     }

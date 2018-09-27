@@ -103,7 +103,7 @@ public class HardwareAddress implements Serializable
   @Override
   public String toString ()
   {
-    final StringBuffer sb = new StringBuffer (28);
+    final StringBuilder sb = new StringBuilder (28);
     if (m_nHardwareType != HTYPE_ETHER)
     {
       // append hType only if it is not standard ethernet
@@ -134,9 +134,8 @@ public class HardwareAddress implements Serializable
   public static HardwareAddress getHardwareAddressByString (final String macStr)
   {
     if (macStr == null)
-    {
       throw new NullPointerException ("macStr is null");
-    }
+
     final String [] macAdrItems = macStr.split (":");
     if (macAdrItems.length != 6)
     {
