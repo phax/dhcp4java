@@ -58,20 +58,20 @@ public class DHCPServletTest
 
     DHCPPacket pac = new DHCPPacket ();
     pac.setDhcp (false); // BOOTP
-    assertNull (servicePacket (pac)); // reject BOOTP
+    assertNull (_servicePacket (pac)); // reject BOOTP
 
     pac = new DHCPPacket ();
-    assertNull (servicePacket (pac)); // reject if DHCP_MESSAGE_TYPE is empty
+    assertNull (_servicePacket (pac)); // reject if DHCP_MESSAGE_TYPE is empty
 
     pac = new DHCPPacket ();
     pac.setOp (BOOTREPLY);
     pac.setDHCPMessageType (DHCPDISCOVER);
-    assertNull (servicePacket (pac)); // reject if BOOTREPLY
+    assertNull (_servicePacket (pac)); // reject if BOOTREPLY
 
     pac = new DHCPPacket ();
     pac.setOp ((byte) -1);
     pac.setDHCPMessageType (DHCPDISCOVER);
-    assertNull (servicePacket (pac)); // reject if bad Op
+    assertNull (_servicePacket (pac)); // reject if bad Op
 
     assertNull (s_aServlet.getServer ());
     s_aServlet.setServer (null);
@@ -81,11 +81,11 @@ public class DHCPServletTest
   @Test
   public void testDoXXX ()
   {
-    messageTypeTester (DHCPDISCOVER);
-    messageTypeTester (DHCPREQUEST);
-    messageTypeTester (DHCPINFORM);
-    messageTypeTester (DHCPDECLINE);
-    messageTypeTester (DHCPRELEASE);
+    _messageTypeTester (DHCPDISCOVER);
+    _messageTypeTester (DHCPREQUEST);
+    _messageTypeTester (DHCPINFORM);
+    _messageTypeTester (DHCPDECLINE);
+    _messageTypeTester (DHCPRELEASE);
   }
 
   @Test
@@ -95,24 +95,24 @@ public class DHCPServletTest
     pac.setDHCPMessageType ((byte) -2);
     pac.setOp (BOOTREQUEST);
     s_aServlet.lastMessageType = -1;
-    assertNull (servicePacket (pac));
+    assertNull (_servicePacket (pac));
     assertEquals ((byte) -1, s_aServlet.lastMessageType);
   }
 
-  private static final DatagramPacket servicePacket (final DHCPPacket pac) throws DHCPBadPacketException
+  private static final DatagramPacket _servicePacket (final DHCPPacket pac) throws DHCPBadPacketException
   {
     final byte [] buf = pac.serialize ();
     final DatagramPacket udp = new DatagramPacket (buf, buf.length);
     return s_aServlet.serviceDatagram (udp);
   }
 
-  private static final void messageTypeTester (final byte messageType)
+  private static final void _messageTypeTester (final byte messageType)
   {
     final DHCPPacket pac = new DHCPPacket ();
     pac.setDHCPMessageType (messageType);
     pac.setOp (BOOTREQUEST);
     s_aServlet.lastMessageType = -1;
-    assertNull (servicePacket (pac));
+    assertNull (_servicePacket (pac));
     assertEquals (messageType, s_aServlet.lastMessageType);
   }
 

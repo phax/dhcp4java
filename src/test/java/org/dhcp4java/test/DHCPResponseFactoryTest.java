@@ -188,17 +188,17 @@ public class DHCPResponseFactoryTest
     // RFC 2131 compliance
     // sorry we ignore the broadcast bit
     // fully broadcast by client
-    getDefaultSocketAddressTester (INADDR_ANY, INADDR_ANY, DHCPOFFER, INADDR_BROADCAST, 68);
-    getDefaultSocketAddressTester (INADDR_ANY, INADDR_ANY, DHCPACK, INADDR_BROADCAST, 68);
-    getDefaultSocketAddressTester (INADDR_ANY, INADDR_ANY, DHCPNAK, INADDR_BROADCAST, 68);
+    _getDefaultSocketAddressTester (INADDR_ANY, INADDR_ANY, DHCPOFFER, INADDR_BROADCAST, 68);
+    _getDefaultSocketAddressTester (INADDR_ANY, INADDR_ANY, DHCPACK, INADDR_BROADCAST, 68);
+    _getDefaultSocketAddressTester (INADDR_ANY, INADDR_ANY, DHCPNAK, INADDR_BROADCAST, 68);
     // unicast from client
-    getDefaultSocketAddressTester (adr, INADDR_ANY, DHCPOFFER, adr, 68);
-    getDefaultSocketAddressTester (adr, INADDR_ANY, DHCPACK, adr, 68);
-    getDefaultSocketAddressTester (adr, INADDR_ANY, DHCPNAK, INADDR_BROADCAST, 68);
+    _getDefaultSocketAddressTester (adr, INADDR_ANY, DHCPOFFER, adr, 68);
+    _getDefaultSocketAddressTester (adr, INADDR_ANY, DHCPACK, adr, 68);
+    _getDefaultSocketAddressTester (adr, INADDR_ANY, DHCPNAK, INADDR_BROADCAST, 68);
     // when though a relay
-    getDefaultSocketAddressTester (INADDR_ANY, adr, DHCPOFFER, adr, 67);
-    getDefaultSocketAddressTester (INADDR_ANY, adr, DHCPACK, adr, 67);
-    getDefaultSocketAddressTester (INADDR_ANY, adr, DHCPNAK, adr, 67);
+    _getDefaultSocketAddressTester (INADDR_ANY, adr, DHCPOFFER, adr, 67);
+    _getDefaultSocketAddressTester (INADDR_ANY, adr, DHCPACK, adr, 67);
+    _getDefaultSocketAddressTester (INADDR_ANY, adr, DHCPNAK, adr, 67);
   }
 
   @Test (expected = IllegalArgumentException.class)
@@ -210,10 +210,10 @@ public class DHCPResponseFactoryTest
   @Test (expected = IllegalArgumentException.class)
   public void testGetDefaultSocketAddressBadType () throws Exception
   {
-    getDefaultSocketAddressTester (INADDR_ANY, INADDR_ANY, (byte) -10, INADDR_ANY, 68);
+    _getDefaultSocketAddressTester (INADDR_ANY, INADDR_ANY, (byte) -10, INADDR_ANY, 68);
   }
 
-  private static final void getDefaultSocketAddressTester (final InetAddress ciaddr,
+  private static final void _getDefaultSocketAddressTester (final InetAddress ciaddr,
                                                            final InetAddress giaddr,
                                                            final byte responseType,
                                                            final InetAddress expectedAddress,

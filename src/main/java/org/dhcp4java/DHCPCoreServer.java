@@ -123,9 +123,7 @@ public class DHCPCoreServer implements Runnable
                                            final Properties userProps) throws DHCPServerInitException
   {
     if (servlet == null)
-    {
       throw new IllegalArgumentException ("servlet must not be null");
-    }
     final DHCPCoreServer server = new DHCPCoreServer (servlet, userProps);
     server.init ();
     return server;
@@ -376,19 +374,19 @@ public class DHCPCoreServer implements Runnable
 
   private static class ServerThreadFactory implements ThreadFactory
   {
-    private static final AtomicInteger poolNumber = new AtomicInteger (1);
+    private static final AtomicInteger S_aPoolNumber = new AtomicInteger (1);
 
-    final AtomicInteger threadNumber = new AtomicInteger (1);
-    final String namePrefix;
+    private final AtomicInteger m_aThreadNumber = new AtomicInteger (1);
+    private final String m_sNamePrefix;
 
     ServerThreadFactory ()
     {
-      this.namePrefix = "DHCPCoreServer-" + poolNumber.getAndIncrement () + "-thread-";
+      this.m_sNamePrefix = "DHCPCoreServer-" + S_aPoolNumber.getAndIncrement () + "-thread-";
     }
 
     public Thread newThread (final Runnable runnable)
     {
-      return new Thread (runnable, this.namePrefix + this.threadNumber.getAndIncrement ());
+      return new Thread (runnable, this.m_sNamePrefix + this.m_aThreadNumber.getAndIncrement ());
     }
   }
 

@@ -38,13 +38,12 @@ import org.junit.Test;
  */
 public class DHCPEndToEndTest
 {
-
   private static final String SERVER_ADDR = "127.0.0.1";
   private static final int SERVER_PORT = 6767;
   private static final int CLIENT_PORT = 6768;
 
-  private static DHCPCoreServer server;
-  private static DatagramSocket socket;
+  private static DHCPCoreServer m_aServer;
+  private static DatagramSocket m_aSocket;
 
   /**
    * Start Server.
@@ -60,11 +59,11 @@ public class DHCPEndToEndTest
     localProperties.put (DHCPCoreServer.SERVER_ADDRESS, SERVER_ADDR + ':' + SERVER_PORT);
     localProperties.put (DHCPCoreServer.SERVER_THREADS, "1");
 
-    server = DHCPCoreServer.initServer (new DHCPEndToEndTestServlet (), localProperties);
+    m_aServer = DHCPCoreServer.initServer (new DHCPEndToEndTestServlet (), localProperties);
 
-    new Thread (server).start ();
+    new Thread (m_aServer).start ();
 
-    socket = new DatagramSocket (CLIENT_PORT);
+    m_aSocket = new DatagramSocket (CLIENT_PORT);
   }
 
   @Test (timeout = 1000)
@@ -78,7 +77,7 @@ public class DHCPEndToEndTest
     udp = new DatagramPacket (buf, buf.length);
     udp.setAddress (InetAddress.getByName (SERVER_ADDR));
     udp.setPort (SERVER_PORT);
-    socket.send (udp);
+    m_aSocket.send (udp);
     udp = new DatagramPacket (new byte [1500], 1500);
     // TODO
     // socket.receive(udp);
@@ -87,15 +86,15 @@ public class DHCPEndToEndTest
   @AfterClass
   public static void shutdownServer ()
   {
-    if (socket != null)
+    if (m_aSocket != null)
     {
-      socket.close ();
-      socket = null;
+      m_aSocket.close ();
+      m_aSocket = null;
     }
-    if (server != null)
+    if (m_aServer != null)
     { // do some cleanup
-      server.stopServer ();
-      server = null;
+      m_aServer.stopServer ();
+      m_aServer = null;
     }
   }
 }

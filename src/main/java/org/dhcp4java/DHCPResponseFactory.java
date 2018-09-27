@@ -47,7 +47,6 @@ import java.net.InetSocketAddress;
  */
 public final class DHCPResponseFactory
 {
-  // Suppresses default constructor, ensuring non-instantiability.
   private DHCPResponseFactory ()
   {}
 

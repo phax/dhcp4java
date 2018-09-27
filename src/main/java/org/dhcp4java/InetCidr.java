@@ -228,9 +228,9 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
     }
     if (equals (rhs))
       return 0;
-    if (int2UnsignedLong (this.m_nAddr) < int2UnsignedLong (rhs.m_nAddr))
+    if (_int2UnsignedLong (this.m_nAddr) < _int2UnsignedLong (rhs.m_nAddr))
       return -1;
-    if (int2UnsignedLong (this.m_nAddr) > int2UnsignedLong (rhs.m_nAddr))
+    if (_int2UnsignedLong (this.m_nAddr) > _int2UnsignedLong (rhs.m_nAddr))
       return 1;
 
     // addr are identical, now comparing mask
@@ -243,7 +243,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
     return 0;
   }
 
-  private final static long int2UnsignedLong (final int i)
+  private final static long _int2UnsignedLong (final int i)
   {
     return (i & 0xFFFFFFFFL);
   }

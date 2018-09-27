@@ -555,7 +555,7 @@ public class DHCPPacket implements Cloneable, Serializable
     b &= (this.m_bIsDhcp == p.m_bIsDhcp);
     // we deliberately ignore "truncated" since it is reset when cloning
     b &= (Arrays.equals (this.m_aPadding, p.m_aPadding));
-    b &= (equalsStatic (this.m_aAddress, p.m_aAddress));
+    b &= (_equalsStatic (this.m_aAddress, p.m_aAddress));
     b &= (this.m_nPort == p.m_nPort);
 
     return b;
@@ -592,15 +592,15 @@ public class DHCPPacket implements Cloneable, Serializable
     return h;
   }
 
-  private static boolean equalsStatic (final Object a, final Object b)
+  private static boolean _equalsStatic (final Object a, final Object b)
   {
-    return ((a == null) ? (b == null) : a.equals (b));
+    return a == null ? b == null : a.equals (b);
   }
 
   /**
    * Assert all the invariants of the object. For debug purpose only.
    */
-  private void assertInvariants ()
+  private void _assertInvariants ()
   {
     assert (this.m_sComment != null);
     assert (this.m_aCiaddr != null);
@@ -782,7 +782,7 @@ public class DHCPPacket implements Cloneable, Serializable
       this.m_aPadding = new byte [inBStream.available ()];
       inBStream.read (this.m_aPadding);
       // final verifications (if assertions are activated)
-      this.assertInvariants ();
+      this._assertInvariants ();
 
       return this;
     }
@@ -830,7 +830,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public byte [] serialize (final int minSize, final int maxSize)
   {
-    this.assertInvariants ();
+    this._assertInvariants ();
     // prepare output buffer, pre-sized to maximum buffer length
     // default buffer is half the maximum size of possible packet
     // (this seams reasonable for most uses, worst case only doubles the buffer
@@ -965,7 +965,7 @@ public class DHCPPacket implements Cloneable, Serializable
       }
 
       buffer.append ("\nhlen=").append (this.m_nHlen).append ("\nhops=").append (this.m_nHops).append ("\nxid=0x");
-      appendHex (buffer, this.m_nXid);
+      _appendHex (buffer, this.m_nXid);
       buffer.append ("\nsecs=")
             .append (this.m_nSecs)
             .append ("\nflags=0x")
@@ -979,7 +979,7 @@ public class DHCPPacket implements Cloneable, Serializable
       buffer.append ("\ngiaddr=");
       appendHostAddress (buffer, InetAddress.getByAddress (this.m_aGiaddr));
       buffer.append ("\nchaddr=0x");
-      this.appendChaddrAsHex (buffer);
+      this._appendChaddrAsHex (buffer);
       buffer.append ("\nsname=").append (this.getSname ()).append ("\nfile=").append (this.getFile ());
 
       if (this.m_bIsDhcp)
@@ -1061,7 +1061,7 @@ public class DHCPPacket implements Cloneable, Serializable
    *        this string buffer
    * @return the string buffer.
    */
-  private StringBuilder appendChaddrAsHex (final StringBuilder buffer)
+  private StringBuilder _appendChaddrAsHex (final StringBuilder buffer)
   {
     appendHex (buffer, this.m_aChaddr, 0, this.m_nHlen & 0xFF);
     return buffer;
@@ -1095,7 +1095,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public String getChaddrAsHex ()
   {
-    return this.appendChaddrAsHex (new StringBuilder (this.m_nHlen & 0xFF)).toString ();
+    return this._appendChaddrAsHex (new StringBuilder (this.m_nHlen & 0xFF)).toString ();
   }
 
   /**
@@ -2778,7 +2778,7 @@ public class DHCPPacket implements Cloneable, Serializable
    * Convert integer to hex chars (uppercase) and appends them to a string
    * builder
    */
-  private static void appendHex (final StringBuilder sbuf, final int i)
+  private static void _appendHex (final StringBuilder sbuf, final int i)
   {
     appendHex (sbuf, (byte) ((i & 0xff000000) >>> 24));
     appendHex (sbuf, (byte) ((i & 0x00ff0000) >>> 16));

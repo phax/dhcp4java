@@ -52,7 +52,7 @@ public class DHCPServlet
   private static final Logger s_aLogger = LoggerFactory.getLogger (DHCPServlet.class);
 
   /** the server instance running this servlet */
-  protected DHCPCoreServer m_aServer = null;
+  protected DHCPCoreServer m_aServer;
 
   /**
    * Initialize servlet. Override this method to implement any initialization
@@ -89,7 +89,7 @@ public class DHCPServlet
    */
   public DatagramPacket serviceDatagram (final DatagramPacket requestDatagram)
   {
-    DatagramPacket responseDatagram;
+    DatagramPacket aResponseDatagram;
 
     if (requestDatagram == null)
     {
@@ -125,29 +125,29 @@ public class DHCPServlet
       }
 
       // check address/port
-      final InetAddress address = response.getAddress ();
-      if (address == null)
+      final InetAddress aAddress = response.getAddress ();
+      if (aAddress == null)
       {
         s_aLogger.warn ("Address needed in response");
         return null;
       }
-      final int port = response.getPort ();
+      final int nPort = response.getPort ();
 
       // we have something to send back
-      final byte [] responseBuf = response.serialize ();
+      final byte [] aResponseBuf = response.serialize ();
 
       if (s_aLogger.isDebugEnabled ())
       {
-        s_aLogger.debug ("Buffer is " + responseBuf.length + " bytes long");
+        s_aLogger.debug ("Buffer is " + aResponseBuf.length + " bytes long");
       }
 
-      responseDatagram = new DatagramPacket (responseBuf, responseBuf.length, address, port);
+      aResponseDatagram = new DatagramPacket (aResponseBuf, aResponseBuf.length, aAddress, nPort);
       if (s_aLogger.isDebugEnabled ())
       {
-        s_aLogger.debug ("Sending back to" + address.getHostAddress () + '(' + port + ')');
+        s_aLogger.debug ("Sending back to" + aAddress.getHostAddress () + '(' + nPort + ')');
       }
-      this.postProcess (requestDatagram, responseDatagram);
-      return responseDatagram;
+      this.postProcess (requestDatagram, aResponseDatagram);
+      return aResponseDatagram;
     }
     catch (final DHCPBadPacketException e)
     {

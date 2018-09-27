@@ -48,9 +48,9 @@ import org.junit.Test;
 
 public class DHCPPacketTest
 {
-  private static DHCPPacket refPacketFromHex;
-  private static DHCPPacket refPacketFromSratch;
-  private DHCPPacket pac0;
+  private static DHCPPacket s_aRefPacketFromHex;
+  private static DHCPPacket s_aRefPacketFromScratch;
+  private DHCPPacket m_aPac0;
 
   /*
    * @see TestCase#setUp()
@@ -60,49 +60,48 @@ public class DHCPPacketTest
   {
     final byte [] refBuf = HexUtils.hexToBytes (REF_PACKET);
 
-    refPacketFromHex = DHCPPacket.getPacket (refBuf, 0, refBuf.length, true);
-    refPacketFromHex.setComment ("foobar");
-    refPacketFromHex.setAddress (InetAddress.getByName ("10.11.12.13"));
-    refPacketFromHex.setPort (6767);
+    s_aRefPacketFromHex = DHCPPacket.getPacket (refBuf, 0, refBuf.length, true);
+    s_aRefPacketFromHex.setComment ("foobar");
+    s_aRefPacketFromHex.setAddress (InetAddress.getByName ("10.11.12.13"));
+    s_aRefPacketFromHex.setPort (6767);
 
-    final DHCPPacket packet = new DHCPPacket ();
-    packet.setComment ("foobar");
-    packet.setOp (BOOTREQUEST);
-    packet.setHtype (HTYPE_ETHER);
-    packet.setHlen ((byte) 6);
-    packet.setHops ((byte) 0);
-    packet.setSecs ((short) 0);
-    packet.setXid (0x11223344);
-    packet.setFlags ((short) 0x8000);
-    packet.setCiaddr ("10.0.0.1");
-    packet.setYiaddr ("10.0.0.2");
-    packet.setSiaddr ("10.0.0.3");
-    packet.setGiaddr ("10.0.0.4");
-    packet.setChaddr (HexUtils.hexToBytes ("00112233445566778899AABBCCDDEEFF"));
-    packet.setSname (STR200.substring (0, 64));
-    packet.setFile (STR200.substring (0, 128));
-    packet.setDHCPMessageType (DHCPDISCOVER);
-    packet.setOptionAsInetAddress (DHO_DHCP_SERVER_IDENTIFIER, "12.34.56.68");
-    packet.setOptionAsInt (DHO_DHCP_LEASE_TIME, 86400);
-    packet.setOptionAsInetAddress (DHO_SUBNET_MASK, "255.255.255.0");
-    packet.setOptionAsInetAddress (DHO_ROUTERS, "10.0.0.254");
+    final DHCPPacket aPacket = new DHCPPacket ();
+    aPacket.setComment ("foobar");
+    aPacket.setOp (BOOTREQUEST);
+    aPacket.setHtype (HTYPE_ETHER);
+    aPacket.setHlen ((byte) 6);
+    aPacket.setHops ((byte) 0);
+    aPacket.setSecs ((short) 0);
+    aPacket.setXid (0x11223344);
+    aPacket.setFlags ((short) 0x8000);
+    aPacket.setCiaddr ("10.0.0.1");
+    aPacket.setYiaddr ("10.0.0.2");
+    aPacket.setSiaddr ("10.0.0.3");
+    aPacket.setGiaddr ("10.0.0.4");
+    aPacket.setChaddr (HexUtils.hexToBytes ("00112233445566778899AABBCCDDEEFF"));
+    aPacket.setSname (STR200.substring (0, 64));
+    aPacket.setFile (STR200.substring (0, 128));
+    aPacket.setDHCPMessageType (DHCPDISCOVER);
+    aPacket.setOptionAsInetAddress (DHO_DHCP_SERVER_IDENTIFIER, "12.34.56.68");
+    aPacket.setOptionAsInt (DHO_DHCP_LEASE_TIME, 86400);
+    aPacket.setOptionAsInetAddress (DHO_SUBNET_MASK, "255.255.255.0");
+    aPacket.setOptionAsInetAddress (DHO_ROUTERS, "10.0.0.254");
     final InetAddress [] staticRoutes = new InetAddress [2];
     staticRoutes[0] = InetAddress.getByName ("22.33.44.55");
     staticRoutes[1] = InetAddress.getByName ("10.0.0.254");
-    packet.setOptionAsInetAddresses (DHO_STATIC_ROUTES, staticRoutes);
-    packet.setOptionAsInetAddress (DHO_NTP_SERVERS, "10.0.0.5");
-    packet.setOptionAsInetAddress (DHO_WWW_SERVER, "10.0.0.6");
-    packet.setPaddingWithZeroes (256);
-    packet.setAddress (InetAddress.getByName ("10.11.12.13"));
-    packet.setPort (6767);
-
-    refPacketFromSratch = packet;
+    aPacket.setOptionAsInetAddresses (DHO_STATIC_ROUTES, staticRoutes);
+    aPacket.setOptionAsInetAddress (DHO_NTP_SERVERS, "10.0.0.5");
+    aPacket.setOptionAsInetAddress (DHO_WWW_SERVER, "10.0.0.6");
+    aPacket.setPaddingWithZeroes (256);
+    aPacket.setAddress (InetAddress.getByName ("10.11.12.13"));
+    aPacket.setPort (6767);
+    s_aRefPacketFromScratch = aPacket;
   }
 
   @Before
   public void setUp ()
   {
-    pac0 = new DHCPPacket ();
+    m_aPac0 = new DHCPPacket ();
   }
 
   @Test
@@ -144,7 +143,7 @@ public class DHCPPacketTest
     final DHCPPacket pac = DHCPPacket.getPacket (udp);
     pac.setComment ("foobar");
 
-    assertEquals (refPacketFromHex, pac);
+    assertEquals (s_aRefPacketFromHex, pac);
 
   }
 
@@ -263,7 +262,7 @@ public class DHCPPacketTest
   @Test (expected = IllegalArgumentException.class)
   public void testSetCHAddrHexNotEven ()
   {
-    pac0.setChaddrHex ("0");
+    m_aPac0.setChaddrHex ("0");
   }
 
   // ----
@@ -271,113 +270,113 @@ public class DHCPPacketTest
   @Test (expected = IllegalArgumentException.class)
   public void testSetCIAddrIPv6 () throws Exception
   {
-    pac0.setCiaddr (InetAddress.getByName ("1080:0:0:0:8:800:200C:417A"));
+    m_aPac0.setCiaddr (InetAddress.getByName ("1080:0:0:0:8:800:200C:417A"));
   }
 
   @Test (expected = IllegalArgumentException.class)
   public void testSetCIAddrRaw3 () throws Exception
   {
-    pac0.setCiaddrRaw (new byte [3]);
+    m_aPac0.setCiaddrRaw (new byte [3]);
   }
 
   @Test (expected = IllegalArgumentException.class)
   public void testSetCIAddrRaw5 () throws Exception
   {
-    pac0.setCiaddrRaw (new byte [5]);
+    m_aPac0.setCiaddrRaw (new byte [5]);
   }
 
   @Test (expected = IllegalArgumentException.class)
   public void testSetSIAddrIPv6 () throws Exception
   {
-    pac0.setSiaddr (InetAddress.getByName ("1080:0:0:0:8:800:200C:417A"));
+    m_aPac0.setSiaddr (InetAddress.getByName ("1080:0:0:0:8:800:200C:417A"));
   }
 
   @Test (expected = IllegalArgumentException.class)
   public void testSetSIAddrRaw3 () throws Exception
   {
-    pac0.setSiaddrRaw (new byte [3]);
+    m_aPac0.setSiaddrRaw (new byte [3]);
   }
 
   @Test (expected = IllegalArgumentException.class)
   public void testSetSIAddrRaw5 () throws Exception
   {
-    pac0.setSiaddrRaw (new byte [5]);
+    m_aPac0.setSiaddrRaw (new byte [5]);
   }
 
   @Test (expected = IllegalArgumentException.class)
   public void testSetYIAddrIPv6 () throws Exception
   {
-    pac0.setYiaddr (InetAddress.getByName ("1080:0:0:0:8:800:200C:417A"));
+    m_aPac0.setYiaddr (InetAddress.getByName ("1080:0:0:0:8:800:200C:417A"));
   }
 
   @Test (expected = IllegalArgumentException.class)
   public void testSetYIAddrRaw3 () throws Exception
   {
-    pac0.setYiaddrRaw (new byte [3]);
+    m_aPac0.setYiaddrRaw (new byte [3]);
   }
 
   @Test (expected = IllegalArgumentException.class)
   public void testSetYIAddrRaw5 () throws Exception
   {
-    pac0.setYiaddrRaw (new byte [5]);
+    m_aPac0.setYiaddrRaw (new byte [5]);
   }
 
   @Test (expected = IllegalArgumentException.class)
   public void testSetGIAddrIPv6 () throws Exception
   {
-    pac0.setGiaddr (InetAddress.getByName ("1080:0:0:0:8:800:200C:417A"));
+    m_aPac0.setGiaddr (InetAddress.getByName ("1080:0:0:0:8:800:200C:417A"));
   }
 
   @Test (expected = IllegalArgumentException.class)
   public void testSetGIAddrRaw3 () throws Exception
   {
-    pac0.setGiaddrRaw (new byte [3]);
+    m_aPac0.setGiaddrRaw (new byte [3]);
   }
 
   @Test (expected = IllegalArgumentException.class)
   public void testSetGIAddrRaw5 () throws Exception
   {
-    pac0.setGiaddrRaw (new byte [5]);
+    m_aPac0.setGiaddrRaw (new byte [5]);
   }
 
   // SName
   @Test
   public void testSetSnameRaw ()
   {
-    pac0.setSnameRaw (new byte [64]); // maximum size
-    assertEquals ("", pac0.getSname ());
-    pac0.setSnameRaw (null);
-    assertEquals ("", pac0.getSname ());
+    m_aPac0.setSnameRaw (new byte [64]); // maximum size
+    assertEquals ("", m_aPac0.getSname ());
+    m_aPac0.setSnameRaw (null);
+    assertEquals ("", m_aPac0.getSname ());
   }
 
   @Test (expected = IllegalArgumentException.class)
   public void testSetSnameRawTooLong ()
   {
-    pac0.setSnameRaw (new byte [65]);
+    m_aPac0.setSnameRaw (new byte [65]);
   }
 
   // File
   @Test
   public void testSetFileRaw ()
   {
-    pac0.setFileRaw (new byte [128]); // maximum size
-    assertEquals ("", pac0.getFile ());
-    pac0.setFileRaw (null);
-    assertEquals ("", pac0.getFile ());
+    m_aPac0.setFileRaw (new byte [128]); // maximum size
+    assertEquals ("", m_aPac0.getFile ());
+    m_aPac0.setFileRaw (null);
+    assertEquals ("", m_aPac0.getFile ());
   }
 
   @Test (expected = IllegalArgumentException.class)
   public void testSetFileRawTooLong ()
   {
-    pac0.setFileRaw (new byte [129]);
+    m_aPac0.setFileRaw (new byte [129]);
   }
 
   @Test
   public void testGetHardwareAddress ()
   {
     final HardwareAddress ha = new HardwareAddress (HTYPE_ETHER, "001122334455");
-    assertEquals (ha, refPacketFromSratch.getHardwareAddress ());
-    final DHCPPacket pac2 = refPacketFromSratch.clone ();
+    assertEquals (ha, s_aRefPacketFromScratch.getHardwareAddress ());
+    final DHCPPacket pac2 = s_aRefPacketFromScratch.clone ();
     pac2.setHlen ((byte) 17);
     final HardwareAddress ha2 = new HardwareAddress (HTYPE_ETHER, "00112233445566778899AABBCCDDEEFF");
     assertEquals (ha2, pac2.getHardwareAddress ());
@@ -386,21 +385,21 @@ public class DHCPPacketTest
   @Test
   public void testGetOptionAsNum ()
   {
-    assertEquals (Integer.valueOf (86400), refPacketFromSratch.getOptionAsNum (DHO_DHCP_LEASE_TIME));
-    assertNull (refPacketFromSratch.getOptionAsNum (DHO_USER_CLASS));
-    assertNull (refPacketFromSratch.getOptionAsNum (DHO_STATIC_ROUTES));
-    assertEquals (Integer.valueOf (167772414), refPacketFromSratch.getOptionAsNum (DHO_ROUTERS));
+    assertEquals (Integer.valueOf (86400), s_aRefPacketFromScratch.getOptionAsNum (DHO_DHCP_LEASE_TIME));
+    assertNull (s_aRefPacketFromScratch.getOptionAsNum (DHO_USER_CLASS));
+    assertNull (s_aRefPacketFromScratch.getOptionAsNum (DHO_STATIC_ROUTES));
+    assertEquals (Integer.valueOf (167772414), s_aRefPacketFromScratch.getOptionAsNum (DHO_ROUTERS));
   }
 
   @Test
   public void testEqualsTrivial ()
   {
-    assertTrue (refPacketFromHex.equals (refPacketFromHex));
-    assertFalse (refPacketFromHex.equals ("bla"));
-    final DHCPPacket pac = refPacketFromHex.clone ();
-    assertTrue (refPacketFromHex.equals (pac));
+    assertTrue (s_aRefPacketFromHex.equals (s_aRefPacketFromHex));
+    assertFalse (s_aRefPacketFromHex.equals ("bla"));
+    final DHCPPacket pac = s_aRefPacketFromHex.clone ();
+    assertTrue (s_aRefPacketFromHex.equals (pac));
     pac.setHops ((byte) -1);
-    assertFalse (refPacketFromHex.equals (pac));
+    assertFalse (s_aRefPacketFromHex.equals (pac));
   }
 
   @Test
@@ -408,16 +407,16 @@ public class DHCPPacketTest
   {
     // compare packet serialized from packet built from scratch
     // compare DHCPPacket objects
-    Assert.assertEquals (refPacketFromHex, refPacketFromSratch);
+    Assert.assertEquals (s_aRefPacketFromHex, s_aRefPacketFromScratch);
     // compare byte[] datagrams
-    Assert.assertTrue (Arrays.equals (HexUtils.hexToBytes (REF_PACKET), refPacketFromSratch.serialize ()));
+    Assert.assertTrue (Arrays.equals (HexUtils.hexToBytes (REF_PACKET), s_aRefPacketFromScratch.serialize ()));
   }
 
   @Test
   public void testMarshall () throws UnknownHostException
   {
     // test if serialized packet has the right parameters
-    final DHCPPacket packet = refPacketFromHex;
+    final DHCPPacket packet = s_aRefPacketFromHex;
 
     assertEquals ("foobar", packet.getComment ());
     assertEquals (BOOTREQUEST, packet.getOp ());
@@ -467,7 +466,7 @@ public class DHCPPacketTest
   @Test
   public void testRemoveAllOptions ()
   {
-    final DHCPPacket packet = refPacketFromHex.clone ();
+    final DHCPPacket packet = s_aRefPacketFromHex.clone ();
     assertTrue (packet.containsOption (DHO_WWW_SERVER));
     packet.removeAllOptions ();
     assertFalse (packet.containsOption (DHO_WWW_SERVER));
@@ -477,11 +476,11 @@ public class DHCPPacketTest
   @Test
   public void testBootP ()
   {
-    pac0.setDhcp (false);
-    assertEquals (REF_BOOTP_STRING, pac0.toString ());
+    m_aPac0.setDhcp (false);
+    assertEquals (REF_BOOTP_STRING, m_aPac0.toString ());
 
-    assertEquals (hexToBytes (EMPTY_BOOTP).length, pac0.serialize ().length);
-    assertTrue (Arrays.equals (hexToBytes (EMPTY_BOOTP), pac0.serialize ()));
+    assertEquals (hexToBytes (EMPTY_BOOTP).length, m_aPac0.serialize ().length);
+    assertTrue (Arrays.equals (hexToBytes (EMPTY_BOOTP), m_aPac0.serialize ()));
   }
 
   @Test (expected = DHCPBadPacketException.class)
@@ -502,20 +501,20 @@ public class DHCPPacketTest
   @Test
   public void testSetPaddingWithZeroes ()
   {
-    pac0.setPaddingWithZeroes (-1);
-    assertTrue (Arrays.equals (new byte [0], pac0.getPadding ()));
-    pac0.setPaddingWithZeroes (1500);
-    assertTrue (Arrays.equals (new byte [1500], pac0.getPadding ()));
-    pac0.setPadding (hexToBytes ("FF0011AA"));
-    assertTrue (Arrays.equals (hexToBytes ("FF0011AA"), pac0.getPadding ()));
-    pac0.setPaddingWithZeroes (4);
-    assertTrue (Arrays.equals (new byte [4], pac0.getPadding ()));
+    m_aPac0.setPaddingWithZeroes (-1);
+    assertTrue (Arrays.equals (new byte [0], m_aPac0.getPadding ()));
+    m_aPac0.setPaddingWithZeroes (1500);
+    assertTrue (Arrays.equals (new byte [1500], m_aPac0.getPadding ()));
+    m_aPac0.setPadding (hexToBytes ("FF0011AA"));
+    assertTrue (Arrays.equals (hexToBytes ("FF0011AA"), m_aPac0.getPadding ()));
+    m_aPac0.setPaddingWithZeroes (4);
+    assertTrue (Arrays.equals (new byte [4], m_aPac0.getPadding ()));
   }
 
   @Test (expected = IllegalArgumentException.class)
   public void testSetPaddingWithZeroesTooBig ()
   {
-    pac0.setPaddingWithZeroes (1501);
+    m_aPac0.setPaddingWithZeroes (1501);
   }
 
   //
@@ -523,82 +522,82 @@ public class DHCPPacketTest
   @Test
   public void testOptionAsByte ()
   {
-    assertNull (pac0.getOptionAsByte (DHO_IP_FORWARDING));
-    pac0.setOptionAsByte (DHO_IP_FORWARDING, (byte) 0xf0);
-    assertEquals ((byte) 0xf0, pac0.getOptionAsByte (DHO_IP_FORWARDING).byteValue ());
+    assertNull (m_aPac0.getOptionAsByte (DHO_IP_FORWARDING));
+    m_aPac0.setOptionAsByte (DHO_IP_FORWARDING, (byte) 0xf0);
+    assertEquals ((byte) 0xf0, m_aPac0.getOptionAsByte (DHO_IP_FORWARDING).byteValue ());
   }
 
   @Test
   public void testOptionAsShort ()
   {
-    assertNull (pac0.getOptionAsShort (DHO_INTERFACE_MTU));
-    pac0.setOptionAsShort (DHO_INTERFACE_MTU, (short) 1500);
-    assertEquals ((short) 1500, pac0.getOptionAsShort (DHO_INTERFACE_MTU).shortValue ());
+    assertNull (m_aPac0.getOptionAsShort (DHO_INTERFACE_MTU));
+    m_aPac0.setOptionAsShort (DHO_INTERFACE_MTU, (short) 1500);
+    assertEquals ((short) 1500, m_aPac0.getOptionAsShort (DHO_INTERFACE_MTU).shortValue ());
   }
 
   @Test
   public void testOptionAsShorts ()
   {
     // TODO missing setOptionAsShorts
-    assertNull (pac0.getOptionAsShorts (DHO_PATH_MTU_PLATEAU_TABLE));
-    pac0.setOptionRaw (DHO_PATH_MTU_PLATEAU_TABLE, hexToBytes ("FFFF00000010"));
+    assertNull (m_aPac0.getOptionAsShorts (DHO_PATH_MTU_PLATEAU_TABLE));
+    m_aPac0.setOptionRaw (DHO_PATH_MTU_PLATEAU_TABLE, hexToBytes ("FFFF00000010"));
     final short [] shorts = new short [3];
     shorts[0] = (short) -1;
     shorts[1] = (short) 0;
     shorts[2] = (short) 16;
-    assertTrue (Arrays.equals (shorts, pac0.getOptionAsShorts (DHO_PATH_MTU_PLATEAU_TABLE)));
+    assertTrue (Arrays.equals (shorts, m_aPac0.getOptionAsShorts (DHO_PATH_MTU_PLATEAU_TABLE)));
   }
 
   @Test
   public void testOptionAsBytes ()
   {
-    assertNull (pac0.getOptionAsShorts (DHO_DHCP_PARAMETER_REQUEST_LIST));
-    pac0.setOptionRaw (DHO_DHCP_PARAMETER_REQUEST_LIST, hexToBytes ("FF0180"));
-    assertTrue (Arrays.equals (hexToBytes ("FF0180"), pac0.getOptionAsBytes (DHO_DHCP_PARAMETER_REQUEST_LIST)));
+    assertNull (m_aPac0.getOptionAsShorts (DHO_DHCP_PARAMETER_REQUEST_LIST));
+    m_aPac0.setOptionRaw (DHO_DHCP_PARAMETER_REQUEST_LIST, hexToBytes ("FF0180"));
+    assertTrue (Arrays.equals (hexToBytes ("FF0180"), m_aPac0.getOptionAsBytes (DHO_DHCP_PARAMETER_REQUEST_LIST)));
   }
 
   @Test
   public void testOptionAsInetAddress () throws Exception
   {
-    assertNull (pac0.getOptionAsInetAddr (DHO_SUBNET_MASK));
-    pac0.setOptionAsInetAddress (DHO_SUBNET_MASK, InetAddress.getByName ("10.12.14.16"));
-    assertEquals (InetAddress.getByName ("10.12.14.16"), pac0.getOptionAsInetAddr (DHO_SUBNET_MASK));
+    assertNull (m_aPac0.getOptionAsInetAddr (DHO_SUBNET_MASK));
+    m_aPac0.setOptionAsInetAddress (DHO_SUBNET_MASK, InetAddress.getByName ("10.12.14.16"));
+    assertEquals (InetAddress.getByName ("10.12.14.16"), m_aPac0.getOptionAsInetAddr (DHO_SUBNET_MASK));
   }
 
   @Test
   public void testOptionAsInteger ()
   {
-    assertNull (pac0.getOptionAsInteger (DHO_DHCP_LEASE_TIME));
-    pac0.setOptionAsInt (DHO_DHCP_LEASE_TIME, -1);
-    assertEquals (-1, pac0.getOptionAsInteger (DHO_DHCP_LEASE_TIME).intValue ());
+    assertNull (m_aPac0.getOptionAsInteger (DHO_DHCP_LEASE_TIME));
+    m_aPac0.setOptionAsInt (DHO_DHCP_LEASE_TIME, -1);
+    assertEquals (-1, m_aPac0.getOptionAsInteger (DHO_DHCP_LEASE_TIME).intValue ());
   }
 
   @Test
   public void testOptionAsString ()
   {
-    assertNull (pac0.getOptionAsString (DHO_BOOTFILE));
-    pac0.setOptionAsString (DHO_BOOTFILE, "foobar");
-    assertEquals ("foobar", pac0.getOptionAsString (DHO_BOOTFILE));
+    assertNull (m_aPac0.getOptionAsString (DHO_BOOTFILE));
+    m_aPac0.setOptionAsString (DHO_BOOTFILE, "foobar");
+    assertEquals ("foobar", m_aPac0.getOptionAsString (DHO_BOOTFILE));
   }
 
   @Test
   public void testOptionRaw ()
   {
-    assertNull (pac0.getOptionRaw (DHO_BOOTFILE));
-    pac0.setOptionRaw (DHO_BOOTFILE, hexToBytes ("FF005498"));
-    assertTrue (Arrays.equals (hexToBytes ("FF005498"), pac0.getOptionRaw (DHO_BOOTFILE)));
-    pac0.setOptionRaw (DHO_BOOTFILE, null); // equivalent to removeOption
-    assertNull (pac0.getOptionRaw (DHO_BOOTFILE));
+    assertNull (m_aPac0.getOptionRaw (DHO_BOOTFILE));
+    m_aPac0.setOptionRaw (DHO_BOOTFILE, hexToBytes ("FF005498"));
+    assertTrue (Arrays.equals (hexToBytes ("FF005498"), m_aPac0.getOptionRaw (DHO_BOOTFILE)));
+    m_aPac0.setOptionRaw (DHO_BOOTFILE, null); // equivalent to removeOption
+    assertNull (m_aPac0.getOptionRaw (DHO_BOOTFILE));
   }
 
   @Test
   public void testSetOptionNull ()
   {
-    pac0.setOptionRaw (DHO_BOOTFILE, hexToBytes ("FF005498"));
-    assertNotNull (pac0.getOptionRaw (DHO_BOOTFILE));
-    pac0.setOption (new DHCPOption (DHO_BOOTFILE, null));
-    assertFalse (pac0.containsOption (DHO_BOOTFILE));
-    assertNull (pac0.getOptionRaw (DHO_BOOTFILE));
+    m_aPac0.setOptionRaw (DHO_BOOTFILE, hexToBytes ("FF005498"));
+    assertNotNull (m_aPac0.getOptionRaw (DHO_BOOTFILE));
+    m_aPac0.setOption (new DHCPOption (DHO_BOOTFILE, null));
+    assertFalse (m_aPac0.containsOption (DHO_BOOTFILE));
+    assertNull (m_aPac0.getOptionRaw (DHO_BOOTFILE));
   }
 
   @Test
@@ -609,16 +608,16 @@ public class DHCPPacketTest
     opts[1] = DHCPOption.newOptionAsInt (DHO_DHCP_LEASE_TIME, 0x01FE02FC);
     opts[2] = null;
     opts[3] = DHCPOption.newOptionAsInetAddress (DHO_SUBNET_MASK, InetAddress.getByName ("252.10.224.3"));
-    pac0.setOptions (opts);
-    final DHCPOption [] pacOpts = pac0.getOptionsArray ();
+    m_aPac0.setOptions (opts);
+    final DHCPOption [] pacOpts = m_aPac0.getOptionsArray ();
     assertEquals (3, pacOpts.length);
     assertEquals (opts[0], pacOpts[0]);
     assertEquals (opts[1], pacOpts[1]);
     assertEquals (opts[3], pacOpts[2]);
     // verifying that null setter does not modify packet
-    final DHCPPacket pac2 = pac0.clone ();
+    final DHCPPacket pac2 = m_aPac0.clone ();
     pac2.setOptions ((DHCPOption []) null);
-    assertEquals (pac0, pac2);
+    assertEquals (m_aPac0, pac2);
   }
 
   @Test
@@ -628,60 +627,60 @@ public class DHCPPacketTest
     list.add (DHCPOption.newOptionAsShort (DHO_INTERFACE_MTU, (short) 1500));
     list.add (DHCPOption.newOptionAsInt (DHO_DHCP_LEASE_TIME, 0x01FE02FC));
     list.add (DHCPOption.newOptionAsInetAddress (DHO_SUBNET_MASK, InetAddress.getByName ("252.10.224.3")));
-    pac0.setOptions (list);
-    final DHCPOption [] pacOpts = pac0.getOptionsArray ();
+    m_aPac0.setOptions (list);
+    final DHCPOption [] pacOpts = m_aPac0.getOptionsArray ();
     assertEquals (3, pacOpts.length);
     assertEquals (list.get (0), pacOpts[0]);
     assertEquals (list.get (1), pacOpts[1]);
     assertEquals (list.get (2), pacOpts[2]);
     // verifying that null setter does not modify packet
-    final DHCPPacket pac2 = pac0.clone ();
+    final DHCPPacket pac2 = m_aPac0.clone ();
     pac2.setOptions ((Collection <DHCPOption>) null);
-    assertEquals (pac0, pac2);
+    assertEquals (m_aPac0, pac2);
   }
 
   // address/port
   @Test
   public void testSetAddress () throws Exception
   {
-    pac0.setAddress (InetAddress.getByName ("10.255.12.254"));
-    assertEquals (InetAddress.getByName ("10.255.12.254"), pac0.getAddress ());
-    pac0.setAddress (null);
-    assertNull (pac0.getAddress ());
+    m_aPac0.setAddress (InetAddress.getByName ("10.255.12.254"));
+    assertEquals (InetAddress.getByName ("10.255.12.254"), m_aPac0.getAddress ());
+    m_aPac0.setAddress (null);
+    assertNull (m_aPac0.getAddress ());
   }
 
   @Test
   public void testAddrPort () throws Exception
   {
-    pac0.setAddrPort (new InetSocketAddress (InetAddress.getByName ("10.255.12.254"), 6868));
-    assertEquals (InetAddress.getByName ("10.255.12.254"), pac0.getAddress ());
-    assertEquals (6868, pac0.getPort ());
-    pac0.setAddress (InetAddress.getByName ("255.255.255.255"));
-    pac0.setPort (0);
-    assertEquals (new InetSocketAddress (InetAddress.getByName ("255.255.255.255"), 0), pac0.getAddrPort ());
-    pac0.setAddrPort (null);
-    assertNull (pac0.getAddress ());
-    assertEquals (0, pac0.getPort ());
-    assertEquals (new InetSocketAddress (InetAddress.getByName ("0.0.0.0"), 0), pac0.getAddrPort ());
+    m_aPac0.setAddrPort (new InetSocketAddress (InetAddress.getByName ("10.255.12.254"), 6868));
+    assertEquals (InetAddress.getByName ("10.255.12.254"), m_aPac0.getAddress ());
+    assertEquals (6868, m_aPac0.getPort ());
+    m_aPac0.setAddress (InetAddress.getByName ("255.255.255.255"));
+    m_aPac0.setPort (0);
+    assertEquals (new InetSocketAddress (InetAddress.getByName ("255.255.255.255"), 0), m_aPac0.getAddrPort ());
+    m_aPac0.setAddrPort (null);
+    assertNull (m_aPac0.getAddress ());
+    assertEquals (0, m_aPac0.getPort ());
+    assertEquals (new InetSocketAddress (InetAddress.getByName ("0.0.0.0"), 0), m_aPac0.getAddrPort ());
   }
 
   @Test (expected = IllegalArgumentException.class)
   public void testSetAddressIPv6 () throws Exception
   {
-    pac0.setAddress (InetAddress.getByName ("1080:0:0:0:8:800:200C:417A"));
+    m_aPac0.setAddress (InetAddress.getByName ("1080:0:0:0:8:800:200C:417A"));
   }
 
   @Test (expected = IllegalArgumentException.class)
   public void testAddrPortIPv6 () throws Exception
   {
-    pac0.setAddrPort (new InetSocketAddress (InetAddress.getByName ("1080:0:0:0:8:800:200C:417A"), 0));
+    m_aPac0.setAddrPort (new InetSocketAddress (InetAddress.getByName ("1080:0:0:0:8:800:200C:417A"), 0));
   }
 
   @Test
   public void testToString ()
   {
-    assertEquals (REF_PACKET_TO_STRING, refPacketFromHex.toString ());
-    final DHCPPacket pac = refPacketFromHex.clone ();
+    assertEquals (REF_PACKET_TO_STRING, s_aRefPacketFromHex.toString ());
+    final DHCPPacket pac = s_aRefPacketFromHex.clone ();
     pac.setOp ((byte) 129);
     pac.setHtype ((byte) -2);
     assertEquals (REF_PACKET_MOD_TO_STRING, pac.toString ());
