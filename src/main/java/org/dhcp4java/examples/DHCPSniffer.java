@@ -24,6 +24,8 @@ import java.net.DatagramSocket;
 
 import org.dhcp4java.DHCPConstants;
 import org.dhcp4java.DHCPPacket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A simple DHCP sniffer.
@@ -33,10 +35,10 @@ import org.dhcp4java.DHCPPacket;
  */
 public class DHCPSniffer
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (DHCPSniffer.class);
+
   private DHCPSniffer ()
-  {
-    throw new UnsupportedOperationException ();
-  }
+  {}
 
   public static void main (final String [] args)
   {
@@ -45,16 +47,14 @@ public class DHCPSniffer
       while (true)
       {
         final DatagramPacket pac = new DatagramPacket (new byte [1500], 1500);
-        DHCPPacket dhcp;
-
         socket.receive (pac);
-        dhcp = DHCPPacket.getPacket (pac);
-        System.out.println (dhcp.toString ());
+        final DHCPPacket dhcp = DHCPPacket.getPacket (pac);
+        s_aLogger.info (dhcp.toString ());
       }
     }
     catch (final Exception e)
     {
-      e.printStackTrace ();
+      s_aLogger.error ("Ooops", e);
     }
   }
 }
