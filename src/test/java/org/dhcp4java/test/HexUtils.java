@@ -1,4 +1,4 @@
-/*
+/**
  *	This file is part of dhcp4java, a DHCP API for the Java language.
  *	(c) 2006 Stephan Hadinger
  *
@@ -33,7 +33,7 @@ import java.util.BitSet;
  *
  * @author syoung
  */
-public class HexUtils
+final class HexUtils
 {
   private HexUtils ()
   {}

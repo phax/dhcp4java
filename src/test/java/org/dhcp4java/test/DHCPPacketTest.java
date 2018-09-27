@@ -1,4 +1,4 @@
-/*
+/**
  *	This file is part of dhcp4java, a DHCP API for the Java language.
  *	(c) 2006 Stephan Hadinger
  *
@@ -45,11 +45,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-/**
- */
 public class DHCPPacketTest
 {
-
   private static DHCPPacket refPacketFromHex;
   private static DHCPPacket refPacketFromSratch;
   private DHCPPacket pac0;

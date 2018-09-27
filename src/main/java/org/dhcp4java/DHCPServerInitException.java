@@ -1,4 +1,4 @@
-/*
+/**
  *	This file is part of dhcp4java, a DHCP API for the Java language.
  *	(c) 2006 Stephan Hadinger
  *
@@ -20,7 +20,7 @@ package org.dhcp4java;
 
 /**
  * Thrown to indicate there was a problem starting the DHCP Server.
- * 
+ *
  * @author Stephan Hadinger
  * @version 1.00
  */
@@ -29,7 +29,7 @@ public class DHCPServerInitException extends Exception
   private static final long serialVersionUID = 1L;
 
   /**
-   * 
+   *
    *
    */
   public DHCPServerInitException ()
@@ -40,7 +40,7 @@ public class DHCPServerInitException extends Exception
   /**
    * @param message
    */
-  public DHCPServerInitException (String message)
+  public DHCPServerInitException (final String message)
   {
     super (message);
   }
@@ -48,7 +48,7 @@ public class DHCPServerInitException extends Exception
   /**
    * @param cause
    */
-  public DHCPServerInitException (Throwable cause)
+  public DHCPServerInitException (final Throwable cause)
   {
     super (cause);
   }
@@ -57,7 +57,7 @@ public class DHCPServerInitException extends Exception
    * @param message
    * @param cause
    */
-  public DHCPServerInitException (String message, Throwable cause)
+  public DHCPServerInitException (final String message, final Throwable cause)
   {
     super (message, cause);
   }

@@ -1,4 +1,4 @@
-/*
+/**
  *	This file is part of dhcp4java, a DHCP API for the Java language.
  *	(c) 2006 Stephan Hadinger
  *
@@ -40,10 +40,10 @@ public class DHCPClient
     throw new UnsupportedOperationException ();
   }
 
-  public static void main (String [] args)
+  public static void main (final String [] args)
   {
     // first send discover
-    DHCPPacket discover = new DHCPPacket ();
+    final DHCPPacket discover = new DHCPPacket ();
 
     discover.setOp (BOOTREQUEST);
     discover.setHtype (HTYPE_ETHER);

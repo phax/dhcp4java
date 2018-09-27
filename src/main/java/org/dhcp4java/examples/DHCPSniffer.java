@@ -1,4 +1,4 @@
-/*
+/**
  *	This file is part of dhcp4java, a DHCP API for the Java language.
  *	(c) 2006 Stephan Hadinger
  *
@@ -37,13 +37,13 @@ public class DHCPSniffer
     throw new UnsupportedOperationException ();
   }
 
-  public static void main (String [] args)
+  public static void main (final String [] args)
   {
     try (final DatagramSocket socket = new DatagramSocket (DHCPConstants.BOOTP_REQUEST_PORT))
     {
       while (true)
       {
-        DatagramPacket pac = new DatagramPacket (new byte [1500], 1500);
+        final DatagramPacket pac = new DatagramPacket (new byte [1500], 1500);
         DHCPPacket dhcp;
 
         socket.receive (pac);
@@ -51,7 +51,7 @@ public class DHCPSniffer
         System.out.println (dhcp.toString ());
       }
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       e.printStackTrace ();
     }

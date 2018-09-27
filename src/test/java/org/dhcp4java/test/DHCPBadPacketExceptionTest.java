@@ -1,4 +1,4 @@
-/*
+/**
  *	This file is part of dhcp4java, a DHCP API for the Java language.
  *	(c) 2006 Stephan Hadinger
  *
@@ -24,7 +24,7 @@ import org.junit.Test;
 /**
  * These are complementary test (not essential ones) designed to increase the
  * test coverage.
- * 
+ *
  * @author Stephan Hadinger
  */
 public class DHCPBadPacketExceptionTest

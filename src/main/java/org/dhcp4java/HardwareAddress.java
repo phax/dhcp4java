@@ -1,4 +1,4 @@
-/*
+/**
  *	This file is part of dhcp4java, a DHCP API for the Java language.
  *	(c) 2006 Stephan Hadinger
  *
@@ -23,7 +23,7 @@ import java.util.Arrays;
 
 /**
  * Class is immutable.
- * 
+ *
  * @author Stephan Hadinger
  * @version 1.00
  */
@@ -41,24 +41,24 @@ public class HardwareAddress implements Serializable
    * Invariants: 1- hardwareAddress is not null
    */
 
-  public HardwareAddress (byte [] macAddr)
+  public HardwareAddress (final byte [] macAddr)
   {
     this.hardwareType = HTYPE_ETHER;
     this.hardwareAddress = macAddr;
   }
 
-  public HardwareAddress (byte hType, byte [] macAddr)
+  public HardwareAddress (final byte hType, final byte [] macAddr)
   {
     this.hardwareType = hType;
     this.hardwareAddress = macAddr;
   }
 
-  public HardwareAddress (String macHex)
+  public HardwareAddress (final String macHex)
   {
     this (DHCPPacket.hex2Bytes (macHex));
   }
 
-  public HardwareAddress (byte hType, String macHex)
+  public HardwareAddress (final byte hType, final String macHex)
   {
     this (hType, DHCPPacket.hex2Bytes (macHex));
   }
@@ -84,13 +84,13 @@ public class HardwareAddress implements Serializable
   }
 
   @Override
-  public boolean equals (Object obj)
+  public boolean equals (final Object obj)
   {
     if ((obj == null) || (!(obj instanceof HardwareAddress)))
     {
       return false;
     }
-    HardwareAddress hwAddr = (HardwareAddress) obj;
+    final HardwareAddress hwAddr = (HardwareAddress) obj;
 
     return ((this.hardwareType == hwAddr.hardwareType) &&
             (Arrays.equals (this.hardwareAddress, hwAddr.hardwareAddress)));
@@ -107,7 +107,7 @@ public class HardwareAddress implements Serializable
   @Override
   public String toString ()
   {
-    StringBuffer sb = new StringBuffer (28);
+    final StringBuffer sb = new StringBuffer (28);
     if (hardwareType != HTYPE_ETHER)
     {
       // append hType only if it is not standard ethernet
@@ -130,25 +130,25 @@ public class HardwareAddress implements Serializable
    * Parse the MAC address in hex format, split by ':'.
    * <p>
    * E.g. <tt>0:c0:c3:49:2b:57</tt>.
-   * 
+   *
    * @param macStr
    * @return the newly created HardwareAddress object
    */
-  public static HardwareAddress getHardwareAddressByString (String macStr)
+  public static HardwareAddress getHardwareAddressByString (final String macStr)
   {
     if (macStr == null)
     {
       throw new NullPointerException ("macStr is null");
     }
-    String [] macAdrItems = macStr.split (":");
+    final String [] macAdrItems = macStr.split (":");
     if (macAdrItems.length != 6)
     {
       throw new IllegalArgumentException ("macStr[" + macStr + "] has not 6 items");
     }
-    byte [] macBytes = new byte [6];
+    final byte [] macBytes = new byte [6];
     for (int i = 0; i < 6; i++)
     {
-      int val = Integer.parseInt (macAdrItems[i], 16);
+      final int val = Integer.parseInt (macAdrItems[i], 16);
       if ((val < -128) || (val > 255))
       {
         throw new IllegalArgumentException ("Value is out of range:" + macAdrItems[i]);

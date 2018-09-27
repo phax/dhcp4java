@@ -1,4 +1,4 @@
-/*
+/**
  *	This file is part of dhcp4java, a DHCP API for the Java language.
  *	(c) 2006 Stephan Hadinger
  *
@@ -41,19 +41,19 @@ import org.junit.Test;
 
 public class DHCPServletTest
 {
-  private static DHCPServletTestServlet servlet = null;
+  private static DHCPServletTestServlet s_aServlet;
 
   @BeforeClass
   public static void initServlet ()
   {
-    servlet = new DHCPServletTestServlet ();
-    servlet.init (null); // not much to test here
+    s_aServlet = new DHCPServletTestServlet ();
+    s_aServlet.init (null); // not much to test here
   }
 
   @Test
   public void testServiceDatagram ()
   {
-    assertNull (servlet.serviceDatagram (null));
+    assertNull (s_aServlet.serviceDatagram (null));
 
     DHCPPacket pac = new DHCPPacket ();
     pac.setDhcp (false); // BOOTP
@@ -72,8 +72,8 @@ public class DHCPServletTest
     pac.setDHCPMessageType (DHCPDISCOVER);
     assertNull (servicePacket (pac)); // reject if bad Op
 
-    assertNull (servlet.getServer ());
-    servlet.setServer (null);
+    assertNull (s_aServlet.getServer ());
+    s_aServlet.setServer (null);
   }
 
   // test all messages
@@ -90,42 +90,42 @@ public class DHCPServletTest
   @Test
   public void testInvalidMessageType ()
   {
-    DHCPPacket pac = new DHCPPacket ();
+    final DHCPPacket pac = new DHCPPacket ();
     pac.setDHCPMessageType ((byte) -2);
     pac.setOp (BOOTREQUEST);
-    servlet.lastMessageType = -1;
+    s_aServlet.lastMessageType = -1;
     assertNull (servicePacket (pac));
-    assertEquals ((byte) -1, servlet.lastMessageType);
+    assertEquals ((byte) -1, s_aServlet.lastMessageType);
   }
 
-  private static final DatagramPacket servicePacket (DHCPPacket pac) throws DHCPBadPacketException
+  private static final DatagramPacket servicePacket (final DHCPPacket pac) throws DHCPBadPacketException
   {
-    byte [] buf = pac.serialize ();
-    DatagramPacket udp = new DatagramPacket (buf, buf.length);
-    return servlet.serviceDatagram (udp);
+    final byte [] buf = pac.serialize ();
+    final DatagramPacket udp = new DatagramPacket (buf, buf.length);
+    return s_aServlet.serviceDatagram (udp);
   }
 
-  private static final void messageTypeTester (byte messageType)
+  private static final void messageTypeTester (final byte messageType)
   {
-    DHCPPacket pac = new DHCPPacket ();
+    final DHCPPacket pac = new DHCPPacket ();
     pac.setDHCPMessageType (messageType);
     pac.setOp (BOOTREQUEST);
-    servlet.lastMessageType = -1;
+    s_aServlet.lastMessageType = -1;
     assertNull (servicePacket (pac));
-    assertEquals (messageType, servlet.lastMessageType);
+    assertEquals (messageType, s_aServlet.lastMessageType);
   }
 
   // test response addresses
   @Test
   public void testResponseAddresses () throws Exception
   {
-    DHCPServletTestServletWithGoodResponse servlet2 = new DHCPServletTestServletWithGoodResponse ();
-    DHCPPacket pac = new DHCPPacket ();
+    final DHCPServletTestServletWithGoodResponse servlet2 = new DHCPServletTestServletWithGoodResponse ();
+    final DHCPPacket pac = new DHCPPacket ();
     pac.setDHCPMessageType (DHCPDISCOVER);
     pac.setOp (BOOTREQUEST);
     servlet2.postProcessPassed = false;
-    byte [] buf = pac.serialize ();
-    DatagramPacket udp = new DatagramPacket (buf, buf.length);
+    final byte [] buf = pac.serialize ();
+    final DatagramPacket udp = new DatagramPacket (buf, buf.length);
 
     servlet2.addressToReturn = null;
     servlet2.portToReturn = 0;
@@ -145,35 +145,35 @@ class DHCPServletTestServlet extends DHCPServlet
   public byte lastMessageType = -1;
 
   @Override
-  protected DHCPPacket doDiscover (DHCPPacket request)
+  protected DHCPPacket doDiscover (final DHCPPacket request)
   {
     lastMessageType = DHCPDISCOVER;
     return super.doDiscover (request);
   }
 
   @Override
-  protected DHCPPacket doRequest (DHCPPacket request)
+  protected DHCPPacket doRequest (final DHCPPacket request)
   {
     lastMessageType = DHCPREQUEST;
     return super.doRequest (request);
   }
 
   @Override
-  protected DHCPPacket doInform (DHCPPacket request)
+  protected DHCPPacket doInform (final DHCPPacket request)
   {
     lastMessageType = DHCPINFORM;
     return super.doInform (request);
   }
 
   @Override
-  protected DHCPPacket doDecline (DHCPPacket request)
+  protected DHCPPacket doDecline (final DHCPPacket request)
   {
     lastMessageType = DHCPDECLINE;
     return super.doDecline (request);
   }
 
   @Override
-  protected DHCPPacket doRelease (DHCPPacket request)
+  protected DHCPPacket doRelease (final DHCPPacket request)
   {
     lastMessageType = DHCPRELEASE;
     return super.doRelease (request);
@@ -188,16 +188,16 @@ class DHCPServletTestServletWithGoodResponse extends DHCPServlet
   public int portToReturn = 0;
 
   @Override
-  protected DHCPPacket doDiscover (DHCPPacket request)
+  protected DHCPPacket doDiscover (final DHCPPacket request)
   {
-    DHCPPacket response = new DHCPPacket ();
+    final DHCPPacket response = new DHCPPacket ();
     response.setAddress (addressToReturn);
     response.setPort (portToReturn);
     return response;
   }
 
   @Override
-  protected void postProcess (DatagramPacket requestDatagram, DatagramPacket responseDatagram)
+  protected void postProcess (final DatagramPacket requestDatagram, final DatagramPacket responseDatagram)
   {
     super.postProcess (requestDatagram, responseDatagram);
     postProcessPassed = true;
