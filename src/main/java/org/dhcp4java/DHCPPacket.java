@@ -961,19 +961,19 @@ public class DHCPPacket implements Cloneable, Serializable
       }
 
       buffer.append ("\nhlen=").append (m_nHlen).append ("\nhops=").append (m_nHops).append ("\nxid=0x");
-      _appendHex (buffer, m_nXid);
+      Util.appendHex (buffer, m_nXid);
       buffer.append ("\nsecs=")
             .append (m_nSecs)
             .append ("\nflags=0x")
             .append (Integer.toHexString (m_nFlags))
             .append ("\nciaddr=");
-      appendHostAddress (buffer, InetAddress.getByAddress (m_aCiaddr));
+      Util.appendHostAddress (buffer, InetAddress.getByAddress (m_aCiaddr));
       buffer.append ("\nyiaddr=");
-      appendHostAddress (buffer, InetAddress.getByAddress (m_aYiaddr));
+      Util.appendHostAddress (buffer, InetAddress.getByAddress (m_aYiaddr));
       buffer.append ("\nsiaddr=");
-      appendHostAddress (buffer, InetAddress.getByAddress (m_aSiaddr));
+      Util.appendHostAddress (buffer, InetAddress.getByAddress (m_aSiaddr));
       buffer.append ("\ngiaddr=");
-      appendHostAddress (buffer, InetAddress.getByAddress (m_aGiaddr));
+      Util.appendHostAddress (buffer, InetAddress.getByAddress (m_aGiaddr));
       buffer.append ("\nchaddr=0x");
       _appendChaddrAsHex (buffer);
       buffer.append ("\nsname=").append (getSname ()).append ("\nfile=").append (getFile ());
@@ -992,7 +992,7 @@ public class DHCPPacket implements Cloneable, Serializable
 
       // padding
       buffer.append ("\npadding[").append (m_aPadding.length).append ("]=");
-      appendHex (buffer, m_aPadding);
+      Util.appendHex (buffer, m_aPadding);
     }
     catch (final Exception e)
     {
@@ -1059,7 +1059,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   private StringBuilder _appendChaddrAsHex (final StringBuilder buffer)
   {
-    appendHex (buffer, m_aChaddr, 0, m_nHlen & 0xFF);
+    Util.appendHex (buffer, m_aChaddr, 0, m_nHlen & 0xFF);
     return buffer;
   }
 
@@ -1132,7 +1132,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setChaddrHex (final String hex)
   {
-    setChaddr (hex2Bytes (hex));
+    setChaddr (Util.hex2Bytes (hex));
   }
 
   /**
@@ -1239,7 +1239,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public String getFile ()
   {
-    return bytesToString (getFileRaw ());
+    return Util.bytesToString (getFileRaw ());
   }
 
   /**
@@ -1258,7 +1258,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setFile (final String file)
   {
-    setFileRaw (stringToBytes (file));
+    setFileRaw (Util.stringToBytes (file));
   }
 
   /**
@@ -1737,7 +1737,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public String getSname ()
   {
-    return bytesToString (getSnameRaw ());
+    return Util.bytesToString (getSnameRaw ());
   }
 
   /**
@@ -1756,7 +1756,7 @@ public class DHCPPacket implements Cloneable, Serializable
    */
   public void setSname (final String sname)
   {
-    setSnameRaw (stringToBytes (sname));
+    setSnameRaw (Util.stringToBytes (sname));
   }
 
   /**
@@ -2606,239 +2606,5 @@ public class DHCPPacket implements Cloneable, Serializable
       setAddress (addrPort.getAddress ());
       setPort (addrPort.getPort ());
     }
-  }
-
-  // ========================================================================
-  // utility functions
-
-  /**
-   * Converts a null terminated byte[] string to a String object, with a
-   * transparent conversion. Faster version than String.getBytes()
-   */
-  static String bytesToString (final byte [] buf)
-  {
-    if (buf == null)
-    {
-      return "";
-    }
-    return bytesToString (buf, 0, buf.length);
-  }
-
-  static String bytesToString (final byte [] buf, final int nSrc, final int nLen)
-  {
-    if (buf == null)
-      return "";
-    int src = nSrc;
-    int len = nLen;
-    if (src < 0)
-    {
-      len += src; // reduce length
-      src = 0;
-    }
-    if (len <= 0)
-    {
-      return "";
-    }
-    if (src >= buf.length)
-    {
-      return "";
-    }
-    if (src + len > buf.length)
-    {
-      len = buf.length - src;
-    }
-    // string should be null terminated or whole buffer
-    // first find the real length
-    for (int i = src; i < src + len; i++)
-    {
-      if (buf[i] == 0)
-      {
-        len = i - src;
-        break;
-      }
-    }
-
-    final char [] chars = new char [len];
-    for (int i = src; i < src + len; i++)
-    {
-      chars[i - src] = (char) buf[i];
-    }
-    return new String (chars);
-  }
-
-  /**
-   * Converts byte to hex string (2 chars) (uppercase)
-   */
-  private static final char [] HEX_CHARS = { '0',
-                                             '1',
-                                             '2',
-                                             '3',
-                                             '4',
-                                             '5',
-                                             '6',
-                                             '7',
-                                             '8',
-                                             '9',
-                                             'A',
-                                             'B',
-                                             'C',
-                                             'D',
-                                             'E',
-                                             'F' };
-
-  static void appendHex (final StringBuilder sbuf, final byte b)
-  {
-    final int i = (b & 0xFF);
-    sbuf.append (HEX_CHARS[(i & 0xF0) >> 4]).append (HEX_CHARS[i & 0x0F]);
-  }
-
-  /**
-   * Converts a byte[] to a sequence of hex chars (uppercase), limited to
-   * <code>len</code> bytes and appends them to a string buffer
-   */
-  static void appendHex (final StringBuilder sbuf, final byte [] buf, final int nSrc, final int nLen)
-  {
-    if (buf == null)
-      return;
-    int src = nSrc;
-    int len = nLen;
-    if (src < 0)
-    {
-      len += src; // reduce length
-      src = 0;
-    }
-    if (len <= 0 || src >= buf.length)
-    {
-      return;
-    }
-    if (src + len > buf.length)
-    {
-      len = buf.length - src;
-    }
-
-    for (int i = src; i < src + len; i++)
-    {
-      appendHex (sbuf, buf[i]);
-    }
-  }
-
-  /**
-   * Convert plain byte[] to hex string (uppercase)
-   */
-  static void appendHex (final StringBuilder sbuf, final byte [] buf)
-  {
-    appendHex (sbuf, buf, 0, buf.length);
-  }
-
-  /**
-   * Convert bytes to hex string.
-   *
-   * @param buf
-   * @return hex string (lowercase) or "" if buf is <code>null</code>
-   */
-  static String bytes2Hex (final byte [] buf)
-  {
-    if (buf == null)
-    {
-      return "";
-    }
-    final StringBuilder sb = new StringBuilder (buf.length * 2);
-    appendHex (sb, buf);
-    return sb.toString ();
-  }
-
-  /**
-   * Convert hes String to byte[]
-   */
-  static byte [] hex2Bytes (final String s)
-  {
-    if ((s.length () & 1) != 0)
-    {
-      throw new IllegalArgumentException ("String length must be even: " + s.length ());
-    }
-
-    final byte [] buf = new byte [s.length () / 2];
-
-    for (int index = 0; index < buf.length; index++)
-    {
-      final int stringIndex = index << 1;
-      buf[index] = (byte) Integer.parseInt (s.substring (stringIndex, stringIndex + 2), 16);
-    }
-    return buf;
-  }
-
-  /**
-   * Convert integer to hex chars (uppercase) and appends them to a string
-   * builder
-   */
-  private static void _appendHex (final StringBuilder sbuf, final int i)
-  {
-    appendHex (sbuf, (byte) ((i & 0xff000000) >>> 24));
-    appendHex (sbuf, (byte) ((i & 0x00ff0000) >>> 16));
-    appendHex (sbuf, (byte) ((i & 0x0000ff00) >>> 8));
-    appendHex (sbuf, (byte) ((i & 0x000000ff)));
-  }
-
-  public static byte [] stringToBytes (final String str)
-  {
-    if (str == null)
-    {
-      return null;
-    }
-
-    final char [] chars = str.toCharArray ();
-    final int len = chars.length;
-    final byte [] buf = new byte [len];
-
-    for (int i = 0; i < len; i++)
-    {
-      buf[i] = (byte) chars[i];
-    }
-    return buf;
-  }
-
-  /**
-   * Even faster version than {@link #getHostAddress} when the address is not
-   * the only piece of information put in the string.
-   *
-   * @param sbuf
-   *        the string builder
-   * @param addr
-   *        the Internet address
-   */
-  public static void appendHostAddress (final StringBuilder sbuf, final InetAddress addr)
-  {
-    if (addr == null)
-    {
-      throw new IllegalArgumentException ("addr must not be null");
-    }
-    if (!(addr instanceof Inet4Address))
-    {
-      throw new IllegalArgumentException ("addr must be an instance of Inet4Address");
-    }
-
-    final byte [] src = addr.getAddress ();
-
-    sbuf.append (src[0] & 0xFF)
-        .append ('.')
-        .append (src[1] & 0xFF)
-        .append ('.')
-        .append (src[2] & 0xFF)
-        .append ('.')
-        .append (src[3] & 0xFF);
-  }
-
-  /**
-   * Faster version than <code>InetAddress.getHostAddress()</code>.
-   *
-   * @param addr
-   *        address
-   * @return String representation of address.
-   */
-  public static String getHostAddress (final InetAddress addr)
-  {
-    final StringBuilder sbuf = new StringBuilder (15);
-    appendHostAddress (sbuf, addr);
-    return sbuf.toString ();
   }
 }

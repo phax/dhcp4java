@@ -218,7 +218,7 @@ public class DHCPCoreServer implements Runnable
       {
         final StringBuilder sbuf = new StringBuilder ("Received packet from ");
 
-        DHCPPacket.appendHostAddress (sbuf, requestDatagram.getAddress ());
+        Util.appendHostAddress (sbuf, requestDatagram.getAddress ());
         sbuf.append ('(').append (requestDatagram.getPort ()).append (')');
         s_aLogger.debug (sbuf.toString ());
       }

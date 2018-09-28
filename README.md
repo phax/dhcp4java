@@ -10,6 +10,7 @@ This is a fork of https://github.com/shadinger/dhcp4java from 2018-09-27
     * Using SLF4J 1.7 for logging
     * Fixed JavaDocs
     * Added Travis build
+    * Made it an OSGI bundle
 * v1.00 - 2008-05-11
     * Corrected bug in makeDHCPAck that was not totally conformant to RFC2131 4.3.5. (Thanks to Thiago Figueiredo)
 

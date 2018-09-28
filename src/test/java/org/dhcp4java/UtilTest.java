@@ -17,13 +17,12 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.dhcp4java.test;
+package org.dhcp4java;
 
 import static org.junit.Assert.assertEquals;
 
 import java.net.InetAddress;
 
-import org.dhcp4java.Util;
 import org.junit.Test;
 
 public class UtilTest
@@ -90,5 +89,29 @@ public class UtilTest
   public void testInetAddress2LongIPv6 () throws Exception
   {
     Util.inetAddress2Long (InetAddress.getByName ("1080:0:0:0:8:800:200C:417A"));
+  }
+
+  @Test
+  public void testGetHostAddress () throws Exception
+  {
+    InetAddress adr;
+    adr = InetAddress.getByName ("0.0.0.0");
+    assertEquals (adr.getHostAddress (), Util.getHostAddress (adr));
+    adr = InetAddress.getByName ("255.255.255.255");
+    assertEquals (adr.getHostAddress (), Util.getHostAddress (adr));
+    adr = InetAddress.getByName ("10.254.11.252");
+    assertEquals (adr.getHostAddress (), Util.getHostAddress (adr));
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testGetHostAddressNull ()
+  {
+    Util.getHostAddress (null);
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testGetHostAddressIPv6 () throws Exception
+  {
+    Util.getHostAddress (InetAddress.getByName ("1080:0:0:0:8:800:200C:417A"));
   }
 }

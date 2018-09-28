@@ -60,7 +60,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
       throw new IllegalArgumentException ("Bad mask:" + mask + " must be between 1 and 32");
 
     // apply mask to address
-    m_nAddr = Util.inetAddress2Int (addr) & (int) gCidrMask[mask];
+    m_nAddr = Util.inetAddress2Int (addr) & (int) CIDR_MASK_LONG[mask];
     m_nMask = mask;
   }
 
@@ -85,11 +85,11 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
     if (!(addr instanceof Inet4Address) || !(netMask instanceof Inet4Address))
       throw new IllegalArgumentException ("Only IPv4 addresses supported");
 
-    final Integer intMask = gCidr.get (netMask);
+    final Integer intMask = CIDR.get (netMask);
     if (intMask == null)
       throw new IllegalArgumentException ("netmask: " + netMask + " is not a valid mask");
 
-    m_nAddr = Util.inetAddress2Int (addr) & (int) gCidrMask[intMask.intValue ()];
+    m_nAddr = Util.inetAddress2Int (addr) & (int) CIDR_MASK_LONG[intMask.intValue ()];
     m_nMask = intMask.intValue ();
   }
 
@@ -189,7 +189,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
     final InetCidr [] cidrs = new InetCidr [32];
     for (int i = cidrs.length; i >= 1; i--)
     {
-      cidrs[32 - i] = new InetCidr (Util.int2InetAddress (addrInt & (int) gCidrMask[i]), i);
+      cidrs[32 - i] = new InetCidr (Util.int2InetAddress (addrInt & (int) CIDR_MASK_LONG[i]), i);
     }
     return cidrs;
   }
@@ -296,7 +296,7 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
       if (prev != null && cidr.getAddrLong () <= pivotEnd)
         throw new IllegalStateException ("Overlapping cidr: " + prev + ", " + cidr);
 
-      pivotEnd = cidr.getAddrLong () + (gCidrMask[cidr.getMask ()] ^ 0xFFFFFFFFL);
+      pivotEnd = cidr.getAddrLong () + (CIDR_MASK_LONG[cidr.getMask ()] ^ 0xFFFFFFFFL);
       prev = cidr;
     }
   }
@@ -334,20 +334,20 @@ public class InetCidr implements Serializable, Comparable <InetCidr>
                                                 "255.255.255.254",
                                                 "255.255.255.255" };
 
-  private static final Map <InetAddress, Integer> gCidr = new HashMap <> (48);
-  private static final long [] gCidrMask = new long [33];
+  private static final Map <InetAddress, Integer> CIDR = new HashMap <> (48);
+  private static final long [] CIDR_MASK_LONG = new long [1 + CIDR_MASKS.length];
 
   static
   {
     try
     {
-      gCidrMask[0] = 0;
+      CIDR_MASK_LONG[0] = 0;
       for (int i = 0; i < CIDR_MASKS.length; i++)
       {
         final InetAddress mask = InetAddress.getByName (CIDR_MASKS[i]);
 
-        gCidrMask[i + 1] = Util.inetAddress2Long (mask);
-        gCidr.put (mask, Integer.valueOf (i + 1));
+        CIDR_MASK_LONG[i + 1] = Util.inetAddress2Long (mask);
+        CIDR.put (mask, Integer.valueOf (i + 1));
       }
     }
     catch (final UnknownHostException e)

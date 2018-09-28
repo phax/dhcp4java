@@ -17,10 +17,10 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.dhcp4java.test;
+package org.dhcp4java;
 
 import static org.dhcp4java.DHCPConstants.*;
-import static org.dhcp4java.test.HexUtils.hexToBytes;
+import static org.dhcp4java.HexUtils.hexToBytes;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -37,10 +37,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.dhcp4java.DHCPBadPacketException;
-import org.dhcp4java.DHCPOption;
-import org.dhcp4java.DHCPPacket;
-import org.dhcp4java.HardwareAddress;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -714,31 +710,6 @@ public class DHCPPacketTest
   private static void testPacket (final int size, final int offset, final int length)
   {
     DHCPPacket.getPacket (new byte [size], offset, length, true);
-  }
-
-  // utility functions
-  @Test
-  public void testGetHostAddress () throws Exception
-  {
-    InetAddress adr;
-    adr = InetAddress.getByName ("0.0.0.0");
-    assertEquals (adr.getHostAddress (), DHCPPacket.getHostAddress (adr));
-    adr = InetAddress.getByName ("255.255.255.255");
-    assertEquals (adr.getHostAddress (), DHCPPacket.getHostAddress (adr));
-    adr = InetAddress.getByName ("10.254.11.252");
-    assertEquals (adr.getHostAddress (), DHCPPacket.getHostAddress (adr));
-  }
-
-  @Test (expected = IllegalArgumentException.class)
-  public void testGetHostAddressNull ()
-  {
-    DHCPPacket.getHostAddress (null);
-  }
-
-  @Test (expected = IllegalArgumentException.class)
-  public void testGetHostAddressIPv6 () throws Exception
-  {
-    DHCPPacket.getHostAddress (InetAddress.getByName ("1080:0:0:0:8:800:200C:417A"));
   }
 
   // Hashcode

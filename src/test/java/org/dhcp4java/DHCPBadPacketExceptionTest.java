@@ -17,35 +17,41 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.dhcp4java.test;
+package org.dhcp4java;
 
-import org.dhcp4java.DHCPServerInitException;
+import org.dhcp4java.DHCPBadPacketException;
 import org.junit.Test;
 
-public class DHCPServerInitExceptionTest
+/**
+ * These are complementary test (not essential ones) designed to increase the
+ * test coverage.
+ *
+ * @author Stephan Hadinger
+ */
+public class DHCPBadPacketExceptionTest
 {
-  @Test (expected = DHCPServerInitException.class)
-  public void testDHCPServerInitExceptionVoid () throws DHCPServerInitException
+  @Test (expected = DHCPBadPacketException.class)
+  public void testDHCPBadPacketExceptionVoid ()
   {
-    throw new DHCPServerInitException ();
+    throw new DHCPBadPacketException ();
   }
 
-  @Test (expected = DHCPServerInitException.class)
-  public void testDHCPServerInitExceptionString () throws DHCPServerInitException
+  @Test (expected = DHCPBadPacketException.class)
+  public void testDHCPBadPacketExceptionString ()
   {
-    throw new DHCPServerInitException ("foobar");
+    throw new DHCPBadPacketException ("foobar");
   }
 
-  @Test (expected = DHCPServerInitException.class)
-  public void testDHCPServerInitExceptionThrowableString () throws DHCPServerInitException
+  @Test (expected = DHCPBadPacketException.class)
+  public void testDHCPBadPacketExceptionThrowableString ()
   {
-    throw new DHCPServerInitException ("foobar", new RuntimeException ());
+    throw new DHCPBadPacketException ("foobar", new RuntimeException ());
   }
 
-  @Test (expected = DHCPServerInitException.class)
-  public void testDHCPServerInitExceptionThrowable () throws DHCPServerInitException
+  @Test (expected = DHCPBadPacketException.class)
+  public void testDHCPBadPacketExceptionThrowable ()
   {
-    throw new DHCPServerInitException (new RuntimeException ());
+    throw new DHCPBadPacketException (new RuntimeException ());
   }
 
 }

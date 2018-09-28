@@ -52,12 +52,12 @@ public class HardwareAddress implements Serializable
 
   public HardwareAddress (final String macHex)
   {
-    this (DHCPPacket.hex2Bytes (macHex));
+    this (Util.hex2Bytes (macHex));
   }
 
   public HardwareAddress (final byte hType, final String macHex)
   {
-    this (hType, DHCPPacket.hex2Bytes (macHex));
+    this (hType, Util.hex2Bytes (macHex));
   }
 
   public byte getHardwareType ()
@@ -94,7 +94,7 @@ public class HardwareAddress implements Serializable
 
   public String getHardwareAddressHex ()
   {
-    return DHCPPacket.bytes2Hex (m_aHardwareAddress);
+    return Util.bytes2Hex (m_aHardwareAddress);
   }
 
   /**
