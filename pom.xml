@@ -43,9 +43,9 @@
     </license>
   </licenses>
   <scm>
-    <connection>scm:git:git@github.com:phax/ph-poi.git</connection>
-    <developerConnection>scm:git:git@github.com:phax/ph-poi.git</developerConnection>
-    <url>http://github.com/phax/ph-poi</url>
+    <connection>scm:git:git@github.com:phax/dhcp4java.git</connection>
+    <developerConnection>scm:git:git@github.com:phax/dhcp4java.git</developerConnection>
+    <url>http://github.com/phax/dhcp4java</url>
     <tag>HEAD</tag>
   </scm>
   <organization>
