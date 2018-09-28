@@ -678,21 +678,13 @@ public class DHCPPacket implements Cloneable, Serializable
     // do some basic sanity checks
     // ibuff, offset & length are valid?
     if (buffer == null)
-    {
       throw new IllegalArgumentException ("null buffer not allowed");
-    }
     if (offset < 0)
-    {
       throw new IndexOutOfBoundsException ("negative offset not allowed");
-    }
     if (length < 0)
-    {
       throw new IllegalArgumentException ("negative length not allowed");
-    }
     if (buffer.length < offset + length)
-    {
       throw new IndexOutOfBoundsException ("offset+length exceeds buffer length");
-    }
 
     // absolute minimum size for a valid packet
     if (length < _BOOTP_ABSOLUTE_MIN_LEN)
@@ -709,15 +701,14 @@ public class DHCPPacket implements Cloneable, Serializable
     }
 
     // copy address and port
-    m_aAddress = address0; // no need to clone, InetAddress is immutable
+    // no need to clone, InetAddress is immutable
+    m_aAddress = address0;
     m_nPort = port0;
 
-    try
+    // turn buffer into a readable stream
+    try (final ByteArrayInputStream inBStream = new ByteArrayInputStream (buffer, offset, length);
+         final DataInputStream inStream = new DataInputStream (inBStream))
     {
-      // turn buffer into a readable stream
-      final ByteArrayInputStream inBStream = new ByteArrayInputStream (buffer, offset, length);
-      final DataInputStream inStream = new DataInputStream (inBStream);
-
       // parse static part of packet
       m_nOp = inStream.readByte ();
       m_nHtype = inStream.readByte ();
@@ -736,15 +727,18 @@ public class DHCPPacket implements Cloneable, Serializable
 
       // check for DHCP MAGIC_COOKIE
       m_bIsDhcp = true;
-      inBStream.mark (4); // read ahead 4 bytes
+      // read ahead 4 bytes
+      inBStream.mark (4);
       if (inStream.readInt () != _MAGIC_COOKIE)
       {
         m_bIsDhcp = false;
-        inBStream.reset (); // re-read the 4 bytes
+        // re-read the 4 bytes
+        inBStream.reset ();
       }
 
       if (m_bIsDhcp)
-      { // is it a full DHCP packet or a simple BOOTP?
+      {
+        // is it a full DHCP packet or a simple BOOTP?
         // DHCP Packet: parsing options
         int type = 0;
 
@@ -753,34 +747,39 @@ public class DHCPPacket implements Cloneable, Serializable
           int r = inBStream.read ();
           if (r < 0)
           {
+            // EOF
             break;
-          } // EOF
+          }
 
           type = (byte) r;
 
           if (type == DHO_PAD)
           {
+            // skip Padding
             continue;
-          } // skip Padding
+          }
           if (type == DHO_END)
           {
+            // break if end of options
             break;
-          } // break if end of options
+          }
 
           r = inBStream.read ();
           if (r < 0)
           {
+            // EOF
             break;
-          } // EOF
+          }
 
           final int len = Math.min (r, inBStream.available ());
           final byte [] unit_opt = new byte [len];
           inBStream.read (unit_opt);
 
-          setOption (new DHCPOption ((byte) type, unit_opt)); // store
-                                                              // option
+          // store option
+          setOption (new DHCPOption ((byte) type, unit_opt));
         }
-        m_bTruncated = (type != DHO_END); // truncated options?
+        // truncated options?
+        m_bTruncated = (type != DHO_END);
         if (strict && m_bTruncated)
         {
           throw new DHCPBadPacketException ("Packet seams to be truncated");

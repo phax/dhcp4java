@@ -58,7 +58,7 @@ public class DHCPServlet
    * Initialize servlet. Override this method to implement any initialization
    * you may need.
    * <p>
-   * This method is called once at stratup, before any request is passed to the
+   * This method is called once at startup, before any request is passed to the
    * servlet. A properties is passed to the servlet to read whatever parameters
    * it needs.
    * <p>
@@ -89,22 +89,18 @@ public class DHCPServlet
    */
   public DatagramPacket serviceDatagram (final DatagramPacket requestDatagram)
   {
-    DatagramPacket aResponseDatagram;
-
     if (requestDatagram == null)
-    {
       return null;
-    }
 
     try
     {
       // parse DHCP request
       final DHCPPacket request = DHCPPacket.getPacket (requestDatagram);
-
       if (request == null)
       {
+        // nothing much we can do
         return null;
-      } // nothing much we can do
+      }
 
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug (request.getAsString ());
@@ -117,9 +113,7 @@ public class DHCPServlet
         s_aLogger.debug ("service() done");
 
       if (response == null)
-      {
         return null;
-      }
 
       // check address/port
       final InetAddress aAddress = response.getAddress ();
@@ -138,7 +132,7 @@ public class DHCPServlet
         s_aLogger.debug ("Buffer is " + aResponseBuf.length + " bytes long");
       }
 
-      aResponseDatagram = new DatagramPacket (aResponseBuf, aResponseBuf.length, aAddress, nPort);
+      final DatagramPacket aResponseDatagram = new DatagramPacket (aResponseBuf, aResponseBuf.length, aAddress, nPort);
       if (s_aLogger.isDebugEnabled ())
       {
         s_aLogger.debug ("Sending back to" + aAddress.getHostAddress () + '(' + nPort + ')');
@@ -205,7 +199,6 @@ public class DHCPServlet
           return doDecline (request);
         case DHCPRELEASE:
           return doRelease (request);
-
         default:
           s_aLogger.info ("Unsupported message type " + dhcpMessageType);
           return null;

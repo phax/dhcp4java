@@ -71,6 +71,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DHCPCoreServer implements Runnable
 {
+  public static final String CONFIG_FILE_PATH = "/DHCPd.properties";
   private static final Logger s_aLogger = LoggerFactory.getLogger (DHCPCoreServer.class);
   private static final int BOUNDED_QUEUE_SIZE = 20;
 
@@ -146,14 +147,14 @@ public class DHCPCoreServer implements Runnable
       m_aProperties = new Properties (DEF_PROPS);
 
       // try to load default configuration file
-      final InputStream propFileStream = getClass ().getResourceAsStream ("/DHCPd.properties");
+      final InputStream propFileStream = getClass ().getResourceAsStream (CONFIG_FILE_PATH);
       if (propFileStream != null)
       {
         m_aProperties.load (propFileStream);
       }
       else
       {
-        s_aLogger.error ("Could not load /DHCPd.properties");
+        s_aLogger.error ("Could not load " + CONFIG_FILE_PATH);
       }
 
       // now integrate provided properties
@@ -207,29 +208,29 @@ public class DHCPCoreServer implements Runnable
   {
     try
     {
-      final DatagramPacket requestDatagram = new DatagramPacket (new byte [PACKET_SIZE], PACKET_SIZE);
+      final DatagramPacket aRequestDatagram = new DatagramPacket (new byte [PACKET_SIZE], PACKET_SIZE);
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug ("Waiting for packet");
 
       // receive datagram
-      m_aServerSocket.receive (requestDatagram);
+      m_aServerSocket.receive (aRequestDatagram);
 
       if (s_aLogger.isDebugEnabled ())
       {
         final StringBuilder sbuf = new StringBuilder ("Received packet from ");
 
-        Util.appendHostAddress (sbuf, requestDatagram.getAddress ());
-        sbuf.append ('(').append (requestDatagram.getPort ()).append (')');
+        Util.appendHostAddress (sbuf, aRequestDatagram.getAddress ());
+        sbuf.append ('(').append (aRequestDatagram.getPort ()).append (')');
         s_aLogger.debug (sbuf.toString ());
       }
 
       // send work to thread pool
-      final DHCPServletDispatcher dispatcher = new DHCPServletDispatcher (this, m_aServlet, requestDatagram);
+      final DHCPServletDispatcher dispatcher = new DHCPServletDispatcher (this, m_aServlet, aRequestDatagram);
       m_aThreadPool.execute (dispatcher);
     }
     catch (final IOException e)
     {
-      s_aLogger.info ("IOException", e);
+      s_aLogger.info ("Error dispatching", e);
     }
   }
 
@@ -246,7 +247,8 @@ public class DHCPCoreServer implements Runnable
   {
     if (responseDatagram == null)
     {
-      return; // skipping
+      // skipping
+      return;
     }
 
     try
@@ -272,20 +274,18 @@ public class DHCPCoreServer implements Runnable
    * This method can be overridden to specify an non default socket behaviour
    *
    * @param props
-   *        Properties loaded from /DHCPd.properties
+   *        Properties loaded from {@link #CONFIG_FILE_PATH}
    * @return the socket address, null if there was a problem
    */
   protected InetSocketAddress getInetSocketAddress (final Properties props)
   {
     if (props == null)
-    {
       throw new IllegalArgumentException ("null props not allowed");
-    }
+
     final String serverAddress = props.getProperty (SERVER_ADDRESS);
     if (serverAddress == null)
-    {
       throw new IllegalStateException ("Cannot load SERVER_ADDRESS property");
-    }
+
     return parseSocketAddress (serverAddress);
   }
 
@@ -301,14 +301,11 @@ public class DHCPCoreServer implements Runnable
   public static InetSocketAddress parseSocketAddress (final String address)
   {
     if (address == null)
-    {
       throw new IllegalArgumentException ("Null address not allowed");
-    }
+
     final int index = address.indexOf (':');
     if (index <= 0)
-    {
       throw new IllegalArgumentException ("semicolon missing for port number");
-    }
 
     final String serverStr = address.substring (0, index);
     final String portStr = address.substring (index + 1, address.length ());
@@ -330,7 +327,8 @@ public class DHCPCoreServer implements Runnable
     {
       try
       {
-        dispatch (); // do the stuff
+        // do the stuff
+        dispatch ();
       }
       catch (final Exception e)
       {
@@ -345,8 +343,8 @@ public class DHCPCoreServer implements Runnable
   public void stopServer ()
   {
     m_bStopped = true;
-    m_aServerSocket.close (); // this generates an exception when trying to
-    // receive
+    // this generates an exception when trying to receive
+    m_aServerSocket.close ();
   }
 
   private static final Properties DEF_PROPS = new Properties ();
@@ -371,14 +369,14 @@ public class DHCPCoreServer implements Runnable
 
   private static class ServerThreadFactory implements ThreadFactory
   {
-    private static final AtomicInteger S_aPoolNumber = new AtomicInteger (1);
+    private static final AtomicInteger POOL_NUMBER = new AtomicInteger (1);
 
     private final AtomicInteger m_aThreadNumber = new AtomicInteger (1);
     private final String m_sNamePrefix;
 
     ServerThreadFactory ()
     {
-      m_sNamePrefix = "DHCPCoreServer-" + S_aPoolNumber.getAndIncrement () + "-thread-";
+      m_sNamePrefix = "DHCPCoreServer-" + POOL_NUMBER.getAndIncrement () + "-thread-";
     }
 
     public Thread newThread (final Runnable runnable)
@@ -407,11 +405,11 @@ class DHCPServletDispatcher implements Runnable
   private final DHCPServlet m_aDispatchServlet;
   private final DatagramPacket m_aDispatchPacket;
 
-  public DHCPServletDispatcher (final DHCPCoreServer server, final DHCPServlet servlet, final DatagramPacket req)
+  public DHCPServletDispatcher (final DHCPCoreServer aServer, final DHCPServlet aServlet, final DatagramPacket aReq)
   {
-    m_aServer = server;
-    m_aDispatchServlet = servlet;
-    m_aDispatchPacket = req;
+    m_aServer = aServer;
+    m_aDispatchServlet = aServlet;
+    m_aDispatchPacket = aReq;
   }
 
   public void run ()

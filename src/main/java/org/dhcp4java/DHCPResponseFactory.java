@@ -121,8 +121,8 @@ public final class DHCPResponseFactory
     // set standard options
     resp.setOptionAsInt (DHO_DHCP_LEASE_TIME, leaseTime);
     resp.setOptionAsInetAddress (DHO_DHCP_SERVER_IDENTIFIER, serverIdentifier);
-    resp.setOptionAsString (DHO_DHCP_MESSAGE, message); // if null, it is
-                                                        // removed
+    // if null, it is removed
+    resp.setOptionAsString (DHO_DHCP_MESSAGE, message);
 
     if (options != null)
       for (final DHCPOption opt : options)
@@ -148,9 +148,9 @@ public final class DHCPResponseFactory
    * @param offeredAddress
    *        offered address
    * @param leaseTime
-   *        lease time
+   *        lease time in seconds
    * @param serverIdentifier
-   *        server identfier
+   *        server identifier
    * @param message
    *        message
    * @param options
@@ -207,12 +207,13 @@ public final class DHCPResponseFactory
 
     // set standard options
     if (requestMessageType.byteValue () == DHCPREQUEST)
-    { // rfc 2131
+    {
+      // rfc 2131
       resp.setOptionAsInt (DHO_DHCP_LEASE_TIME, leaseTime);
     }
     resp.setOptionAsInetAddress (DHO_DHCP_SERVER_IDENTIFIER, serverIdentifier);
-    resp.setOptionAsString (DHO_DHCP_MESSAGE, message); // if null, it is
-                                                        // removed
+    // if null, it is removed
+    resp.setOptionAsString (DHO_DHCP_MESSAGE, message);
 
     if (options != null)
       for (final DHCPOption opt : options)
@@ -279,8 +280,8 @@ public final class DHCPResponseFactory
 
     // set standard options
     resp.setOptionAsInetAddress (DHO_DHCP_SERVER_IDENTIFIER, serverIdentifier);
-    resp.setOptionAsString (DHO_DHCP_MESSAGE, message); // if null, it is
-                                                        // removed
+    // if null, it is removed
+    resp.setOptionAsString (DHO_DHCP_MESSAGE, message);
 
     // we do not set other options for this type of message
 
@@ -334,7 +335,8 @@ public final class DHCPResponseFactory
         if (INADDR_ANY.equals (giaddr))
         {
           if (INADDR_ANY.equals (ciaddr))
-          { // broadcast to LAN
+          {
+            // broadcast to LAN
             sockAdr = new InetSocketAddress (INADDR_BROADCAST, 68);
           }
           else
@@ -343,13 +345,15 @@ public final class DHCPResponseFactory
           }
         }
         else
-        { // unicast to relay
+        {
+          // unicast to relay
           sockAdr = new InetSocketAddress (giaddr, 67);
         }
         break;
       case DHCPNAK:
         if (INADDR_ANY.equals (giaddr))
-        { // always broadcast
+        {
+          // always broadcast
           sockAdr = new InetSocketAddress (INADDR_BROADCAST, 68);
         }
         else
