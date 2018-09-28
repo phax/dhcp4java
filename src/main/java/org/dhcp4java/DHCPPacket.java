@@ -350,27 +350,41 @@ import org.slf4j.LoggerFactory;
  */
 public class DHCPPacket implements Cloneable, Serializable
 {
-
   private static final Logger s_aLogger = LoggerFactory.getLogger (DHCPPacket.class);
 
   // user defined comment
-  private String m_sComment; // Free user-defined comment
+  // Free user-defined comment
+  private String m_sComment;
 
   // static structure of the packet
-  private byte m_nOp; // Op code
-  private byte m_nHtype; // HW address Type
-  private byte m_nHlen; // hardware address length
-  private byte m_nHops; // Hw options
-  private int m_nXid; // transaction id
-  private short m_nSecs; // elapsed time from trying to boot
-  private short m_nFlags; // flags
-  private byte [] m_aCiaddr; // client IP
-  private byte [] m_aYiaddr; // your client IP
-  private byte [] m_aSiaddr; // Server IP
-  private byte [] m_aGiaddr; // relay agent IP
-  private byte [] m_aChaddr; // Client HW address
-  private byte [] m_aSname; // Optional server host name
-  private byte [] m_aFile; // Boot file name
+  // Op code
+  private byte m_nOp;
+  // HW address Type
+  private byte m_nHtype;
+  // hardware address length
+  private byte m_nHlen;
+  // Hw options
+  private byte m_nHops;
+  // transaction id
+  private int m_nXid;
+  // elapsed time from trying to boot
+  private short m_nSecs;
+  // flags
+  private short m_nFlags;
+  // client IP
+  private byte [] m_aCiaddr;
+  // your client IP
+  private byte [] m_aYiaddr;
+  // Server IP
+  private byte [] m_aSiaddr;
+  // relay agent IP
+  private byte [] m_aGiaddr;
+  // Client HW address
+  private byte [] m_aChaddr;
+  // Optional server host name
+  private byte [] m_aSname;
+  // Boot file name
+  private byte [] m_aFile;
 
   // ----------------------------------------------------------------------
   // options part of the packet
@@ -380,11 +394,14 @@ public class DHCPPacket implements Cloneable, Serializable
   // Invariant 2: V.value is never <code>null</code>
   // Invariant 3; K is not 0 (PAD) and not -1 (END)
   private Map <Byte, DHCPOption> m_aOptions;
-  private boolean m_bIsDhcp; // well-formed DHCP Packet ?
-  private boolean m_bTruncated; // are the option truncated
+  // well-formed DHCP Packet ?
+  private boolean m_bIsDhcp;
+  // are the option truncated
+  private boolean m_bTruncated;
   // ----------------------------------------------------------------------
   // extra bytes for padding
-  private byte [] m_aPadding; // end of packet padding
+  private byte [] m_aPadding;
+  // end of packet padding
 
   // ----------------------------------------------------------------------
   // Address/port address of the machine, which this datagram is being sent to
@@ -431,9 +448,8 @@ public class DHCPPacket implements Cloneable, Serializable
   public static DHCPPacket getPacket (final DatagramPacket datagram) throws DHCPBadPacketException
   {
     if (datagram == null)
-    {
       throw new IllegalArgumentException ("datagram is null");
-    }
+
     final DHCPPacket packet = new DHCPPacket ();
     // all parameters are checked in marshall()
     packet.marshall (datagram.getData (),
@@ -502,8 +518,8 @@ public class DHCPPacket implements Cloneable, Serializable
       p.m_aOptions = new LinkedHashMap <> (m_aOptions);
       p.m_aPadding = m_aPadding.clone ();
 
-      p.m_bTruncated = false; // freshly new object, it is not considered as
-      // corrupt
+      // freshly new object, it is not considered as corrupt
+      p.m_bTruncated = false;
 
       return p;
     }
@@ -525,36 +541,33 @@ public class DHCPPacket implements Cloneable, Serializable
   public boolean equals (final Object o)
   {
     if (o == this)
-    {
       return true;
-    }
-    if (!(o instanceof DHCPPacket))
-    {
-      return false;
-    }
 
-    final DHCPPacket p = (DHCPPacket) o;
+    if (o == null || !(o instanceof DHCPPacket))
+      return false;
+
+    final DHCPPacket rhs = (DHCPPacket) o;
     // we deliberately ignore "truncated" since it is reset when cloning
-    return m_sComment.equals (p.m_sComment) &&
-           m_nOp == p.m_nOp &&
-           m_nHtype == p.m_nHtype &&
-           m_nHlen == p.m_nHlen &&
-           m_nHops == p.m_nHops &&
-           m_nXid == p.m_nXid &&
-           m_nSecs == p.m_nSecs &&
-           m_nFlags == p.m_nFlags &&
-           Arrays.equals (m_aCiaddr, p.m_aCiaddr) &&
-           Arrays.equals (m_aYiaddr, p.m_aYiaddr) &&
-           Arrays.equals (m_aSiaddr, p.m_aSiaddr) &&
-           Arrays.equals (m_aGiaddr, p.m_aGiaddr) &&
-           Arrays.equals (m_aChaddr, p.m_aChaddr) &&
-           Arrays.equals (m_aSname, p.m_aSname) &&
-           Arrays.equals (m_aFile, p.m_aFile) &&
-           m_aOptions.equals (p.m_aOptions) &&
-           m_bIsDhcp == p.m_bIsDhcp &&
-           Arrays.equals (m_aPadding, p.m_aPadding) &&
-           _equalsStatic (m_aAddress, p.m_aAddress) &&
-           m_nPort == p.m_nPort;
+    return m_sComment.equals (rhs.m_sComment) &&
+           m_nOp == rhs.m_nOp &&
+           m_nHtype == rhs.m_nHtype &&
+           m_nHlen == rhs.m_nHlen &&
+           m_nHops == rhs.m_nHops &&
+           m_nXid == rhs.m_nXid &&
+           m_nSecs == rhs.m_nSecs &&
+           m_nFlags == rhs.m_nFlags &&
+           Arrays.equals (m_aCiaddr, rhs.m_aCiaddr) &&
+           Arrays.equals (m_aYiaddr, rhs.m_aYiaddr) &&
+           Arrays.equals (m_aSiaddr, rhs.m_aSiaddr) &&
+           Arrays.equals (m_aGiaddr, rhs.m_aGiaddr) &&
+           Arrays.equals (m_aChaddr, rhs.m_aChaddr) &&
+           Arrays.equals (m_aSname, rhs.m_aSname) &&
+           Arrays.equals (m_aFile, rhs.m_aFile) &&
+           m_aOptions.equals (rhs.m_aOptions) &&
+           m_bIsDhcp == rhs.m_bIsDhcp &&
+           Arrays.equals (m_aPadding, rhs.m_aPadding) &&
+           _equalsStatic (m_aAddress, rhs.m_aAddress) &&
+           m_nPort == rhs.m_nPort;
   }
 
   /**

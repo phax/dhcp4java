@@ -4,7 +4,7 @@ This is a fork of https://github.com/shadinger/dhcp4java from 2018-09-27
 
 # Revision history for dhcp4java.
 
-* v1.0.1 - work in progress
+* v1.1.0 - 2018-09-28
     * Mavenized (com.helger:dhcp4java)
     * Requires Java 8
     * Using SLF4J 1.7 for logging

@@ -82,31 +82,21 @@ public final class DHCPResponseFactory
   {
     // check request
     if (request == null)
-    {
       throw new NullPointerException ("request is null");
-    }
     if (!request.isDhcp ())
-    {
       throw new DHCPBadPacketException ("request is BOOTP");
-    }
+
     final Byte requestMessageType = request.getDHCPMessageType ();
     if (requestMessageType == null)
-    {
       throw new DHCPBadPacketException ("request has no message type");
-    }
     if (requestMessageType.byteValue () != DHCPDISCOVER)
-    {
       throw new DHCPBadPacketException ("request is not DHCPDISCOVER");
-    }
+
     // check offeredAddress
     if (offeredAddress == null)
-    {
       throw new IllegalArgumentException ("offeredAddress must not be null");
-    }
     if (!(offeredAddress instanceof Inet4Address))
-    {
       throw new IllegalArgumentException ("offeredAddress must be IPv4");
-    }
 
     final DHCPPacket resp = new DHCPPacket ();
 
@@ -135,12 +125,8 @@ public final class DHCPResponseFactory
                                                         // removed
 
     if (options != null)
-    {
       for (final DHCPOption opt : options)
-      {
         resp.setOption (opt.applyOption (request));
-      }
-    }
 
     // we set address/port according to rfc
     resp.setAddrPort (getDefaultSocketAddress (request, DHCPOFFER));
@@ -180,31 +166,21 @@ public final class DHCPResponseFactory
   {
     // check request
     if (request == null)
-    {
       throw new NullPointerException ("request is null");
-    }
     if (!request.isDhcp ())
-    {
       throw new DHCPBadPacketException ("request is BOOTP");
-    }
+
     final Byte requestMessageType = request.getDHCPMessageType ();
     if (requestMessageType == null)
-    {
       throw new DHCPBadPacketException ("request has no message type");
-    }
     if (requestMessageType.byteValue () != DHCPREQUEST && requestMessageType.byteValue () != DHCPINFORM)
-    {
       throw new DHCPBadPacketException ("request is not DHCPREQUEST/DHCPINFORM");
-    }
+
     // check offered address
     if (offeredAddress == null)
-    {
       throw new IllegalArgumentException ("offeredAddress must not be null");
-    }
     if (!(offeredAddress instanceof Inet4Address))
-    {
       throw new IllegalArgumentException ("offeredAddress must be IPv4");
-    }
 
     final DHCPPacket resp = new DHCPPacket ();
 
@@ -239,12 +215,8 @@ public final class DHCPResponseFactory
                                                         // removed
 
     if (options != null)
-    {
       for (final DHCPOption opt : options)
-      {
         resp.setOption (opt.applyOption (request));
-      }
-    }
 
     // we set address/port according to rfc
     resp.setAddrPort (getDefaultSocketAddress (request, DHCPACK));
@@ -275,22 +247,15 @@ public final class DHCPResponseFactory
   {
     // check request
     if (request == null)
-    {
       throw new NullPointerException ("request is null");
-    }
     if (!request.isDhcp ())
-    {
       throw new DHCPBadPacketException ("request is BOOTP");
-    }
+
     final Byte requestMessageType = request.getDHCPMessageType ();
     if (requestMessageType == null)
-    {
       throw new DHCPBadPacketException ("request has no message type");
-    }
     if (requestMessageType.byteValue () != DHCPREQUEST)
-    {
       throw new DHCPBadPacketException ("request is not DHCPREQUEST");
-    }
 
     final DHCPPacket resp = new DHCPPacket ();
 
@@ -355,9 +320,8 @@ public final class DHCPResponseFactory
   public static InetSocketAddress getDefaultSocketAddress (final DHCPPacket request, final byte responseType)
   {
     if (request == null)
-    {
       throw new IllegalArgumentException ("request is null");
-    }
+
     InetSocketAddress sockAdr;
     final InetAddress giaddr = request.getGiaddr ();
     final InetAddress ciaddr = request.getCiaddr ();

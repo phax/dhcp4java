@@ -193,21 +193,21 @@ public final class Util
     int len = nLen;
     if (src < 0)
     {
-      len += src; // reduce length
+      // reduce length
+      len += src;
       src = 0;
     }
     if (len <= 0)
-    {
       return "";
-    }
+
     if (src >= buf.length)
-    {
       return "";
-    }
+
     if (src + len > buf.length)
     {
       len = buf.length - src;
     }
+
     // string should be null terminated or whole buffer
     // first find the real length
     for (int i = src; i < src + len; i++)
