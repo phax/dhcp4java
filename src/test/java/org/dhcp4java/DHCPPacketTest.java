@@ -473,7 +473,7 @@ public class DHCPPacketTest
   public void testBootP ()
   {
     m_aPac0.setDhcp (false);
-    assertEquals (REF_BOOTP_STRING, m_aPac0.toString ());
+    assertEquals (REF_BOOTP_STRING, m_aPac0.getAsString ());
 
     assertEquals (hexToBytes (EMPTY_BOOTP).length, m_aPac0.serialize ().length);
     assertTrue (Arrays.equals (hexToBytes (EMPTY_BOOTP), m_aPac0.serialize ()));
@@ -675,11 +675,11 @@ public class DHCPPacketTest
   @Test
   public void testToString ()
   {
-    assertEquals (REF_PACKET_TO_STRING, s_aRefPacketFromHex.toString ());
+    assertEquals (REF_PACKET_TO_STRING, s_aRefPacketFromHex.getAsString ());
     final DHCPPacket pac = s_aRefPacketFromHex.clone ();
     pac.setOp ((byte) 129);
     pac.setHtype ((byte) -2);
-    assertEquals (REF_PACKET_MOD_TO_STRING, pac.toString ());
+    assertEquals (REF_PACKET_MOD_TO_STRING, pac.getAsString ());
   }
 
   @Test

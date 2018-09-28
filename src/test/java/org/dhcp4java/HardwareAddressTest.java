@@ -25,8 +25,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
-import org.dhcp4java.DHCPConstants;
-import org.dhcp4java.HardwareAddress;
 import org.junit.Test;
 
 public class HardwareAddressTest
@@ -62,9 +60,9 @@ public class HardwareAddressTest
   @Test
   public void testToString ()
   {
-    assertEquals ("00:11:22:33:44:55", s_aHA.toString ());
+    assertEquals ("00:11:22:33:44:55", s_aHA.getAsString ());
     final HardwareAddress ha2 = new HardwareAddress (DHCPConstants.HTYPE_FDDI, "0011045508");
-    assertEquals ("8/00:11:04:55:08", ha2.toString ());
+    assertEquals ("8/00:11:04:55:08", ha2.getAsString ());
   }
 
   @Test
