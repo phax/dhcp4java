@@ -934,8 +934,7 @@ public class DHCPPacket implements Cloneable, Serializable
    *
    * @return a string representation of the object.
    */
-  @Override
-  public String toString ()
+  public String getAsString ()
   {
     final StringBuilder buffer = new StringBuilder ();
 
@@ -1015,6 +1014,12 @@ public class DHCPPacket implements Cloneable, Serializable
     return buffer.toString ();
   }
 
+  @Override
+  @Deprecated
+  public String toString ()
+  {
+    return getAsString ();
+  }
   // ========================================================================
   // getters and setters
 

@@ -98,10 +98,9 @@ public class HardwareAddress implements Serializable
   }
 
   /**
-   * Prints the hardware address in hex format, split by ":".
+   * @return the hardware address in hex format, split by ":".
    */
-  @Override
-  public String toString ()
+  public String getAsString ()
   {
     final StringBuilder sb = new StringBuilder (28);
     if (m_nHardwareType != HTYPE_ETHER)
@@ -120,6 +119,13 @@ public class HardwareAddress implements Serializable
       }
     }
     return sb.toString ();
+  }
+
+  @Deprecated
+  @Override
+  public String toString ()
+  {
+    return getAsString ();
   }
 
   /**

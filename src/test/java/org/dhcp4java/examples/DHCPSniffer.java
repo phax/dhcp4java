@@ -49,7 +49,7 @@ public class DHCPSniffer
         final DatagramPacket pac = new DatagramPacket (new byte [1500], 1500);
         socket.receive (pac);
         final DHCPPacket dhcp = DHCPPacket.getPacket (pac);
-        s_aLogger.info (dhcp.toString ());
+        s_aLogger.info (dhcp.getAsString ());
       }
     }
     catch (final Exception e)

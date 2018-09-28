@@ -107,18 +107,15 @@ public class DHCPServlet
       } // nothing much we can do
 
       if (s_aLogger.isDebugEnabled ())
-      {
-        s_aLogger.debug (request.toString ());
-      }
+        s_aLogger.debug (request.getAsString ());
 
       // do the real work
       // call service function
       final DHCPPacket response = service (request);
       // done
       if (s_aLogger.isDebugEnabled ())
-      {
         s_aLogger.debug ("service() done");
-      }
+
       if (response == null)
       {
         return null;
@@ -178,12 +175,8 @@ public class DHCPServlet
    */
   protected DHCPPacket service (final DHCPPacket request)
   {
-    Byte dhcpMessageType;
-
     if (request == null)
-    {
       return null;
-    }
 
     if (!request.isDhcp ())
     {
@@ -191,8 +184,7 @@ public class DHCPServlet
       return null; // skipping old BOOTP
     }
 
-    dhcpMessageType = request.getDHCPMessageType ();
-
+    final Byte dhcpMessageType = request.getDHCPMessageType ();
     if (dhcpMessageType == null)
     {
       s_aLogger.info ("no DHCP message type");

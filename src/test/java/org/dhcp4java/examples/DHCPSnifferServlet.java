@@ -19,40 +19,52 @@
  */
 package org.dhcp4java.examples;
 
-import static org.dhcp4java.DHCPConstants.BOOTREQUEST;
-import static org.dhcp4java.DHCPConstants.HTYPE_ETHER;
-
-import java.util.Random;
-
+import org.dhcp4java.DHCPCoreServer;
 import org.dhcp4java.DHCPPacket;
+import org.dhcp4java.DHCPServerInitException;
+import org.dhcp4java.DHCPServlet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Example of DHCP Client (under construction).
+ * A simple DHCP sniffer based on DHCP servlets.
  *
  * @author Stephan Hadinger
  * @version 1.00
  */
-public class DHCPClient
+public class DHCPSnifferServlet extends DHCPServlet
 {
-  private static byte [] macAddress = { (byte) 0x00, (byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04, (byte) 0x05 };
+  private static final Logger s_aLogger = LoggerFactory.getLogger (DHCPSnifferServlet.class);
 
-  private DHCPClient ()
+  /**
+   * Print received packet as INFO log, and do not respond.
+   */
+  @Override
+  public DHCPPacket service (final DHCPPacket request)
   {
-    throw new UnsupportedOperationException ();
+    s_aLogger.info (request.getAsString ());
+    return null;
   }
 
+  /**
+   * Launcher for the server.
+   * <p>
+   * No args.
+   *
+   * @param args
+   *        cmdline args
+   */
   public static void main (final String [] args)
   {
-    // first send discover
-    final DHCPPacket discover = new DHCPPacket ();
-
-    discover.setOp (BOOTREQUEST);
-    discover.setHtype (HTYPE_ETHER);
-    discover.setHlen ((byte) 6);
-    discover.setHops ((byte) 0);
-    discover.setXid ((new Random ()).nextInt ());
-    discover.setSecs ((short) 0);
-    discover.setFlags ((short) 0);
-    discover.setChaddr (macAddress);
+    try
+    {
+      final DHCPCoreServer server = DHCPCoreServer.initServer (new DHCPSnifferServlet (), null);
+      final Thread t = new Thread (server);
+      t.start ();
+    }
+    catch (final DHCPServerInitException e)
+    {
+      s_aLogger.error ("Server init", e);
+    }
   }
 }
