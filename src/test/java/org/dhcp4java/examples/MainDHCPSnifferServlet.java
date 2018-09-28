@@ -19,42 +19,52 @@
  */
 package org.dhcp4java.examples;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-
-import org.dhcp4java.DHCPConstants;
+import org.dhcp4java.DHCPCoreServer;
 import org.dhcp4java.DHCPPacket;
+import org.dhcp4java.DHCPServerInitException;
+import org.dhcp4java.DHCPServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A simple DHCP sniffer.
+ * A simple DHCP sniffer based on DHCP servlets.
  *
  * @author Stephan Hadinger
  * @version 1.00
  */
-public class DHCPSniffer
+public class MainDHCPSnifferServlet extends DHCPServlet
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (DHCPSniffer.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (MainDHCPSnifferServlet.class);
 
-  private DHCPSniffer ()
-  {}
+  /**
+   * Print received packet as INFO log, and do not respond.
+   */
+  @Override
+  public DHCPPacket service (final DHCPPacket request)
+  {
+    s_aLogger.info (request.getAsString ());
+    return null;
+  }
 
+  /**
+   * Launcher for the server.
+   * <p>
+   * No args.
+   *
+   * @param args
+   *        cmdline args
+   */
   public static void main (final String [] args)
   {
-    try (final DatagramSocket socket = new DatagramSocket (DHCPConstants.BOOTP_REQUEST_PORT))
+    try
     {
-      while (true)
-      {
-        final DatagramPacket pac = new DatagramPacket (new byte [1500], 1500);
-        socket.receive (pac);
-        final DHCPPacket dhcp = DHCPPacket.getPacket (pac);
-        s_aLogger.info (dhcp.getAsString ());
-      }
+      final DHCPCoreServer server = DHCPCoreServer.initServer (new MainDHCPSnifferServlet (), null);
+      final Thread t = new Thread (server);
+      t.start ();
     }
-    catch (final Exception e)
+    catch (final DHCPServerInitException e)
     {
-      s_aLogger.error ("Ooops", e);
+      s_aLogger.error ("Server init", e);
     }
   }
 }

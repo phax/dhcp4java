@@ -37,12 +37,12 @@ import org.slf4j.LoggerFactory;
  * @author Stephan Hadinger
  * @version 1.00
  */
-public class DHCPClient
+public class MainDHCPClient
 {
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (DHCPClient.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (MainDHCPClient.class);
 
-  private DHCPClient ()
+  private MainDHCPClient ()
   {}
 
   public static void main (final String [] args) throws Exception
