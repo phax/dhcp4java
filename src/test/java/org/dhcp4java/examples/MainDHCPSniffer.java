@@ -42,13 +42,13 @@ public class MainDHCPSniffer
 
   public static void main (final String [] args)
   {
-    try (final DatagramSocket socket = new DatagramSocket (DHCPConstants.BOOTP_REQUEST_PORT))
+    try (final DatagramSocket aSocket = new DatagramSocket (DHCPConstants.BOOTP_REQUEST_PORT))
     {
       while (true)
       {
-        final DatagramPacket pac = new DatagramPacket (new byte [1500], 1500);
-        socket.receive (pac);
-        final DHCPPacket aPacket = DHCPPacket.getPacket (pac);
+        final DatagramPacket aDP = new DatagramPacket (new byte [1500], 1500);
+        aSocket.receive (aDP);
+        final DHCPPacket aPacket = DHCPPacket.getPacket (aDP);
         s_aLogger.info (aPacket.getAsString ());
       }
     }

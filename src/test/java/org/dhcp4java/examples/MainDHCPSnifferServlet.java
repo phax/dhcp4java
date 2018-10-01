@@ -36,6 +36,9 @@ public class MainDHCPSnifferServlet extends DHCPServlet
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (MainDHCPSnifferServlet.class);
 
+  private MainDHCPSnifferServlet ()
+  {}
+
   /**
    * Print received packet as INFO log, and do not respond.
    */

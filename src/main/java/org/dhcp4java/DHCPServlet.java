@@ -52,7 +52,7 @@ public class DHCPServlet
   private static final Logger s_aLogger = LoggerFactory.getLogger (DHCPServlet.class);
 
   /** the server instance running this servlet */
-  protected DHCPCoreServer m_aServer;
+  private DHCPCoreServer m_aServer;
 
   /**
    * Initialize servlet. Override this method to implement any initialization
@@ -107,25 +107,25 @@ public class DHCPServlet
 
       // do the real work
       // call service function
-      final DHCPPacket response = service (request);
+      final DHCPPacket aResponse = service (request);
       // done
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug ("service() done");
 
-      if (response == null)
+      if (aResponse == null)
         return null;
 
       // check address/port
-      final InetAddress aAddress = response.getAddress ();
+      final InetAddress aAddress = aResponse.getAddress ();
       if (aAddress == null)
       {
         s_aLogger.warn ("Address needed in response");
         return null;
       }
-      final int nPort = response.getPort ();
+      final int nPort = aResponse.getPort ();
 
       // we have something to send back
-      final byte [] aResponseBuf = response.serialize ();
+      final byte [] aResponseBuf = aResponse.serialize ();
 
       if (s_aLogger.isDebugEnabled ())
       {
@@ -134,9 +134,8 @@ public class DHCPServlet
 
       final DatagramPacket aResponseDatagram = new DatagramPacket (aResponseBuf, aResponseBuf.length, aAddress, nPort);
       if (s_aLogger.isDebugEnabled ())
-      {
         s_aLogger.debug ("Sending back to" + aAddress.getHostAddress () + '(' + nPort + ')');
-      }
+
       postProcess (requestDatagram, aResponseDatagram);
       return aResponseDatagram;
     }
@@ -307,7 +306,7 @@ public class DHCPServlet
   /**
    * @return Returns the server.
    */
-  public DHCPCoreServer getServer ()
+  public final DHCPCoreServer getServer ()
   {
     return m_aServer;
   }
@@ -316,7 +315,7 @@ public class DHCPServlet
    * @param server
    *        The server to set.
    */
-  public void setServer (final DHCPCoreServer server)
+  final void setServer (final DHCPCoreServer server)
   {
     m_aServer = server;
   }

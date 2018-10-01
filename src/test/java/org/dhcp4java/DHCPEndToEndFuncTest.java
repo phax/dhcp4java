@@ -39,10 +39,33 @@ import org.slf4j.LoggerFactory;
  * @author Stephan Hadinger
  */
 @Ignore
-public class DHCPEndToEndTest
+public final class DHCPEndToEndFuncTest
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (DHCPEndToEndTest.class);
-  static final String SERVER_ADDR = "127.0.0.1";
+  static final class DHCPEndToEndFuncTestServlet extends DHCPServlet
+  {
+    // TODO to be completed
+    @Override
+    protected DHCPPacket doDiscover (final DHCPPacket aPacket)
+    {
+      try
+      {
+        super.doDiscover (aPacket);
+        return DHCPResponseFactory.makeDHCPOffer (aPacket,
+                                                  Util.int2InetAddress (0x0A000001),
+                                                  86400,
+                                                  InetAddress.getByName (DHCPEndToEndFuncTest.SERVER_ADDR),
+                                                  null,
+                                                  null);
+      }
+      catch (final UnknownHostException ex)
+      {
+        throw new IllegalStateException (ex);
+      }
+    }
+  }
+
+  private static final Logger s_aLogger = LoggerFactory.getLogger (DHCPEndToEndFuncTest.class);
+  private static final String SERVER_ADDR = "127.0.0.1";
   private static final int SERVER_PORT = 6767;
   private static final int CLIENT_PORT = 6768;
 
@@ -58,13 +81,13 @@ public class DHCPEndToEndTest
   @BeforeClass
   public static void startServer () throws Exception
   {
-    final Properties localProperties = new Properties ();
-    localProperties.put (DHCPCoreServer.SERVER_ADDRESS, SERVER_ADDR + ':' + SERVER_PORT);
-    localProperties.put (DHCPCoreServer.SERVER_THREADS, "1");
+    final Properties aLocalProps = new Properties ();
+    aLocalProps.put (DHCPCoreServer.SERVER_ADDRESS, SERVER_ADDR + ':' + SERVER_PORT);
+    aLocalProps.put (DHCPCoreServer.SERVER_THREADS, "1");
 
-    m_aServer = DHCPCoreServer.initServer (new DHCPEndToEndTestServlet (), localProperties);
-
+    m_aServer = DHCPCoreServer.initServer (new DHCPEndToEndFuncTestServlet (), aLocalProps);
     s_aLogger.info ("Starting server at " + SERVER_ADDR + ':' + SERVER_PORT);
+
     final Thread t = new Thread (m_aServer);
     t.start ();
 
@@ -77,7 +100,6 @@ public class DHCPEndToEndTest
     final DHCPPacket pac = new DHCPPacket ();
     pac.setOp (BOOTREQUEST);
     pac.setDHCPMessageType (DHCPDISCOVER);
-
     s_aLogger.info ("Sending: " + pac.getAsString ());
 
     final byte [] buf = pac.serialize ();
@@ -85,6 +107,7 @@ public class DHCPEndToEndTest
     udp.setAddress (InetAddress.getByName (SERVER_ADDR));
     udp.setPort (SERVER_PORT);
     m_aClientSocket.send (udp);
+
     udp = new DatagramPacket (new byte [1500], 1500);
     m_aClientSocket.receive (udp);
     final DHCPPacket aReceived = DHCPPacket.getPacket (udp);
@@ -104,28 +127,6 @@ public class DHCPEndToEndTest
       // do some cleanup
       m_aServer.stopServer ();
       m_aServer = null;
-    }
-  }
-}
-
-class DHCPEndToEndTestServlet extends DHCPServlet
-{
-  // TODO to be completed
-  @Override
-  protected DHCPPacket doDiscover (final DHCPPacket request)
-  {
-    try
-    {
-      return DHCPResponseFactory.makeDHCPOffer (request,
-                                                Util.int2InetAddress (0x0A000001),
-                                                86400,
-                                                InetAddress.getByName (DHCPEndToEndTest.SERVER_ADDR),
-                                                null,
-                                                null);
-    }
-    catch (final UnknownHostException ex)
-    {
-      throw new IllegalStateException (ex);
     }
   }
 }

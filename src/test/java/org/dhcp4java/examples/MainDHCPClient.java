@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
  */
 public class MainDHCPClient
 {
-
   private static final Logger s_aLogger = LoggerFactory.getLogger (MainDHCPClient.class);
 
   private MainDHCPClient ()

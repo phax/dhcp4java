@@ -94,15 +94,13 @@ public class DHCPCoreServer implements Runnable
   private boolean m_bStopped = false;
 
   /**
-   * Constructor
-   * <p>
    * Constructor shall not be called directly. New servers are created through
    * <code>initServer()</code> factory.
    */
-  private DHCPCoreServer (final DHCPServlet servlet, final Properties userProps)
+  private DHCPCoreServer (final DHCPServlet aServlet, final Properties aIserProps)
   {
-    m_aServlet = servlet;
-    m_aUserProps = userProps;
+    m_aServlet = aServlet;
+    m_aUserProps = aIserProps;
   }
 
   /**
@@ -110,24 +108,24 @@ public class DHCPCoreServer implements Runnable
    * <p>
    * It instanciates the object, then calls <code>init()</code> method.
    *
-   * @param servlet
+   * @param aServlet
    *        the <code>DHCPServlet</code> instance processing incoming requests,
    *        must not be <code>null</code>.
-   * @param userProps
+   * @param aUserProps
    *        specific properties, overriding file and default properties, may be
    *        <code>null</code>.
    * @return the new <code>DHCPCoreServer</code> instance (never null).
    * @throws DHCPServerInitException
    *         unable to start the server.
    */
-  public static DHCPCoreServer initServer (final DHCPServlet servlet,
-                                           final Properties userProps) throws DHCPServerInitException
+  public static DHCPCoreServer initServer (final DHCPServlet aServlet,
+                                           final Properties aUserProps) throws DHCPServerInitException
   {
-    if (servlet == null)
+    if (aServlet == null)
       throw new IllegalArgumentException ("servlet must not be null");
-    final DHCPCoreServer server = new DHCPCoreServer (servlet, userProps);
-    server.init ();
-    return server;
+    final DHCPCoreServer aServer = new DHCPCoreServer (aServlet, aUserProps);
+    aServer.init ();
+    return aServer;
   }
 
   /**
@@ -163,12 +161,13 @@ public class DHCPCoreServer implements Runnable
         m_aProperties.putAll (m_aUserProps);
       }
 
-      // load socket address, this method may be overriden
+      // load socket address, this method may be overridden
       m_aSockAddress = getInetSocketAddress (m_aProperties);
       if (m_aSockAddress == null)
         throw new DHCPServerInitException ("Cannot find which SockAddress to open");
 
-      s_aLogger.info ("Listing at " + m_aSockAddress.getHostString () + ":" + m_aSockAddress.getPort ());
+      if (s_aLogger.isInfoEnabled ())
+        s_aLogger.info ("Listening at " + m_aSockAddress.getHostString () + ":" + m_aSockAddress.getPort ());
 
       // open socket for listening and sending
       m_aServerSocket = new DatagramSocket (null);
