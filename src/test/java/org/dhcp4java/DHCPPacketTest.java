@@ -387,6 +387,7 @@ public class DHCPPacketTest
     assertEquals (Integer.valueOf (167772414), s_aRefPacketFromScratch.getOptionAsNum (DHO_ROUTERS));
   }
 
+  @SuppressWarnings ("unlikely-arg-type")
   @Test
   public void testEqualsTrivial ()
   {

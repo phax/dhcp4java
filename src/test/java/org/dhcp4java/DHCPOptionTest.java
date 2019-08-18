@@ -48,9 +48,6 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
-import org.dhcp4java.DHCPBadPacketException;
-import org.dhcp4java.DHCPConstants;
-import org.dhcp4java.DHCPOption;
 import org.junit.Test;
 
 @SuppressWarnings ("unused")
@@ -91,6 +88,7 @@ public class DHCPOptionTest
     assertEquals (opt.getValue (), null);
   }
 
+  @SuppressWarnings ("unlikely-arg-type")
   @Test
   public void testEquals ()
   {
@@ -105,6 +103,7 @@ public class DHCPOptionTest
     assertFalse (opt1.equals (new DHCPOption (DHO_BOOTFILE, null)));
   }
 
+  @SuppressWarnings ("unlikely-arg-type")
   @Test
   public void testEqualsNull ()
   {

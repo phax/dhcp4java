@@ -28,8 +28,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dhcp4java.InetCidr;
-import org.dhcp4java.Util;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -121,6 +119,7 @@ public class InetCidrTest
     assertTrue (hash1 != hash2);
   }
 
+  @SuppressWarnings ("unlikely-arg-type")
   @Test
   public void testEquals () throws Exception
   {
